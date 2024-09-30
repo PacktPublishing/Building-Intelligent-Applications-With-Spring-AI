@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.packt.spring.ai.examples.connect4.ConnectFourBoardGameUnitTests
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.105 s -- in com.packt.spring.ai.examples.connect4.ConnectFourBoardGameUnitTests
