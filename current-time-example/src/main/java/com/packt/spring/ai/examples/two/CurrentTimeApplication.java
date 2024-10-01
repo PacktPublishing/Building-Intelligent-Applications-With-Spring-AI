@@ -87,10 +87,10 @@ public class CurrentTimeApplication {
 				ZonedDateTime now = ZonedDateTime.now();
 
 				String prompt = "If the current time in {zone} is {dateTime},"
-					+ " in {format}, what time would it be in {location}?";
+					+ " in {format}, what time is it in {location}?";
+				//System.out.printf("PROMPT [%s]%n", prompt);
 
 				String format = Rfc1123DateTimeStructuredOutputConverter.INSTANCE.getFormat();
-				//System.out.printf("PROMPT [%s]%n", prompt);
 
 				Map<String, Object> promptArguments = Map.of(
 					"zone", now.getZone().getId(),
