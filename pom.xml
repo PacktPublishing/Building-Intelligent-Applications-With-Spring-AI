@@ -23,6 +23,7 @@
 		<module>stock-quote-example</module>
 		<module>opposites-example</module>
 		<module>moderation-example</module>
+		<module>embeddings-example</module>
 	</modules>
 
 	<licenses>
