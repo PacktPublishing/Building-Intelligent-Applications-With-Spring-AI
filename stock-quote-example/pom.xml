@@ -13,8 +13,10 @@
 
 	<artifactId>stock-quote-example</artifactId>
 
-	<name>ExampleThree</name>
-	<description>Stock Quote application using Spring AI to prompt for Stock Quotes.</description>
+	<name>ExampleFour</name>
+	<description>
+		Spring Boot application using Spring AI with Google Gemini to prompt for Stock Quotes.
+	</description>
 	<url/>
 
 	<dependencies>
