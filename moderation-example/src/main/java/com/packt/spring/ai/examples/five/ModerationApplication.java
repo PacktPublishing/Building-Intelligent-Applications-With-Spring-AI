@@ -29,10 +29,16 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} demonstrating the Moderation API by OpenAI.
+ * {@link SpringBootApplication} demonstrating Spring AI's Moderation API with OpenAI.
  *
  * @author John Blum
+ * @see org.springframework.ai.moderation.Moderation
+ * @see org.springframework.ai.moderation.ModerationPrompt
+ * @see org.springframework.ai.moderation.ModerationResponse
+ * @see org.springframework.ai.openai.OpenAiModerationModel
+ * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.boot.builder.SpringApplicationBuilder
  * @since 0.1.0
  */
 @SpringBootApplication

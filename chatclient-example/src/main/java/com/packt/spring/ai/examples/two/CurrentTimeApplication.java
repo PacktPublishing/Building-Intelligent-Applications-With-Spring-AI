@@ -33,18 +33,20 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SpringBootApplication} that returns the current time for any location in the world.
- * <p/>
- * Current response:
- * Enter Location: London
- * > I'm unable to provide real-time information, including the current time in London. However, you can easily find
- * the current time by searching "current time in London" on a search engine or by checking the clock on your device
- * set to London time.
+ * {@link SpringBootApplication} demonstrating Spring AI's {@link ChatClient} API to return the current time
+ * for any location around the world.
+ * <p>
+ *     If the prompt is simply, "What time is it in London?", the AI will respond with:
+ *     "I'm unable to provide real-time information, including the current time in London. However, you can easily find
+ *     the current time by searching "current time in London" on a search engine or by checking the clock on your device
+ *     set to London time."
+ * </p>
  *
  * @author John Blum
  * @see java.time.ZonedDateTime
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.ai.converter.StructuredOutputConverter
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
@@ -64,7 +66,6 @@ public class CurrentTimeApplication {
 			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
-
 	}
 
 	@Bean
@@ -88,7 +89,6 @@ public class CurrentTimeApplication {
 
 				String prompt = "If the current time in {zone} is {dateTime},"
 					+ " in {format}, what time is it in {location}?";
-				//System.out.printf("PROMPT [%s]%n", prompt);
 
 				String format = Rfc1123DateTimeStructuredOutputConverter.INSTANCE.getFormat();
 
@@ -129,7 +129,6 @@ public class CurrentTimeApplication {
 
 		@Override
 		public ZonedDateTime convert(@NonNull String source) {
-			//System.out.printf("SOURCE [%s]%n", source);
 			return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
 		}
 	}

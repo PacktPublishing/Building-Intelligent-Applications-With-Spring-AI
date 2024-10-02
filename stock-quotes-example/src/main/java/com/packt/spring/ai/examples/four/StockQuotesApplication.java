@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 // TODO: Example for Spring AI Functions
 /**
- * {@link SpringBootApplication} used to return a Stock Quote.
+ * {@link SpringBootApplication} used to return a Stock Quote given a Stock Symbol (for examples: AAPL).
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient

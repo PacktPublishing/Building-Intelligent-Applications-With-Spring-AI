@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SpringBootApplication} used to get the opposite of a user-provided value,
- * for example, when given "day", expect "night".
+ * {@link SpringBootApplication} used to get the opposite of a user-provided value.
+ * For example, when the user prompts "day", AI should respond with "night".
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient

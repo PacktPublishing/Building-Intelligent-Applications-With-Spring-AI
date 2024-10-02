@@ -22,6 +22,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * {@link SpringBootApplication} demonstrating the of the Spring AI {@link ChatModel} API.
+ *
+ * @author John Blum
+ * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.boot.ApplicationRunner
+ * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.boot.builder.SpringApplicationBuilder
+ * @since 0.1.0
+ */
 @SpringBootApplication
 @SuppressWarnings("unused")
 public class DeepThoughtApplication {

@@ -29,11 +29,15 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} used to demonstrate the use of an Embeddings AI model.
+ * {@link SpringBootApplication} demonstrating Spring AI's Embeddings Model API.
  *
  * @author John Blum
+ * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
+ * @see org.springframework.ai.vectorstore.VectorStore
+ * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.boot.builder.SpringApplicationBuilder
  * @since 0.1.0
  */
 @SpringBootApplication
