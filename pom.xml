@@ -19,7 +19,7 @@
 
 	<modules>
 		<module>example-one</module>
-		<module>chatclient-example</module>
+		<module>chat-client-example</module>
 		<module>embeddings-example</module>
 		<module>moderation-example</module>
 		<module>opposites-example</module>
