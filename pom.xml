@@ -22,6 +22,7 @@
 		<module>chat-client-example</module>
 		<module>embeddings-example</module>
 		<module>moderation-example</module>
+		<module>similarity-search-example</module>
 		<module>opposites-example</module>
 		<module>stock-quotes-example</module>
 	</modules>
