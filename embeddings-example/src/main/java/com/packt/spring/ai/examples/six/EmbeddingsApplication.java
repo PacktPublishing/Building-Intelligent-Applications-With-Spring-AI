@@ -57,7 +57,7 @@ public class EmbeddingsApplication {
 
 			float[] vector = embeddingModel.embed(text);
 
-			System.out.printf("prompt> %s%n%n", text);
+			System.out.printf("prompt> %s%n", text);
 			System.out.printf("Vector Dimension: %d%n", vector.length);
 		};
 	}
