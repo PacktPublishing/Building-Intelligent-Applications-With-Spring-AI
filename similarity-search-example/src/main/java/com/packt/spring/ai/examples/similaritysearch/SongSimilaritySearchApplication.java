@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.transformer.splitter.TextSplitter;
+import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -34,6 +36,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -52,7 +55,7 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class SongSimilaritySearchApplication {
 
-	private static final double SIMILARITY_THRESHOLD = 0.45d;
+	private static final double SIMILARITY_THRESHOLD = 0.55d;
 
 	private static final String[] SONG_JSON_FILES = {
 		"acdc-backinblack.json",
@@ -81,14 +84,14 @@ public class SongSimilaritySearchApplication {
 
 			loadSongLyrics(vectorStore, objectMapper);
 
-			Set.of("alive", "I'm back in black").forEach(query -> {
+			Set.of("alive", "back in black").forEach(query -> {
 
 				SearchRequest searchRequest = SearchRequest.query(query)
 					.withSimilarityThreshold(SIMILARITY_THRESHOLD);
 
 				List<Document> similarSongs = vectorStore.similaritySearch(searchRequest);
 
-				System.out.printf("Songs similar to [\"%s\"]: %s%n%n", searchRequest.getQuery(),
+				System.out.printf("%nSongs similar to [\"%s\"]: %s%n", searchRequest.getQuery(),
 					similarSongs.stream().map(Document::getId).toList());
 			});
 		};
@@ -100,10 +103,17 @@ public class SongSimilaritySearchApplication {
 			.map(ClassPathResource::new)
 			.map(doSafely(ClassPathResource::getContentAsByteArray))
 			.map(doSafely(byteArray -> objectMapper.readValue(byteArray, Song.class)))
-			.map(Song::toDocument)
+			.map(this::logSong)
+			.map(Song::toChunkedDocuments)
+			.flatMap(List::stream)
 			.toList();
 
 		vectorStore.accept(documents);
+	}
+
+	private Song logSong(Song song) {
+		System.out.printf("Loading Song [%s]%n", song);
+		return song;
 	}
 
 	private static <S, T> Function<S, T> doSafely(ExceptionThrowingFunction<S, T> function) {
@@ -125,25 +135,41 @@ public class SongSimilaritySearchApplication {
 	@Getter
 	static class Song {
 
+		protected static final String SONG_STRING = "%s by %s";
+
 		private String artist;
 		private String lyrics;
 		private String title;
 
-		public Document toDocument() {
-
-			return Document.builder()
-				.withContent(getLyrics())
-				.withId(getId())
-				.build();
-		}
+		@Getter(AccessLevel.PROTECTED)
+		private final TextSplitter textSplitter = new TokenTextSplitter(12, 80, 5, 10_000, false);
 
 		public String getId() {
 			return toString();
 		}
 
+		public List<Document> toChunkedDocuments() {
+
+			return getTextSplitter().split(toDocument()).stream()
+				.map(document -> buildDocument(getId(), document.getContent()))
+				.toList();
+		}
+
+		public Document toDocument() {
+			return buildDocument(getId(), getLyrics());
+		}
+
+		private Document buildDocument(String id, String content) {
+
+			return Document.builder()
+				.withContent(content)
+				.withId(id)
+				.build();
+		}
+
 		@Override
 		public String toString() {
-			return "%s by %s".formatted(getTitle(), getArtist());
+			return SONG_STRING.formatted(getTitle(), getArtist());
 		}
 	}
 }
