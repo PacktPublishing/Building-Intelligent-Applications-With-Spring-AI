@@ -15,13 +15,7 @@
  */
 package com.packt.spring.ai.examples.six;
 
-import java.util.List;
-
-import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,9 +26,7 @@ import org.springframework.context.annotation.Bean;
  * {@link SpringBootApplication} demonstrating Spring AI's Embeddings Model API.
  *
  * @author John Blum
- * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
- * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
@@ -64,37 +56,5 @@ public class EmbeddingsApplication {
 			System.out.printf("prompt> %s%n", text);
 			System.out.printf("Vector Dimension: %d%n", vector.length);
 		};
-	}
-
-	@Bean
-	ApplicationRunner vectorStoreRunner(EmbeddingModel embeddingModel) {
-
-		return args -> {
-
-			VectorStore vectorStore = new SimpleVectorStore(embeddingModel);
-
-			List<Document> documents = List.of(
-				buildDocument("EddieVedder", "Do I deserve to be, is that the question, and if so,"
-					+ " if so, who answers, who answers"),
-				buildDocument("WilliamShakespeare", "To be, or not to be, that is the question.")
-			);
-
-			vectorStore.accept(documents);
-
-			SearchRequest searchRequest = SearchRequest.query("is the question").withSimilarityThreshold(0.5d);
-
-			List<Document> similarDocuments = vectorStore.similaritySearch(searchRequest);
-
-			System.out.printf("Similar Documents to [\"%s\"]: %s%n%n", searchRequest.getQuery(),
-				similarDocuments.stream().map(Document::getId).toList());
-		};
-	}
-
-	private Document buildDocument(String id, String content) {
-
-		return Document.builder()
-			.withContent(content)
-			.withId(id)
-			.build();
 	}
 }
