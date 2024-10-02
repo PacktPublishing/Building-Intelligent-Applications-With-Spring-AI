@@ -49,7 +49,7 @@ public class EmbeddingsApplication {
 
 		return args -> {
 
-			String text = "What's in a name?";
+			String text = "To be, or not to be, that is the question.";
 
 			float[] vector = embeddingModel.embed(text);
 
