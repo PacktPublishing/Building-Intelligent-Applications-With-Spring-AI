@@ -13,10 +13,10 @@
 
 	<artifactId>opposites-example</artifactId>
 
-	<name>ExampleThree</name>
+	<name>OppositesApplication</name>
 	<description>
-		Spring Boot application using Spring AI with Google Gemini to prompt for the opposite of a user-specified value,
-		for example, prompting for "day" should return "night".
+		Spring Boot application using Spring AI and Google Gemini to prompt for the opposite of a user-provided value.
+		For example, if the user prompts for "day", AI should return "night", and "positive" should return "negative".
 	</description>
 	<url/>
 

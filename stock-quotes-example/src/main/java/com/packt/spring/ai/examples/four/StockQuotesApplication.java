@@ -41,14 +41,14 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
-public class StockQuoteApplication {
+public class StockQuotesApplication {
 
 	private static final String EXIT = "exit";
 	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(StockQuoteApplication.class)
+		new SpringApplicationBuilder(StockQuotesApplication.class)
 			.web(WebApplicationType.NONE)
 			.profiles(USER_PROFILE)
 			.build()

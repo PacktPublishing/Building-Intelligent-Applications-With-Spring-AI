@@ -13,9 +13,9 @@
 
 	<artifactId>embeddings-example</artifactId>
 
-	<name>ExampleSix</name>
+	<name>EmbeddingsExample</name>
 	<description>
-		Spring Boot application using Spring AI with Ollama to demonstrate Embeddings.
+		Spring Boot application using Spring AI and Ollama to demonstrate the Embeddings Model API.
 	</description>
 	<url/>
 
