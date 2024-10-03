@@ -25,6 +25,7 @@
 		<module>similarity-search-example</module>
 		<module>opposites-example</module>
 		<module>stock-quotes-example</module>
+		<module>image-generation-example</module>
 	</modules>
 
 	<licenses>
