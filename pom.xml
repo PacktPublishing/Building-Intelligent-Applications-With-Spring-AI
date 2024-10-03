@@ -26,6 +26,7 @@
 		<module>opposites-example</module>
 		<module>stock-quotes-example</module>
 		<module>image-generation-example</module>
+		<module>audio-transcription-example</module>
 	</modules>
 
 	<licenses>
