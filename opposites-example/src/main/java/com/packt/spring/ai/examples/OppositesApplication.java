@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.four;
+package com.packt.spring.ai.examples;
 
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -27,9 +27,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
-// TODO: Example for Spring AI Functions
 /**
- * {@link SpringBootApplication} used to return a Stock Quote given a Stock Symbol (for examples: AAPL).
+ * {@link SpringBootApplication} used to get the opposite of a user-provided value.
+ * For example, when the user prompts "day", AI should respond with "night".
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
@@ -41,14 +41,14 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
-public class StockQuotesApplication {
+public class OppositesApplication {
 
 	private static final String EXIT = "exit";
 	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(StockQuotesApplication.class)
+		new SpringApplicationBuilder(OppositesApplication.class)
 			.web(WebApplicationType.NONE)
 			.profiles(USER_PROFILE)
 			.build()
@@ -68,22 +68,22 @@ public class StockQuotesApplication {
 			Scanner scanner = new Scanner(System.in);
 			String input;
 
-			System.out.print("Enter Stock Symbol: ");
+			System.out.print("The opposite of: ");
 
 			while (isNotExit(input = scanner.nextLine())) {
 
-				String stockSymbol = input;
+				String value = input;
 
 				Consumer<ChatClient.PromptUserSpec> promptUserSpecConsumer = promptUserSpec ->
-					promptUserSpec.text("What is the current stock price for {stock}?").param("stock", stockSymbol);
+					promptUserSpec.text("In a single word, what is opposite of {value}?").param("value", value);
 
-				String stockPrice = chatClient.prompt()
+				String opposite = chatClient.prompt()
 					.user(promptUserSpecConsumer)
 					.call()
 					.content();
 
-				System.out.printf("[%s]: %s%n%n", stockSymbol, stockPrice);
-				System.out.print("Enter Stock Symbol: ");
+				System.out.printf("> %s%n%n", opposite);
+				System.out.print("The opposite of: ");
 			}
 		};
 	}

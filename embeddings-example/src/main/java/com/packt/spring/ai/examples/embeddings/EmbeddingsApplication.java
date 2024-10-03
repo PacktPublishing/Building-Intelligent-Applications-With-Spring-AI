@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.six;
+package com.packt.spring.ai.examples.embeddings;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.boot.ApplicationRunner;

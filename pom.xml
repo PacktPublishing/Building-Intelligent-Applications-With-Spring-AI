@@ -19,14 +19,14 @@
 
 	<modules>
 		<module>example-one</module>
+		<module>audio-transcription-example</module>
 		<module>chat-client-example</module>
 		<module>embeddings-example</module>
+		<module>image-generation-example</module>
 		<module>moderation-example</module>
 		<module>similarity-search-example</module>
 		<module>opposites-example</module>
 		<module>stock-quotes-example</module>
-		<module>image-generation-example</module>
-		<module>audio-transcription-example</module>
 	</modules>
 
 	<licenses>

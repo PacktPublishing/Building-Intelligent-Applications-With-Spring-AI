@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.two;
+package com.packt.spring.ai.examples.chat.client;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
