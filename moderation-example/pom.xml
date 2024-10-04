@@ -15,7 +15,7 @@
 
 	<name>ModerationExample</name>
 	<description>
-		Spring Boot application using Spring AI and OpenAI to demonstrate the Moderation API.
+		Spring Boot application using Spring AI with OpenAI to demonstrate the Moderation API.
 	</description>
 	<url/>
 
