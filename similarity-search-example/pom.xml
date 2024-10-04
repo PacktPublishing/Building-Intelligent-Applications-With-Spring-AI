@@ -15,8 +15,8 @@
 
 	<name>SimilaritySearchExample</name>
 	<description>
-		Spring Boot application using Spring AI and Ollama to demonstrate (Cosine) Similarity Search
-		with Spring AI's VectorStore API and SimpleVectorStore.
+		Spring Boot application using Spring AI with Ollama to demonstrate (Cosine) Similarity Search
+		using Spring AI's VectorStore API and the (in-memory) SimpleVectorStore.
 	</description>
 	<url/>
 
