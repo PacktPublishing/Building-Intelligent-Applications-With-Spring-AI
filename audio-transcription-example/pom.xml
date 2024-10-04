@@ -15,7 +15,7 @@
 
 	<name>AudioTranscriptionExample</name>
 	<description>
-		Spring AI application using OpenAI with the Whisper model to transcribe audio into text.
+		Spring Boot application using Spring AI with OpenAI and the Whisper model to transcribe audio into text.
 	</description>
 	<url/>
 
