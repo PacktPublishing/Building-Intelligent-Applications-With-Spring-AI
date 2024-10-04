@@ -15,8 +15,8 @@
 
 	<name>ChatClientExample</name>
 	<description>
-		Spring Boot application using Spring AI and OpenAI to get the current time in different locations
-		around the world and demonstrate the ChatClient API.
+		Spring Boot application using Spring AI with OpenAI and ChatGPT to demonstrate the ChatClient API used to
+		get the current time for different locations around the world.
 	</description>
 	<url/>
 
