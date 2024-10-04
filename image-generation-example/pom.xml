@@ -15,7 +15,8 @@
 
 	<name>ImageGenerationExample</name>
 	<description>
-		Spring Boot application using Spring AI with Ollama to generate an image from a prompt.
+		Spring Boot application using Spring AI with Ollama to demonstrate the Image Model API
+		and generate an image from a given Prompt.
 	</description>
 	<url/>
 
