@@ -15,7 +15,7 @@
 
 	<name>EmbeddingsExample</name>
 	<description>
-		Spring Boot application using Spring AI and Ollama to demonstrate the Embeddings Model API.
+		Spring Boot application using Spring AI with Ollama to demonstrate the Embeddings Model API.
 	</description>
 	<url/>
 
