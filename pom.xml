@@ -28,6 +28,7 @@
 		<module>similarity-search-example</module>
 		<module>stock-quotes-example</module>
 		<module>streaming-example</module>
+		<module>prompt-example</module>
 	</modules>
 
 	<licenses>
