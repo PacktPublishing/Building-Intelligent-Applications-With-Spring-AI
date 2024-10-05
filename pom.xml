@@ -21,6 +21,7 @@
 		<module>example-one</module>
 		<module>audio-transcription-example</module>
 		<module>chat-client-example</module>
+		<module>document-etl-example</module>
 		<module>embeddings-example</module>
 		<module>image-generation-example</module>
 		<module>moderation-example</module>
