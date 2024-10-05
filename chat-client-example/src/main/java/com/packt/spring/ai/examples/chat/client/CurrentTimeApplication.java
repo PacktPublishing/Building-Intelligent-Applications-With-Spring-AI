@@ -23,12 +23,14 @@ import java.util.function.Consumer;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +59,7 @@ import org.springframework.util.StringUtils;
 public class CurrentTimeApplication {
 
 	private static final String EXIT = "exit";
+	private static final String PROMPT_TEMPLATE_PROFILE = "prompt-template";
 	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
@@ -74,6 +77,7 @@ public class CurrentTimeApplication {
 	}
 
 	@Bean
+	@Profile("!"+PROMPT_TEMPLATE_PROFILE)
 	ApplicationRunner programRunner(ChatClient chatClient) {
 
 		return args -> {
@@ -105,8 +109,47 @@ public class CurrentTimeApplication {
 				ZonedDateTime locationDateTime = chatClient.prompt()
 					.user(userPrompt)
 					.call()
-					.responseEntity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE)
-					.entity();
+					.entity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE);
+
+				System.out.printf("> %s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+				System.out.print("Enter Location: ");
+			}
+		};
+	}
+
+	@Bean
+	@Profile(PROMPT_TEMPLATE_PROFILE)
+	ApplicationRunner programRunnerUsingPromptTemplate(ChatClient chatClient) {
+
+		System.out.println("Using Prompt Template");
+
+		return args -> {
+
+			Scanner scanner = new Scanner(System.in);
+			String location;
+
+			System.out.print("Enter Location: ");
+
+			while (isNotExit(location = scanner.nextLine())) {
+
+				ZonedDateTime now = ZonedDateTime.now();
+
+				String template = "If the current time in {zone} is {dateTime},"
+					+ " in {format}, what time is it in {location}?";
+
+				String format = Rfc1123DateTimeStructuredOutputConverter.INSTANCE.getFormat();
+
+				PromptTemplate promptTemplate =new PromptTemplate(template);
+
+				promptTemplate.add("zone", now.getZone().getId());
+				promptTemplate.add("dateTime", now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+				promptTemplate.add("format", format);
+				promptTemplate.add("location", location);
+
+				ZonedDateTime locationDateTime = chatClient.prompt()
+					.messages(promptTemplate.createMessage())
+					.call()
+					.entity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE);
 
 				System.out.printf("> %s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
 				System.out.print("Enter Location: ");
