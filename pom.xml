@@ -25,10 +25,11 @@
 		<module>image-generation-example</module>
 		<module>moderation-example</module>
 		<module>opposites-example</module>
+		<module>prompt-example</module>
 		<module>similarity-search-example</module>
 		<module>stock-quotes-example</module>
 		<module>streaming-example</module>
-		<module>prompt-example</module>
+		<module>structured-output-converter-example</module>
 	</modules>
 
 	<licenses>
