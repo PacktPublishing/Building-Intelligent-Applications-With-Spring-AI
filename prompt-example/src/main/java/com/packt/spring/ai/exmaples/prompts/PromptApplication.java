@@ -30,7 +30,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} using Spring AI to demonstrate {@link Prompt Prompts} and {@link Message Messages}.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate
+ * {@link Prompt Prompts} and {@link Message Messages}.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.messages.AssistantMessage
