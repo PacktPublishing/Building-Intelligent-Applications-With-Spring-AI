@@ -50,8 +50,10 @@ import org.springframework.web.client.RestClient;
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama (llama3.2 model) demonstrating Spring AI's Function Calling
- * to return a Stock Quote given a Stock Symbol (for examples: AAPL).
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Function Calling
+ * in order to return a {@link StockQuote} given a stock (exchange) symbol, for examples: {@literal AAPL}.
+ * <p/>
+ * Uses Polygon.io's REST API to fetch realtime sock market data, such as stock quotes.
  *
  * @author John Blum
  * @see java.util.function.Function
