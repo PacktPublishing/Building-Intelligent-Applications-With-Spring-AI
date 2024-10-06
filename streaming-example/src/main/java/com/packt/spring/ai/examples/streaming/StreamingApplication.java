@@ -37,10 +37,12 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's Streaming API.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate
+ * the Streaming API.
  * <p>
+ * PROMPTS:
  * Please explain Cosine Similarity Search and how it works.
- * Recite the poem Twinkle Twinkle Little Star.
+ * Recite the poem 'Twinkle Twinkle Little Star'.
  * </p>
  *
  * @author John Blum
