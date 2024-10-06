@@ -28,8 +28,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SpringBootApplication} used to get the opposite of a user-provided value.
- * For example, when the user prompts "day", AI should respond with "night".
+ * {@link SpringBootApplication} usig Spring AI with Ollama ({@literal llama3.2} model) to get the opposite of
+ * a user-provided value.
+ * <p/>
+ * For example, when the user prompts "day", AI should generate a response of "night".
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
