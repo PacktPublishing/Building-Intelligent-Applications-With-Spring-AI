@@ -29,7 +29,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's Moderation API with OpenAI.
+ * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o} model) to demonstrate
+ * the Moderation API.
  *
  * @author John Blum
  * @see org.springframework.ai.moderation.Moderation
