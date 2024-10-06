@@ -35,13 +35,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's {@link ChatClient} API to return the current time
- * for any location around the world.
+ * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o} model) demonstrating
+ * the {@link ChatClient} API by returning the current time for any location in the world.
  * <p>
  *     If the prompt is simply, "What time is it in London?", the AI will respond with:
+
  *     "I'm unable to provide real-time information, including the current time in London. However, you can easily find
  *     the current time by searching "current time in London" on a search engine or by checking the clock on your device
  *     set to London time."
+
+ *     Therefore, this requires the application to provide the AI with context, or a point of reference.
  * </p>
  *
  * @author John Blum
