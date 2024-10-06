@@ -36,7 +36,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} using Spring AI with OpenAI (DALL-E-2) to generate an {@link Image}.
+ * {@link SpringBootApplication} using Spring AI with OpenAI ({@literal DALL-E-2} model) to generate an {@link Image}.
  *
  * @author John Blum
  * @see org.springframework.ai.image.Image
