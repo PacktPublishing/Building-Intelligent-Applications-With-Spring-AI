@@ -40,7 +40,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} demonstrating Similarity Search with Spring AI.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal nomic-embed-text} model)
+ * to demonstrate Similarity Search.
  *
  * @author John Blum
  * @see org.springframework.ai.document.Document
