@@ -23,7 +23,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's Embeddings Model API.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal nomic-embed-text} model)
+ * to demonstrate Spring AI's Embeddings Model API.
  *
  * @author John Blum
  * @see org.springframework.ai.embedding.EmbeddingModel
