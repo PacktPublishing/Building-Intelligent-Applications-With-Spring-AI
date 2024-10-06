@@ -35,12 +35,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate ETL capabilities with Spring AI
- * using the {@link Document} API.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate
+ * ETL capabilities with Spring AI and the {@link Document} API.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.ai.document.Document
+ * @see org.springframework.ai.transformer.KeywordMetadataEnricher
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
