@@ -35,7 +35,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's {@link StructuredOutputConverter}.
+ * {@link SpringBootApplication} using spring AI with Ollama {@literal llama3.2} model) to demonstrate
+ * {@link StructuredOutputConverter StructuredOutputConverters}.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
