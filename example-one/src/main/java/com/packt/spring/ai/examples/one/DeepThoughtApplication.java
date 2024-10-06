@@ -23,7 +23,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} demonstrating Spring AI's {@link ChatModel} API.
+ * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o}) to demonstrate
+ * the {@link ChatModel} API.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
