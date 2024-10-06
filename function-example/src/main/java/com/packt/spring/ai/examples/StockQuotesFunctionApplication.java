@@ -27,9 +27,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
-// TODO: Example for Spring AI Functions
 /**
- * {@link SpringBootApplication} used to return a Stock Quote given a Stock Symbol (for examples: AAPL).
+ * {@link SpringBootApplication} using Spring AI with Ollama (llama3.2 model) demonstrating Spring AI's Function Calling
+ * to return a Stock Quote given a Stock Symbol (for examples: AAPL).
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
@@ -41,14 +41,14 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
-public class StockQuotesApplication {
+public class StockQuotesFunctionApplication {
 
 	private static final String EXIT = "exit";
 	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(StockQuotesApplication.class)
+		new SpringApplicationBuilder(StockQuotesFunctionApplication.class)
 			.web(WebApplicationType.NONE)
 			.profiles(USER_PROFILE)
 			.build()
