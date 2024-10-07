@@ -15,9 +15,6 @@
  */
 package com.packt.spring.ai.example.chat.model.options;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -28,6 +25,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o} model) to demonstrate
@@ -64,21 +64,20 @@ public class ChatModelOptionsApplication {
 			int topK = Integer.parseInt(args.getNonOptionArgs().get(0));
 			float topP = Float.parseFloat(args.getNonOptionArgs().get(1));
 
+			String userPrompt = "Finish the sentence, 'A long, long time ago in a...'";
+			//String userPrompt = "Finish the sentence, 'If you don't eat your fruits and vegetables, you will...'";
+
 			OllamaOptions chatOptions = OllamaOptions.builder()
 				//.withSeed(SEED)
 				.withTopK(topK)
 				.withTopP(topP)
 				.build();
 
-			System.out.printf("Seed [%s], Top K [%s] - Top P [%s]%n",
-				chatOptions.getSeed(), chatOptions.getTopK(), chatOptions.getTopP());
-
-			String userPrompt = "Finish the sentence, 'A long, long time ago in a...'";
-			//String userPrompt = "Finish the sentence, 'If you don't eat your fruits and vegetables, you will...'";
-
-			System.out.printf("user> %s%n", userPrompt);
-
 			Prompt prompt = new Prompt(userPrompt, chatOptions);
+
+			print("Seed [%s], Top K [%s] - Top P [%s]%n",
+				chatOptions.getSeed(), chatOptions.getTopK(), chatOptions.getTopP());
+			print("user> %s%n", getContent(prompt));
 
 			Map<String, Integer> generationCount = new HashMap<>();
 
@@ -93,5 +92,14 @@ public class ChatModelOptionsApplication {
 
 	private String getContent(ChatResponse response) {
 		return response.getResult().getOutput().getContent();
+	}
+
+	private String getContent(Prompt prompt) {
+		return prompt.getContents();
+	}
+
+	private void print(String message, Object... args) {
+		System.out.printf(message, args);
+		System.out.flush();
 	}
 }
