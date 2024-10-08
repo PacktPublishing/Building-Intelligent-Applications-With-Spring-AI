@@ -67,7 +67,7 @@ public class MetadataApplication {
 			//Prompt prompt = new Prompt("Summarize the difference between the theory of general relativity"
 			//	+ " and quantum mechanics in 2 paragraphs.");
 
-			Prompt prompt = new Prompt("Explain the theory of general relativity in 5 paragraphs or less.");
+			Prompt prompt = new Prompt("Explain the theory of general relativity in a few paragraphs.");
 
 			print("user> %s%n", getContent(prompt));
 
