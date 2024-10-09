@@ -32,6 +32,7 @@
 		<module>similarity-search-example</module>
 		<module>streaming-example</module>
 		<module>structured-output-converter-example</module>
+		<module>tokenizer-example</module>
 		<module>opposites-application</module>
 	</modules>
 
