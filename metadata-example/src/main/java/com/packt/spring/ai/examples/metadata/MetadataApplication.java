@@ -82,9 +82,9 @@ public class MetadataApplication {
 
 			Usage usage = metadata.getUsage();
 
-			print("Prompt Tokens: %d%n", usage.getPromptTokens());
-			print("Generation Tokens: %d%n", usage.getGenerationTokens());
-			print("Total Tokens: %d%n", usage.getTotalTokens());
+			print("Prompt Token Count: %d%n", usage.getPromptTokens());
+			print("Generation Token Count: %d%n", usage.getGenerationTokens());
+			print("Total Token Count: %d%n", usage.getTotalTokens());
 
 			RateLimit rateLimit = metadata.getRateLimit();
 
