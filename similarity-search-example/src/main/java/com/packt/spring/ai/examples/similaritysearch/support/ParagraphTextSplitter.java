@@ -29,7 +29,7 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public class ParagraphTextSplitter extends AbstractLowercasePreProcessingTextSplitter {
+public class ParagraphTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
 	@Override
 	protected String regex() {
