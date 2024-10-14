@@ -15,17 +15,26 @@
  */
 package com.packt.spring.ai.examples.similaritysearch;
 
+import static com.packt.spring.ai.examples.similaritysearch.support.ExceptionThrowingFunction.doSafely;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.packt.spring.ai.examples.similaritysearch.support.DocumentTextSplitter;
+import com.packt.spring.ai.examples.similaritysearch.support.NewlineTextSplitter;
+import com.packt.spring.ai.examples.similaritysearch.support.ParagraphTextSplitter;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.transformer.splitter.TextSplitter;
-import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -34,18 +43,28 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama ({@literal nomic-embed-text} model)
  * to demonstrate Similarity Search.
  *
  * @author John Blum
+ * @see com.fasterxml.jackson.databind.ObjectMapper
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
+ * @see org.springframework.ai.transformer.splitter.TextSplitter
+ * @see org.springframework.ai.vectorstore.SearchRequest
+ * @see org.springframework.ai.vectorstore.SimpleVectorStore
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
@@ -53,10 +72,18 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SpringBootApplication
+@Profile("!test")
 @SuppressWarnings("unused")
 public class SongSimilaritySearchApplication {
 
-	private static final double SIMILARITY_THRESHOLD = 0.55d;
+	private static final boolean SHOW_ALL = false;
+
+	private static final double SIMILARITY_THRESHOLD = 0.70d;
+
+	private static final int TOP_K = 1_000;
+
+	private static final Predicate<String> NON_ESSENTIAL_SONG_WORDS_PREDICATE =
+		word -> !Set.of("be", "do", "to").contains(word);
 
 	private static final String[] SONG_JSON_FILES = {
 		"acdc-backinblack.json",
@@ -79,28 +106,75 @@ public class SongSimilaritySearchApplication {
 	}
 
 	@Bean
+	@Profile("!vector-similarity")
 	ApplicationRunner programRunner(VectorStore vectorStore, ObjectMapper objectMapper) {
 
 		return args -> {
 
-			loadSongLyrics(vectorStore, objectMapper);
+			loadSongs(objectMapper, vectorStore);
 
-			Set.of("alive", "back in black").forEach(query -> {
+			print("Using Similarity Threshold [%s]%n", SIMILARITY_THRESHOLD);
+			print("Using Top K [%d]%n", TOP_K);
+
+			List.of("alive", "back in black", "do I deserve to be").forEach(query -> {
 
 				SearchRequest searchRequest = SearchRequest.query(query)
-					.withSimilarityThreshold(SIMILARITY_THRESHOLD);
+					.withSimilarityThreshold(SIMILARITY_THRESHOLD)
+					.withTopK(TOP_K);
 
-				List<Document> similarSongs = vectorStore.similaritySearch(searchRequest);
+				List<Document> similarDocuments = vectorStore.similaritySearch(searchRequest);
 
-				System.out.printf("%nSongs similar to [\"%s\"]: %s%n", searchRequest.getQuery(),
-					similarSongs.stream().map(Document::getId).toList());
+				//print("Similar Documents %s%n", similarDocuments);
+
+				List<Song> similarSongs = similarDocuments.stream()
+					.map(Song::from)
+					.distinct()
+					.sorted()
+					.toList();
+
+				print("%nSongs similar to [\"%s\"]: %s%n", searchRequest.getQuery(), similarSongs);
 			});
 		};
 	}
 
-	private void loadSongLyrics(VectorStore vectorStore, ObjectMapper objectMapper) {
+	@Bean
+	@Profile("vector-similarity")
+	ApplicationRunner vectorSimilarity(VectorStore vectorStore, ObjectMapper objectMapper, EmbeddingModel embeddingModel) {
+
+		return args -> {
+
+			DocumentTextSplitter textSplitter = new DocumentTextSplitter();
+
+			String query = "alive";
+			//String query = "back in black";
+			//String query = "do I deserve to be";
+			//String query = "\"You're still alive,\" she said, oh, and do I deserve to be?";
+
+			print("Using Query [%s]%n", query);
+			print("Using Similarity Threshold [%s]%n", SIMILARITY_THRESHOLD);
+			print("Using Top K [%d]%n", TOP_K);
+
+			float[] queryEmbedding = embeddingModel.embed(textSplitter.preProcess(query));
+
+			loadSongs(objectMapper, vectorStore).forEach(document -> {
+
+					float[] documentEmbedding = document.getEmbedding();
+
+					double cosineSimilarity = SimpleVectorStore.EmbeddingMath
+						.cosineSimilarity(documentEmbedding, queryEmbedding);
+
+					if (SHOW_ALL || cosineSimilarity >= SIMILARITY_THRESHOLD) {
+						print("Document [%s] Content [%s] compare to Query [%s] has Cosine Similarity: %s%n%n",
+							document.getId(), document.getContent(), query, cosineSimilarity);
+					}
+				});
+		};
+	}
+
+	protected List<Document> loadSongs(ObjectMapper objectMapper, VectorStore vectorStore) {
 
 		List<Document> documents = Arrays.stream(SONG_JSON_FILES)
+			.filter(songPredicate())
 			.map(ClassPathResource::new)
 			.map(doSafely(ClassPathResource::getContentAsByteArray))
 			.map(doSafely(byteArray -> objectMapper.readValue(byteArray, Song.class)))
@@ -110,50 +184,118 @@ public class SongSimilaritySearchApplication {
 			.toList();
 
 		vectorStore.accept(documents);
+
+		return documents;
 	}
 
 	private Song logSong(Song song) {
-		System.out.printf("Loading Song [%s]%n", song);
+		print("Loaded Song [%s]%n", song);
+		logSongByArtistAndTitle(song, "NA", "NA");
 		return song;
 	}
 
-	private static <S, T> Function<S, T> doSafely(ExceptionThrowingFunction<S, T> function) {
-
-		return target -> {
-			try {
-				return function.apply(target);
-			}
-			catch (Exception cause) {
-				throw new RuntimeException(cause);
-			}
-		};
+	private void logSongByArtistAndTitle(Song song, String artist, String title) {
+		if (Song.ARTIST_PREDICATE.test(song, artist) && Song.TITLE_PREDICATE.test(song, title)) {
+			song.toChunkedDocuments().forEach(document -> print("Document for Song [%s]: [%s]%n%n",
+				document.getId(), document.getContent()));
+		}
 	}
 
-	interface ExceptionThrowingFunction<S, T> {
-		T apply(S target) throws Exception;
+	protected void print(String message, Object... arguments) {
+		System.out.printf(message, arguments);
+		System.out.flush();
+	}
+
+	@SuppressWarnings("all")
+	protected Predicate<String> songPredicate() {
+
+		Predicate<String> songPredicate = song -> true;
+
+		Predicate<String> songArtistPredicate =  IntStream.range(0, SONG_JSON_FILES.length)
+		//Predicate<String> songArtistPredicate =  IntStream.of(1, 2)
+			.mapToObj(index -> SONG_JSON_FILES[index])
+			.<Predicate<String>>map(song -> song::equalsIgnoreCase)
+			.reduce(Predicate::or)
+			.orElseGet(() -> song -> false);
+
+		return songPredicate.and(songArtistPredicate);
 	}
 
 	@Getter
-	static class Song {
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Song implements Comparable<Song> {
 
-		protected static final String SONG_STRING = "%s by %s";
+		protected static final BiPredicate<Song, String> ARTIST_PREDICATE = (song, artist) ->
+			song.getArtist().equalsIgnoreCase(artist);
+
+		protected static final BiPredicate<Song, String> TITLE_PREDICATE = (song, title) ->
+			song.getTitle().equalsIgnoreCase(title);
+
+		protected static final String BY_REGEX = "\\bby\\b";
+		protected static final String POUND = "#";
+		protected static final String ID_COUNT_TEMPLATE = "%s" + POUND + "%d";
+		protected static final String SONG_TO_STRING = "%s by %s";
+
+		public static Song from(Document document) {
+
+			Assert.notNull(document, "Document is required");
+
+			String id = document.getId();
+			String resolvedId = stripCount(id);
+
+			String[] titleAndArtist = resolvedId.split(BY_REGEX);
+
+			return Song.builder()
+				.artist(titleAndArtist[1].trim())
+				.title(titleAndArtist[0].trim())
+				.lyrics(document.getContent())
+				.build();
+		}
+
+		private static String stripCount(String value) {
+			int index = String.valueOf(value).indexOf(POUND);
+			return index > -1 ? value.substring(0, index) : value;
+		}
+
+		private final AtomicInteger documentCounter = new AtomicInteger(0);
 
 		private String artist;
 		private String lyrics;
 		private String title;
 
 		@Getter(AccessLevel.PROTECTED)
-		private final TextSplitter textSplitter = new TokenTextSplitter(12, 80, 5, 10_000, false);
+		private final Set<TextSplitter> textSplitters = Set.of(
+			//new TokenTextSplitter(12, 80, 5, 10_000, false)
+			//new SongLyricsTextSplitter(),
+			new SongRefrainTextSplitter(),
+			new SongVerseTextSplitter()
+		);
 
 		public String getId() {
 			return toString();
 		}
 
+		protected String getIdWithCount() {
+			return ID_COUNT_TEMPLATE.formatted(getId(), getDocumentCounter().incrementAndGet());
+		}
+
 		public List<Document> toChunkedDocuments() {
 
-			return getTextSplitter().split(toDocument()).stream()
-				.map(document -> buildDocument(getId(), document.getContent()))
-				.toList();
+			List<Document> chunkedDocuments = new ArrayList<>();
+
+			for (TextSplitter textSplitter : getTextSplitters()) {
+
+				List<Document> documents = textSplitter.split(toDocument()).stream()
+					.filter(document -> StringUtils.hasText(document.getContent()))
+					.map(document -> buildDocument(getIdWithCount(), document.getContent()))
+					.toList();
+
+				chunkedDocuments.addAll(documents);
+			}
+
+			return chunkedDocuments;
 		}
 
 		public Document toDocument() {
@@ -169,8 +311,62 @@ public class SongSimilaritySearchApplication {
 		}
 
 		@Override
+		public int compareTo(Song song) {
+
+			int value = this.getArtist().compareTo(song.getArtist());
+
+			return value == 0
+				? this.getTitle().compareTo(song.getTitle())
+				: value;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+
+			if (this == obj) {
+				return true;
+			}
+
+			if (!(obj instanceof Song that)) {
+				return false;
+			}
+
+			return this.getArtist().equals(that.getArtist())
+				&& this.getTitle().equals(that.getTitle());
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(getArtist(), getTitle());
+		}
+
+		@Override
 		public String toString() {
-			return SONG_STRING.formatted(getTitle(), getArtist());
+			return SONG_TO_STRING.formatted(getTitle(), getArtist());
+		}
+	}
+
+	static class SongLyricsTextSplitter extends DocumentTextSplitter {
+
+		@Override
+		protected Predicate<String> nonEssentialWordsPredicate() {
+			return NON_ESSENTIAL_SONG_WORDS_PREDICATE;
+		}
+	}
+
+	static class SongRefrainTextSplitter extends NewlineTextSplitter {
+
+		@Override
+		protected Predicate<String> nonEssentialWordsPredicate() {
+			return NON_ESSENTIAL_SONG_WORDS_PREDICATE;
+		}
+	}
+
+	static class SongVerseTextSplitter extends ParagraphTextSplitter {
+
+		@Override
+		protected Predicate<String> nonEssentialWordsPredicate() {
+			return NON_ESSENTIAL_SONG_WORDS_PREDICATE;
 		}
 	}
 }
