@@ -33,6 +33,6 @@ public class ParagraphTextSplitter extends AbstractNonEssentialWordsPreProcessin
 
 	@Override
 	protected String regex() {
-		return "\\v{2}";
+		return "\\v{2,}";
 	}
 }
