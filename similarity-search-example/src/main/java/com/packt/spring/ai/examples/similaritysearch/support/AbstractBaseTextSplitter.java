@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +45,10 @@ public abstract class AbstractBaseTextSplitter extends TextSplitter {
 	protected String resolveRegex(String text) {
 		String regex = regex();
 		return StringUtils.hasText(regex) ? regex : text;
+	}
+
+	public List<Document> split(String text) {
+		return split(new Document(text));
 	}
 
 	@Override
