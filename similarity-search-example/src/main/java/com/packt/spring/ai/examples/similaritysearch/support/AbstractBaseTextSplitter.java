@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.ai.transformer.splitter.TextSplitter
  * @since 0.1.0
  */
+@SuppressWarnings("unused")
 public abstract class AbstractBaseTextSplitter extends TextSplitter {
 
 	protected static final String EMPTY_STRING = "";
