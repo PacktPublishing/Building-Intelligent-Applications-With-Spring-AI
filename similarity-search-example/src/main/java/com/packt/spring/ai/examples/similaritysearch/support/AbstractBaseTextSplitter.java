@@ -37,7 +37,7 @@ public abstract class AbstractBaseTextSplitter extends TextSplitter {
 	protected static final String SINGLE_SPACE = " ";
 	protected static final String WHITESPACE_REGEX = "\\s+";
 
-	protected String preProcess(String text) {
+	public String preProcess(String text) {
 		return text.trim();
 	}
 

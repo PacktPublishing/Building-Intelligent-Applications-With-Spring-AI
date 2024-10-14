@@ -26,7 +26,7 @@ package com.packt.spring.ai.examples.similaritysearch.support;
 public abstract class AbstractLowercasePreProcessingTextSplitter extends AbstractBaseTextSplitter {
 
 	@Override
-	protected String preProcess(String text) {
+	public String preProcess(String text) {
 		return super.preProcess(text).toLowerCase();
 	}
 }

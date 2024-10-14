@@ -93,7 +93,7 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	}
 
 	@Override
-	protected String preProcess(String text) {
+	public String preProcess(String text) {
 
 		String preProcessedText = super.preProcess(text);
 
