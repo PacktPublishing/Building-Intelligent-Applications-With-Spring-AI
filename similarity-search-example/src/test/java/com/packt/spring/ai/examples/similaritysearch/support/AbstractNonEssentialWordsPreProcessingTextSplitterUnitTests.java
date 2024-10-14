@@ -33,18 +33,23 @@ public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 		= new TestNonEssentialWordsPreProcessingTextSplitter();
 
 	@Test
+	@SuppressWarnings("all")
 	void preProcessesTextCorrectly() {
 
-		String text = """
-				This is a sentence!
-				And this is yet another sentence?
-				We have all sorts of sentences.
-			""";
+		String text = "  This is a sentence!"
+			+ "\nAnd, this is yet another sentence I did?"
+			+ "\n\nWe have all   sorts of sentences it seems. ";
 
-		String preProcessedText = this.textSplitter.preProcess(text);
+		String expectedText = "this sentence\nthis yet another sentence i\n\nwe all sorts sentences it";
+		String actualText = this.textSplitter.preProcess(text);
 
-		assertThat(preProcessedText).isNotBlank();
-		assertThat(preProcessedText).isEqualTo("this sentence this yet another sentence we all sorts sentences");
+		assertThat(actualText).isNotBlank();
+
+		String[] expectedTexts = expectedText.split("\\v");
+		String[] actualTexts = actualText.split("\\v");
+
+		assertThat(expectedTexts).hasSize(4);
+		assertThat(actualTexts).isEqualTo(expectedTexts);
 	}
 
 	static class TestNonEssentialWordsPreProcessingTextSplitter
