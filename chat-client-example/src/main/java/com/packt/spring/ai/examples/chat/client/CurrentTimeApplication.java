@@ -114,7 +114,7 @@ public class CurrentTimeApplication {
 					.call()
 					.entity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE);
 
-				System.out.printf("> %s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+				System.out.printf("%s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
 				System.out.print("Enter Location: ");
 			}
 		};
