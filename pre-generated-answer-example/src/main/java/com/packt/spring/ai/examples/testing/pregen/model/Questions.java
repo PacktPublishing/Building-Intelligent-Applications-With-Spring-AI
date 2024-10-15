@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.ai.document.Document;
@@ -52,6 +53,7 @@ public interface Questions extends Iterable<Question> {
 		return of(Arrays.asList(questions));
 	}
 
+	@JsonCreator
 	static Questions of(Iterable<Question> questions) {
 		return questions::iterator;
 	}
