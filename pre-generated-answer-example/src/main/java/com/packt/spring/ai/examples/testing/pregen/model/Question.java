@@ -46,6 +46,13 @@ public record Question(String name, Document document, Answer answer) implements
 		return new Question.Builder(question);
 	}
 
+	public static Question.Builder copy(Question question) {
+
+		return new Question.Builder(question.get())
+			.answered(question.answer())
+			.named(question.getName());
+	}
+
 	public static Question empty() {
 		return from("?");
 	}
