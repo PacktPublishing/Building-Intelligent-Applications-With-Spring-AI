@@ -18,8 +18,6 @@ package com.packt.spring.ai.examples.testing.pregen.model;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.lang.NonNull;
@@ -63,8 +61,7 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	private String name;
 
-	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-	public HowTo(@JsonProperty("questions") Questions questions, @JsonProperty("answer") Answer answer) {
+	public HowTo(Questions questions, Answer answer) {
 		this.questions = Questions.nullSafe(questions);
 		this.answer = assertAnswer(answer);
 	}
