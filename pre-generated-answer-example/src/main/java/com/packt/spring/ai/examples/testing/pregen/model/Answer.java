@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
  * Abstract Data Type (ADT) modeling an answer generated from AI.
  *
  * @author John Blum
+ * @see com.packt.spring.ai.examples.testing.pregen.model.Question
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
