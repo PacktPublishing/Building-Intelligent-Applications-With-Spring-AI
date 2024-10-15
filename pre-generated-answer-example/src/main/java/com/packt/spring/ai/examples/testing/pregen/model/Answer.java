@@ -36,6 +36,10 @@ public record Answer(String content) {
 		return new Answer(content);
 	}
 
+	public boolean isUnknown() {
+		return this.equals(UNKNOWN);
+	}
+
 	@Override
 	public String toString() {
 		return content();
