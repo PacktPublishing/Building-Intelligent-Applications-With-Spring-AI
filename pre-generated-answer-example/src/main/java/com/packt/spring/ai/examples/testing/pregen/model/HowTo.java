@@ -42,7 +42,11 @@ import lombok.NoArgsConstructor;
 public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	public static HowTo from(Question question, Answer answer) {
-		return new HowTo(Questions.of(assertQuestion(question)), assertAnswer(answer));
+		return from(Questions.of(assertQuestion(question)), assertAnswer(answer));
+	}
+
+	public static HowTo from(Questions questions, Answer answer) {
+		return new HowTo(questions, answer);
 	}
 
 	private static Answer assertAnswer(Answer answer) {
@@ -61,7 +65,7 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	private String name;
 
-	public HowTo(Questions questions, Answer answer) {
+	protected HowTo(Questions questions, Answer answer) {
 		this.questions = Questions.nullSafe(questions);
 		this.answer = assertAnswer(answer);
 	}
