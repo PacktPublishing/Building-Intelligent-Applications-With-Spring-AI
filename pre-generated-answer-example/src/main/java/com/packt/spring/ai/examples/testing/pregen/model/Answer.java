@@ -36,6 +36,10 @@ public record Answer(String content) {
 		return new Answer(content);
 	}
 
+	public static boolean isUnknown(Answer answer) {
+		return answer == null || answer.isUnknown();
+	}
+
 	public boolean isUnknown() {
 		return this.equals(UNKNOWN);
 	}
