@@ -15,9 +15,6 @@
  */
 package com.packt.spring.ai.examples.testing.pregen.config;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregen.model.Answer;
 import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
@@ -26,7 +23,6 @@ import com.packt.spring.ai.examples.testing.pregen.model.Question;
 import com.packt.spring.ai.examples.testing.pregen.model.Questions;
 import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
-
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -37,6 +33,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * {@link SpringBootConfiguration} or all {@link ApplicationRunner ApplicationRunners}.
@@ -78,8 +77,7 @@ public class PreGeneratedAnswersRunnerConfiguration {
 				"howToSolveQuadraticEquations", "How to solve a quadratic equation?")
 			.forEach((name, stringQuestion) -> {
 
-
-				Utils.print("Pre-Generating Answers...");
+				Utils.print("Creating Pre-Generated Answers...");
 
 				Prompt prompt = new Prompt(stringQuestion);
 
