@@ -33,15 +33,25 @@ import lombok.RequiredArgsConstructor;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Question(String name, Document document) implements Nameable<String> {
+public record Question(String name, Document document, Answer answer) implements Nameable<String> {
+
+	private static final Answer NO_ANSWER = null;
 
 	public Question {
-		assertName(name);
+		name = resolveName(name);
 		assertDocument(document);
 	}
 
-	private static void assertName(String name) {
-		Assert.hasText(name, () -> "Name [%s] of Question is required".formatted(name));
+	public static Question.Builder builder(String question) {
+		return new Question.Builder(question);
+	}
+
+	public static Question empty() {
+		return from("?");
+	}
+
+	public static Question from(String question) {
+		return new Question(randomName(), buildDocument(question), NO_ANSWER);
 	}
 
 	private static void assertDocument(Document document) {
@@ -53,23 +63,11 @@ public record Question(String name, Document document) implements Nameable<Strin
 		return question;
 	}
 
-	public static Question.Builder builder(String question) {
-		return new Question.Builder(assertQuestion(question));
-	}
-
-	public static Question empty() {
-		return from("?");
-	}
-
-	public static Question from(String question) {
-		return new Question(randomName(), buildDocument(assertQuestion(question)));
-	}
-
 	private static Document buildDocument(String content) {
 
 		return Document.builder()
 			.withId(UUID.randomUUID().toString())
-			.withContent(content)
+			.withContent(assertQuestion(content))
 			.build();
 	}
 
@@ -85,6 +83,15 @@ public record Question(String name, Document document) implements Nameable<Strin
 		return document().getContent();
 	}
 
+	@Override
+	public String getName() {
+		return name();
+	}
+
+	public boolean hasAnswer() {
+		return !Answer.isUnknown(answer());
+	}
+
 	public boolean isMatch(Document document) {
 		return document != null && isMatch(document.getContent());
 	}
@@ -98,11 +105,6 @@ public record Question(String name, Document document) implements Nameable<Strin
 	}
 
 	@Override
-	public String getName() {
-		return name();
-	}
-
-	@Override
 	public String toString() {
 		return get();
 	}
@@ -111,9 +113,16 @@ public record Question(String name, Document document) implements Nameable<Strin
 	@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Builder {
 
+		private Answer answer;
+
 		private String name;
 
 		private final String question;
+
+		public Builder answered(Answer answer) {
+			this.answer = answer;
+			return this;
+		}
 
 		public Builder named(String name) {
 			this.name = name;
@@ -121,7 +130,7 @@ public record Question(String name, Document document) implements Nameable<Strin
 		}
 
 		public Question build() {
-			return new Question(resolveName(getName()), buildDocument(getQuestion()));
+			return new Question(getName(), buildDocument(getQuestion()), getAnswer());
 		}
 	}
 }
