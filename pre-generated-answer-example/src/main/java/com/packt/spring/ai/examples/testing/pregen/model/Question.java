@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * Abstract Data Type (ADT) modeling a user question (prompt).
  *
  * @author John Blum
+ * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
