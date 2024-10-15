@@ -21,6 +21,10 @@ import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Abstract Data Type (ADT) modeling a user question (prompt).
  *
@@ -29,15 +33,36 @@ import org.springframework.util.StringUtils;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Question(Document document) {
+public record Question(String name, Document document) implements Nameable<String> {
+
+	public Question {
+		assertName(name);
+		assertDocument(document);
+	}
+
+	private static void assertName(String name) {
+		Assert.hasText(name, () -> "Name [%s] of Question is required".formatted(name));
+	}
+
+	private static void assertDocument(Document document) {
+		Assert.notNull(document, "Document is required");
+	}
+
+	private static String assertQuestion(String question) {
+		Assert.hasText(question, () -> "Question [%s] is required".formatted(question));
+		return question;
+	}
+
+	public static Question.Builder builder(String question) {
+		return new Question.Builder(assertQuestion(question));
+	}
 
 	public static Question empty() {
 		return from("?");
 	}
 
 	public static Question from(String question) {
-		Assert.hasText(question, "Question is required");
-		return new Question(buildDocument(question));
+		return new Question(randomName(), buildDocument(assertQuestion(question)));
 	}
 
 	private static Document buildDocument(String content) {
@@ -48,8 +73,12 @@ public record Question(Document document) {
 			.build();
 	}
 
-	public Question {
-		Assert.notNull(document, "Document is required");
+	private static String randomName() {
+		return UUID.randomUUID().toString();
+	}
+
+	private static String resolveName(String name) {
+		return StringUtils.hasText(name) ? name : randomName();
 	}
 
 	public String get() {
@@ -69,7 +98,30 @@ public record Question(Document document) {
 	}
 
 	@Override
+	public String getName() {
+		return name();
+	}
+
+	@Override
 	public String toString() {
 		return get();
+	}
+
+	@Getter(AccessLevel.PROTECTED)
+	@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class Builder {
+
+		private String name;
+
+		private final String question;
+
+		public Builder named(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Question build() {
+			return new Question(resolveName(getName()), buildDocument(getQuestion()));
+		}
 	}
 }

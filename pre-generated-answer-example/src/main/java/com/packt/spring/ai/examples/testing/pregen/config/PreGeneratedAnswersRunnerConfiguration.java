@@ -15,7 +15,7 @@
  */
 package com.packt.spring.ai.examples.testing.pregen.config;
 
-import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregen.model.Answer;
@@ -48,6 +48,11 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unused")
 public class PreGeneratedAnswersRunnerConfiguration {
 
+	protected static final Set<Question> NAMED_QUESTIONS = Set.of(
+		Question.builder("How to solve a linear equation?").named("howToSolveLinearEquations").build(),
+		Question.builder("How to solve a quadratic equation?").named("howToSolveQuadraticEquations").build()
+	);
+
 	@Bean
 	@Profile("!pre-generated-answers")
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -71,23 +76,20 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	ApplicationRunner preGenerateAnswersRunner(ChatClient chatClient, EmbeddingModel embeddingModel,
 			HowToRepository repository) {
 
-		return args -> Map.of(
-				"howToSolveLinearEquations", "How to solve a linear equation?",
-				"howToSolveQuadraticEquations", "How to solve a quadratic equation?")
-			.forEach((name, stringQuestion) -> {
+		return args -> NAMED_QUESTIONS
+			.forEach(question -> {
 
 				Utils.print("Creating Pre-Generated Answers...");
 
-				Prompt prompt = new Prompt(stringQuestion);
+				Prompt prompt = new Prompt(question.get());
 
 				String stringAnswer = chatClient.prompt(prompt).call().content();
 
 				Answer answer = Answer.from(stringAnswer);
-				Question question = Question.from(stringQuestion);
 
 				question.document().setEmbedding(embeddingModel.embed(question.get()));
 
-				HowTo howTo = HowTo.from(question, answer).named(name);
+				HowTo howTo = HowTo.from(question, answer).named(question.getName());
 
 				Assert.state(repository.save(howTo), () -> "Failed to save HowTo [%s]".formatted(howTo));
 			});
