@@ -26,12 +26,12 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unused")
 public record Answer(String content) {
 
-	public static Answer empty() {
-		return from("unknown");
-	}
-
 	public static Answer from(String content) {
 		return new Answer(content);
+	}
+
+	public static Answer unknown() {
+		return from("unknown");
 	}
 
 	public Answer {
