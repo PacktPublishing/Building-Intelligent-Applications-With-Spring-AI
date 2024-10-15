@@ -1,0 +1,74 @@
+/*
+ * Copyright 2024 Author or Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.packt.spring.ai.examples.testing.pregen.service;
+
+import com.packt.spring.ai.examples.testing.pregen.model.Answer;
+import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregen.model.Question;
+import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
+
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+/**
+ * Srping {@link Service} used to answer how-to questions using AI.
+ *
+ * @author John Blum
+ * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregen.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository
+ * @see org.springframework.ai.chat.client.ChatClient
+ * @see org.springframework.ai.chat.prompt.Prompt
+ * @see org.springframework.ai.vectorstore.VectorStore
+ * @see org.springframework.stereotype.Service
+ * @since 0.1.0
+ */
+@Primary
+@Service
+@Profile("pre-generated-answers")
+@SuppressWarnings("unused")
+public class AiEnabledSmartHowToService extends SmartHowToService {
+
+	public AiEnabledSmartHowToService(ChatClient chatClient, HowToRepository repository, VectorStore vectorStore) {
+		super(chatClient, repository, vectorStore);
+	}
+
+	@Override
+	public Answer answer(Question question) {
+
+		Assert.notNull(question, "Question is required");
+
+		Answer answer = promptAi(question);
+
+		save(HowTo.from(store(question), answer));
+
+		return answer;
+	}
+
+	protected Answer promptAi(Question question) {
+
+		Prompt prompt = new Prompt(question.get());
+		String answer = getChatClient().prompt(prompt).call().content();
+
+		return Answer.from(answer);
+	}
+}
