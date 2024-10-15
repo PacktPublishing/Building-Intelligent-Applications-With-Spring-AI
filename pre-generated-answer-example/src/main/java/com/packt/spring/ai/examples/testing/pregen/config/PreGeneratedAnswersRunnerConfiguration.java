@@ -15,14 +15,16 @@
  */
 package com.packt.spring.ai.examples.testing.pregen.config;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregen.model.Answer;
 import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregen.model.Nameable;
 import com.packt.spring.ai.examples.testing.pregen.model.Question;
-import com.packt.spring.ai.examples.testing.pregen.model.Questions;
 import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -33,9 +35,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
-
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * {@link SpringBootConfiguration} or all {@link ApplicationRunner ApplicationRunners}.
@@ -56,7 +55,7 @@ public class PreGeneratedAnswersRunnerConfiguration {
 
 		return args -> {
 
-			Utils.print("Loading Pre-Generated Answers...");
+			Utils.print("Loading Pre-Generated Answers...%n");
 
 			Nameable[] names = {
 				Nameable.named("howToSolveLinearEquations"),
@@ -95,37 +94,16 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	}
 
 	@Bean
-	@Profile("json-deserialization-test")
-	ApplicationRunner howToJsonDeserializationRunner(ObjectMapper objectMapper) {
+	@Profile("json-serialization-test")
+	ApplicationRunner howToJsonDeserializationSerializationRunner(ObjectMapper objectMapper) {
 
 		return args -> {
 
 			Resource json = new ClassPathResource("howToSolveLinearEquations.json");
 			HowTo howTo = objectMapper.readValue(json.getContentAsByteArray(), HowTo.class);
 
-			Utils.print("QUESTION [%s]%n", howTo.findFirstQuestion());
-			Utils.print("ANSWER [%s]%n", howTo.getAnswer());
-			Utils.print("EMBEDDING [%s]%n", Arrays.toString(howTo.findFirstQuestion().document().getEmbedding()));
-		};
-	}
-
-	@Bean
-	@Profile("json-serialization-test")
-	ApplicationRunner questionsJsonSerializationRunner(EmbeddingModel embeddingModel, ObjectMapper objectMapper) {
-
-		return args -> {
-
-			Questions questions = Questions.of(
-				Question.from("How to solve a linear equation?"),
-				Question.from("How to solve a quadratic equation?")
-			);
-
-			questions.stream().forEach(question ->
-				question.document().setEmbedding(embeddingModel.embed(question.get())));
-
-			String json = objectMapper.writeValueAsString(questions);
-
-			Utils.print("JSON %s%n", json);
+			Utils.print("JSON [%s]%n",
+				objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(howTo));
 		};
 	}
 }
