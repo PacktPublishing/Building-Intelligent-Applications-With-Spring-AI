@@ -18,11 +18,16 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.repo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
@@ -44,7 +49,11 @@ import lombok.RequiredArgsConstructor;
  * @see com.fasterxml.jackson.databind.ObjectMapper
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.InMemoryHowToRepository
+ * @see org.springframework.ai.vectorstore.VectorStore
+ * @see org.springframework.context.annotation.Profile
  * @see org.springframework.core.env.Environment
+ * @see org.springframework.core.io.Resource
  * @see org.springframework.stereotype.Repository
  * @since 0.1.0
  */
@@ -61,16 +70,18 @@ public class JsonFileHowToRepository extends InMemoryHowToRepository {
 
 	private final ObjectMapper objectMapper;
 
+	private final VectorStore vectorStore;
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean load(Nameable<String>... namedHowTos) {
+	public boolean load(Nameable<String>... names) {
 
-		return Arrays.stream(namedHowTos)
+		return Arrays.stream(names)
 			.map(namedHowTo -> {
 				try {
-					Resource jsonFile = new ClassPathResource(toJsonFile(namedHowTo).getName());
-					HowTo howTo = getObjectMapper().readValue(jsonFile.getContentAsByteArray(), HowTo.class);
-					return super.save(howTo);
+					Resource jsonFile = resolveResource(namedHowTo);
+					HowTo howTo = loadJson(jsonFile, HowTo.class);
+					return super.save(store(howTo));
 				}
 				catch (IOException e) {
 					return false;
@@ -107,6 +118,21 @@ public class JsonFileHowToRepository extends InMemoryHowToRepository {
 
 	private boolean isPersistenceNotEnabled() {
 		return !isPersistenceEnabled();
+	}
+
+	@SuppressWarnings("all")
+	private <T> T loadJson(Resource jsonFile, Class<T> type) throws IOException {
+		return getObjectMapper().readValue(jsonFile.getContentAsByteArray(), type);
+	}
+
+	private ClassPathResource resolveResource(Nameable<String> namedObject) {
+		return new ClassPathResource(toJsonFile(namedObject).getName());
+	}
+
+	private <T extends Iterable<Question>> T store(T questions) {
+		List<Document> documents = Utils.stream(questions).map(Question::document).toList();
+		getVectorStore().accept(documents);
+		return questions;
 	}
 
 	private File toJsonFile(Nameable<String> namedObject) {

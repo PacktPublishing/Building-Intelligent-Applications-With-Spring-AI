@@ -17,10 +17,11 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.PreGeneratedAnswersApplication;
 
+import io.codeprimate.extensioins.spring.ai.vectorstor.DecoratedSimpleVectorStore;
+
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +49,6 @@ public class PreGeneratedAnswersConfiguration {
 
 	@Bean
 	VectorStore vectorStore(EmbeddingModel embeddingModel) {
-		return new SimpleVectorStore(embeddingModel);
+		return new DecoratedSimpleVectorStore(embeddingModel);
 	}
 }
