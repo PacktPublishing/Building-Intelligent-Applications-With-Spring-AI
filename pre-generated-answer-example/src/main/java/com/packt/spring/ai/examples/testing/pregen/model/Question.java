@@ -127,6 +127,10 @@ public record Question(String name, Document document, Answer answer) implements
 
 		private final String question;
 
+		protected Document getDocument() {
+			return buildDocument(getQuestion());
+		}
+
 		public Builder answered(Answer answer) {
 			this.answer = answer;
 			return this;
@@ -138,7 +142,7 @@ public record Question(String name, Document document, Answer answer) implements
 		}
 
 		public Question build() {
-			return new Question(getName(), buildDocument(getQuestion()), getAnswer());
+			return new Question(getName(), getDocument(), getAnswer());
 		}
 	}
 }
