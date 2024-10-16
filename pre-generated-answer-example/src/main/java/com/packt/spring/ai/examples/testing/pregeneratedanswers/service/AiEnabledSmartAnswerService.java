@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.service;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.service;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
-import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
-import com.packt.spring.ai.examples.testing.pregen.util.AnswerNotFoundException;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.AnswerNotFoundException;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -35,10 +35,10 @@ import lombok.Getter;
  * Spring {@link Service} used to answer how-to questions using AI.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
- * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
- * @see com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.prompt.Prompt
  * @see org.springframework.ai.vectorstore.VectorStore

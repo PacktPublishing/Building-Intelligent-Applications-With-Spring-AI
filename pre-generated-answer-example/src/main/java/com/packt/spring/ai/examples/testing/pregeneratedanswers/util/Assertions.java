@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.util;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.util;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * Abstract utility class for assertions used by the Questions and Answers application.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.util.Utils
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils
  */
 @SuppressWarnings("unused")
 public abstract class Assertions extends Utils {

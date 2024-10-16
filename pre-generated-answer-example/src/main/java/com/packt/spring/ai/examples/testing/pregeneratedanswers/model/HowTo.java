@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.model;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Assertions;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.lang.NonNull;
 
@@ -32,10 +32,10 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see java.lang.Iterable
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
- * @see com.packt.spring.ai.examples.testing.pregen.model.Nameable
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
- * @see com.packt.spring.ai.examples.testing.pregen.model.Questions
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Questions
  * @since 0.1.0
  */
 @Getter

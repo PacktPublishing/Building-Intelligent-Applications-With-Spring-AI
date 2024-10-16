@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.model;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import java.util.UUID;
 
-import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Assertions;
 
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  * Abstract Data Type (ADT) modeling a user question (prompt).
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */

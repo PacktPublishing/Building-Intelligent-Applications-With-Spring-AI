@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.model;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 /**
  * Interface defining a contract for objects that can be named.

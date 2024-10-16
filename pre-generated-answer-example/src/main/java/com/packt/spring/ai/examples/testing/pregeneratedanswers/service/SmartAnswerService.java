@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.service;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.service;
 
 import java.util.List;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
-import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
-import com.packt.spring.ai.examples.testing.pregen.util.AnswerNotFoundException;
-import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.AnswerNotFoundException;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Assertions;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -41,10 +41,10 @@ import lombok.RequiredArgsConstructor;
  * {@link Answer Answers} mainly focus on {@literal how-to} type {@link Question questions}.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
- * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
- * @see com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.stereotype.Service
  * @since 0.1.0

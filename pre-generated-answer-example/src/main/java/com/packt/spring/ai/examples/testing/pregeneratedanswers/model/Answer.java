@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.model;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import org.springframework.util.Assert;
 
@@ -21,7 +21,7 @@ import org.springframework.util.Assert;
  * Abstract Data Type (ADT) modeling an answer generated from AI.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @since 0.1.0
  */
 @SuppressWarnings("unused")

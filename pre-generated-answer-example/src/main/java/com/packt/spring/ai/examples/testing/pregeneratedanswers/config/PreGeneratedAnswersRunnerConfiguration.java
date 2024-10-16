@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.config;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
-import com.packt.spring.ai.examples.testing.pregen.model.Nameable;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
-import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;

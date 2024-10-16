@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.config;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
-import com.packt.spring.ai.examples.testing.pregen.PreGeneratedAnswersApplication;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.PreGeneratedAnswersApplication;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;

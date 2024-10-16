@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.repo;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.repo;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
-import com.packt.spring.ai.examples.testing.pregen.model.Nameable;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -41,8 +41,8 @@ import lombok.RequiredArgsConstructor;
  * @author John Blum
  * @see java.io.File
  * @see com.fasterxml.jackson.databind.ObjectMapper
- * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
- * @see com.packt.spring.ai.examples.testing.pregen.model.Nameable
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
  * @see org.springframework.stereotype.Repository
  * @since 0.1.0
  */

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.util;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.util;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
 import org.springframework.ai.document.Document;
 

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.repo;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.repo;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -33,7 +33,7 @@ import lombok.Getter;
  * {@link Repository} used to store {@link HowTo} objects in-memory.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
  * @see org.springframework.stereotype.Repository
  * @since 1.0.0
  */

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.service;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.service;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
 /**
  * Service used to {@link Answer answer} {@link Question questions}.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @since 0.1.0
  */
 @SuppressWarnings("unused")

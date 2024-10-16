@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.model;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.ai.document.Document;
 
@@ -34,7 +34,7 @@ import org.springframework.ai.document.Document;
  *
  * @author John Blum
  * @see java.lang.Iterable
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @since 1.0.0
  */
 @FunctionalInterface

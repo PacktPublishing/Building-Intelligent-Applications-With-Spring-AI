@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.serialization.json;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.serialization.json;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.packt.spring.ai.examples.testing.pregen.model.Questions;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Questions;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.boot.jackson.JsonComponent;
 
@@ -29,8 +29,8 @@ import org.springframework.boot.jackson.JsonComponent;
  * Spring {@link JsonComponent} and Jackson {@link JsonSerializer} used to serialize {@link Questions} to JSON.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
- * @see com.packt.spring.ai.examples.testing.pregen.model.Questions
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Questions
  * @see com.fasterxml.jackson.core.JsonGenerator
  * @see com.fasterxml.jackson.databind.JsonSerializer
  * @see org.springframework.boot.jackson.JsonComponent

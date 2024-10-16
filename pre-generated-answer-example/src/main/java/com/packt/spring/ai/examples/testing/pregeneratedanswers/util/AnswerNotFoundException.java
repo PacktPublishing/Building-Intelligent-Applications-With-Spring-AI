@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.util;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.util;
 
-import com.packt.spring.ai.examples.testing.pregen.model.Answer;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
 /**
  * Java {@link RuntimeException} thrown when a {@link Answer pre-generated answer} cannot be found.
  *
  * @author John Blum
  * @see java.lang.RuntimeException
- * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
- * @see com.packt.spring.ai.examples.testing.pregen.model.Question
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @since 0.1.0
  */
 @SuppressWarnings("unused")

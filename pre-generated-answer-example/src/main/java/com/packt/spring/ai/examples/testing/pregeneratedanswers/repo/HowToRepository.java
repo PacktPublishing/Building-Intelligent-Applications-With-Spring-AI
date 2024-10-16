@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.testing.pregen.repo;
+package com.packt.spring.ai.examples.testing.pregeneratedanswers.repo;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
-import com.packt.spring.ai.examples.testing.pregen.model.Nameable;
-import com.packt.spring.ai.examples.testing.pregen.model.Question;
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.ai.document.Document;
 
@@ -33,7 +33,7 @@ import org.springframework.ai.document.Document;
  * @author John Blum
  * @see java.lang.FunctionalInterface
  * @see java.lang.Iterable
- * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
  * @since 0.1.0
  */
 @FunctionalInterface
