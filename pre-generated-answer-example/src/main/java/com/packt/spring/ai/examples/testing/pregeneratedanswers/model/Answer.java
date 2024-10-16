@@ -15,26 +15,37 @@
  */
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.springframework.util.Assert;
 
 /**
  * Abstract Data Type (ADT) modeling an answer generated from AI.
  *
  * @author John Blum
+ * @see java.util.UUID
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Identifiable
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @since 0.1.0
  */
+@JsonIgnoreProperties("id")
 @SuppressWarnings("unused")
-public record Answer(String content) {
+public record Answer(UUID id, String content) implements Identifiable<UUID> {
 
-	public static final Answer UNKNOWN = new Answer("unknown");
+	public static final Answer UNKNOWN = new Answer(generateId(), "unknown");
 
 	public Answer {
 		Assert.hasText(content, "Content of Answer is required");
 	}
 
 	public static Answer from(String content) {
-		return new Answer(content);
+		return new Answer(generateId(), content);
+	}
+
+	private static UUID generateId() {
+		return UUID.randomUUID();
 	}
 
 	public static boolean isUnknown(Answer answer) {
@@ -47,6 +58,10 @@ public record Answer(String content) {
 
 	public static Answer nullSafe(Answer answer) {
 		return answer != null ? answer : UNKNOWN;
+	}
+
+	public UUID getId() {
+		return id();
 	}
 
 	public boolean isUnknown() {
