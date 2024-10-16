@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.lang.NonNull;
@@ -42,7 +43,7 @@ import lombok.Getter;
 public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	public static HowTo from(Question question, Answer answer) {
-		Questions questions = Questions.of(Utils.assertQuestion(question));
+		Questions questions = Questions.of(Assertions.assertQuestion(question));
 		return new HowTo(questions, answer);
 	}
 
@@ -55,7 +56,7 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 	@JsonCreator
 	protected HowTo(@JsonProperty("questions") Questions questions, @JsonProperty("answer") Answer answer) {
 		this.questions = Questions.nullSafe(questions);
-		this.answer = Utils.assertAnswer(answer);
+		this.answer = Assertions.assertAnswer(answer);
 	}
 
 	public synchronized HowTo add(Question question) {

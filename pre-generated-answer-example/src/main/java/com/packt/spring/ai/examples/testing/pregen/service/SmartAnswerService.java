@@ -22,6 +22,7 @@ import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregen.model.Question;
 import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
 import com.packt.spring.ai.examples.testing.pregen.util.AnswerNotFoundException;
+import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.ai.document.Document;
@@ -67,7 +68,7 @@ public class SmartAnswerService implements AnswerService {
 	@Override
 	public Answer answer(Question question) {
 
-		Utils.assertQuestion(question);
+		Assertions.assertQuestion(question);
 
 		return getRepository().findBy(question)
 			.map(HowTo::getAnswer)

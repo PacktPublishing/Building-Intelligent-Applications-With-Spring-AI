@@ -17,7 +17,7 @@ package com.packt.spring.ai.examples.testing.pregen.model;
 
 import java.util.UUID;
 
-import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+import com.packt.spring.ai.examples.testing.pregen.util.Assertions;
 
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
@@ -42,7 +42,7 @@ public record Question(String name, Document document, Answer answer) implements
 
 	public Question {
 		name = resolveName(name);
-		Utils.assertDocument(document);
+		Assertions.assertDocument(document);
 	}
 
 	public static Question.Builder builder(String question) {
@@ -70,7 +70,7 @@ public record Question(String name, Document document, Answer answer) implements
 
 		return Document.builder()
 			.withId(UUID.randomUUID().toString())
-			.withContent(Utils.assertQuestion(content))
+			.withContent(Assertions.assertQuestion(content))
 			.build();
 	}
 
