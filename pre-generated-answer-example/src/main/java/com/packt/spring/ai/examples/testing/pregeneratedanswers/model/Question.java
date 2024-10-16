@@ -17,6 +17,7 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Assertions;
 
 import org.springframework.ai.document.Document;
@@ -32,11 +33,15 @@ import lombok.RequiredArgsConstructor;
  *
  * @author John Blum
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Identifiable
+ * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Question(String name, Document document, Answer answer) implements Nameable<String> {
+@JsonIgnoreProperties("id")
+public record Question(String name, Document document, Answer answer)
+		implements Identifiable<String>, Nameable<String> {
 
 	private static final Answer NO_ANSWER = null;
 
@@ -84,6 +89,11 @@ public record Question(String name, Document document, Answer answer) implements
 
 	public String get() {
 		return document().getContent();
+	}
+
+	@Override
+	public String getId() {
+		return document().getId();
 	}
 
 	@Override
