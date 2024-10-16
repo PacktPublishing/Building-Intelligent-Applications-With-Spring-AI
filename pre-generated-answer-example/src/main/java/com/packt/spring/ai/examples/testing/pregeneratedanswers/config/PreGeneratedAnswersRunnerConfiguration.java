@@ -81,13 +81,15 @@ public class PreGeneratedAnswersRunnerConfiguration {
 
 				Utils.print("Creating Pre-Generated Answers...");
 
-				Prompt prompt = new Prompt(question.get());
+				String stringQuestion = question.get();
+
+				Prompt prompt = new Prompt(stringQuestion);
 
 				String stringAnswer = chatClient.prompt(prompt).call().content();
 
 				Answer answer = Answer.from(stringAnswer);
 
-				question.document().setEmbedding(embeddingModel.embed(question.get()));
+				question.document().setEmbedding(embeddingModel.embed(stringQuestion));
 
 				HowTo howTo = HowTo.from(question, answer).named(question.getName());
 
