@@ -22,13 +22,17 @@ import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.service.AiEnabledSmartAnswerService;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.service.AnswerService;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -50,8 +54,10 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	);
 
 	@Bean
-	@Profile({ "!ai-enabled-answers", "pre-generated-answers" })
-	@SuppressWarnings({ "unchecked" })
+	@Order(2)
+	@Profile("pre-generated-answers")
+	@ConditionalOnMissingBean(AiEnabledSmartAnswerService.class)
+	@SuppressWarnings("unchecked")
 	ApplicationRunner loadPreGeneratedAnswersRunner(HowToRepository repository) {
 
 		return args -> {
@@ -61,6 +67,8 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	}
 
 	@Bean
+	@Order(1)
+	@ConditionalOnBean(AiEnabledSmartAnswerService.class)
 	@Profile({ "ai-enabled-answers", "pre-generated-answers" })
 	ApplicationRunner preGenerateAnswersRunner(AnswerService answerService) {
 
