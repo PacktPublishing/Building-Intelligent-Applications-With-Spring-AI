@@ -49,6 +49,8 @@ public record Question(String name, Document document, Answer answer) implements
 
 	public static Question.Builder copy(Question question) {
 
+		Assert.notNull(question, "Question to copy is required");
+
 		return new Question.Builder(question.get())
 			.answered(question.answer())
 			.named(question.getName());
@@ -64,6 +66,7 @@ public record Question(String name, Document document, Answer answer) implements
 
 	private static void assertDocument(Document document) {
 		Assert.notNull(document, "Document is required");
+		assertQuestion(document.getContent());
 	}
 
 	private static String assertQuestion(String question) {
