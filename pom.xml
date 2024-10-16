@@ -18,6 +18,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>spring-ai-extensions</module>
 		<module>example-one</module>
 		<module>audio-transcription-example</module>
 		<module>chat-client-example</module>
@@ -99,6 +100,11 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.packt.spring.ai</groupId>
+			<artifactId>spring-ai-extensions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
