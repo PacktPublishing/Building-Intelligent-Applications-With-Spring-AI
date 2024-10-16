@@ -81,6 +81,14 @@ public interface Questions extends Iterable<Question> {
 		return !isEmpty();
 	}
 
+	default Questions findAll(Predicate<Question> predicate) {
+		return Questions.of(stream().filter(predicate).collect(Collectors.toSet()));
+	}
+
+	default Questions findAllBy(Answer answer) {
+		return findAll(question -> Answer.nullSafe(question.answer()).equals(Answer.nullSafe(answer)));
+	}
+
 	default Optional<Question> findBy(Predicate<Question> predicate) {
 		return stream().filter(predicate).findFirst();
 	}
