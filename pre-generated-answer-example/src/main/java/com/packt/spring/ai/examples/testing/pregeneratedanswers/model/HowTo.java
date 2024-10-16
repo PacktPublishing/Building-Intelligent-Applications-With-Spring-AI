@@ -60,7 +60,8 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 	}
 
 	public synchronized HowTo add(Question question) {
-		this.questions = getQuestions().add(question);
+		Question answeredQuestion = Question.copy(question).answered(getAnswer()).build();
+		this.questions = getQuestions().add(answeredQuestion);
 		return this;
 	}
 
