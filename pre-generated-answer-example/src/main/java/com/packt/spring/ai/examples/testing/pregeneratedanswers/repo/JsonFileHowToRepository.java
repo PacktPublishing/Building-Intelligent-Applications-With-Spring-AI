@@ -25,6 +25,7 @@ import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
@@ -43,6 +44,7 @@ import lombok.RequiredArgsConstructor;
  * @see com.fasterxml.jackson.databind.ObjectMapper
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
+ * @see org.springframework.core.env.Environment
  * @see org.springframework.stereotype.Repository
  * @since 0.1.0
  */
@@ -54,6 +56,8 @@ import lombok.RequiredArgsConstructor;
 public class JsonFileHowToRepository extends InMemoryHowToRepository {
 
 	private static final String JSON_FILE_EXTENSION = ".json";
+
+	private final Environment environment;
 
 	private final ObjectMapper objectMapper;
 
@@ -81,6 +85,11 @@ public class JsonFileHowToRepository extends InMemoryHowToRepository {
 
 		Assert.state(super.save(howTo), () -> "Failed to save HowTo [%s] in memory".formatted(howTo));
 
+		return isPersistenceNotEnabled() || doSave(howTo);
+	}
+
+	private boolean doSave(HowTo howTo) {
+
 		File jsonFile = toJsonFile(howTo);
 
 		try {
@@ -90,6 +99,14 @@ public class JsonFileHowToRepository extends InMemoryHowToRepository {
 		catch (IOException e) {
 			throw new RuntimeException("Failed to save HowTo [%s] to file [%s]".formatted(howTo, jsonFile), e);
 		}
+	}
+
+	private boolean isPersistenceEnabled() {
+		return getEnvironment().matchesProfiles("ai-enabled-answers");
+	}
+
+	private boolean isPersistenceNotEnabled() {
+		return !isPersistenceEnabled();
 	}
 
 	private File toJsonFile(Nameable<String> namedObject) {
