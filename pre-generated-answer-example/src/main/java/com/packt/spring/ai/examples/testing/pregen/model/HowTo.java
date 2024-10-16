@@ -18,13 +18,14 @@ package com.packt.spring.ai.examples.testing.pregen.model;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * Abstract Data Type (ADT) modeling a how-to {@link Question} with an associated {@link Answer}.
@@ -32,20 +33,17 @@ import lombok.NoArgsConstructor;
  * @author John Blum
  * @see java.lang.Iterable
  * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
+ * @see com.packt.spring.ai.examples.testing.pregen.model.Nameable
  * @see com.packt.spring.ai.examples.testing.pregen.model.Question
  * @see com.packt.spring.ai.examples.testing.pregen.model.Questions
  * @since 0.1.0
  */
 @Getter
-@NoArgsConstructor
 @SuppressWarnings("unused")
 public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	public static HowTo from(Question question, Answer answer) {
-		return from(Questions.of(assertQuestion(question)), assertAnswer(answer));
-	}
-
-	public static HowTo from(Questions questions, Answer answer) {
+		Questions questions = Questions.of(assertQuestion(question));
 		return new HowTo(questions, answer);
 	}
 
@@ -59,13 +57,14 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 		return question;
 	}
 
-	private Answer answer;
+	private final Answer answer;
 
-	private Questions questions;
+	private volatile Questions questions;
 
 	private String name;
 
-	protected HowTo(Questions questions, Answer answer) {
+	@JsonCreator
+	protected HowTo(@JsonProperty("questions") Questions questions, @JsonProperty("answer") Answer answer) {
 		this.questions = Questions.nullSafe(questions);
 		this.answer = assertAnswer(answer);
 	}
