@@ -32,7 +32,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Srping {@link Service} used to answer how-to questions using AI.
+ * Spring {@link Service} used to answer how-to questions using AI.
  *
  * @author John Blum
  * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
