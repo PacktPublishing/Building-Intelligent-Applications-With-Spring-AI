@@ -33,6 +33,10 @@ public record Answer(String content) {
 		Assert.hasText(content, "Content of Answer is required");
 	}
 
+	public static Answer nullSafe(Answer answer) {
+		return answer != null ? answer : UNKNOWN;
+	}
+
 	public static Answer from(String content) {
 		return new Answer(content);
 	}
