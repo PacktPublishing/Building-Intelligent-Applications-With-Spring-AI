@@ -55,19 +55,14 @@ public class PreGeneratedAnswersRunnerConfiguration {
 
 	@Bean
 	@Profile("!pre-generated-answers")
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	ApplicationRunner loadPreGeneratedAnswersRunner(HowToRepository repository) {
 
 		return args -> {
 
 			Utils.print("Loading Pre-Generated Answers...%n");
 
-			Nameable[] names = {
-				Nameable.named("howToSolveLinearEquations"),
-				Nameable.named("howToSolveQuadraticEquations")
-			};
-
-			repository.load(names);
+			repository.load(NAMED_QUESTIONS.toArray(new Nameable[0]));
 		};
 	}
 
@@ -79,7 +74,7 @@ public class PreGeneratedAnswersRunnerConfiguration {
 		return args -> NAMED_QUESTIONS
 			.forEach(question -> {
 
-				Utils.print("Creating Pre-Generated Answers...");
+				Utils.print("Creating Pre-Generated Answers...%n");
 
 				String stringQuestion = question.get();
 
