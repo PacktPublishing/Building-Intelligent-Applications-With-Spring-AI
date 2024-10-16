@@ -88,7 +88,9 @@ public class AiEnabledSmartAnswerService extends SmartAnswerService {
 		return Answer.from(answer);
 	}
 
-	protected void recordHowTo(Question question) {
-		save(HowTo.from(store(question), question.answer()));
+	@SuppressWarnings("all")
+	protected HowTo recordHowTo(Question question) {
+		HowTo howTo = HowTo.from(store(question), question.answer());
+		return save(howTo);
 	}
 }
