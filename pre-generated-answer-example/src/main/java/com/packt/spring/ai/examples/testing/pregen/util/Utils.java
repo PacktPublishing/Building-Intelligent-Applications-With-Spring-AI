@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.packt.spring.ai.examples.testing.pregen.model.Answer;
 import com.packt.spring.ai.examples.testing.pregen.model.Question;
 
 import org.springframework.ai.document.Document;
@@ -34,8 +35,28 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unused")
 public abstract class Utils {
 
-	public void assertEmbedding(Question question) {
+	public static Answer assertAnswer(Answer answer) {
+		Assert.notNull(answer, "Answer is required");
+		return answer;
+	}
+
+	public static void assertDocument(Document document) {
+		Assert.notNull(document, "Document is required");
+		assertQuestion(document.getContent());
+	}
+
+	public static void assertEmbedding(Question question) {
 		Assert.state(isEmbeddingPresent(question), () -> "Expected Embedding for Question [%s]".formatted(question));
+	}
+
+	public static Question assertQuestion(Question question) {
+		Assert.notNull(question, "Question is required");
+		return question;
+	}
+
+	public static String assertQuestion(String question) {
+		Assert.hasText(question, () -> "Question [%s] is required".formatted(question));
+		return question;
 	}
 
 	public static boolean isEmbeddingPresent(Document document) {

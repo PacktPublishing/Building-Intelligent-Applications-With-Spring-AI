@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 import lombok.Getter;
 
@@ -43,18 +42,8 @@ import lombok.Getter;
 public class HowTo implements Iterable<Question>, Nameable<String> {
 
 	public static HowTo from(Question question, Answer answer) {
-		Questions questions = Questions.of(assertQuestion(question));
+		Questions questions = Questions.of(Utils.assertQuestion(question));
 		return new HowTo(questions, answer);
-	}
-
-	private static Answer assertAnswer(Answer answer) {
-		Assert.notNull(answer, "Answer is required");
-		return answer;
-	}
-
-	private static Question assertQuestion(Question question) {
-		Assert.notNull(question, "Question is required");
-		return question;
 	}
 
 	private final Answer answer;
@@ -66,7 +55,7 @@ public class HowTo implements Iterable<Question>, Nameable<String> {
 	@JsonCreator
 	protected HowTo(@JsonProperty("questions") Questions questions, @JsonProperty("answer") Answer answer) {
 		this.questions = Questions.nullSafe(questions);
-		this.answer = assertAnswer(answer);
+		this.answer = Utils.assertAnswer(answer);
 	}
 
 	public synchronized HowTo add(Question question) {

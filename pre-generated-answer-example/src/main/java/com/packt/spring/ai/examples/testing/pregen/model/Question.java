@@ -17,6 +17,8 @@ package com.packt.spring.ai.examples.testing.pregen.model;
 
 import java.util.UUID;
 
+import com.packt.spring.ai.examples.testing.pregen.util.Utils;
+
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -40,7 +42,7 @@ public record Question(String name, Document document, Answer answer) implements
 
 	public Question {
 		name = resolveName(name);
-		assertDocument(document);
+		Utils.assertDocument(document);
 	}
 
 	public static Question.Builder builder(String question) {
@@ -64,21 +66,11 @@ public record Question(String name, Document document, Answer answer) implements
 		return new Question(randomName(), buildDocument(question), NO_ANSWER);
 	}
 
-	private static void assertDocument(Document document) {
-		Assert.notNull(document, "Document is required");
-		assertQuestion(document.getContent());
-	}
-
-	private static String assertQuestion(String question) {
-		Assert.hasText(question, () -> "Question [%s] is required".formatted(question));
-		return question;
-	}
-
 	private static Document buildDocument(String content) {
 
 		return Document.builder()
 			.withId(UUID.randomUUID().toString())
-			.withContent(assertQuestion(content))
+			.withContent(Utils.assertQuestion(content))
 			.build();
 	}
 
