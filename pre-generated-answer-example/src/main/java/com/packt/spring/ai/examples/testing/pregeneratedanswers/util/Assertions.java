@@ -16,6 +16,7 @@
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.util;
 
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
 import org.springframework.ai.document.Document;
@@ -42,6 +43,11 @@ public abstract class Assertions extends Utils {
 
 	public static void assertEmbedding(Question question) {
 		Assert.state(isEmbeddingPresent(question), () -> "Expected Embedding for Question [%s]".formatted(question));
+	}
+
+	public static HowTo assertHowTo(HowTo howTo) {
+		Assert.notNull(howTo, "HowTo is required");
+		return howTo;
 	}
 
 	public static Question assertQuestion(Question question) {

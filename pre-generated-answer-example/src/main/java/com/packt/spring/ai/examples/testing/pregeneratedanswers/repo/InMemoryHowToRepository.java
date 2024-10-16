@@ -21,10 +21,10 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Assertions;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,7 +50,6 @@ public class InMemoryHowToRepository implements HowToRepository {
 
 	@Override
 	public boolean save(HowTo howTo) {
-		Assert.notNull(howTo, "HowTo is required");
-		return getHowTos().add(howTo);
+		return getHowTos().add(Assertions.assertHowTo(howTo));
 	}
 }
