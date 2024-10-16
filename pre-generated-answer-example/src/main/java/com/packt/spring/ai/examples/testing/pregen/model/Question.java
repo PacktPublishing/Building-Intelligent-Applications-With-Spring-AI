@@ -97,7 +97,7 @@ public record Question(String name, Document document, Answer answer) implements
 	}
 
 	public boolean hasAnswer() {
-		return !Answer.isUnknown(answer());
+		return Answer.isNotUnknown(answer());
 	}
 
 	public boolean isMatch(Document document) {

@@ -33,16 +33,20 @@ public record Answer(String content) {
 		Assert.hasText(content, "Content of Answer is required");
 	}
 
-	public static Answer nullSafe(Answer answer) {
-		return answer != null ? answer : UNKNOWN;
-	}
-
 	public static Answer from(String content) {
 		return new Answer(content);
 	}
 
 	public static boolean isUnknown(Answer answer) {
 		return answer == null || answer.isUnknown();
+	}
+
+	public static boolean isNotUnknown(Answer answer) {
+		return !isUnknown(answer);
+	}
+
+	public static Answer nullSafe(Answer answer) {
+		return answer != null ? answer : UNKNOWN;
 	}
 
 	public boolean isUnknown() {
