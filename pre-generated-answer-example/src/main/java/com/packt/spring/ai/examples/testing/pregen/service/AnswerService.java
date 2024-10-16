@@ -31,6 +31,4 @@ public interface AnswerService {
 
 	Answer answer(Question question);
 
-	Answer howTo(Question question);
-
 }

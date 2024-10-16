@@ -29,7 +29,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,6 +36,8 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Spring {@link Service} used to {@link Answer answer} {@link Question questions}.
+ * <p/>
+ * {@link Answer Answers} mainly focus on {@literal how-to} type {@link Question questions}.
  *
  * @author John Blum
  * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
@@ -65,26 +66,28 @@ public class SmartAnswerService implements AnswerService {
 
 	@Override
 	public Answer answer(Question question) {
-		throw new UnsupportedOperationException("Generated Answers Not Supported");
-	}
 
-	@Override
-	public Answer howTo(Question question) {
-
-		Assert.notNull(question, "Question is required");
+		Utils.assertQuestion(question);
 
 		return getRepository().findBy(question)
 			.map(HowTo::getAnswer)
-			.orElseGet(() -> findAnswerBySimilarQuestions(question));
+			.orElseGet(() -> findAnswerFromSimilarQuestions(question));
 	}
 
-	protected Answer findAnswerBySimilarQuestions(Question question) {
+	protected Answer findAnswerFromSimilarQuestions(Question question) {
 
 		List<Document> similarDocuments = findSimilarDocuments(question);
 
-		return Utils.isNotEmpty(similarDocuments)
-			? findAnswerBySimilarDocuments(question, similarDocuments)
-			: answer(question);
+		if (Utils.isNotEmpty(similarDocuments)) {
+
+			Answer answer = findAnswerBySimilarDocuments(question, similarDocuments);
+
+			if (Answer.isNotUnknown(answer)) {
+				return answer;
+			}
+		}
+
+		throw AnswerNotFoundException.from(question);
 	}
 
 	protected List<Document> findSimilarDocuments(Question question) {
@@ -103,7 +106,7 @@ public class SmartAnswerService implements AnswerService {
 		return getRepository().findBy(similarDocuments)
 			.map(howTo -> howTo.add(store(question)))
 			.map(HowTo::getAnswer)
-			.orElseThrow(() -> AnswerNotFoundException.from(question));
+			.orElse(Answer.UNKNOWN);
 	}
 
 	protected HowTo save(HowTo howTo) {
@@ -112,7 +115,8 @@ public class SmartAnswerService implements AnswerService {
 	}
 
 	protected Question store(Question question) {
-		getVectorStore().accept(List.of(question.document()));
+		List<Document> documents = List.of(question.document());
+		getVectorStore().accept(documents);
 		return question;
 	}
 }

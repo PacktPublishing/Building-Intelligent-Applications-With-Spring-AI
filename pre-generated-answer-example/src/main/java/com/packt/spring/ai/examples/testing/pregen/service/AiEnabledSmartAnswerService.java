@@ -19,6 +19,7 @@ import com.packt.spring.ai.examples.testing.pregen.model.Answer;
 import com.packt.spring.ai.examples.testing.pregen.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregen.model.Question;
 import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregen.util.AnswerNotFoundException;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -26,7 +27,6 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -62,7 +62,15 @@ public class AiEnabledSmartAnswerService extends SmartAnswerService {
 	@Override
 	public Answer answer(Question question) {
 
-		Assert.notNull(question, "Question is required");
+		try {
+			return super.answer(question);
+		}
+		catch (AnswerNotFoundException tryAgain) {
+			return answerWithAi(question);
+		}
+	}
+
+	protected Answer answerWithAi(Question question) {
 
 		Answer answer = promptAi(question);
 		Question answeredQuestion = Question.copy(question).answered(answer).build();
