@@ -48,7 +48,7 @@ import lombok.Getter;
 @Primary
 @Service
 @Getter(AccessLevel.PROTECTED)
-@Profile("pre-generated-answers")
+@Profile("ai-enabled-answers")
 @SuppressWarnings("unused")
 public class AiEnabledSmartAnswerService extends SmartAnswerService {
 
