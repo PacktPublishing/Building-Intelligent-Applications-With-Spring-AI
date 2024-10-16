@@ -51,7 +51,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 @Profile("pre-generated-answers")
-public class JsonFilesystemHowToRepository extends InMemoryHowToRepository {
+public class JsonFileHowToRepository extends InMemoryHowToRepository {
 
 	private static final String JSON_FILE_EXTENSION = ".json";
 
