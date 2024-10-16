@@ -24,7 +24,6 @@ import com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository;
 import com.packt.spring.ai.examples.testing.pregen.util.AnswerNotFoundException;
 import com.packt.spring.ai.examples.testing.pregen.util.Utils;
 
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -60,8 +59,6 @@ public class SmartHowToService implements HowToService {
 
 	@Value("${example.app.pre-generated-answers.embeddings.top-k:10}")
 	private int topK;
-
-	private final ChatClient chatClient;
 
 	private final HowToRepository repository;
 

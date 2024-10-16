@@ -28,6 +28,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * Srping {@link Service} used to answer how-to questions using AI.
  *
@@ -44,12 +47,16 @@ import org.springframework.util.Assert;
  */
 @Primary
 @Service
+@Getter(AccessLevel.PROTECTED)
 @Profile("pre-generated-answers")
 @SuppressWarnings("unused")
 public class AiEnabledSmartHowToService extends SmartHowToService {
 
+	private final ChatClient chatClient;
+
 	public AiEnabledSmartHowToService(ChatClient chatClient, HowToRepository repository, VectorStore vectorStore) {
-		super(chatClient, repository, vectorStore);
+		super(repository, vectorStore);
+		this.chatClient = chatClient;
 	}
 
 	@Override
@@ -58,8 +65,9 @@ public class AiEnabledSmartHowToService extends SmartHowToService {
 		Assert.notNull(question, "Question is required");
 
 		Answer answer = promptAi(question);
+		Question answeredQuestion = Question.copy(question).answered(answer).build();
 
-		save(HowTo.from(store(question), answer));
+		recordHowTo(answeredQuestion);
 
 		return answer;
 	}
@@ -70,5 +78,9 @@ public class AiEnabledSmartHowToService extends SmartHowToService {
 		String answer = getChatClient().prompt(prompt).call().content();
 
 		return Answer.from(answer);
+	}
+
+	protected void recordHowTo(Question question) {
+		save(HowTo.from(store(question), question.answer()));
 	}
 }
