@@ -18,23 +18,19 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Answer;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.HowToRepository;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.service.AnswerService;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 
 /**
  * {@link SpringBootConfiguration} or all {@link ApplicationRunner ApplicationRunners}.
@@ -54,43 +50,24 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	);
 
 	@Bean
-	@Profile("!pre-generated-answers")
+	@Profile({ "!ai-enabled-answers", "pre-generated-answers" })
 	@SuppressWarnings({ "unchecked" })
 	ApplicationRunner loadPreGeneratedAnswersRunner(HowToRepository repository) {
 
 		return args -> {
-
 			Utils.print("Loading Pre-Generated Answers...%n");
-
 			repository.load(NAMED_QUESTIONS.toArray(new Nameable[0]));
 		};
 	}
 
 	@Bean
-	@Profile("pre-generated-answers")
-	ApplicationRunner preGenerateAnswersRunner(ChatClient chatClient, EmbeddingModel embeddingModel,
-			HowToRepository repository) {
+	@Profile({ "ai-enabled-answers", "pre-generated-answers" })
+	ApplicationRunner preGenerateAnswersRunner(AnswerService answerService) {
 
-		return args -> NAMED_QUESTIONS
-			.forEach(question -> {
-
-				Utils.print("Creating Pre-Generated Answers...%n");
-
-				String stringQuestion = question.get();
-
-				Prompt prompt = new Prompt(stringQuestion);
-
-				String stringAnswer = chatClient.prompt(prompt).call().content();
-
-				Answer answer = Answer.from(stringAnswer);
-				Question answeredQuestion = Question.copy(question).answered(answer).build();
-
-				answeredQuestion.document().setEmbedding(embeddingModel.embed(stringQuestion));
-
-				HowTo howTo = HowTo.from(answeredQuestion, answer).named(answeredQuestion.getName());
-
-				Assert.state(repository.save(howTo), () -> "Failed to save HowTo [%s]".formatted(howTo));
-			});
+		return args -> {
+			Utils.print("Creating Pre-Generated Answers...%n");
+			NAMED_QUESTIONS.forEach(answerService::answer);
+		};
 	}
 
 	@Bean
