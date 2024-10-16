@@ -83,10 +83,11 @@ public class PreGeneratedAnswersRunnerConfiguration {
 				String stringAnswer = chatClient.prompt(prompt).call().content();
 
 				Answer answer = Answer.from(stringAnswer);
+				Question answeredQuestion = Question.copy(question).answered(answer).build();
 
-				question.document().setEmbedding(embeddingModel.embed(stringQuestion));
+				answeredQuestion.document().setEmbedding(embeddingModel.embed(stringQuestion));
 
-				HowTo howTo = HowTo.from(question, answer).named(question.getName());
+				HowTo howTo = HowTo.from(answeredQuestion, answer).named(answeredQuestion.getName());
 
 				Assert.state(repository.save(howTo), () -> "Failed to save HowTo [%s]".formatted(howTo));
 			});
