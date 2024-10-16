@@ -15,6 +15,7 @@
  */
 package io.codeprimate.extensioins.spring.ai.vectorstor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.observation.ObservationRegistry;
@@ -52,9 +53,15 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 
 		List<Document> embeddedDocuments = store(documents);
 
-		documents.removeAll(embeddedDocuments);
+		documents = reduce(documents, embeddedDocuments);
 
 		super.accept(documents);
+	}
+
+	private List<Document> reduce(List<Document> source, List<Document> exclude) {
+		List<Document> documents = new ArrayList<>(source);
+		documents.removeAll(exclude);
+		return documents;
 	}
 
 	private List<Document> store(List<Document> documents) {
