@@ -19,7 +19,7 @@ import com.packt.spring.ai.examples.testing.pregen.model.Answer;
 import com.packt.spring.ai.examples.testing.pregen.model.Question;
 
 /**
- * Service used to answer questions.
+ * Service used to {@link Answer answer} {@link Question questions}.
  *
  * @author John Blum
  * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
@@ -27,7 +27,7 @@ import com.packt.spring.ai.examples.testing.pregen.model.Question;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public interface HowToService {
+public interface AnswerService {
 
 	Answer answer(Question question);
 

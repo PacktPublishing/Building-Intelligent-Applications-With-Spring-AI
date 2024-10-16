@@ -36,14 +36,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Spring {@link Service} used to answer how-to questions.
+ * Spring {@link Service} used to {@link Answer answer} {@link Question questions}.
  *
  * @author John Blum
  * @see com.packt.spring.ai.examples.testing.pregen.model.Answer
  * @see com.packt.spring.ai.examples.testing.pregen.model.HowTo
  * @see com.packt.spring.ai.examples.testing.pregen.model.Question
  * @see com.packt.spring.ai.examples.testing.pregen.repo.HowToRepository
- * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.stereotype.Service
  * @since 0.1.0
@@ -52,7 +51,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("all")
-public class SmartHowToService implements HowToService {
+public class SmartAnswerService implements AnswerService {
 
 	@Value("${example.app.pre-generated-answers.embeddings.similarity-threshold:0.75}")
 	private double simililarityThreshold;

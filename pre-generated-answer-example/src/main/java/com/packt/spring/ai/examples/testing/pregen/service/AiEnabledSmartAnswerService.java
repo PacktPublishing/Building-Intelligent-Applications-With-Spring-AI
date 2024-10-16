@@ -50,11 +50,11 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 @Profile("pre-generated-answers")
 @SuppressWarnings("unused")
-public class AiEnabledSmartHowToService extends SmartHowToService {
+public class AiEnabledSmartAnswerService extends SmartAnswerService {
 
 	private final ChatClient chatClient;
 
-	public AiEnabledSmartHowToService(ChatClient chatClient, HowToRepository repository, VectorStore vectorStore) {
+	public AiEnabledSmartAnswerService(ChatClient chatClient, HowToRepository repository, VectorStore vectorStore) {
 		super(repository, vectorStore);
 		this.chatClient = chatClient;
 	}
