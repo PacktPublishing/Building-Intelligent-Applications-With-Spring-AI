@@ -73,7 +73,9 @@ public class AiEnabledSmartAnswerService extends SmartAnswerService {
 	protected Answer answerWithAi(Question question) {
 
 		Answer answer = promptAi(question);
-		Question answeredQuestion = Question.copy(question).answered(answer).build();
+
+		Question answeredQuestion =
+			Question.copy(question).answered(answer).build();
 
 		recordHowTo(answeredQuestion);
 
