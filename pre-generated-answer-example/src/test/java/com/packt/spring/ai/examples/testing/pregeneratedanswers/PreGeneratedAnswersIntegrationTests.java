@@ -97,8 +97,8 @@ public class PreGeneratedAnswersIntegrationTests {
 	void questionWithNoAnswer() {
 
 		assertThatExceptionOfType(AnswerNotFoundException.class)
-			.isThrownBy(() -> this.answerService.answer(Question.from("How do I tie my shoe?")))
-			.withMessage("Answer to Question [How do I tie my shoe?] not found")
+			.isThrownBy(() -> this.answerService.answer(Question.from("How do I tie my shoes?")))
+			.withMessage("Answer to Question [How do I tie my shoes?] not found")
 			.withNoCause();
 	}
 
