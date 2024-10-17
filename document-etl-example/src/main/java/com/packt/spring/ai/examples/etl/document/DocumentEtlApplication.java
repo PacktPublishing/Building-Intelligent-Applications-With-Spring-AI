@@ -25,13 +25,13 @@ import org.springframework.ai.document.DocumentWriter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.ai.transformer.KeywordMetadataEnricher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -62,9 +62,10 @@ public class DocumentEtlApplication {
 			.run(args);
 	}
 
-		private final AtomicReference<List<Document>> documentsReference = new AtomicReference<>(null);
+	private final AtomicReference<List<Document>> documentsReference = new AtomicReference<>(null);
 
-		private final Resource pdfDocument = new ClassPathResource(DOCUMENT_NAME);
+	@Value("classpath:/" + DOCUMENT_NAME)
+	private Resource pdfDocument;
 
 	@Bean
 	@Order(1)
