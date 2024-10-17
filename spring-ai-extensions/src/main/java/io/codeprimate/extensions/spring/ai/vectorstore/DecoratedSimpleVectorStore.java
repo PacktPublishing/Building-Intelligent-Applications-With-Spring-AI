@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.extensioins.spring.ai.vectorstor;
+package io.codeprimate.extensions.spring.ai.vectorstore;
 
 import java.util.ArrayList;
 import java.util.List;

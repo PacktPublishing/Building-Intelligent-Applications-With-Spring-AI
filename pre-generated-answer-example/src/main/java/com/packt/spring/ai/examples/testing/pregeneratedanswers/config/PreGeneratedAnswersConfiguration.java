@@ -17,7 +17,7 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.PreGeneratedAnswersApplication;
 
-import io.codeprimate.extensioins.spring.ai.vectorstor.DecoratedSimpleVectorStore;
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
