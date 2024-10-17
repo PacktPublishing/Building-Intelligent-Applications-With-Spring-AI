@@ -29,13 +29,13 @@
 		<module>image-generation-example</module>
 		<module>metadata-example</module>
 		<module>moderation-example</module>
+		<module>pre-generated-answer-example</module>
 		<module>prompt-example</module>
 		<module>similarity-search-example</module>
 		<module>streaming-example</module>
 		<module>structured-output-converter-example</module>
 		<module>tokenizer-example</module>
 		<module>opposites-application</module>
-		<module>pre-generated-answer-example</module>
 	</modules>
 
 	<licenses>
