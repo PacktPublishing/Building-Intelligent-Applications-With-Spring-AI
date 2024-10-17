@@ -56,7 +56,7 @@ import lombok.RequiredArgsConstructor;
 public class SmartAnswerService implements AnswerService {
 
 	@Value("${example.app.pre-generated-answers.embeddings.similarity-threshold:0.75}")
-	private double simililarityThreshold;
+	private double similarityThreshold;
 
 	@Value("${example.app.pre-generated-answers.embeddings.top-k:10}")
 	private int topK;
@@ -96,7 +96,7 @@ public class SmartAnswerService implements AnswerService {
 		String query = question.get();
 
 		SearchRequest request = SearchRequest.query(query)
-			.withSimilarityThreshold(getSimililarityThreshold())
+			.withSimilarityThreshold(getSimilarityThreshold())
 			.withTopK(getTopK());
 
 		return getVectorStore().similaritySearch(request);
