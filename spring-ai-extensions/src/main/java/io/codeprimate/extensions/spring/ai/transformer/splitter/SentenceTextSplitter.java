@@ -40,7 +40,7 @@ public class SentenceTextSplitter extends AbstractNonEssentialWordsPreProcessing
 	}
 
 	@Override
-	protected String regex() {
+	public String regex() {
 		return "(?<=[\\.!\\?])\\s*";
 	}
 }

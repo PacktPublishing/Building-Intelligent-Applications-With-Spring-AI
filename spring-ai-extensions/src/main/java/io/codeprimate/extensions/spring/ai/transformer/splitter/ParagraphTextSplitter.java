@@ -32,7 +32,7 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 public class ParagraphTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
 	@Override
-	protected String regex() {
+	public String regex() {
 		return "\\v{2,}";
 	}
 }

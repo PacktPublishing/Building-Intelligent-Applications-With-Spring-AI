@@ -42,7 +42,7 @@ public abstract class AbstractBaseTextSplitter extends TextSplitter {
 		return text.trim();
 	}
 
-	protected abstract String regex();
+	public abstract String regex();
 
 	protected String resolveRegex(String text) {
 		String regex = regex();

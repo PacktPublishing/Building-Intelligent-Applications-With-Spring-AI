@@ -33,7 +33,7 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 public class DocumentTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
 	@Override
-	protected String regex() {
+	public String regex() {
 		return EMPTY_STRING;
 	}
 }

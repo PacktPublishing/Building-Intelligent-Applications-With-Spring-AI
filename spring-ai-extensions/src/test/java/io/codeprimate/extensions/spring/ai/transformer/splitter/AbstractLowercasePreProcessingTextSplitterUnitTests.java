@@ -48,7 +48,7 @@ public class AbstractLowercasePreProcessingTextSplitterUnitTests {
 	static final class TestLowercasePreProcessingTextSplitter extends AbstractLowercasePreProcessingTextSplitter {
 
 		@Override
-		protected String regex() {
+		public String regex() {
 			throw new UnsupportedOperationException("Not Implemented");
 		}
 	}

@@ -56,7 +56,7 @@ public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 			extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
 		@Override
-		protected String regex() {
+		public String regex() {
 			throw new UnsupportedOperationException("Not Implemented");
 		}
 	}
