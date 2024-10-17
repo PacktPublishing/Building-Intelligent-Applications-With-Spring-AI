@@ -21,17 +21,17 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import io.codeprimate.extensions.spring.ai.converter.Rfc1123DateTimeStructuredOutputConverter;
+
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 /**
@@ -162,20 +162,5 @@ public class CurrentTimeApplication {
 
 	private boolean isNotExit(String input) {
 		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input);
-	}
-
-	static class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutputConverter<ZonedDateTime> {
-
-		static final Rfc1123DateTimeStructuredOutputConverter INSTANCE = new Rfc1123DateTimeStructuredOutputConverter();
-
-		@Override
-		public String getFormat() {
-			return "Use format RFC 1123. Respond only with date and time.";
-		}
-
-		@Override
-		public ZonedDateTime convert(@NonNull String source) {
-			return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
-		}
 	}
 }
