@@ -13,6 +13,12 @@
 
 	<artifactId>spring-ai-extensions</artifactId>
 
+	<name>Spring AI Extensions</name>
+	<description>
+		Extensions to Spring AI.
+	</description>
+	<url/>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
