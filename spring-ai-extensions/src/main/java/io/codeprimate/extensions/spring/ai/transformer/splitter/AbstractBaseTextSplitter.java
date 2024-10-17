@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * Abstract base class supporting implementations of Spring AI's {@link TextSplitter}.
  *
  * @author John Blum
+ * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.transformer.splitter.TextSplitter
  * @since 0.1.0
  */

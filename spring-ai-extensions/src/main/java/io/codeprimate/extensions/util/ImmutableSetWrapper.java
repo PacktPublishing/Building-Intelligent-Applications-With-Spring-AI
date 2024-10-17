@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.util;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
@@ -35,9 +35,10 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
 public class ImmutableSetWrapper<E> extends AbstractSet<E> {
 
-	static <E> ImmutableSetWrapper<E> from(Set<E> set) {
+	public static <E> ImmutableSetWrapper<E> from(Set<E> set) {
 		return new ImmutableSetWrapper<>(set);
 	}
 

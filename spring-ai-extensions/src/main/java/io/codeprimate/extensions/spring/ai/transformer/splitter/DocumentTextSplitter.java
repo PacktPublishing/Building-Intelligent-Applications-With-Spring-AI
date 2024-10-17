@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
@@ -26,7 +26,7 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
  * to lowercase and remove all non-essential words.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.similaritysearch.support.AbstractNonEssentialWordsPreProcessingTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractNonEssentialWordsPreProcessingTextSplitter
  * @since 0.1.0
  */
 @SuppressWarnings("unused")

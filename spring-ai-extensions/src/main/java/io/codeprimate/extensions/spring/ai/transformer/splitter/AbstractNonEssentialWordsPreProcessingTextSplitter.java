@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import io.codeprimate.extensions.util.ImmutableSetWrapper;
 
 import org.springframework.util.StringUtils;
 
@@ -32,7 +34,7 @@ import org.springframework.util.StringUtils;
  * along with all {@literal Punctuation}.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.similaritysearch.support.AbstractLowercasePreProcessingTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractLowercasePreProcessingTextSplitter
  * @since 0.1.0
  */
 @SuppressWarnings("unused")

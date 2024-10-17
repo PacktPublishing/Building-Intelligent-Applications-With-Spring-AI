@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 /**
  * Abstract base class and pre-processor used to process {@link String text}, converting the {@link String text}
  * to {@link String#toLowerCase() lowercase}.
  *
  * @author John Blum
- * @see com.packt.spring.ai.examples.similaritysearch.support.AbstractBaseTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter
  * @since 0.1.0
  */
 public abstract class AbstractLowercasePreProcessingTextSplitter extends AbstractBaseTextSplitter {

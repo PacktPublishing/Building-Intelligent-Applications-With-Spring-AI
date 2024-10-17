@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author John Blum
  * @see org.junit.jupiter.api.Test
- * @see com.packt.spring.ai.examples.similaritysearch.support.AbstractNonEssentialWordsPreProcessingTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractNonEssentialWordsPreProcessingTextSplitter
  * @since 0.1.0
  */
 public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {

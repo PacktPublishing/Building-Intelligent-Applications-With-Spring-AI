@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.similaritysearch.support;
+package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
-import static com.packt.spring.ai.examples.similaritysearch.SongSimilaritySearchApplication.Song;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -25,11 +24,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 
+import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
+
+import lombok.Getter;
 
 /**
  * Unit Tests for {@link DocumentTextSplitter}
@@ -37,7 +41,7 @@ import org.springframework.test.context.ActiveProfiles;
  * @author John Blum
  * @see org.junit.jupiter.api.Test
  * @see org.springframework.boot.test.autoconfigure.json.JsonTest
- * @see com.packt.spring.ai.examples.similaritysearch.support.DocumentTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter
  * @since 0.1.0
  */
 @JsonTest
@@ -53,13 +57,13 @@ public class DocumentTextSplitterUnitTests {
 	@Test
 	void splitsTextCorrectly() throws IOException {
 
-		Resource pearlJamBlack = new ClassPathResource("pearljam-black.json");
+		Resource pearlJamBlack = new ClassPathResource("ledzeppelin-stairwaytoheaven.json");
 
 		Song song = this.objectMapper.readValue(pearlJamBlack.getContentAsByteArray(), Song.class);
 
-		assertThat(song).isNotNull();
-		assertThat(song.getArtist()).isEqualTo("Pearl Jam");
-		assertThat(song.getTitle()).isEqualTo("Black");
+		Assertions.assertThat(song).isNotNull();
+		Assertions.assertThat(song.getArtist()).isEqualTo("Led Zeppelin");
+		Assertions.assertThat(song.getTitle()).isEqualTo("Stairway to Heaven");
 
 		String lyrics = song.getLyrics();
 
@@ -78,5 +82,19 @@ public class DocumentTextSplitterUnitTests {
 
 	private String preProcess(String text) {
 		return this.textSplitter.preProcess(text);
+	}
+
+	@SpringBootConfiguration
+	@EnableAutoConfiguration
+	static class DocumentTextSplitterConfiguration {
+
+	}
+
+	@Getter
+	static class Song {
+
+		private String artist;
+		private String lyrics;
+		private String title;
 	}
 }

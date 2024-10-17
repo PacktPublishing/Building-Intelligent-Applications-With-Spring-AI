@@ -15,7 +15,7 @@
  */
 package com.packt.spring.ai.examples.similaritysearch;
 
-import static com.packt.spring.ai.examples.similaritysearch.support.ExceptionThrowingFunction.doSafely;
+import static io.codeprimate.extensions.util.ExceptionThrowingFunction.doSafely;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +28,10 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.packt.spring.ai.examples.similaritysearch.support.DocumentTextSplitter;
-import com.packt.spring.ai.examples.similaritysearch.support.NewlineTextSplitter;
-import com.packt.spring.ai.examples.similaritysearch.support.ParagraphTextSplitter;
+
+import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -139,7 +140,8 @@ public class SongSimilaritySearchApplication {
 
 	@Bean
 	@Profile("vector-similarity")
-	ApplicationRunner vectorSimilarity(VectorStore vectorStore, ObjectMapper objectMapper, EmbeddingModel embeddingModel) {
+	ApplicationRunner vectorSimilarity(VectorStore vectorStore, ObjectMapper objectMapper,
+		EmbeddingModel embeddingModel) {
 
 		return args -> {
 
@@ -158,16 +160,16 @@ public class SongSimilaritySearchApplication {
 
 			loadSongs(objectMapper, vectorStore).forEach(document -> {
 
-					float[] documentEmbedding = document.getEmbedding();
+				float[] documentEmbedding = document.getEmbedding();
 
-					double cosineSimilarity = SimpleVectorStore.EmbeddingMath
-						.cosineSimilarity(documentEmbedding, queryEmbedding);
+				double cosineSimilarity = SimpleVectorStore.EmbeddingMath
+					.cosineSimilarity(documentEmbedding, queryEmbedding);
 
-					if (SHOW_ALL || cosineSimilarity >= SIMILARITY_THRESHOLD) {
-						print("Document [%s] Content [%s] compare to Query [%s] has Cosine Similarity: %s%n%n",
-							document.getId(), document.getContent(), query, cosineSimilarity);
-					}
-				});
+				if (SHOW_ALL || cosineSimilarity >= SIMILARITY_THRESHOLD) {
+					print("Document [%s] Content [%s] compare to Query [%s] has Cosine Similarity: %s%n%n",
+						document.getId(), document.getContent(), query, cosineSimilarity);
+				}
+			});
 		};
 	}
 
@@ -194,6 +196,7 @@ public class SongSimilaritySearchApplication {
 		return song;
 	}
 
+	@SuppressWarnings("all")
 	private void logSongByArtistAndTitle(Song song, String artist, String title) {
 		if (Song.ARTIST_PREDICATE.test(song, artist) && Song.TITLE_PREDICATE.test(song, title)) {
 			song.toChunkedDocuments().forEach(document -> print("Document for Song [%s]: [%s]%n%n",
@@ -211,8 +214,8 @@ public class SongSimilaritySearchApplication {
 
 		Predicate<String> songPredicate = song -> true;
 
-		Predicate<String> songArtistPredicate =  IntStream.range(0, SONG_JSON_FILES.length)
-		//Predicate<String> songArtistPredicate =  IntStream.of(1, 2)
+		Predicate<String> songArtistPredicate = IntStream.range(0, SONG_JSON_FILES.length)
+			//Predicate<String> songArtistPredicate =  IntStream.of(1, 2)
 			.mapToObj(index -> SONG_JSON_FILES[index])
 			.<Predicate<String>>map(song -> song::equalsIgnoreCase)
 			.reduce(Predicate::or)
