@@ -43,11 +43,7 @@ import org.springframework.context.annotation.Profile;
  * @see org.springframework.boot.SpringBootConfiguration
  * @see org.springframework.boot.test.context.SpringBootTest
  */
-@SpringBootTest(properties = {
-	"spring.ai.openai.api-key=X",
-	"spring.ai.vertex.ai.gemini.location=us-west",
-	"spring.ai.vertex.ai.gemini.projectId=Y",
-})
+@SpringBootTest
 //@ActiveProfiles({ "test" })
 @SuppressWarnings("unused")
 public class ChatClientAndChatModelConfigurationIntegrationTests {
