@@ -29,10 +29,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 /**
  * Integration Tests for {@link ChatClient} and {@link ChatModel} Spring configuration extensions.
@@ -55,6 +57,10 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 	private ChatModel chatModel;
 
 	@Autowired
+	@Qualifier("Y")
+	private ChatModel currentChatModel;
+
+	@Autowired
 	private Consumer<ChatClient.Builder> chatClientBuilderConsumer;
 
 	@Test
@@ -71,6 +77,9 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 
 		assertThat(compositeChatModel.stream().map(Object::toString).toList())
 			.containsExactlyInAnyOrder("X", "Y", "Z");
+
+		assertThat(this.currentChatModel).isNotNull();
+		assertThat(compositeChatModel.getCurrentChatModel()).isSameAs(this.currentChatModel);
 	}
 
 	@Test
@@ -86,17 +95,20 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 	@EnableChatClient
 	static class MultipleChatModelsTestConfiguration {
 
-		@Bean
+		@Bean("X")
+		@Order(2)
 		ChatModel mockChatModelOne() {
 			return mock(ChatModel.class, "X");
 		}
 
-		@Bean
+		@Bean("Y")
+		@Order(1)
 		ChatModel mockChatModelTwo() {
 			return mock(ChatModel.class, "Y");
 		}
 
-		@Bean
+		@Bean("Z")
+		@Order(3)
 		ChatModel mockChatModelThree() {
 			return mock(ChatModel.class, "Z");
 		}

@@ -66,12 +66,15 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 	private final Set<ChatModel> chatModels;
 
-	public CompositeChatModel(List<ChatModel> chatClients) {
-		this.chatModels = new HashSet<>(resolveChatClients(chatClients));
-		this.currentChatModel = this.chatModels.stream().findFirst().orElse(null);
+	public CompositeChatModel(List<ChatModel> chatModels) {
+
+		List<ChatModel> resolvedChatModels = resolveChatModels(chatModels);
+
+		this.currentChatModel = resolvedChatModels.stream().findFirst().orElse(null);
+		this.chatModels = new HashSet<>(resolvedChatModels);
 	}
 
-	private List<ChatModel> resolveChatClients(List<ChatModel> chatModels) {
+	private List<ChatModel> resolveChatModels(List<ChatModel> chatModels) {
 		return Utils.nullSafeList(chatModels).stream()
 			.filter(Objects::nonNull)
 			.toList();
