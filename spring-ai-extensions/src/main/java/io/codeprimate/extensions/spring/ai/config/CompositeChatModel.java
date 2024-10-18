@@ -1,0 +1,125 @@
+/*
+ * Copyright 2024 Author or Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.codeprimate.extensions.spring.ai.config;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import io.codeprimate.extensions.util.Utils;
+
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.util.Assert;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * Spring AI {@link ChatModel} implementation composed of 1 or more {@link ChatModel ChatModels}.
+ *
+ * @author John Blum
+ * @see java.lang.Iterable
+ * @see org.springframework.ai.chat.model.ChatModel
+ * @see <a href="https://en.wikipedia.org/wiki/Composite_pattern">Composite Software Design Pattern</a>
+ */
+@Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
+public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
+
+	public static CompositeChatModel empty() {
+		return of();
+	}
+
+	public static CompositeChatModel of(ChatModel... chatModels) {
+		return of(Arrays.asList(chatModels));
+	}
+
+	public static CompositeChatModel of(Iterable<ChatModel> chatModels) {
+		return new CompositeChatModel(Utils.stream(chatModels).toList());
+	}
+
+	private volatile ChatModel currentChatModel;
+
+	private final Set<ChatModel> chatModels;
+
+	public CompositeChatModel(List<ChatModel> chatClients) {
+		this.chatModels = new HashSet<>(resolveChatClients(chatClients));
+		this.currentChatModel = this.chatModels.stream().findFirst().orElse(null);
+	}
+
+	private List<ChatModel> resolveChatClients(List<ChatModel> chatModels) {
+		return Utils.nullSafeList(chatModels).stream()
+			.filter(Objects::nonNull)
+			.toList();
+	}
+
+	public ChatModel getCurrentChatModel() {
+
+		Assert.state(this.currentChatModel != null, "ChatModel has not been initialized;"
+			+ " Did you include a ChatModel implementation on your application classpath?");
+
+		return this.currentChatModel;
+	}
+
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return getCurrentChatModel().getDefaultOptions();
+	}
+
+	@Override
+	public ChatResponse call(Prompt prompt) {
+		return getCurrentChatModel().call(prompt);
+	}
+
+	public Optional<ChatModel> findBy(Predicate<ChatModel> predicate) {
+		return stream().filter(predicate).findFirst();
+	}
+
+	public ChatModel requireBy(Predicate<ChatModel> predicate) {
+		return findBy(predicate).orElseThrow(() ->
+			new ChatModelNotFoundException("ChatModel could not be found with Predicate [%s]".formatted(predicate)));
+	}
+
+	@Override
+	public @NonNull Iterator<ChatModel> iterator() {
+		return Collections.unmodifiableSet(getChatModels()).iterator();
+	}
+
+	public Stream<ChatModel> stream() {
+		return Utils.stream(this);
+	}
+
+	public CompositeChatModel use(ChatModel chatM) {
+
+		Assert.notNull(chatM, "ChatModel is required");
+
+		getChatModels().add(chatM);
+		this.currentChatModel = chatM;
+
+		return this;
+	}
+}
