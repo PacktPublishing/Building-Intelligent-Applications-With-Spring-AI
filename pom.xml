@@ -36,6 +36,7 @@
 		<module>structured-output-converter-example</module>
 		<module>tokenizer-example</module>
 		<module>opposites-application</module>
+		<module>spring-ai-tools</module>
 	</modules>
 
 	<licenses>

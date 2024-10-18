@@ -1,0 +1,127 @@
+body {
+    background: white;
+    border: 0px;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.x-border {
+    border: 1px solid black;
+}
+
+.x-hide {
+    visibility: hidden;
+}
+
+.center {
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    padding: 10px;
+    width: 90%;
+}
+
+.padding-and-margins {
+    margin: 10px;
+    padding: 5px;
+}
+
+div.tokenNavBarContainer > * {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+div.tokenMainNavBarContainer {
+    background: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 50px;
+}
+
+div.tokenSubNavBarContainer {
+    background: #575757;
+    height: 30px;
+}
+
+div.horizontalWhiteBar {
+    background: white;
+    height: 25px;
+}
+
+form {
+    width: 100%;
+}
+
+.tokenMainNavBarTitle {
+    color: white;
+    font-family: "calibri", sans-serif;
+    font-size: 40px;
+    letter-spacing: 20px;
+    margin-top: 0px;
+    margin-left: 25px;
+    padding: 2px;
+    text-transform: uppercase;
+}
+
+.tokenSubNavBarTitle {
+    color: gray;
+    font-family: "calibri", sans-serif;
+    font-size: 20px;
+    letter-spacing: 10px;
+    margin-top: 20px;
+    margin-right: 25px;
+    padding: 2px;
+}
+
+textarea {
+    border: 1px solid #edfeee;
+    overflow-y: scroll;
+}
+
+textarea:focus {
+    border-color: #83df8a;
+    outline: none;
+}
+
+.tokenizer-stats-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1em;
+    transition: opacity .3s;
+}
+
+tokenizer-stat {
+    margin-right: 200px;
+    min-width: 100px;
+}
+
+.tokenizer-stat-title {
+    background: #f1f3f6;
+    font-size: 25px;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.tokenizer-stat-val {
+    margin-top: 5px;
+    font-size: 50px;
+    color: var(--gray-900);
+}
+
+.gradient-text {
+    background: linear-gradient(to bottom, #ffffff, #83df8a);
+    -webkit-background-clip: text;
+    color: transparent;
+}
