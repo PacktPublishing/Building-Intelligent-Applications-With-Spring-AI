@@ -16,7 +16,13 @@
 package io.codeprimate.extensions.spring.ai.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +58,9 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 	@Autowired
 	private ChatModel chatModel;
 
+	@Autowired
+	private Consumer<ChatClient.Builder> chatClientBuilderConsumer;
+
 	@Test
 	public void chatClientIsConfiguredCorrectly() {
 		assertThat(this.chatClient).isNotNull();
@@ -66,6 +75,15 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 
 		assertThat(compositeChatModel.stream().map(Object::toString).toList())
 			.containsExactlyInAnyOrder("X", "Y", "Z");
+	}
+
+	@Test
+	void chatClientBuilderConsumerCalled() {
+
+		assertThat(this.chatClientBuilderConsumer).isNotNull();
+
+		verify(this.chatClientBuilderConsumer, times(1)).accept(isA(ChatClient.Builder.class));
+		verifyNoMoreInteractions(this.chatClientBuilderConsumer);
 	}
 
 	@SpringBootConfiguration
@@ -91,6 +109,12 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 		@Profile("test")
 		ChatClient testChatClient(ChatModel chatModel) {
 			return ChatClient.builder(chatModel).build();
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		Consumer<ChatClient.Builder> chatClientBuilderCustomizer() {
+			return mock(Consumer.class);
 		}
 	}
 }
