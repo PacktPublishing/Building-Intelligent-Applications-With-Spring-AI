@@ -113,13 +113,23 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		return Utils.stream(this);
 	}
 
-	public CompositeChatModel use(ChatModel chatM) {
+	public CompositeChatModel use(ChatModel chatModel) {
 
-		Assert.notNull(chatM, "ChatModel is required");
+		Assert.notNull(chatModel, "ChatModel is required");
 
-		getChatModels().add(chatM);
-		this.currentChatModel = chatM;
+		getChatModels().add(chatModel);
+		this.currentChatModel = chatModel;
 
 		return this;
+	}
+
+	public CompositeChatModel use(Class<ChatModel> type) {
+
+		Assert.notNull(type, "Type of ChatModel is required");
+
+		Predicate<ChatModel> chatModelByType = type::isInstance;
+		ChatModel chatModel = requireBy(chatModelByType);
+
+		return use(chatModel);
 	}
 }
