@@ -79,6 +79,9 @@ public class TokenCostEstimatorApplication {
 			if (Desktop.isDesktopSupported()) {
 				Desktop.getDesktop().browse(webappUri);
 			}
+			else {
+				log.warn("Unable to launch {}; Open a web browser to [{}]", applicationName, webappUri);
+			}
 		};
 	}
 }
