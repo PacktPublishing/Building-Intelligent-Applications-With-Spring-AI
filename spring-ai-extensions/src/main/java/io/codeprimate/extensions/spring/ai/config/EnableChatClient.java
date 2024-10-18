@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Import;
  * @see java.lang.annotation.Annotation
  * @see io.codeprimate.extensions.spring.ai.config.ChatClientConfiguration
  * @see org.springframework.ai.chat.client.ChatClient
+ * @see org.springframework.context.annotation.Import
  */
 @Documented
 @Inherited
