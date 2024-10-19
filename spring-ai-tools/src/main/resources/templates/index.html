@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" th:href="@{/css/main.css}" href="../static/css/main.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-		<script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.js" integrity="sha384-BBDmZzVt6vjz5YbQqZPtFZW82o8QotoM7RUp5xOxV3nSJ8u2pSdtzFAbGKzTlKtg" crossorigin="anonymous"></script>
 	</head>
 
 	<body>
@@ -24,9 +24,9 @@
 			</div>
 		</div>
 		<div class="container center">
-			<form id="tokenTextForm" action="#" enctype="application/x-www-form-urlencoded">
+			<form id="tokenTextForm" action="#">
 				<div style="margin: 15px;">
-					<textarea id="textContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
+					<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
 				</div>
 			</form>
 		</div>
@@ -34,21 +34,47 @@
 		<div class="tokenizer-stats-container center">
 			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">WORD COUNT</div>
-				<div class="tokenizer-stat-value">0</div>
+				<div id="wordCount" class="tokenizer-stat-value">0</div>
 			</div>
 			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">TOKEN COUNT</div>
-				<div class="tokenizer-stat-value">0</div>
+				<div id="tokenCount" class="tokenizer-stat-value">0</div>
 			</div>
 			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">FILTERED TOKEN COUNT</div>
-				<div class="tokenizer-stat-value">0</div>
+				<div id="filteredTokenCount" class="tokenizer-stat-value">0</div>
 			</div>
 		</div>
 		<div class="horizontal-separator"></div>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$("#textContent").focus();
+				$("#documentContent").focus();
+
+				htmx.on("#documentContent", "input", function(event) {
+
+					var documentContent = $("#documentContent").val()
+
+					documentContent = documentContent.replace(/(\r\n|\n|\r)/gm, " ");
+					documentContent = documentContent.replace(/\s+/g, " ");
+					documentContent = documentContent.trim();
+
+					$.ajax({
+						method: 'POST',
+						url: 'http://localhost:8080/token-cost-estimator/api/tokens/count',
+						accept: 'application/json',
+						contentType: 'application/json',
+						data: `{ \"content\": \"${documentContent}\" }`,
+						success: function(data) {
+							console.log(`Document Content [${documentContent}]`);
+							$("#wordCount").html(data.wordCount);
+							$("#tokenCount").html(data.tokenCount);
+							$("#filteredTokenCount").html(data.filteredTokenCount);
+						},
+						error: function(xhr, status, errorMessage) {
+							console.log(`Failed to get token counts from content: { status: ${status}, errorMessage: ${errorMessage} }`);
+						}
+					});
+				}, "{ delay: 500ms }");
 			});
 		</script>
 	</body>
