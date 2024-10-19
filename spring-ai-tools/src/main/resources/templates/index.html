@@ -14,15 +14,14 @@
 	<body>
 		<div class="tokenNavBarContainer">
 			<div class="tokenMainNavBarContainer">
-				<div class="tokenMainNavBarContainer">
-					<img th:src="@{/img/SpringLogo.png}" src="../static/img/SpringLogo.png" style="border: 2px solid black; height: 40px; width: 40px; margin: 3px; margin-left: 10px;"/>
-					<p class="tokenMainNavBarTitle">Token Cost Estimator</p>
-				</div>
+				<img th:src="@{/img/SpringLogo.png}" src="../static/img/SpringLogo.png" style="border: 2px solid black; height: 40px; width: 40px; margin: 3px; margin-left: 10px;"/>
+				<p class="tokenMainNavBarTitle">Token Cost Estimator</p>
+			</div>
+			<div class="tokenSubNavBarContainer">
 				<p class="tokenSubNavBarTitle">
 					<span style="color: #898989;">by Codeprimate, LLC</span>
 				</p>
 			</div>
-			<div class="tokenSubNavBarContainer"></div>
 		</div>
 		<div class="container center">
 			<form id="tokenTextForm" action="#" enctype="application/x-www-form-urlencoded">
@@ -31,23 +30,22 @@
 				</div>
 			</form>
 		</div>
-		<hr/>
+		<div class="horizontal-separator"></div>
 		<div class="tokenizer-stats-container center">
-			<div class="tokenizer-stat">
+			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">WORD COUNT</div>
 				<div class="tokenizer-stat-value">0</div>
 			</div>
-			<div style="width: 50px;"> </div>
-			<div class="tokenizer-stat">
+			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">TOKEN COUNT</div>
 				<div class="tokenizer-stat-value">0</div>
 			</div>
-			<div style="width: 50px;"> </div>
-			<div class="tokenizer-stat">
+			<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">FILTERED TOKEN COUNT</div>
 				<div class="tokenizer-stat-value">0</div>
 			</div>
 		</div>
+		<div class="horizontal-separator"></div>
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$("#textContent").focus();
