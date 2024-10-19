@@ -18,7 +18,7 @@ package io.codeprimate.tools.spring.ai.tokens.service;
 import java.math.BigDecimal;
 
 /**
- * Service component used to compute the cost of tokens used for a particular AI provider and AI model.
+ * Service interface used to compute the cost for a given number of tokens when using a particular AI provider model.
  *
  * @author John Blum
  * @see java.lang.FunctionalInterface
@@ -28,6 +28,16 @@ import java.math.BigDecimal;
 @SuppressWarnings("unused")
 public interface TokenCostEstimatorService {
 
+	/**
+	 * Computes the cost for the given {@link Integer number} of tokens when using the given,
+	 * {@link String named} AI provider model
+	 *
+	 * @param modelName {@link String} containing the name of the AI provide model (e.g. {@literal OpenAI gpt-4o)).
+	 * @param tokenCount {@link Integer} specifying the number of tokens used.
+	 * @return a {@link BigDecimal} indicating the cost in {@literal USD} for the given number of tokens
+	 * when using the {@link String named} AI provider model.
+	 * @see java.math.BigDecimal
+	 */
 	BigDecimal cost(String modelName, int tokenCount);
 
 }
