@@ -34,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
  * {@link SpringBootApplication} for the Token Cost Estimator.
  *
  * @author John Blum
- * @see org.springframework.boot.SpringApplication
+ * @see java.awt.Desktop
+ * @see java.net.URI
+ * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  * @since 0.1.0
