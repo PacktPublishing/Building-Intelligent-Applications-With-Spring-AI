@@ -8,16 +8,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" th:href="@{/css/main.css}" href="../static/css/main.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-		<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
 	</head>
 
 	<body>
 		<div class="tokenNavBarContainer">
 			<div class="tokenMainNavBarContainer">
 				<div class="tokenMainNavBarContainer">
-					<img th:src="@{/img/SpringLogo.png}" src="../static/img/SpringLogo.png"
-						 style="border: 2px solid black; height: 40px; width: 40px; margin: 3px; margin-left: 10px;"/>
-					<p class="tokenMainNavBarTitle gradient-text">Token Cost Estimator</p>
+					<img th:src="@{/img/SpringLogo.png}" src="../static/img/SpringLogo.png" style="border: 2px solid black; height: 40px; width: 40px; margin: 3px; margin-left: 10px;"/>
+					<p class="tokenMainNavBarTitle">Token Cost Estimator</p>
 				</div>
 				<p class="tokenSubNavBarTitle">
 					<span style="color: #898989;">by Codeprimate, LLC</span>
@@ -26,9 +25,9 @@
 			<div class="tokenSubNavBarContainer"></div>
 		</div>
 		<div class="container center">
-			<form id="tokenTextForm" hx-post="/token-cost-estimator/prompt" hx-target="#tokenCount" enctype="application/x-www-form-urlencoded">
+			<form id="tokenTextForm" action="#" enctype="application/x-www-form-urlencoded">
 				<div style="margin: 15px;">
-					<textarea id="textContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 400px; margin: 5px;"></textarea>
+					<textarea id="textContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
 				</div>
 			</form>
 		</div>
@@ -36,17 +35,17 @@
 		<div class="tokenizer-stats-container center">
 			<div class="tokenizer-stat">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">WORD COUNT</div>
-				<div class="tokenizer-stat-val">0</div>
+				<div class="tokenizer-stat-value">0</div>
 			</div>
 			<div style="width: 50px;"> </div>
 			<div class="tokenizer-stat">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">TOKEN COUNT</div>
-				<div class="tokenizer-stat-val">0</div>
+				<div class="tokenizer-stat-value">0</div>
 			</div>
 			<div style="width: 50px;"> </div>
 			<div class="tokenizer-stat">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">FILTERED TOKEN COUNT</div>
-				<div class="tokenizer-stat-val">0</div>
+				<div class="tokenizer-stat-value">0</div>
 			</div>
 		</div>
 		<script type="text/javascript">

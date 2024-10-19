@@ -2,6 +2,7 @@ body {
     background: white;
     border: 0px;
     height: 100%;
+    width: 100%;
     margin: 0px;
     padding: 0px;
 }
@@ -54,15 +55,6 @@ div.tokenSubNavBarContainer {
     height: 30px;
 }
 
-div.horizontalWhiteBar {
-    background: white;
-    height: 25px;
-}
-
-form {
-    width: 100%;
-}
-
 .tokenMainNavBarTitle {
     color: white;
     font-family: "calibri", sans-serif;
@@ -84,6 +76,15 @@ form {
     padding: 2px;
 }
 
+div.horizontalWhiteBar {
+    background: white;
+    height: 25px;
+}
+
+form {
+    width: 100%;
+}
+
 textarea {
     border: 1px solid #edfeee;
     overflow-y: scroll;
@@ -98,26 +99,24 @@ textarea:focus {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    margin-top: 1em;
     transition: opacity .3s;
 }
 
 tokenizer-stat {
-    margin-right: 200px;
     min-width: 100px;
 }
 
 .tokenizer-stat-title {
     background: #f1f3f6;
+    color: var(--gray-900);
     font-size: 25px;
     font-weight: 800;
-    color: var(--gray-900);
 }
 
-.tokenizer-stat-val {
-    margin-top: 5px;
-    font-size: 50px;
+.tokenizer-stat-value {
     color: var(--gray-900);
+    font-size: 50px;
+    margin-top: 5px;
 }
 
 .gradient-text {
