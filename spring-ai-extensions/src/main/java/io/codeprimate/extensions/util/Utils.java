@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,6 +33,14 @@ public abstract class Utils {
 
 	public static final String EMPTY_STRING = "";
 	public static final String SINGLE_SPACE = " ";
+
+	public static <T> T defaultIfNull(T value, T defaultValue) {
+		return defaultIfNull(value, () -> defaultValue);
+	}
+
+	public static <T> T defaultIfNull(T value, Supplier<T> defaultValue) {
+		return value != null ? value : defaultValue.get();
+	}
 
 	public static <T> Consumer<T> nullSafeConsumer(Consumer<T> consumer) {
 		return consumer != null ? consumer : target -> {};
