@@ -30,6 +30,9 @@ import java.util.stream.StreamSupport;
 @SuppressWarnings("unused")
 public abstract class Utils {
 
+	public static final String EMPTY_STRING = "";
+	public static final String SINGLE_SPACE = " ";
+
 	public static <T> Consumer<T> nullSafeConsumer(Consumer<T> consumer) {
 		return consumer != null ? consumer : target -> {};
 	}
