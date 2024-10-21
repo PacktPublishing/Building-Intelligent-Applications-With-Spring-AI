@@ -16,75 +16,64 @@
 package io.codeprimate.tools.spring.ai.tokens.service;
 
 import org.springframework.ai.document.Document;
-import org.springframework.util.StringUtils;
 
 /**
- * Service interface used to estimate the token and word count for a given block of {@link String text content}.
+ * Service interface used to estimate the number of tokens in given block of {@link String content},
+ * such as a body of {@link String plain text}.
  *
  * @author John Blum
+ * @see java.lang.FunctionalInterface
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
-public interface TokenCountEstimatorService {
+public interface TokenCountService {
 
 	/**
 	 * Counts the number of tokens in the given {@link String content}.
 	 *
 	 * @param content {@link String} containing the content used to count tokens.
 	 * @return the number of token estimated from the given {@link String content}.
-	 * @see #filteredTokenCount(String)
+	 * @see #countFilteredTokens(String)
 	 */
-	int tokenCount(String content);
+	int countTokens(String content);
 
 	/**
 	 * Counts the number of tokens in the given {@link Document}.
 	 *
-	 * @param document {@link Document} containing the content used to count tokens.
+	 * @param document {@link Document} containing the {@link String content} used to count tokens.
 	 * @return the number of token estimated from the given {@link Document}.
 	 * @see org.springframework.ai.document.Document
-	 * @see #tokenCount(Document)
+	 * @see #countTokens(String)
 	 */
-	default int tokenCount(Document document) {
-		return document != null ? tokenCount(document.getContent()) : 0;
+	default int countTokens(Document document) {
+		return document != null ? countTokens(document.getContent()) : 0;
 	}
 
 	/**
 	 * Counts the number of tokens in the given {@link String content} after having been filtered
-	 * for non-essential words.
+	 * for non-essential words and punctuation.
+	 * <p>
+	 * By default, there is no difference between token count and filtered token count.
 	 *
 	 * @param content {@link String} containing the content used to count tokens.
 	 * @return the number of token estimated from the given, filtered {@link String content}.
-	 * @see #tokenCount(String)
+	 * @see #countTokens(String)
 	 */
-	int filteredTokenCount(String content);
-
-	/**
-	 * Counts the number of tokens in the given {@link Document} after having been filtered
-	 * for non-essential words.
-	 *
-	 * @param document {@link Document} containing the content used to count tokens.
-	 * @return the number of token estimated from the given, filtered {@link Document}.
-	 * @see #filteredTokenCount(String)
-	 */
-	default int filteredTokenCount(Document document) {
-		return document != null ? filteredTokenCount(document.getContent()) : 0;
+	default int countFilteredTokens(String content) {
+		return countTokens(content);
 	}
 
 	/**
-	 * Counts the number of words in the given {@link String content}.
+	 * Counts the number of tokens in the given {@link Document} after having been filtered
+	 * for non-essential words and punctuation.
 	 *
-	 * @param content {@link String} containing the content used to count words.
-	 * @return the number of words in the given {@link String content} or {@literal 0}
-	 * if the {@link String content} is {@literal null}, {@literal empty} or {@literal blank}.
+	 * @param document {@link Document} containing the content used to count tokens.
+	 * @return the number of token estimated from the given, filtered {@link Document}.
+	 * @see #countFilteredTokens(String)
 	 */
-	default int wordCount(String content) {
-
-		if (StringUtils.hasText(content)) {
-			String singleSpacedContent = content.replaceAll("\\s+", " ");
-			return singleSpacedContent.split(" ").length;
-		}
-
-		return 0;
+	default int countFilteredTokens(Document document) {
+		return document != null ? countFilteredTokens(document.getContent()) : 0;
 	}
 }

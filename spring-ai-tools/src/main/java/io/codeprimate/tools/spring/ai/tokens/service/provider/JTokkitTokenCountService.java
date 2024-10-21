@@ -17,7 +17,7 @@ package io.codeprimate.tools.spring.ai.tokens.service.provider;
 
 import io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCountEstimatorService;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
 
 import org.springframework.ai.tokenizer.TokenCountEstimator;
 import org.springframework.stereotype.Service;
@@ -27,12 +27,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Spring {@link Service} using the Spring AI's {@link TokenCountEstimator} and the {@literal JTokkit} library
- * to estimate the number of token from a given {@link String text content}.
+ * Spring {@link Service} using Spring AI's {@link TokenCountEstimator} and the {@literal JTokkit} library
+ * to estimate the number of token from the given {@link String content}, such as a body of {@link String plaintext}.
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter
- * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCostEstimatorService
+ * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCountService
  * @see org.springframework.ai.tokenizer.TokenCountEstimator
  * @see org.springframework.stereotype.Service
  * @since 0.1.0
@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public class JTokkitTokenCountEstimatorService implements TokenCountEstimatorService {
+public class JTokkitTokenCountService implements TokenCountService {
 
 	private final AbstractBaseTextSplitter textSplitter = newTextSplitter();
 
@@ -51,13 +51,13 @@ public class JTokkitTokenCountEstimatorService implements TokenCountEstimatorSer
 	}
 
 	@Override
-	public int tokenCount(String content) {
+	public int countTokens(String content) {
 		return getTokenCountEstimator().estimate(content);
 	}
 
 	@Override
-	public int filteredTokenCount(String content) {
+	public int countFilteredTokens(String content) {
 		String processedContent = getTextSplitter().preProcess(content);
-		return tokenCount(processedContent);
+		return countTokens(processedContent);
 	}
 }
