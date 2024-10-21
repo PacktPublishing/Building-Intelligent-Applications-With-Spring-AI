@@ -125,6 +125,16 @@ textarea:focus {
     margin-top: 5px;
 }
 
+.tokenizer-tokens {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    font-size: 20px;
+    margin-top: 5px;
+    width: 80%;
+}
+
 .gradient-text {
     background: linear-gradient(to bottom, #ffffff, #83df8a);
     -webkit-background-clip: text;

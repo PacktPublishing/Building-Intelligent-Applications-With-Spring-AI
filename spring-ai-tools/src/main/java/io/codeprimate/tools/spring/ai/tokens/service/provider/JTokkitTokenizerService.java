@@ -52,7 +52,7 @@ public class JTokkitTokenizerService implements TokenizerService {
 	@SuppressWarnings("all")
 	public List<String> tokenize(String content, String modelName) {
 
-		Assert.hasText(content, "Content to tokenize is required");
+		Assert.notNull(content, "Content to tokenize is required");
 		Assert.hasText(modelName, "Name of model is required");
 
 		EncodingWrapper<?> encoding = GptBytePairEncodingWrapper.wrap(getEncodingRegistry().getEncodingForModel(modelName)

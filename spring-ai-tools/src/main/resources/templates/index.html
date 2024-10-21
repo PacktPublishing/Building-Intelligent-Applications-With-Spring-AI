@@ -55,6 +55,7 @@
 			</div>
 		</div>
 		<div class="horizontal-separator"></div>
+		<div id="tokens" class="tokenizer-tokens center"></div>
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$("#documentContent").focus();
@@ -81,6 +82,20 @@
 						},
 						error: function(xhr, status, errorMessage) {
 							console.log(`Failed to get token counts from content: { status: ${status}, errorMessage: ${errorMessage} }`);
+						}
+					});
+
+					$.ajax({
+						method: 'POST',
+						url: 'http://localhost:8080/token-metadata/view/tokens',
+						accept: 'text/html',
+						contentType: 'application/json',
+						data: `{ \"content\": \"${documentContent}\" }`,
+						success: function(html) {
+							$("#tokens").html(html);
+						},
+						error: function(xhr, status, errorMessage) {
+							console.log(`Failed to get token from content: { status: ${status}, errorMessage: ${errorMessage} }`);
 						}
 					});
 				}, "{ delay: 500ms }");
