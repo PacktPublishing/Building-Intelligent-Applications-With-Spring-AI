@@ -15,10 +15,16 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.service.provider;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
 import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
 
+import org.springframework.ai.model.Media;
+import org.springframework.ai.model.MediaContent;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +62,34 @@ public class JTokkitTokenCountService implements TokenCountService {
 	}
 
 	@Override
+	public int countTokens(Media media) {
+		return getTokenCountEstimator().estimate(newMediaContent(media));
+	}
+
+	@Override
 	public int countFilteredTokens(String content) {
 		String processedContent = getTextSplitter().preProcess(content);
 		return countTokens(processedContent);
+	}
+
+	protected MediaContent newMediaContent(Media media) {
+
+		return new MediaContent() {
+
+			@Override
+			public Collection<Media> getMedia() {
+				return Collections.singleton(media);
+			}
+
+			@Override
+			public String getContent() {
+				return null;
+			}
+
+			@Override
+			public Map<String, Object> getMetadata() {
+				return Collections.emptyMap();
+			}
+		};
 	}
 }

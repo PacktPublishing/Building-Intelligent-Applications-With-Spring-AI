@@ -15,36 +15,40 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.web.controller;
 
-import java.math.BigDecimal;
-
 import io.codeprimate.tools.spring.ai.tokens.model.Document;
-import io.codeprimate.tools.spring.ai.tokens.model.TokenMetadata;
 import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
 import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
 import io.codeprimate.tools.spring.ai.tokens.service.WordCountService;
 
-import org.springframework.util.Assert;
+import org.springframework.ai.model.Media;
+import org.springframework.core.io.Resource;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Spring {@link RestController} used to provide token count and cost estimates.
  *
  * @author John Blum
+ * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCostService
+ * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCountService
+ * @see io.codeprimate.tools.spring.ai.tokens.service.WordCountService
+ * @see io.codeprimate.tools.spring.ai.tokens.web.controller.AbstractApiBaseController
+ * @see org.springframework.ai.model.Media
+ * @see org.springframework.core.io.Resource
  * @see org.springframework.web.bind.annotation.RequestMapping
  * @see org.springframework.web.bind.annotation.RestController
+ * @see org.springframework.web.multipart.MultipartFile
  * @since 0.1.0
  */
 @Slf4j
@@ -53,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class TokenMetadataApiController {
+public class TokenMetadataApiController extends AbstractApiBaseController {
 
 	private final TokenCostService tokenCostService;
 
@@ -79,9 +83,20 @@ public class TokenMetadataApiController {
 			.build();
 	}
 
-	@GetMapping("/prompt/cost")
-	public CostMetadata tokenPromptCost(@RequestParam("modelName") String modelName, @RequestParam("count") int count) {
-		return CostMetadata.prompt(getTokenCostService().cost(modelName, count));
+	@PostMapping("/count/media")
+	public CountMetadata tokenCount(MultipartFile file) {
+
+		MimeType mimeType = resolveMimeType(file);
+		Resource resource = resolveResource(file);
+		Media media = new Media(mimeType, resource);
+
+		int tokenCount = getTokenCountService().countTokens(media);
+
+		return CountMetadata.builder()
+			.tokenCount(tokenCount)
+			.noFilteredTokens()
+			.noWords()
+			.build();
 	}
 
 	@GetMapping("/generation/cost")
@@ -89,47 +104,8 @@ public class TokenMetadataApiController {
 		return CostMetadata.generation(getTokenCostService().cost(modelName, count));
 	}
 
-	@Getter
-	@Builder
-	@ToString
-	@EqualsAndHashCode
-	public static class CostMetadata {
-
-		private static CostMetadata from(TokenMetadata.Cost cost) {
-
-			return CostMetadata.builder()
-				.amount(cost.getAmount())
-				.currencyCode(cost.getCurrencyCode())
-				.build();
-		}
-
-		public static CostMetadata generation(TokenMetadata tokenMetadata) {
-
-			Assert.notNull(tokenMetadata, "TokenMetadata is required");
-
-			return from(tokenMetadata.getGenerationCost());
-		}
-
-		public static CostMetadata prompt(TokenMetadata tokenMetadata) {
-
-			Assert.notNull(tokenMetadata, "TokenMetadata is required");
-
-			return from(tokenMetadata.getPromptCost());
-		}
-
-		private BigDecimal amount;
-
-		private String currencyCode;
-
-	}
-
-	@Getter
-	@Builder
-	public static class CountMetadata {
-
-		private int filteredTokenCount;
-		private int tokenCount;
-		private int wordCount;
-
+	@GetMapping("/prompt/cost")
+	public CostMetadata tokenPromptCost(@RequestParam("modelName") String modelName, @RequestParam("count") int count) {
+		return CostMetadata.prompt(getTokenCostService().cost(modelName, count));
 	}
 }

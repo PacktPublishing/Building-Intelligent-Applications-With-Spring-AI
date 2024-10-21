@@ -24,12 +24,21 @@
 			</div>
 		</div>
 		<div class="container center">
-			<form id="tokenTextForm" action="#">
+			<form id="tokenContentForm" action="#">
 				<div style="margin: 15px;">
 					<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
 				</div>
 			</form>
 		</div>
+<!--
+		<div class="container center">
+			<form id="tokenMediaForm" th:action="/token-metadata/api/tokens/count/media" action="#" method="POST" enctype="multipart/form-data">
+				<div style="margin: 15px;">
+					<textarea id="mediaContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
+				</div>
+			</form>
+		</div>
+-->
 		<div class="horizontal-separator"></div>
 		<div class="tokenizer-stats-container center">
 			<div class="tokenizer-stat vertical-separators">
@@ -60,7 +69,7 @@
 
 					$.ajax({
 						method: 'POST',
-						url: 'http://localhost:8080/token-cost-estimator/api/tokens/count',
+						url: 'http://localhost:8080/token-metadata/api/tokens/count',
 						accept: 'application/json',
 						contentType: 'application/json',
 						data: `{ \"content\": \"${documentContent}\" }`,
