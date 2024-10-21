@@ -15,6 +15,8 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.service;
 
+import io.codeprimate.tools.spring.ai.tokens.service.provider.DefaultWordCountService;
+
 /**
  * Service interface used to count the number of {@literal words} in a body of {@link String text}.
  *
@@ -25,6 +27,15 @@ package io.codeprimate.tools.spring.ai.tokens.service;
  */
 @FunctionalInterface
 public interface WordCountService {
+
+	/**
+	 * Factory method to get the default implementation of the {@link WordCountService}.
+	 *
+	 * @return the default implementation of the {@link WordCountService}.
+	 */
+	static WordCountService defaultService() {
+		return new DefaultWordCountService();
+	}
 
 	/**
 	 * Counts the number of words in the given {@link String content}, such as a body of {@link String plaintext}.
