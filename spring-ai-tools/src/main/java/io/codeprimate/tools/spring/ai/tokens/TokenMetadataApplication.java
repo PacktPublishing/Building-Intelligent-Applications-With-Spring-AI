@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * {@link SpringBootApplication} for the Token Cost Estimator.
+ * {@link SpringBootApplication} providing Token Metadata such as counts and costs estimates.
  *
  * @author John Blum
  * @see java.awt.Desktop
@@ -39,23 +39,25 @@ import lombok.extern.slf4j.Slf4j;
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
+ * @see org.springframework.context.annotation.Bean
+ * @see org.springframework.context.annotation.Profile
  * @since 0.1.0
  */
 @Slf4j
 @SpringBootApplication
 @Getter(AccessLevel.PROTECTED)
-@Profile(TokenCostEstimatorApplication.SPRING_APPLICATION_PROFILE)
+@Profile(TokenMetadataApplication.SPRING_APPLICATION_PROFILE)
 @SuppressWarnings("unused")
-public class TokenCostEstimatorApplication {
+public class TokenMetadataApplication {
 
-	public static final String SPRING_APPLICATION_PROFILE = "token-cost-estimator-app";
+	public static final String SPRING_APPLICATION_PROFILE = "token-metadata-app";
 	private static final String WEBAPP_URI = "http://localhost:%d/%s";
 
 	private static final boolean DEFAULT_HEADLESS = false;
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(TokenCostEstimatorApplication.class)
+		new SpringApplicationBuilder(TokenMetadataApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.profiles(SPRING_APPLICATION_PROFILE)
 			.headless(isHeadless())
