@@ -15,9 +15,6 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.web.controller;
 
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCostEstimatorService;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCountEstimatorService;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Spring {@link Controller} used to present the Token Cost Estimator application UI.
+ * Spring Web MVC {@link Controller} used to present the token metadata application UI.
  *
  * @author John Blum
  * @see org.springframework.stereotype.Controller
@@ -39,13 +36,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class TokenCostEstimatorController {
+public class TokenMetadataViewController {
 
 	protected static final String INDEX = "index";
-
-	private final TokenCostEstimatorService tokenCostEstimatorService;
-
-	private final TokenCountEstimatorService tokenCountEstimatorService;
 
 	@GetMapping
 	public String index() {
