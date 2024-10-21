@@ -40,7 +40,7 @@ public class SentenceTextSplitterUnitTests {
 		String processedText = this.textSplitter.preProcess(text);
 
 		assertThat(processedText).isNotBlank();
-		assertThat(processedText).isEqualTo("text containing comma.");
+		assertThat(processedText).isEqualTo("text containing a comma.");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class SentenceTextSplitterUnitTests {
 		assertThat(sentences).isNotNull();
 		assertThat(sentences).hasSize(1);
 		assertThat(sentences.get(0))
-			.isEqualTo("this incomplete sentence this another incomplete sentence");
+			.isEqualTo("this is an incomplete sentence this is another incomplete sentence");
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class SentenceTextSplitterUnitTests {
 
 		assertThat(sentences).isNotNull();
 		assertThat(sentences).hasSize(2);
-		assertThat(sentences.get(0)).isEqualTo("this first sentence.");
-		assertThat(sentences.get(1)).isEqualTo("this second sentence?");
+		assertThat(sentences.get(0)).isEqualTo("this is first sentence.");
+		assertThat(sentences.get(1)).isEqualTo("is this second sentence?");
 	}
 
 	@Test
@@ -106,8 +106,8 @@ public class SentenceTextSplitterUnitTests {
 
 		assertThat(sentences).isNotNull();
 		assertThat(sentences).hasSize(3);
-		assertThat(sentences.get(0)).isEqualTo("this test!");
-		assertThat(sentences.get(1)).isEqualTo("what test?");
-		assertThat(sentences.get(2)).isEqualTo("test test.");
+		assertThat(sentences.get(0)).isEqualTo("this is a test!");
+		assertThat(sentences.get(1)).isEqualTo("what is a test?");
+		assertThat(sentences.get(2)).isEqualTo("a test is a test.");
 	}
 }

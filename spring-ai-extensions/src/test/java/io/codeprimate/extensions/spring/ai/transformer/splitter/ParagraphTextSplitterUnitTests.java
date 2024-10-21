@@ -46,7 +46,7 @@ public class ParagraphTextSplitterUnitTests {
 		assertThat(splitText).isNotNull();
 		assertThat(splitText).hasSize(3);
 		assertThat(splitText.get(0)).isEqualTo("first sentence in first paragraph\nsecond sentence in first paragraph");
-		assertThat(splitText.get(1)).isEqualTo("this second paragraph");
-		assertThat(splitText.get(2)).isEqualTo("this third paragraph");
+		assertThat(splitText.get(1)).isEqualTo("this is second paragraph");
+		assertThat(splitText.get(2)).isEqualTo("this is a third paragraph");
 	}
 }

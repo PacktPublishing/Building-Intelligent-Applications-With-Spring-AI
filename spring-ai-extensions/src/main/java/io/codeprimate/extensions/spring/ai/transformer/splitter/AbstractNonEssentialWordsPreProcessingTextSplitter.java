@@ -47,7 +47,7 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	protected static final String NON_ESSENTIAL_WORD_REGEX_TEMPLATE = "\\b%s\\b";
 	protected static final String PUNCTUATION_REGEX = "\\p{Punct}";
 
-	protected static final Set<String> ARTICLES = Set.of("the");
+	protected static final Set<String> ARTICLES = Set.of("the", "The");
 
 	protected static final Set<String> ADVERBIAL_CONJUNCTIONS =
 		Set.of("also", "anyway", "furthermore", "hence", "however", "indeed", "likewise", "moreover", "nevertheless",
