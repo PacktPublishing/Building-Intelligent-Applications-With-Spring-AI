@@ -15,27 +15,26 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.service.provider;
 
-import java.math.BigDecimal;
-
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCostEstimatorService;
+import io.codeprimate.tools.spring.ai.tokens.model.TokenMetadata;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
 
 import org.springframework.stereotype.Service;
 
 /**
- * {@link TokenCostEstimatorService}
+ * {@link TokenCostService} implementation based on OpenAI.
  *
  * @author John Blum
  * @see java.math.BigDecimal
- * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCostEstimatorService
+ * @see TokenCostService
  * @see org.springframework.stereotype.Service
  * @since 0.1.0
  */
 @Service
 @SuppressWarnings("unused")
-public class OpenAITokenCostEstimatorService implements TokenCostEstimatorService {
+public class OpenAITokenCostService implements TokenCostService {
 
 	@Override
-	public BigDecimal cost(String modelName, int tokenCount) {
-		return BigDecimal.ZERO;
+	public TokenMetadata cost(String modelName, int tokenCount) {
+		return TokenMetadata.from(modelName).count(tokenCount).build();
 	}
 }

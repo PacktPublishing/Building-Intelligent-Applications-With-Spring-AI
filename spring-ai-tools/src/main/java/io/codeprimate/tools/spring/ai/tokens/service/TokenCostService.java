@@ -16,6 +16,10 @@
 package io.codeprimate.tools.spring.ai.tokens.service;
 
 import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
+
+import io.codeprimate.tools.spring.ai.tokens.model.TokenMetadata;
 
 /**
  * Service interface used to compute the cost for a given number of tokens when using a particular AI provider model.
@@ -26,18 +30,19 @@ import java.math.BigDecimal;
  */
 @FunctionalInterface
 @SuppressWarnings("unused")
-public interface TokenCostEstimatorService {
+public interface TokenCostService {
 
 	/**
-	 * Computes the cost for the given {@link Integer number} of tokens when using the given,
-	 * {@link String named} AI provider model
+	 * Computes metadata, such as costs, for the given {@link Integer number} of tokens when using the given,
+	 * {@link String named} AI provider model.
 	 *
-	 * @param modelName {@link String} containing the name of the AI provide model (e.g. {@literal OpenAI gpt-4o)).
+	 * @param modelName {@link String} containing the name of the AI provider model,
+	 * for example: {@literal OpenAI gpt-4o).
 	 * @param tokenCount {@link Integer} specifying the number of tokens used.
-	 * @return a {@link BigDecimal} indicating the cost in {@literal USD} for the given number of tokens
-	 * when using the {@link String named} AI provider model.
-	 * @see java.math.BigDecimal
+	 * @return {@link TokenMetadata} containing {@link BigDecimal costs} in the {@link Locale local} {@link Currency}
+	 * for the given number of tokens when using the {@link String named} AI provider model.
+	 * @see io.codeprimate.tools.spring.ai.model.TokenMetadata
 	 */
-	BigDecimal cost(String modelName, int tokenCount);
+	TokenMetadata cost(String modelName, int tokenCount);
 
 }
