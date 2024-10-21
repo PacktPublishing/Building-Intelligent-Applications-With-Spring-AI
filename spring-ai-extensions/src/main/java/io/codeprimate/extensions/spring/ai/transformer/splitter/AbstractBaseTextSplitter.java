@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import io.codeprimate.extensions.util.Utils;
+
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.util.StringUtils;
@@ -34,8 +36,10 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings("unused")
 public abstract class AbstractBaseTextSplitter extends TextSplitter {
 
-	protected static final String EMPTY_STRING = "";
-	protected static final String SINGLE_SPACE = " ";
+	protected static final String EMPTY_STRING = Utils.EMPTY_STRING;
+	protected static final String NEWLINE = System.lineSeparator();
+	protected static final String SINGLE_SPACE = Utils.SINGLE_SPACE;
+	protected static final String VERTICAL_WHITESPACE_REGEX = "\\v";
 	protected static final String WHITESPACE_REGEX = "\\s+";
 
 	public String preProcess(String text) {

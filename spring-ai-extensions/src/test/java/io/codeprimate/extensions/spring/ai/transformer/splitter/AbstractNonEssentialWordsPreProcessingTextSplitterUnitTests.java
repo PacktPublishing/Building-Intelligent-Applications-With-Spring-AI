@@ -38,9 +38,12 @@ public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 
 		String text = "  This is a sentence!"
 			+ "\nAnd, this is yet another sentence I did?"
-			+ "\n\nWe have all   sorts of sentences it seems. ";
+			+ "\n\nWe  have all   sorts of sentences it seems. "
+			+ "\n\n\nMounds and mounds of sentences or phrases.  Or other things!";
 
-		String expectedText = "this sentence\nthis yet another sentence i\n\nwe all sorts sentences it";
+		String expectedText = "this is a sentence\nthis is another sentence i did"
+			+ "\n\nwe have all sorts of sentences it seems\n\n\nmounds and mounds of sentences or phrases other things";
+
 		String actualText = this.textSplitter.preProcess(text);
 
 		assertThat(actualText).isNotBlank();
@@ -48,7 +51,7 @@ public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 		String[] expectedTexts = expectedText.split("\\v");
 		String[] actualTexts = actualText.split("\\v");
 
-		assertThat(expectedTexts).hasSize(4);
+		assertThat(expectedTexts).hasSize(7);
 		assertThat(actualTexts).isEqualTo(expectedTexts);
 	}
 

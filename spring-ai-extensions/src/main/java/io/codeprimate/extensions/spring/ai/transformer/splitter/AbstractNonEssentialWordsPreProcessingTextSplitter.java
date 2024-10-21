@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.codeprimate.extensions.util.ImmutableSetWrapper;
 
@@ -41,23 +43,21 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 		extends AbstractLowercasePreProcessingTextSplitter {
 
-	protected static final Set<String> ARTICLES = Set.of("a", "an", "the");
-
-	protected static final Set<String> CONJUNCTIONS = Set.of("and", "or");
-
-	// Also known as Copula; Not an exhaustive Set.
-	protected static final Set<String> LINKING_VERBS =
-		Set.of("am", "are", "be", "became", "become", "becomes", "been", "being", "do", "did", "does", "had",
-			"has", "have", "is", "seem", "seems", "was", "will", "would");
-
-	// Not an exhaustive Set.
-	protected static final Set<String> PREPOSITIONS = Set.of("at", "by", "from", "of", "to");
-
 	protected static final String MULTI_SPACED_WORDS_REGEX = " {2,}";
-	protected static final String NEW_LINE = "\n";
 	protected static final String NON_ESSENTIAL_WORD_REGEX_TEMPLATE = "\\b%s\\b";
 	protected static final String PUNCTUATION_REGEX = "\\p{Punct}";
-	protected static final String VERTICAL_WHITESPACE_REGEX = "\\v";
+
+	protected static final Set<String> ARTICLES = Set.of("the");
+
+	protected static final Set<String> ADVERBIAL_CONJUNCTIONS =
+		Set.of("also", "anyway", "furthermore", "hence", "however", "indeed", "likewise", "moreover", "nevertheless",
+			"of course", "therefore", "thus");
+
+	// FANBOYS (non-exhaustive set)
+	protected static final Set<String> COORDINATING_CONJUNCTIONS = Set.of("And", "but", "Or", "so", "yet");
+
+	protected static final BinaryOperator<String> TWO_STRINGS_NEWLINE_CONCATENATION = (one, two) ->
+		one.concat(NEWLINE).concat(two);
 
 	protected Set<String> getAdditionalNonEssentialWords() {
 		return Collections.emptySet();
@@ -72,27 +72,14 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	}
 
 	protected Set<String> getConjunctions() {
-		return CONJUNCTIONS.stream().filter(conjunctionsPredicate()).collect(Collectors.toSet());
+
+		return Stream.concat(ADVERBIAL_CONJUNCTIONS.stream(), COORDINATING_CONJUNCTIONS.stream())
+			.filter(conjunctionsPredicate())
+			.collect(Collectors.toSet());
 	}
 
 	protected Predicate<String> conjunctionsPredicate() {
 		return conjunction -> true;
-	}
-
-	protected Set<String> getLinkingVerbs() {
-		return LINKING_VERBS.stream().filter(linkingVerbsPredicate()).collect(Collectors.toSet());
-	}
-
-	protected Predicate<String> linkingVerbsPredicate() {
-		return linkingVerb -> true;
-	}
-
-	protected Set<String> getPrepositions() {
-		return PREPOSITIONS.stream().filter(prepositionsPredicate()).collect(Collectors.toSet());
-	}
-
-	protected Predicate<String> prepositionsPredicate() {
-		return preposition -> true;
 	}
 
 	protected Optional<String> getPunctuationRegex() {
@@ -105,8 +92,6 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 
 		nonEssentialWords.addAll(getArticles());
 		nonEssentialWords.addAll(getConjunctions());
-		nonEssentialWords.addAll(getLinkingVerbs());
-		nonEssentialWords.addAll(getPrepositions());
 		nonEssentialWords.addAll(getAdditionalNonEssentialWords());
 
 		return nonEssentialWords.stream()
@@ -126,11 +111,11 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	@SuppressWarnings("all")
 	public String preProcess(String text) {
 
-		String preProcessedText = super.preProcess(text);
-		String preProcessedTextWithNoPunctuation = removePunctuation(preProcessedText);
-		String resolvedPreProcessedText = removeNonEssentialWords(preProcessedTextWithNoPunctuation);
+		String textNoPunctuation = removePunctuation(text);
+		String conciseTextNoPunctuation = removeNonEssentialWords(textNoPunctuation);
+		String preProcessedText = super.preProcess(conciseTextNoPunctuation);
 
-		return resolvedPreProcessedText;
+		return preProcessedText;
 	}
 
 	protected String removeNonEssentialWords(String text) {
@@ -144,7 +129,7 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 
 		return Arrays.stream(text.split(VERTICAL_WHITESPACE_REGEX))
 			.map(String::trim)
-			.reduce((one, two) -> one.concat(NEW_LINE).concat(two))
+			.reduce(TWO_STRINGS_NEWLINE_CONCATENATION)
 			.orElse(text);
 	}
 
