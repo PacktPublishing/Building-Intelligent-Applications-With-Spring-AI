@@ -18,32 +18,28 @@ package io.codeprimate.extensions.spring.ai.transformer.splitter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.util.StringUtils;
-
 /**
- * Abstract base class removing all non-essential words in a given {@link String text}.
+ * Abstract base class removing all non-essential words in a given body of {@link String plaintext}.
  * <p/>
  * This includes {@literal Articles}, {@literal Linking Verbs} and {@literal Prepositions}
  * along with all {@literal Punctuation}.
  *
  * @author John Blum
- * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractLowercasePreProcessingTextSplitter
+ * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractPunctuationPreProcessingTextSplitter
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
-		extends AbstractLowercasePreProcessingTextSplitter {
+		extends AbstractPunctuationPreProcessingTextSplitter {
 
 	protected static final String MULTI_SPACED_WORDS_REGEX = " {2,}";
 	protected static final String NON_ESSENTIAL_WORD_REGEX_TEMPLATE = "\\b%s\\b";
-	protected static final String PUNCTUATION_REGEX = "\\p{Punct}";
 
 	// Capitalized words represent the word used at the beginning of sentence.
 	// Lowercase words represent the word in the middle of a sentence.
@@ -104,17 +100,12 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 		return nonEssentialWord -> true;
 	}
 
-	protected Optional<String> getPunctuationRegex() {
-		return Optional.of(PUNCTUATION_REGEX);
-	}
-
 	@Override
 	@SuppressWarnings("all")
 	public String preProcess(String text) {
 
-		String textNoPunctuation = removePunctuation(text);
-		String conciseTextNoPunctuation = removeNonEssentialWords(textNoPunctuation);
-		String preProcessedText = super.preProcess(conciseTextNoPunctuation);
+		String conciseText = removeNonEssentialWords(text);
+		String preProcessedText = super.preProcess(conciseText);
 
 		return preProcessedText;
 	}
@@ -131,14 +122,6 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 		return Arrays.stream(text.split(VERTICAL_WHITESPACE_REGEX))
 			.map(String::trim)
 			.reduce(TWO_STRINGS_NEWLINE_CONCATENATION)
-			.orElse(text);
-	}
-
-	protected String removePunctuation(String text) {
-
-		return getPunctuationRegex()
-			.filter(StringUtils::hasText)
-			.map(punctuationRegex -> text.replaceAll(punctuationRegex, EMPTY_STRING))
 			.orElse(text);
 	}
 }
