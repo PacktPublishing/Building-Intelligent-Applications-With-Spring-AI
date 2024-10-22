@@ -32,6 +32,10 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 @SuppressWarnings("unused")
 public class DocumentTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
+	public static DocumentTextSplitter create() {
+		return new DocumentTextSplitter();
+	}
+
 	@Override
 	public String regex() {
 		return EMPTY_STRING;
