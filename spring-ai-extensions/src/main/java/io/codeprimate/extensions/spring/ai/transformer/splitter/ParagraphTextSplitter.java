@@ -31,6 +31,10 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 @SuppressWarnings("unused")
 public class ParagraphTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
+	public static ParagraphTextSplitter create() {
+		return new ParagraphTextSplitter();
+	}
+
 	@Override
 	public String regex() {
 		return "\\v{2,}";
