@@ -33,6 +33,10 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 @SuppressWarnings("unused")
 public class SentenceTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
+	public static SentenceTextSplitter create() {
+		return new SentenceTextSplitter();
+	}
+
 	@Override
 	protected Optional<String> getPunctuationRegex() {
 		// Expression taken from the POSIX "\p{Punct}" Regular Expression
