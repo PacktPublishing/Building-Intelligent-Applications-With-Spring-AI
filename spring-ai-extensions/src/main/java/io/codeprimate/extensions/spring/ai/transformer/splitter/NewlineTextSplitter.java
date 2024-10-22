@@ -31,6 +31,10 @@ import org.springframework.ai.transformer.splitter.TextSplitter;
 @SuppressWarnings("unused")
 public class NewlineTextSplitter extends AbstractNonEssentialWordsPreProcessingTextSplitter {
 
+	public static NewlineTextSplitter create() {
+		return new NewlineTextSplitter();
+	}
+
 	@Override
 	public String regex() {
 		return "\\v+";
