@@ -106,22 +106,30 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 
 		String conciseText = removeNonEssentialWords(text);
 		String preProcessedText = super.preProcess(conciseText);
+		String reformattedText = reformatText(preProcessedText);
 
-		return preProcessedText;
+		return reformattedText;
 	}
 
 	protected String removeNonEssentialWords(String text) {
 
 		for (String nonEssentialWord : getNonEssentialWords()) {
 			String nonEssentialWordRegex = NON_ESSENTIAL_WORD_REGEX_TEMPLATE.formatted(nonEssentialWord);
-			text = text.replaceAll(nonEssentialWordRegex, EMPTY_STRING)
-				.replaceAll(MULTI_SPACED_WORDS_REGEX, SINGLE_SPACE)
-				.trim();
+			text = text.replaceAll(nonEssentialWordRegex, EMPTY_STRING);
 		}
 
+		return text;
+	}
+
+	protected String reformatText(String text) {
+
 		return Arrays.stream(text.split(VERTICAL_WHITESPACE_REGEX))
-			.map(String::trim)
+			.map(this::singleSpaceWordsAndTrim)
 			.reduce(TWO_STRINGS_NEWLINE_CONCATENATION)
 			.orElse(text);
+	}
+
+	protected String singleSpaceWordsAndTrim(String text) {
+		return text.replaceAll(MULTI_SPACED_WORDS_REGEX, SINGLE_SPACE).trim();
 	}
 }

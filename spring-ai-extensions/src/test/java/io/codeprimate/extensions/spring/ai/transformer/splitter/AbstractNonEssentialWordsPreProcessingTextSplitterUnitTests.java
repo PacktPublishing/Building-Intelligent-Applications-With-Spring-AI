@@ -37,12 +37,12 @@ public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 	void preProcessesTextCorrectly() {
 
 		String text = "  This is a sentence!"
-			+ "\nAnd, this is yet another sentence I did?"
+			+ "\nAnd, this is yet another sentence I did write?"
 			+ "\n\nWe  have all   sorts of sentences it seems. "
-			+ "\n\n\nMounds and mounds of sentences or phrases.  Or other things!";
+			+ "\n\n\nAround and around or upside down.  And stuff!";
 
-		String expectedText = "this is a sentence\nthis is another sentence i did"
-			+ "\n\nwe have all sorts of sentences it seems\n\n\nmounds and mounds of sentences or phrases other things";
+		String expectedText = "this is a sentence\nthis is another sentence i did write"
+			+ "\n\nwe have all sorts of sentences it seems\n\n\naround and around or upside down stuff";
 
 		String actualText = this.textSplitter.preProcess(text);
 
