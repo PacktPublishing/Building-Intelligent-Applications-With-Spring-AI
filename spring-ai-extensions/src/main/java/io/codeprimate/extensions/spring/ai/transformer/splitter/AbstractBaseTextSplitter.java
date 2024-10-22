@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractBaseTextSplitter extends TextSplitter {
 
 	protected static final String EMPTY_STRING = Utils.EMPTY_STRING;
+	protected static final String MATCH_ALL_REGEX = ".*";
 	protected static final String NEWLINE = System.lineSeparator();
 	protected static final String SINGLE_SPACE = Utils.SINGLE_SPACE;
 	protected static final String VERTICAL_WHITESPACE_REGEX = "\\v";
@@ -48,11 +49,6 @@ public abstract class AbstractBaseTextSplitter extends TextSplitter {
 
 	public abstract String regex();
 
-	protected String resolveRegex(String text) {
-		String regex = regex();
-		return StringUtils.hasText(regex) ? regex : text;
-	}
-
 	public List<Document> split(String text) {
 		return split(new Document(text));
 	}
@@ -61,7 +57,14 @@ public abstract class AbstractBaseTextSplitter extends TextSplitter {
 	protected List<String> splitText(String text) {
 
 		return StringUtils.hasText(text)
-			? Arrays.asList(preProcess(text).split(resolveRegex(text)))
+			? doSplitText(preProcess(text), regex())
 			: Collections.emptyList();
+	}
+
+	private List<String> doSplitText(String text, String regex) {
+
+		return StringUtils.hasText(regex)
+			? Arrays.asList(text.split(regex))
+			: Collections.singletonList(text);
 	}
 }
