@@ -39,7 +39,7 @@ public class NewlineTextSplitterUnitTests {
 
 		String text = " The first line.  \nThe second line. \n\n\n   The third line.";
 
-		List<String> expectedText = Arrays.asList("first line\nsecond line\nthird line".split("\\v+"));
+		List<String> expectedText = Arrays.asList("the first line\nthe second line\nthe third line".split("\\v+"));
 		List<String> actualTexts = this.textSplitter.splitText(text);
 
 		assertThat(actualTexts).isNotNull();

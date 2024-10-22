@@ -81,7 +81,7 @@ public class SentenceTextSplitterUnitTests {
 		assertThat(sentences).isNotNull();
 		assertThat(sentences).hasSize(1);
 		assertThat(sentences.get(0))
-			.isEqualTo("this is an incomplete sentence this is another incomplete sentence");
+			.isEqualTo("this is an incomplete sentence and this is another incomplete sentence");
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class SentenceTextSplitterUnitTests {
 
 		assertThat(sentences).isNotNull();
 		assertThat(sentences).hasSize(2);
-		assertThat(sentences.get(0)).isEqualTo("this is first sentence.");
-		assertThat(sentences.get(1)).isEqualTo("is this second sentence?");
+		assertThat(sentences.get(0)).isEqualTo("this is the first sentence.");
+		assertThat(sentences.get(1)).isEqualTo("is this the second sentence?");
 	}
 
 	@Test
