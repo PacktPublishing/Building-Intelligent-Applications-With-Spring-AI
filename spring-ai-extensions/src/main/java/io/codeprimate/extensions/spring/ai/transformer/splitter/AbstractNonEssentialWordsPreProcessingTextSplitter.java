@@ -25,8 +25,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.codeprimate.extensions.util.ImmutableSetWrapper;
-
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,14 +45,21 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	protected static final String NON_ESSENTIAL_WORD_REGEX_TEMPLATE = "\\b%s\\b";
 	protected static final String PUNCTUATION_REGEX = "\\p{Punct}";
 
-	protected static final Set<String> ARTICLES = Set.of("the", "The");
+	// Capitalized words represent the word used at the beginning of sentence.
+	// Lowercase words represent the word in the middle of a sentence.
+	protected static final Set<String> ARTICLES = Set.of("The", "the");
 
+	// Capitalized variant represents the word used at the beginning of sentence.
+	// Lowercase words represent the word in the middle or end of a sentence.
 	protected static final Set<String> ADVERBIAL_CONJUNCTIONS =
-		Set.of("also", "anyway", "furthermore", "hence", "however", "indeed", "likewise", "moreover", "nevertheless",
-			"of course", "therefore", "thus");
+		Set.of("Also", "also", "Anyway", "anyway", "Furthermore", "furthermore", "Hence", "hence", "However", "however",
+			"Indeed", "indeed", "Likewise", "likewise", "Moreover", "moreover", "Nevertheless", "nevertheless",
+			"Of course", "of course", "Therefore", "therefore", "Thus", "thus");
 
-	// FANBOYS (non-exhaustive set)
-	protected static final Set<String> COORDINATING_CONJUNCTIONS = Set.of("And", "but", "Or", "so", "yet");
+	// Capitalized words represent the word used at the beginning of sentence.
+	// Lowercase words represent the word in the middle or end of a sentence.
+	protected static final Set<String> COORDINATING_CONJUNCTIONS =
+		Set.of("And", "But", "but", "Or", "So", "so", "Yet", "yet");
 
 	protected static final BinaryOperator<String> TWO_STRINGS_NEWLINE_CONCATENATION = (one, two) ->
 		one.concat(NEWLINE).concat(two);
@@ -82,10 +87,6 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 		return conjunction -> true;
 	}
 
-	protected Optional<String> getPunctuationRegex() {
-		return Optional.of(PUNCTUATION_REGEX);
-	}
-
 	protected Set<String> getNonEssentialWords() {
 
 		Set<String> nonEssentialWords = new HashSet<>();
@@ -103,8 +104,8 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 		return nonEssentialWord -> true;
 	}
 
-	private ImmutableSetWrapper<String> getWrappedNonEssentialWords() {
-		return ImmutableSetWrapper.from(getNonEssentialWords());
+	protected Optional<String> getPunctuationRegex() {
+		return Optional.of(PUNCTUATION_REGEX);
 	}
 
 	@Override
