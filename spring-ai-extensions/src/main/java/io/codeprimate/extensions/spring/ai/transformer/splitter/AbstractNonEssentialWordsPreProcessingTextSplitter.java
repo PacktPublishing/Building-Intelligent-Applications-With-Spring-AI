@@ -57,8 +57,13 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	protected static final Set<String> COORDINATING_CONJUNCTIONS =
 		Set.of("And", "But", "but", "Or", "So", "so", "Yet", "yet");
 
+	protected static final Predicate<String> DEFAULT_NON_ESSENTIAL_WORDS_PREDICATE = nonEssentialWord -> false;
+	protected static final Predicate<String> EXCLUDE_NON_ESSENTIAL_WORDS_PREDICATE = nonEssentialWord -> true;
+
 	protected static final BinaryOperator<String> TWO_STRINGS_NEWLINE_CONCATENATION = (one, two) ->
 		one.concat(NEWLINE).concat(two);
+
+	private volatile Predicate<String> nonEssentialWordsPredicate = DEFAULT_NON_ESSENTIAL_WORDS_PREDICATE;
 
 	protected Set<String> getAdditionalNonEssentialWords() {
 		return Collections.emptySet();
@@ -97,7 +102,13 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	}
 
 	protected Predicate<String> nonEssentialWordsPredicate() {
-		return nonEssentialWord -> true;
+		return this.nonEssentialWordsPredicate;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractNonEssentialWordsPreProcessingTextSplitter> T excludeNonEssentialWords() {
+		this.nonEssentialWordsPredicate = EXCLUDE_NON_ESSENTIAL_WORDS_PREDICATE;
+		return (T) this;
 	}
 
 	@Override

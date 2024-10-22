@@ -29,22 +29,48 @@ import org.junit.jupiter.api.Test;
  */
 public class AbstractNonEssentialWordsPreProcessingTextSplitterUnitTests {
 
-	private final AbstractNonEssentialWordsPreProcessingTextSplitter textSplitter
-		= new TestNonEssentialWordsPreProcessingTextSplitter();
-
 	@Test
 	@SuppressWarnings("all")
-	void preProcessesTextCorrectly() {
+	void excludesNonEssentialWordsFromText() {
 
 		String text = "  This is a sentence!"
 			+ "\nAnd, this is yet another sentence I did write?"
 			+ "\n\nWe  have all   sorts of sentences it seems. "
 			+ "\n\n\nAround and around or upside down.  And stuff!";
 
-		String expectedText = "this is a sentence\nthis is another sentence i did write"
-			+ "\n\nwe have all sorts of sentences it seems\n\n\naround and around or upside down stuff";
+		String expectedText = "this is a sentence"
+			+ "\nthis is another sentence i did write"
+			+ "\n\nwe have all sorts of sentences it seems"
+			+ "\n\n\naround and around or upside down stuff";
 
-		String actualText = this.textSplitter.preProcess(text);
+		String actualText = new TestNonEssentialWordsPreProcessingTextSplitter()
+			.excludeNonEssentialWords()
+			.preProcess(text);
+
+		assertThat(actualText).isNotBlank();
+
+		String[] expectedTexts = expectedText.split("\\v");
+		String[] actualTexts = actualText.split("\\v");
+
+		assertThat(expectedTexts).hasSize(7);
+		assertThat(actualTexts).isEqualTo(expectedTexts);
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	void includesNonEssentialWordsFromText() {
+
+		String text = "  This is a sentence!"
+			+ "\nAnd, this is yet another sentence I did write?"
+			+ "\n\nWe  have all   sorts of sentences it seems. "
+			+ "\n\n\nAround and around or upside down.  And stuff!";
+
+		String expectedText = "this is a sentence"
+			+ "\nand this is yet another sentence i did write"
+			+ "\n\nwe have all sorts of sentences it seems"
+			+ "\n\n\naround and around or upside down and stuff";
+
+		String actualText = new TestNonEssentialWordsPreProcessingTextSplitter().preProcess(text);
 
 		assertThat(actualText).isNotBlank();
 
