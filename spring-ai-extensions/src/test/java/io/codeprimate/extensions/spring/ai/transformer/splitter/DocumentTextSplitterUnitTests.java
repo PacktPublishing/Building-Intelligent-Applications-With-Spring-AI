@@ -96,5 +96,6 @@ public class DocumentTextSplitterUnitTests {
 		private String artist;
 		private String lyrics;
 		private String title;
+
 	}
 }
