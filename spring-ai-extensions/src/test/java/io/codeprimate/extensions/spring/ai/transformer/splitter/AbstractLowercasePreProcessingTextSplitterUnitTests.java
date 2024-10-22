@@ -35,7 +35,7 @@ public class AbstractLowercasePreProcessingTextSplitterUnitTests {
 	@Test
 	void preProcessesTextCorrectly() {
 
-		String text = " This is A StING of TeXT!  ";
+		String text = " tHIs is A StrING of TeXT!  ";
 
 		String expectedText = text.toLowerCase().trim();
 		String actualText = this.textSplitter.preProcess(text);
