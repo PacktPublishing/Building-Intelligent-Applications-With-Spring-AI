@@ -38,8 +38,8 @@ public class AbstractPunctuationPreProcessingTextSplitterUnitTests {
 		String text = "This is an example sentence. Counting down from: three, two, one... and BOOM!"
 			+ "\nDid you hear that?";
 
-		String expectedText = "This is an example sentence Counting down from three two one and BOOM"
-			+ "\nDid you hear that";
+		String expectedText = "this is an example sentence counting down from three two one and boom"
+			+ "\ndid you hear that";
 
 		String actualText = this.textSplitter.preProcess(text);
 
