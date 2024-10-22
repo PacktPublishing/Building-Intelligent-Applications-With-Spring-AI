@@ -53,7 +53,7 @@ public class JTokkitTokenCountService implements TokenCountService {
 	private final TokenCountEstimator tokenCountEstimator;
 
 	protected AbstractBaseTextSplitter newTextSplitter() {
-		return new DocumentTextSplitter();
+		return DocumentTextSplitter.create().excludeNonEssentialWords();
 	}
 
 	@Override
