@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.exmaples.prompts;
+package com.packt.spring.ai.examples.prompts;
 
 import java.util.List;
 
