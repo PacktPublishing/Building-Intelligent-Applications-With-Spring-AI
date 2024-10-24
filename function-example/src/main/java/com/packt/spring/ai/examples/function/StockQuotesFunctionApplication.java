@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples;
+package com.packt.spring.ai.examples.function;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
