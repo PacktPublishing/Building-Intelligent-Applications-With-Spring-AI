@@ -29,6 +29,7 @@
 		<module>image-generation-example</module>
 		<module>metadata-example</module>
 		<module>moderation-example</module>
+		<module>observability-example</module>
 		<module>pre-generated-answers-example</module>
 		<module>prompt-example</module>
 		<module>similarity-search-example</module>
