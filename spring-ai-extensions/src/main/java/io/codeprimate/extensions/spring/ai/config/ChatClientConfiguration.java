@@ -26,6 +26,7 @@ import org.springframework.ai.chat.client.observation.ChatClientObservationConve
 import org.springframework.ai.chat.client.observation.DefaultChatClientObservationConvention;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -46,6 +47,7 @@ import org.springframework.context.annotation.Primary;
 public class ChatClientConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
 	public ChatClient chatClient(ChatModel chatModel,
 			@Autowired(required = false) Consumer<ChatClient.Builder> chatClientBuilderCustomizer,
 			@Autowired(required = false) ChatClientObservationConvention observationConvention,
