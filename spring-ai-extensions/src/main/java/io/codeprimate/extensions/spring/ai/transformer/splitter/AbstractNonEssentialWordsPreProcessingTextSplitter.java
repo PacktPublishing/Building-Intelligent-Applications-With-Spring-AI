@@ -41,18 +41,18 @@ public abstract class AbstractNonEssentialWordsPreProcessingTextSplitter
 	protected static final String MULTI_SPACED_WORDS_REGEX = " {2,}";
 	protected static final String NON_ESSENTIAL_WORD_REGEX_TEMPLATE = "\\b%s\\b";
 
-	// Capitalized words represent the word used at the beginning of sentence.
+	// Capitalized words represent the word used at the beginning of a sentence.
 	// Lowercase words represent the word in the middle of a sentence.
 	protected static final Set<String> ARTICLES = Set.of("The", "the");
 
-	// Capitalized variant represents the word used at the beginning of sentence.
+	// Capitalized variant represents the word used at the beginning of a sentence.
 	// Lowercase words represent the word in the middle or end of a sentence.
 	protected static final Set<String> ADVERBIAL_CONJUNCTIONS =
 		Set.of("Also", "also", "Anyway", "anyway", "Furthermore", "furthermore", "Hence", "hence", "However", "however",
 			"Indeed", "indeed", "Likewise", "likewise", "Moreover", "moreover", "Nevertheless", "nevertheless",
 			"Of course", "of course", "Therefore", "therefore", "Thus", "thus");
 
-	// Capitalized words represent the word used at the beginning of sentence.
+	// Capitalized words represent the word used at the beginning of a sentence.
 	// Lowercase words represent the word in the middle or end of a sentence.
 	protected static final Set<String> COORDINATING_CONJUNCTIONS =
 		Set.of("And", "But", "but", "Or", "So", "so", "Yet", "yet");
