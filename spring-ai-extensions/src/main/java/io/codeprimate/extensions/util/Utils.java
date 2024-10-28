@@ -16,6 +16,7 @@
 package io.codeprimate.extensions.util;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -40,6 +41,14 @@ public abstract class Utils {
 
 	public static <T> T defaultIfNull(T value, Supplier<T> defaultValue) {
 		return value != null ? value : defaultValue.get();
+	}
+
+	public static <T> Iterator<T> nullSafeIterator(Iterable<T> iterable) {
+		return nullSafeIterator(nullSafeIterable(iterable).iterator());
+	}
+
+	public static <T> Iterator<T> nullSafeIterator(Iterator<T> iterator) {
+		return iterator != null ? iterator : Collections.emptyIterator();
 	}
 
 	public static <T> Consumer<T> nullSafeConsumer(Consumer<T> consumer) {
