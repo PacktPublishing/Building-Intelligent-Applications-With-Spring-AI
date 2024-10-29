@@ -18,10 +18,14 @@ package io.codeprimate.extensions.spring.boot;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
 
+import org.slf4j.Logger;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Abstract base class for all {@link SpringBootApplication SpringBootApplications}.
@@ -31,10 +35,13 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  */
+@Slf4j
 @SuppressWarnings("unused")
 public abstract class AbstractSpringBootApplication {
 
+	protected static final String AI_PROMPT = "ai> %s%n";
 	protected static final String EXIT = "exit";
+	protected static final String USER_PROMPT = "user> ";
 
 	// REPL
 	protected ApplicationRunner readEvaluatePrintLoop(BiConsumer<ApplicationArguments, String> consumer) {
@@ -56,6 +63,19 @@ public abstract class AbstractSpringBootApplication {
 		};
 	}
 
+	// Alias
+	protected ApplicationRunner repl(BiConsumer<ApplicationArguments, String> consumer) {
+		return readEvaluatePrintLoop(consumer);
+	}
+
+	protected String getContent(ChatResponse chatResponse) {
+		return chatResponse.getResult().getOutput().getContent();
+	}
+
+	protected Logger getLogger() {
+		return log;
+	}
+
 	private boolean isExit(String value) {
 		return EXIT.equalsIgnoreCase(StringUtils.trimAllWhitespace(value));
 	}
@@ -64,16 +84,16 @@ public abstract class AbstractSpringBootApplication {
 		return !isExit(value);
 	}
 
-	private void aiGeneratedOutput(String output) {
-		print("ai> %s%n", output);
-	}
-
-	private void userPrompt() {
-		print("user> ");
+	private void aiOutput(String output) {
+		print(AI_PROMPT, output);
 	}
 
 	protected void print(String message, Object... arguments) {
 		System.out.printf(message, arguments);
 		System.out.flush();
+	}
+
+	private void userPrompt() {
+		print(USER_PROMPT);
 	}
 }
