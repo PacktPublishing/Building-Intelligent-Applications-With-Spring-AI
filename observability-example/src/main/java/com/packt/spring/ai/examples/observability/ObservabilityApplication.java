@@ -86,9 +86,7 @@ public class ObservabilityApplication extends AbstractSpringBootApplication {
 
 			ChatResponse chatResponse = chatClient.prompt(prompt).call().chatResponse();
 
-			String generatedContent = getContent(chatResponse);
-
-			aiOutput(generatedContent);
+			String generatedContent = outputAiResponse(getContent(chatResponse));
 
 			// Metadata & Metrics
 			print("%nAI Provider Token Count [%s]%n", getAiProviderTokenCount(chatResponse));
