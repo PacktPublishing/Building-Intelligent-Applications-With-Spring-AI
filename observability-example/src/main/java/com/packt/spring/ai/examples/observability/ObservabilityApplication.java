@@ -15,6 +15,8 @@
  */
 package com.packt.spring.ai.examples.observability;
 
+import java.util.Scanner;
+
 import com.knuddels.jtokkit.api.EncodingType;
 
 import io.micrometer.core.instrument.Counter;
@@ -33,11 +35,13 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate Observability with Micrometer.
  *
  * @author John Blum
+ * @see io.micrometer.core.instrument.MeterRegistry
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.boot.ApplicationRunner
@@ -47,6 +51,8 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @SuppressWarnings("unused")
 public class ObservabilityApplication {
+
+	protected static final String EXIT = "exit";
 
 	public static void main(String[] args) {
 
@@ -77,20 +83,30 @@ public class ObservabilityApplication {
 
 		return args -> {
 
-			Prompt prompt = new Prompt("Explain the main concepts of Artificial Intelligence");
+			Scanner scanner = new Scanner(System.in);
+			String input;
 
-			print("user> %s%n", prompt.getContents());
+			userPrompt();
 
-			ChatResponse chatResponse = chatClient.prompt(prompt).call().chatResponse();
+			while (isNotExit(input = scanner.nextLine())) {
+				if (StringUtils.hasText(input)) {
 
-			String generatedContent = getContent(chatResponse);
+					Prompt prompt = new Prompt(input);
 
-			print("ai> %s%n", generatedContent);
+					ChatResponse chatResponse = chatClient.prompt(prompt).call().chatResponse();
 
-			// Metadata & Metrics
-			print("%nAI Provider Token Count [%s]%n", getAiProviderTokenCount(chatResponse));
-			print("Estimated Token Count [%s]%n", getEstimatedTokenCount(prompt, generatedContent, tokenCountEstimator));
-			print("Observed Token Count [%s]%n", getObservedTokenCount(meterRegistry));
+					String generatedContent = getContent(chatResponse);
+
+					print("ai> %s%n", generatedContent);
+
+					// Metadata & Metrics
+					print("%nAI Provider Token Count [%s]%n", getAiProviderTokenCount(chatResponse));
+					print("Estimated Token Count [%s]%n", getEstimatedTokenCount(prompt, generatedContent, tokenCountEstimator));
+					print("Observed Token Count [%s]%n", getObservedTokenCount(meterRegistry));
+				}
+
+				userPrompt();
+			}
 		};
 	}
 
@@ -126,6 +142,18 @@ public class ObservabilityApplication {
 			.map(Counter.class::cast)
 			.map(Counter::count)
 			.orElse(0.0d);
+	}
+
+	private boolean isExit(String value) {
+		return EXIT.equalsIgnoreCase(StringUtils.trimAllWhitespace(value));
+	}
+
+	private boolean isNotExit(String value) {
+		return !isExit(value);
+	}
+
+	private void userPrompt() {
+		print("user> ");
 	}
 
 	private void print(String message, Object... arguments) {
