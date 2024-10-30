@@ -49,9 +49,9 @@ import org.springframework.context.annotation.Profile;
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  */
 @SpringBootApplication
-@Profile(ObservabilityApplication.SPRING_APPLICATION_PROFILE)
+@Profile(TokenCountObservationApplication.SPRING_APPLICATION_PROFILE)
 @SuppressWarnings("unused")
-public class ObservabilityApplication extends AbstractSpringBootApplication {
+public class TokenCountObservationApplication extends AbstractSpringBootApplication {
 
 	protected static final String EXIT = "exit";
 
@@ -59,7 +59,7 @@ public class ObservabilityApplication extends AbstractSpringBootApplication {
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(ObservabilityApplication.class)
+		new SpringApplicationBuilder(TokenCountObservationApplication.class)
 			.profiles(SPRING_APPLICATION_PROFILE)
 			.web(WebApplicationType.NONE)
 			.build()
