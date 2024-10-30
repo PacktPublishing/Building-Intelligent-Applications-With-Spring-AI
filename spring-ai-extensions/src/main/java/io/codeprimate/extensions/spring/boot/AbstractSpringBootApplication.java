@@ -17,6 +17,7 @@ package io.codeprimate.extensions.spring.boot;
 
 import java.util.Scanner;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -43,6 +44,7 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String AI_PROMPT = "ai> %s%n";
 	protected static final String EMPTY_STRING = "";
 	protected static final String EXIT = "exit";
+	protected static final String NEWLINE = System.lineSeparator();
 	protected static final String USER_PROMPT = "user> %s";
 
 	// REPL
@@ -98,6 +100,14 @@ public abstract class AbstractSpringBootApplication {
 	protected void print(String message, Object... arguments) {
 		System.out.printf(message, arguments);
 		System.out.flush();
+	}
+
+	protected void printNewline(int count) {
+
+		IntStream.range(0, Math.max(0, count))
+			.mapToObj(it -> NEWLINE)
+			.reduce("%s%s"::formatted)
+			.ifPresent(this::print);
 	}
 
 	protected void userPrompt() {
