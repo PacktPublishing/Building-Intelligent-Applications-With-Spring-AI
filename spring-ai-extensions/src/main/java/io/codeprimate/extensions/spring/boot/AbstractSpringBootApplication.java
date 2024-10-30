@@ -40,8 +40,9 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractSpringBootApplication {
 
 	protected static final String AI_PROMPT = "ai> %s%n";
+	protected static final String EMPTY_STRING = "";
 	protected static final String EXIT = "exit";
-	protected static final String USER_PROMPT = "user> ";
+	protected static final String USER_PROMPT = "user> %s";
 
 	// REPL
 	protected ApplicationRunner readEvaluatePrintLoop(BiConsumer<ApplicationArguments, String> consumer) {
@@ -94,7 +95,11 @@ public abstract class AbstractSpringBootApplication {
 		System.out.flush();
 	}
 
-	private void userPrompt() {
-		print(USER_PROMPT);
+	protected void userPrompt() {
+		print(EMPTY_STRING);
+	}
+
+	protected void userPrompt(String userMessage) {
+		print(USER_PROMPT, userMessage);
 	}
 }
