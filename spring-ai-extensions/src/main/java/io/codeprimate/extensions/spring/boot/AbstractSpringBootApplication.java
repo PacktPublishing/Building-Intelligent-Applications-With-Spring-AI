@@ -85,6 +85,10 @@ public abstract class AbstractSpringBootApplication {
 		return !isExit(value);
 	}
 
+	protected String outputAiResponse(ChatResponse chatResponse) {
+		return outputAiResponse(getContent(chatResponse));
+	}
+
 	protected String outputAiResponse(String generatedContent) {
 		print(AI_PROMPT, generatedContent);
 		return generatedContent;
