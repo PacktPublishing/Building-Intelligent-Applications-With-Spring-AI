@@ -34,6 +34,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate Observability with Micrometer.
@@ -48,14 +49,18 @@ import org.springframework.context.annotation.Bean;
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  */
 @SpringBootApplication
+@Profile(ObservabilityApplication.SPRING_APPLICATION_PROFILE)
 @SuppressWarnings("unused")
 public class ObservabilityApplication extends AbstractSpringBootApplication {
 
 	protected static final String EXIT = "exit";
 
+	protected static final String SPRING_APPLICATION_PROFILE = "token-count-observation";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(ObservabilityApplication.class)
+			.profiles(SPRING_APPLICATION_PROFILE)
 			.web(WebApplicationType.NONE)
 			.build()
 			.run(args);
