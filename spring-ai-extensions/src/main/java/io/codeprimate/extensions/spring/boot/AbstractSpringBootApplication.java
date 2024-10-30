@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 
 import org.slf4j.Logger;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -100,10 +101,16 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	protected void userPrompt() {
-		print(EMPTY_STRING);
+		userPrompt(EMPTY_STRING);
 	}
 
-	protected void userPrompt(String userMessage) {
-		print(USER_PROMPT, userMessage);
+	protected Prompt userPrompt(Prompt prompt) {
+		userPrompt(prompt.getContents());
+		return prompt;
+	}
+
+	protected String userPrompt(String message) {
+		print(USER_PROMPT, message);
+		return message;
 	}
 }
