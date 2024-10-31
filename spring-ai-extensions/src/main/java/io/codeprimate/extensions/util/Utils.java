@@ -43,6 +43,10 @@ public abstract class Utils {
 		return value != null ? value : defaultValue.get();
 	}
 
+	public static boolean isNotEmpty(float[] array) {
+		return array != null && array.length > 0;
+	}
+
 	public static <T> Iterator<T> nullSafeIterator(Iterable<T> iterable) {
 		return nullSafeIterator(nullSafeIterable(iterable).iterator());
 	}

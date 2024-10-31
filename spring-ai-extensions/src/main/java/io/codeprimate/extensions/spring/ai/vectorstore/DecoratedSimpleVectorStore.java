@@ -18,6 +18,7 @@ package io.codeprimate.extensions.spring.ai.vectorstore;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.codeprimate.extensions.util.Utils;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.ai.document.Document;
@@ -78,10 +79,6 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	}
 
 	private boolean isEmbeddingPresent(Document document) {
-		return document != null && isNotEmpty(document.getEmbedding());
-	}
-
-	private boolean isNotEmpty(float[] array) {
-		return array != null && array.length > 0;
+		return document != null && Utils.isNotEmpty(document.getEmbedding());
 	}
 }
