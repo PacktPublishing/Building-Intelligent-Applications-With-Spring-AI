@@ -45,7 +45,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate Observability with Micrometer
+ * to measure the latency of chat model interactions.
+ *
  * @author John Blum
+ * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
+ * @see io.micrometer.core.instrument.Timer
+ * @see io.micrometer.observation.Observation
+ * @see org.springframework.ai.chat.client.ChatClient
+ * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.boot.ApplicationRunner
+ * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.boot.builder.SpringApplicationBuilder
  */
 @SpringBootApplication
 @Profile(TimedChatModelCallObservationApplication.SPRING_APPLICATION_PROFILE)
