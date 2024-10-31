@@ -16,8 +16,10 @@
 package io.codeprimate.extensions.spring.ai.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -27,6 +29,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ChatClientCustomizer;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,11 +64,30 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 	private ChatModel currentChatModel;
 
 	@Autowired
+	private ChatClientCustomizer chatClientCustomizer;
+
+	@Autowired
 	private Consumer<ChatClient.Builder> chatClientBuilderConsumer;
 
 	@Test
 	public void chatClientIsConfiguredCorrectly() {
 		assertThat(this.chatClient).isNotNull();
+	}
+
+	@Test
+	void chatClientBuilderConsumerCalled() {
+
+		assertThat(this.chatClientBuilderConsumer).isNotNull();
+
+		verify(this.chatClientBuilderConsumer, times(1)).accept(isA(ChatClient.Builder.class));
+		verifyNoMoreInteractions(this.chatClientBuilderConsumer);
+	}
+
+	@Test
+	void chatClientCustomizerNotCalled() {
+
+		assertThat(this.chatClientCustomizer).isNotNull();
+		verify(this.chatClientCustomizer, never()).customize(any());
 	}
 
 	@Test
@@ -80,15 +102,6 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 
 		assertThat(this.currentChatModel).isNotNull();
 		assertThat(compositeChatModel.getCurrentChatModel()).isSameAs(this.currentChatModel);
-	}
-
-	@Test
-	void chatClientBuilderConsumerCalled() {
-
-		assertThat(this.chatClientBuilderConsumer).isNotNull();
-
-		verify(this.chatClientBuilderConsumer, times(1)).accept(isA(ChatClient.Builder.class));
-		verifyNoMoreInteractions(this.chatClientBuilderConsumer);
 	}
 
 	@SpringBootConfiguration
@@ -117,6 +130,11 @@ public class ChatClientAndChatModelConfigurationIntegrationTests {
 		@Profile("test")
 		ChatClient testChatClient(ChatModel chatModel) {
 			return ChatClient.builder(chatModel).build();
+		}
+
+		@Bean
+		ChatClientCustomizer chatClientCustomizer() {
+			return mock(ChatClientCustomizer.class);
 		}
 
 		@Bean
