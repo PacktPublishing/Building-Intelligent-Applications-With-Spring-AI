@@ -41,9 +41,10 @@ import org.springframework.context.annotation.Profile;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
- * @see io.micrometer.core.instrument.MeterRegistry
+ * @see io.micrometer.core.instrument.Counter
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.ai.tokenizer.TokenCountEstimator
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
