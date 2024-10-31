@@ -26,7 +26,6 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.observation.ChatModelObservationContext;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -53,7 +52,6 @@ import lombok.RequiredArgsConstructor;
  * @see io.micrometer.core.instrument.Timer
  * @see io.micrometer.observation.Observation
  * @see org.springframework.ai.chat.client.ChatClient
- * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
@@ -69,14 +67,14 @@ public class TimedChatModelCallObservationApplication extends AbstractSpringBoot
 
 		new SpringApplicationBuilder(TimedChatModelCallObservationApplication.class)
 			.profiles(SPRING_APPLICATION_PROFILE)
-			.web(WebApplicationType.SERVLET)
+			.web(WebApplicationType.NONE)
 			.build()
 			.run(args);
 	}
 
 	@Bean
-	ChatClient chatClient(ChatModel chatModel) {
-		return ChatClient.builder(chatModel).build();
+	ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+		return chatClientBuilder.build();
 	}
 
 	@Bean

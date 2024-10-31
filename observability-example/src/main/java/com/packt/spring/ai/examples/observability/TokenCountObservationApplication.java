@@ -24,7 +24,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.tokenizer.JTokkitTokenCountEstimator;
@@ -43,7 +42,6 @@ import org.springframework.context.annotation.Profile;
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see io.micrometer.core.instrument.Counter
  * @see org.springframework.ai.chat.client.ChatClient
- * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.ai.tokenizer.TokenCountEstimator
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
@@ -68,8 +66,8 @@ public class TokenCountObservationApplication extends AbstractSpringBootApplicat
 	}
 
 	@Bean
-	ChatClient chatClient(ChatModel chatModel) {
-		return ChatClient.builder(chatModel).build();
+	ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+		return chatClientBuilder.build();
 	}
 
 	@Bean
