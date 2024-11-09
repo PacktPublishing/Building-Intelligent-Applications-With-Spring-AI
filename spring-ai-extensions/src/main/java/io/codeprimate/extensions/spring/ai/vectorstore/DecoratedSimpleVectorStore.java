@@ -27,8 +27,8 @@ import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
 
 /**
- * Decorated {@link SimpleVectorStore} that stores {@link Document embedded documents} without computing
- * the embedding.
+ * Decorated {@link SimpleVectorStore} that stores {@link Document embedded documents}
+ * without re-computing the embedding.
  *
  * @author John Blum
  * @see org.springframework.ai.document.Document
