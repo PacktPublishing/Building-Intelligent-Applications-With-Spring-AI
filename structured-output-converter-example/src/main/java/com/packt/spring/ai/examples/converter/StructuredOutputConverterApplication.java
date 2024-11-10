@@ -75,14 +75,14 @@ public class StructuredOutputConverterApplication {
 
 			ParameterizedTypeReference<List<Golfer>> type = new ParameterizedTypeReference<List<Golfer>>() { };
 
-			BeanOutputConverter<List<Golfer>> tennisPlayersConverter = new BeanOutputConverter<>(type);
+			BeanOutputConverter<List<Golfer>> golferConverter = new BeanOutputConverter<>(type);
 
-			List<Golfer> tennisPlayers = chatClient.prompt()
+			List<Golfer> golfers = chatClient.prompt()
 				.messages(new UserMessage(prompt))
 				.call()
-				.entity(tennisPlayersConverter);
+				.entity(golferConverter);
 
-			tennisPlayers.stream()
+			golfers.stream()
 				.sorted(Comparator.comparingInt(Golfer::getMajorWins).reversed())
 				.map(Golfer::toString)
 				.forEach(System.out::println);
