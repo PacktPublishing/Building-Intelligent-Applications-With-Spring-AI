@@ -24,6 +24,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.function.Consumer;
 
+import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
+
 import org.junit.jupiter.api.Test;
 
 import org.assertj.core.api.InstanceOfAssertFactories;

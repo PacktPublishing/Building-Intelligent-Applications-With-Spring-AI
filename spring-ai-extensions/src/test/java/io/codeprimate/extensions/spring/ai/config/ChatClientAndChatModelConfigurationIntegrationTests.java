@@ -26,6 +26,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.function.Consumer;
 
+import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -43,10 +45,8 @@ import org.springframework.core.annotation.Order;
  * Integration Tests for {@link ChatClient} and {@link ChatModel} Spring configuration extensions.
  *
  * @author John Blum
- * @see org.springframework.ai.chat.client.ChatClient
- * @see org.springframework.ai.chat.model.ChatModel
- * @see org.springframework.boot.SpringBootConfiguration
  * @see org.springframework.boot.test.context.SpringBootTest
+ * @since 0.1.0
  */
 @SpringBootTest
 //@ActiveProfiles({ "test" })

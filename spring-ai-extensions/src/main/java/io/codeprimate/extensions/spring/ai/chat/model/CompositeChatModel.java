@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.extensions.spring.ai.config;
+package io.codeprimate.extensions.spring.ai.chat.model;
 
 import java.util.Arrays;
 import java.util.Collections;

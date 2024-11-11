@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.extensions.spring.ai.config;
+package io.codeprimate.extensions.spring.ai.chat.model;
 
 import org.springframework.ai.chat.client.ChatClient;
 
@@ -22,6 +22,7 @@ import org.springframework.ai.chat.client.ChatClient;
  *
  * @author John Blum
  * @see java.lang.RuntimeException
+ * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public class ChatModelNotFoundException extends RuntimeException {
