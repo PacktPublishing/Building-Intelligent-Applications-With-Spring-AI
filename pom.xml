@@ -20,6 +20,7 @@
 	<modules>
 		<module>spring-ai-extensions</module>
 		<module>example-one</module>
+		<module>advisors-example</module>
 		<module>audio-transcription-example</module>
 		<module>chat-client-example</module>
 		<module>chat-model-options-example</module>
