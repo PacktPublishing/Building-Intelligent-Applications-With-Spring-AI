@@ -15,6 +15,9 @@
  */
 package com.packt.spring.ai.examples.chat.model.options;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -25,9 +28,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o} model) to demonstrate
@@ -62,7 +62,7 @@ public class ChatModelOptionsApplication {
 		return args -> {
 
 			int topK = Integer.parseInt(args.getNonOptionArgs().get(0));
-			float topP = Float.parseFloat(args.getNonOptionArgs().get(1));
+			double topP = Double.parseDouble(args.getNonOptionArgs().get(1));
 
 			String userPrompt = "Finish the sentence, 'A long, long time ago in a...'";
 			//String userPrompt = "Finish the sentence, 'If you don't eat your fruits and vegetables, you will...'";
