@@ -62,9 +62,9 @@ public class ChatModelConfiguration {
 
 				if (bean instanceof ChatModel chatModel) {
 					if (isNotCompositeChatModel(chatModel)) {
-						Level level = chatModelProperties.logging().level();
-						if (isLoggingEnabled(chatModel, level)) {
-							bean = LoggingChatModel.from(chatModel, level).withBeanName(beanName);
+						Level logLevel = chatModelProperties.logging().level();
+						if (isLoggingEnabled(chatModel, logLevel)) {
+							bean = LoggingChatModel.from(chatModel, logLevel).withBeanName(beanName);
 						}
 					}
 				}
@@ -80,8 +80,12 @@ public class ChatModelConfiguration {
 
 	private boolean isLoggingEnabled(ChatModel chatModel, Level level) {
 
-		Logger chatModelLogger = LoggerFactory.getLogger(chatModel.getClass());
+		Logger chatModelLogger = LoggerFactory.getLogger(resolveLoggerType(chatModel));
 
 		return chatModelLogger.isEnabledForLevel(level);
+	}
+
+	private Class<? extends ChatModel> resolveLoggerType(ChatModel chatModel) {
+		return chatModel != null ? chatModel.getClass() : LoggingChatModel.class;
 	}
 }
