@@ -64,7 +64,7 @@ public class ChatModelConfiguration {
 					if (isNotCompositeChatModel(chatModel)) {
 						Level level = chatModelProperties.logging().level();
 						if (isLoggingEnabled(chatModel, level)) {
-							bean = LoggingChatModel.from(chatModel, level);
+							bean = LoggingChatModel.from(chatModel, level).withBeanName(beanName);
 						}
 					}
 				}
