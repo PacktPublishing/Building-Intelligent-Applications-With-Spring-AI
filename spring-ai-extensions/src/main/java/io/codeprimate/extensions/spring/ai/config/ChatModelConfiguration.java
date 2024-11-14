@@ -15,10 +15,15 @@
  */
 package io.codeprimate.extensions.spring.ai.config;
 
+import java.util.List;
+
+import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
+
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Spring {@link Configuration} for Spring AI {@link ChatModel}.
@@ -35,4 +40,9 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("unused")
 public class ChatModelConfiguration {
 
+	@Bean
+	@Primary
+	public CompositeChatModel compositeChatModel(List<ChatModel> chatModels) {
+		return CompositeChatModel.of(chatModels);
+	}
 }

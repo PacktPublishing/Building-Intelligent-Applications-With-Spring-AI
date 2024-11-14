@@ -15,11 +15,9 @@
  */
 package io.codeprimate.extensions.spring.ai.config;
 
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.util.Utils;
 import io.micrometer.observation.ObservationRegistry;
 
@@ -31,13 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 
 /**
  * Spring {@link Configuration} used to enable multiple {@link ChatModel ChatModels} with a single {@link ChatClient}
  * in a Spring AI application.
  *
  * @author John Blum
+ * @see io.codeprimate.extensions.spring.ai.config.ChatModelConfiguration
  * @see io.micrometer.observation.ObservationRegistry
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.client.observation.ChatClientObservationConvention
@@ -46,6 +45,7 @@ import org.springframework.context.annotation.Primary;
  * @see org.springframework.context.annotation.Configuration
  */
 @Configuration
+@Import(ChatModelConfiguration.class)
 @SuppressWarnings("unused")
 public class ChatClientConfiguration {
 
@@ -84,11 +84,5 @@ public class ChatClientConfiguration {
 
 		return chatClientObservationConvention != null ? chatClientObservationConvention
 			: new DefaultChatClientObservationConvention();
-	}
-
-	@Bean
-	@Primary
-	public CompositeChatModel compositeChatModel(List<ChatModel> chatModels) {
-		return CompositeChatModel.of(chatModels);
 	}
 }
