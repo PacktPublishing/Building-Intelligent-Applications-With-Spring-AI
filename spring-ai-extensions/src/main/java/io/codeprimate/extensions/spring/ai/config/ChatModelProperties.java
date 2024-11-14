@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.spring.ai.config;
 
+import java.util.Set;
+
 import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,5 +35,8 @@ public record ChatModelProperties(Logging logging) {
 
 	public record Logging(Level level) {
 
+		public boolean isEnabled() {
+			return Set.of(Level.values()).contains(level());
+		}
 	}
 }
