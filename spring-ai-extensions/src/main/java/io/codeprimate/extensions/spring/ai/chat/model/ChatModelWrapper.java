@@ -34,6 +34,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
 public class ChatModelWrapper implements ChatModel, BeanNameAware {
 
 	public static ChatModelWrapper from(ChatModel chatModel) {
@@ -78,6 +79,12 @@ public class ChatModelWrapper implements ChatModel, BeanNameAware {
 
 		return StringUtils.hasText(beanName) ? beanName
 			: getClass().getSimpleName();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends ChatModelWrapper> T withBeanName(String beanName) {
+		setBeanName(beanName);
+		return (T) this;
 	}
 
 	@Override
