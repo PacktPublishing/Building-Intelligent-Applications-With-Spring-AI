@@ -20,6 +20,8 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,13 +34,15 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
-public class ChatModelWrapper implements ChatModel {
+public class ChatModelWrapper implements ChatModel, BeanNameAware {
 
 	public static ChatModelWrapper from(ChatModel chatModel) {
 		return new ChatModelWrapper(chatModel);
 	}
 
 	private final ChatModel chatModel;
+
+	private volatile String beanName;
 
 	protected ChatModelWrapper(ChatModel chatModel) {
 		Assert.notNull(chatModel, "ChatModel is required");
@@ -61,5 +65,23 @@ public class ChatModelWrapper implements ChatModel {
 	@Override
 	public ChatOptions getDefaultOptions() {
 		return getChatModel().getDefaultOptions();
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
+
+	private String resolveName() {
+
+		String beanName = getBeanName();
+
+		return StringUtils.hasText(beanName) ? beanName
+			: getClass().getSimpleName();
+	}
+
+	@Override
+	public String toString() {
+		return resolveName();
 	}
 }
