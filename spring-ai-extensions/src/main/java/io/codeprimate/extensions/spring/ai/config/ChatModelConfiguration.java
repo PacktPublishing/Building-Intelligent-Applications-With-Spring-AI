@@ -18,12 +18,18 @@ package io.codeprimate.extensions.spring.ai.config;
 import java.util.List;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
+import io.codeprimate.extensions.spring.ai.chat.model.LoggingChatModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.lang.NonNull;
 
 /**
  * Spring {@link Configuration} for Spring AI {@link ChatModel}.
@@ -44,5 +50,38 @@ public class ChatModelConfiguration {
 	@Primary
 	public CompositeChatModel compositeChatModel(List<ChatModel> chatModels) {
 		return CompositeChatModel.of(chatModels);
+	}
+
+	@Bean
+	public BeanPostProcessor loggingChatModelBeanPostProcessor(ChatModelProperties chatModelProperties) {
+
+		return new BeanPostProcessor() {
+
+			@Override
+			public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
+
+				if (bean instanceof ChatModel chatModel) {
+					if (isNotCompositeChatModel(chatModel)) {
+						Level level = chatModelProperties.logging().level();
+						if (isLoggingEnabled(chatModel, level)) {
+							bean = LoggingChatModel.from(chatModel, level);
+						}
+					}
+				}
+
+				return bean;
+			}
+		};
+	}
+
+	private boolean isNotCompositeChatModel(Object target) {
+		return !(target instanceof CompositeChatModel);
+	}
+
+	private boolean isLoggingEnabled(ChatModel chatModel, Level level) {
+
+		Logger chatModelLogger = LoggerFactory.getLogger(chatModel.getClass());
+
+		return chatModelLogger.isEnabledForLevel(level);
 	}
 }
