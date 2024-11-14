@@ -15,9 +15,13 @@
  */
 package io.codeprimate.extensions.spring.ai.chat.model;
 
+import org.cp.elements.lang.ObjectUtils;
+import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,20 +32,30 @@ import lombok.extern.slf4j.Slf4j;
  * @since 0.1.0
  */
 @Slf4j
+@Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class LoggingChatModel extends ChatModelWrapper {
 
+	protected static final Level DEFAULT_LEVEL = Level.INFO;
+
 	public static LoggingChatModel from(ChatModel chatModel) {
-		return new LoggingChatModel(chatModel);
+		return from(chatModel, DEFAULT_LEVEL);
 	}
 
-	protected LoggingChatModel(ChatModel chatModel) {
+	public static LoggingChatModel from(ChatModel chatModel, Level level) {
+		return new LoggingChatModel(chatModel, level);
+	}
+
+	private final Level level;
+
+	protected LoggingChatModel(ChatModel chatModel, Level level) {
 		super(chatModel);
+		this.level = ObjectUtils.requireObject(level, "Level is required");
 	}
 
 	@Override
 	protected Prompt doBefore(Prompt prompt) {
-		log.info("PROMPT [{}]", prompt);
+		log.atLevel(getLevel()).log("PROMPT [{}]", prompt);
 		return super.doBefore(prompt);
 	}
 }
