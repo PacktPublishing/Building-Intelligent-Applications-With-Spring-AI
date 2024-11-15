@@ -36,6 +36,7 @@ import org.springframework.lang.NonNull;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.config.ChatModelProperties
+ * @see org.springframework.context.annotation.Bean
  * @see org.springframework.context.annotation.Configuration
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -62,7 +63,7 @@ public class ChatModelConfiguration {
 
 				if (bean instanceof ChatModel chatModel) {
 					if (isNotCompositeChatModel(chatModel)) {
-						Level logLevel = chatModelProperties.logging().level();
+						Level logLevel = chatModelProperties.logging().resolveLevel();
 						if (isLoggingEnabled(chatModel, logLevel)) {
 							bean = LoggingChatModel.from(chatModel, logLevel).withBeanName(beanName);
 						}

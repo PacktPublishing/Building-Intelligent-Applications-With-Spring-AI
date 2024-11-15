@@ -17,6 +17,7 @@ package io.codeprimate.extensions.spring.ai.config;
 
 import java.util.Set;
 
+import org.cp.elements.lang.Assert;
 import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,10 +34,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @SuppressWarnings("unused")
 public record ChatModelProperties(Logging logging) {
 
+	public ChatModelProperties {
+		logging = logging != null ? logging : new Logging(Logging.DEFAULT_LEVEL);
+	}
+
 	public record Logging(Level level) {
+
+		public static final Level DEFAULT_LEVEL = Level.INFO;
 
 		public boolean isEnabled() {
 			return Set.of(Level.values()).contains(level());
+		}
+
+		public Level level(Level defaultLevel) {
+			Assert.notNull(defaultLevel, "Default Level is required");
+			Level level = level();
+			return level != null ? level : defaultLevel;
+		}
+
+		public Level resolveLevel() {
+			return level(DEFAULT_LEVEL);
 		}
 	}
 }

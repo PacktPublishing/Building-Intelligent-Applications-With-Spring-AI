@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.spring.ai.chat.model;
 
+import io.codeprimate.extensions.spring.ai.config.ChatModelProperties;
+
 import org.cp.elements.lang.ObjectUtils;
 import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
@@ -36,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("unused")
 public class LoggingChatModel extends ChatModelWrapper {
 
-	protected static final Level DEFAULT_LEVEL = Level.INFO;
+	protected static final Level DEFAULT_LEVEL = ChatModelProperties.Logging.DEFAULT_LEVEL;
 
 	public static LoggingChatModel from(ChatModel chatModel) {
 		return from(chatModel, DEFAULT_LEVEL);
