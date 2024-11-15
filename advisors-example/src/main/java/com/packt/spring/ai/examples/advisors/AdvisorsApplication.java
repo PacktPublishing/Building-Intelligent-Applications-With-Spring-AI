@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.ai.config.EnableRateLimit;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -60,19 +61,14 @@ public class AdvisorsApplication {
 	}
 
 	@SpringBootConfiguration
+	@EnableChatClient
 	@EnableRateLimit(count = 1, duration = "15s")
 	static class AdvisorsConfiguration {
 
-	}
-
-	@Bean
-	ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
-		return chatClientBuilder.build();
-	}
-
-	@Bean
-	DefaultConversionService conversionService() {
-		return new DefaultConversionService();
+		@Bean
+		DefaultConversionService conversionService() {
+			return new DefaultConversionService();
+		}
 	}
 
 	@Bean
