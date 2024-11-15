@@ -17,11 +17,11 @@ package com.packt.spring.ai.examples.advisors;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.function.Consumer;
 
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.ai.config.EnableRateLimit;
+import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.ListOutputConverter;
@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate the Advisors API.
@@ -47,10 +46,7 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
-public class AdvisorsApplication {
-
-	protected static final String EMPTY = "";
-	protected static final String EXIT = "exit";
+public class AdvisorsApplication extends AbstractSpringBootApplication {
 
 	public static void main(String[] args) {
 
@@ -74,16 +70,9 @@ public class AdvisorsApplication {
 	@Bean
 	ApplicationRunner programRunner(ChatClient chatClient, DefaultConversionService conversionService) {
 
-		return args -> {
+		String promptTemplate = "What are the main characters in {input}?";
 
-			Scanner scanner = new Scanner(System.in);
-
-			String promptTemplate = "What are the main characters in {input}?";
-			String input;
-
-			print("What are the main characters in: ");
-
-			while (isNotExit(input = scanner.nextLine())) {
+		return repl((applicationArguments, input) -> {
 
 				Map<String, Object> promptArguments = Map.of("input", input);
 
@@ -98,20 +87,14 @@ public class AdvisorsApplication {
 				String output = response.stream()
 					.map("* %s"::formatted)
 					.reduce("%s%n%s"::formatted)
-					.orElse(EMPTY);
+					.orElse(EMPTY_STRING);
 
 				print(output);
-				print("%n%nWhat are the main characters in: ");
-			}
-		};
+			});
 	}
 
-	private boolean isNotExit(String input) {
-		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input.trim());
-	}
-
-	private void print(String text) {
-		System.out.printf(text);
-		System.out.flush();
+	@Override
+	protected void userPrompt() {
+		print("%n%nWhat are the main characters in: ");
 	}
 }
