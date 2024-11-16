@@ -126,7 +126,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 		return advisedResponse(System.currentTimeMillis(), advisedResponseFunction, advisedResponseSupplier);
 	}
 
-	private <T> T assertRateLimit(long currentTimeMillis, Supplier<T> advisedResponseSupplier) {
+	protected <T> T assertRateLimit(long currentTimeMillis, Supplier<T> advisedResponseSupplier) {
 
 		if (isRateLimitExceeded(currentTimeMillis)) {
 			throw RateLimitException.from(getCount(), getDuration(), getCounter().get());
@@ -135,13 +135,12 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 		return advisedResponseSupplier.get();
 	}
 
-	private <T> T advisedResponse(long currentTimeMillis, Function<ChatResponse, T> advisedResponseFunction,
+	protected <T> T advisedResponse(long currentTimeMillis, Function<ChatResponse, T> advisedResponseFunction,
 			Supplier<T> advisedResponseSupplier) {
 
 		if (isRateLimitExceeded(currentTimeMillis)) {
 
-			String message = RateLimitException.MESSAGE.formatted(getCount(), getDuration(), getCounter().get());
-			AssistantMessage assistantMessage = new AssistantMessage(message);
+			AssistantMessage assistantMessage = new AssistantMessage(message());
 			Generation generation = new Generation(assistantMessage);
 
 			ChatResponse chatResponse = ChatResponse.builder()
@@ -154,7 +153,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 		return advisedResponseSupplier.get();
 	}
 
-	private AdvisedResponse buildAdvisedResponse(AdvisedRequest request, ChatResponse response) {
+	protected AdvisedResponse buildAdvisedResponse(AdvisedRequest request, ChatResponse response) {
 
 		return AdvisedResponse.builder()
 			.withResponse(response)
@@ -162,7 +161,11 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 			.build();
 	}
 
-	private boolean isRateLimitExceeded(long currentTimeMillis) {
+	protected String message() {
+		return RateLimitException.MESSAGE.formatted(getCount(), getDuration().toMillis(), getCounter().get());
+	}
+
+	protected boolean isRateLimitExceeded(long currentTimeMillis) {
 
 		long expirationTimeMillis = getDuration().plusMillis(getTimestamp()).toMillis();
 

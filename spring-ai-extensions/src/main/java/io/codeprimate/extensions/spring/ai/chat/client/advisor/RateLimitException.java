@@ -28,10 +28,10 @@ import java.time.Duration;
 public class RateLimitException extends RuntimeException {
 
 	protected static final String MESSAGE =
-		"Exceeded [%d] maximum AI model interactions in [%s]; current count is [%d]";
+		"Exceeded [%d] maximum AI model interactions in [%s ms]; current count is [%d]";
 
 	public static RateLimitException from(int count, Duration duration, int currentCount) {
-		return new RateLimitException(MESSAGE.formatted(count, duration, currentCount));
+		return new RateLimitException(MESSAGE.formatted(count, duration.toMillis(), currentCount));
 	}
 
 	public RateLimitException() {
