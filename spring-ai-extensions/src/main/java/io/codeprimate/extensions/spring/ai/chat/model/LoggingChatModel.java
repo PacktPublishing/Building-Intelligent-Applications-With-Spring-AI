@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.spring.ai.chat.model;
 
+import java.util.function.Supplier;
+
 import io.codeprimate.extensions.spring.ai.config.ChatModelProperties;
 
 import org.cp.elements.lang.ObjectUtils;
@@ -57,7 +59,13 @@ public class LoggingChatModel extends ChatModelWrapper {
 
 	@Override
 	protected Prompt doBefore(Prompt prompt) {
-		log.atLevel(getLevel()).log("PROMPT [{}]", prompt);
+		log("PROMPT [{}]", prompt::getContents);
 		return super.doBefore(prompt);
+	}
+
+	private void log(String message, Supplier<?> arguments) {
+		if (log.isEnabledForLevel(getLevel())) {
+			log.atLevel(getLevel()).log(message, arguments.get());
+		}
 	}
 }
