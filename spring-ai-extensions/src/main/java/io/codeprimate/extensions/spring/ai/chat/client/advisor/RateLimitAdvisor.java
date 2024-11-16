@@ -72,7 +72,6 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	}
 
 	private final int count;
-	private final int order;
 
 	@Setter(AccessLevel.PROTECTED)
 	private volatile long timestamp;
@@ -82,27 +81,27 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	private final Duration duration;
 
 	public RateLimitAdvisor() {
-		this(DEFAULT_COUNT, DEFAULT_DURATION, DEFAULT_ORDER);
+		this(DEFAULT_COUNT, DEFAULT_DURATION);
 	}
 
 	@Builder
 	public RateLimitAdvisor(int count, Duration duration) {
-		this(count, duration, DEFAULT_ORDER);
-	}
-
-	public RateLimitAdvisor(int count, Duration duration, int order) {
 
 		Assert.isTrue(count > 0 , "Count [%d] must be greater than equal to 1".formatted(count));
 		Assert.notNull(duration, "Duration is required");
 
 		this.count = count;
 		this.duration = duration;
-		this.order = order;
 	}
 
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();
+	}
+
+	@Override
+	public int getOrder() {
+		return DEFAULT_ORDER;
 	}
 
 	@Override
