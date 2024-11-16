@@ -62,13 +62,13 @@ public class AdvisorsApplication extends AbstractSpringBootApplication {
 	static class AdvisorsConfiguration {
 
 		@Bean
-		DefaultConversionService conversionService() {
-			return new DefaultConversionService();
+		ListOutputConverter listOutputConverter() {
+			return new ListOutputConverter(new DefaultConversionService());
 		}
 	}
 
 	@Bean
-	ApplicationRunner programRunner(ChatClient chatClient, DefaultConversionService conversionService) {
+	ApplicationRunner programRunner(ChatClient chatClient, ListOutputConverter converter) {
 
 		String promptTemplate = "What are the main characters in {input}?";
 
@@ -82,7 +82,7 @@ public class AdvisorsApplication extends AbstractSpringBootApplication {
 				List<String> response = chatClient.prompt()
 					.user(promptUserSpecConsumer)
 					.call()
-					.entity(new ListOutputConverter(conversionService));
+					.entity(converter);
 
 				String output = response.stream()
 					.map("* %s"::formatted)
