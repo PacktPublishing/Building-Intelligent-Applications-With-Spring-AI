@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.Prompt;
 
 /**
  * Abstract utility class containing common, useful functions.
@@ -81,6 +82,10 @@ public abstract class Utils {
 
 	public static <T> Set<T> nullSafeList(Set<T> set) {
 		return set != null ? set : Collections.emptySet();
+	}
+
+	public static String promptContent(Prompt prompt) {
+		return prompt != null ? prompt.getContents() : EMPTY_STRING;
 	}
 
 	public static <T> Stream<T> stream(Iterable<T> iterable) {
