@@ -1,0 +1,66 @@
+[[building-intelligent-applications-with-spring-ai]]
+= Building Intelligent Applications with Spring AI
+
+This repository contains all the examples cited in the book, *Building Intelligent Applications with Spring AI*,
+published by https://www.packtpub.com/en-us[Packt], authored by https://github.com/jxblum[John Blum].
+
+The examples focus on demonstrating how to use Spring AI's features and functionality in a simple and comprehensive way.
+The examples are meant to help you instantly become familiar with Spring AI's capabilities so you can be immediately
+productive out-of-the-box, leveraging AI to build intelligent applications with Spring.
+
+All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot]
+and https://spring.io/projects/spring-ai[Spring AI], with *Java 17*.
+
+[[build-and-run]]
+== Build & Run
+
+This project uses https://maven.apache.org/[Apache Maven] to build
+and the https://docs.spring.io/spring-boot/maven-plugin/index.html[Spring Boot Maven Plugin] to run the examples.
+
+You can build the entire project in the root directory with the `mvnw` command:
+
+```sh
+$ mvnw clean package
+```
+
+This will compile the source and run the tests.
+
+Examples can be run by running the `mvnw` command targeted at a Maven module example:
+
+```sh
+$ mvnw --projects <example> spring-boot:run
+```
+
+For example:
+
+```sh
+$ mvnw --projects example-one spring-boot:run
+```
+
+For a few examples, the example may use an AI provider model, such as OpenAI. It is recommended that you add an
+`application-user.properties` file to the `resources/` directory of the example Spring Boot, Spring AI application.
+In `application-user.properties` you must declare your registered API key created for you by the AI provider.
+The `application-user.properties` files is ignored by Git. Additionally, the "user" Spring profile has been enabled
+by default.
+
+As discussed in the book, alternatively, you can switch AI providers by changing the Spring Boot, Spring AI starter.
+
+For example, to switch from OpenAI to Google Gemini, change the starter from:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+</dependency>
+```
+
+To:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Refer to the README of individual examples for more details on building and running the example.
