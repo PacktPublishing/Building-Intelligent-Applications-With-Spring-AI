@@ -18,11 +18,15 @@ package io.codeprimate.extensions.util;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.Generation;
 
 /**
  * Abstract utility class containing common, useful functions.
@@ -41,6 +45,14 @@ public abstract class Utils {
 
 	public static <T> T defaultIfNull(T value, Supplier<T> defaultValue) {
 		return value != null ? value : defaultValue.get();
+	}
+
+	public static String generatedContent(Generation generation) {
+
+		return Optional.ofNullable(generation)
+			.map(Generation::getOutput)
+			.map(AssistantMessage::getContent)
+			.orElse(EMPTY_STRING);
 	}
 
 	public static boolean isNotEmpty(float[] array) {
