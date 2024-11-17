@@ -97,11 +97,17 @@ public class ImageGenerationApplication {
 			Image image = imageGeneration.getOutput();
 
 			String URL = image.getUrl();
-			System.out.printf("URL [%s]%n", URL);
-			System.out.printf("Image Base64 JSON [%s]%n", image.getB64Json());
+
+			print("URL [%s]%n", URL);
+			print("Image Base64 JSON [%s]%n", image.getB64Json());
 
 			//save(image);
 		};
+	}
+
+	private void print(String label, Object... arguments) {
+		System.out.printf(label, arguments);
+		System.out.flush();
 	}
 
 	private void save(Image image) throws IOException {

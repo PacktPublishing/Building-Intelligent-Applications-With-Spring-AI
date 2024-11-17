@@ -57,11 +57,6 @@ public class ModerationApplication {
 			.run(args);
 	}
 
-	private void print(String label, Object... arguments) {
-		System.out.printf(label, arguments);
-		System.out.flush();
-	}
-
 	@Bean
 	ApplicationRunner programRunner(OpenAiModerationModel moderationModel) {
 
@@ -100,5 +95,10 @@ public class ModerationApplication {
 				print("Violence Score: %s%n", scores.getViolence());
 			}
 		};
+	}
+
+	private void print(String label, Object... arguments) {
+		System.out.printf(label, arguments);
+		System.out.flush();
 	}
 }

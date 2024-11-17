@@ -97,14 +97,14 @@ public class StreamingApplication {
 						.map(String::toCharArray)
 						.flatMapIterable(this::toListOfCharacters)
 						.delayElements(Duration.ofMillis(5))
-						.doOnComplete(() -> {
-							actionPerformed.set(false);
-							System.out.printf("%n%nuser> ");
-						})
 						.doOnNext(character -> {
 							if (actionPerformed.compareAndSet(false, true)) {
 								System.out.printf("%nai> ");
 							}
+						})
+						.doOnComplete(() -> {
+							actionPerformed.set(false);
+							System.out.printf("%n%nuser> ");
 						})
 						.subscribe(System.out::print);
 				}
