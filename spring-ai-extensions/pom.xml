@@ -21,6 +21,7 @@
 
 	<properties>
 		<codeprimate-elements.version>2.0.0-M5</codeprimate-elements.version>
+		<extensions.main-class>io.codeprimate.extensions.CodeprimateExtensionsApplication</extensions.main-class>
 	</properties>
 
 	<dependencies>
@@ -60,7 +61,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>io.codeprimate.extensions.CodeprimateExtensionsApplication</mainClass>
+							<mainClass>${extensions.main-class}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
