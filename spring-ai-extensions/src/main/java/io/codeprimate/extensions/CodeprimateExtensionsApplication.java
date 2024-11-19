@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.extensions.spring;
+package io.codeprimate.extensions;
 
 /**
  * Java program outputting the version of the Codeprimate Extensions library.
@@ -28,6 +28,6 @@ public class CodeprimateExtensionsApplication {
 	protected static final String VERSION = "0.1.0";
 
 	public static void main(String[] args) {
-		System.out.printf("Codeprimate Extensions version %s for Spring%n".formatted(VERSION));
+		System.out.printf("Codeprimate Extensions version %s%n".formatted(VERSION));
 	}
 }
