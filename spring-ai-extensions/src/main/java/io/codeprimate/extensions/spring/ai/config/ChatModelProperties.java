@@ -43,13 +43,14 @@ public record ChatModelProperties(Logging logging) {
 		public static final Level DEFAULT_LEVEL = Level.INFO;
 
 		public boolean isEnabled() {
-			return Set.of(Level.values()).contains(level());
+			Level configuredLevel = level();
+			return configuredLevel != null && Set.of(Level.values()).contains(configuredLevel);
 		}
 
 		public Level level(Level defaultLevel) {
 			Assert.notNull(defaultLevel, "Default Level is required");
-			Level level = level();
-			return level != null ? level : defaultLevel;
+			Level configuredLevel = level();
+			return configuredLevel != null ? configuredLevel : defaultLevel;
 		}
 
 		public Level resolveLevel() {
