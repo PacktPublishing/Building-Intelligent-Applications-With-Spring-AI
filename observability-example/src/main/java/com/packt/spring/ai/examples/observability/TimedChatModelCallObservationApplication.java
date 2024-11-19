@@ -103,7 +103,7 @@ public class TimedChatModelCallObservationApplication extends AbstractSpringBoot
 			long durationMillis = endTime - startTime;
 
 			Timer.builder("chat.model.call.latency")
-				.description("Metric measuring the latency betwen an AI model prompt and generated response")
+				.description("Metric measuring the latency between an AI model prompt and generated response")
 				.withRegistry(getMeterRegistry())
 				.withTags()
 				.record(Duration.ofMillis(durationMillis));
