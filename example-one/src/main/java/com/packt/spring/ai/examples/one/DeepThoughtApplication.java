@@ -37,10 +37,13 @@ import org.springframework.context.annotation.Bean;
 @SuppressWarnings("unused")
 public class DeepThoughtApplication {
 
+	private static final String SPRING_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(DeepThoughtApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(SPRING_PROFILE)
 			.build()
 			.run(args);
 	}
