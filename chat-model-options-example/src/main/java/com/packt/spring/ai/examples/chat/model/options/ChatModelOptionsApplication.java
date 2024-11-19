@@ -75,7 +75,7 @@ public class ChatModelOptionsApplication {
 
 			Prompt prompt = new Prompt(userPrompt, chatOptions);
 
-			print("Seed [%s], Top K [%s] - Top P [%s]%n",
+			print("Seed [%s] | Top K [%s] | Top P [%s]%n",
 				chatOptions.getSeed(), chatOptions.getTopK(), chatOptions.getTopP());
 			print("user> %s%n", getContent(prompt));
 
