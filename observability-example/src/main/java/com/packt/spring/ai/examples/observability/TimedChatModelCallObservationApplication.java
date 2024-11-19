@@ -15,19 +15,16 @@
  */
 package com.packt.spring.ai.examples.observability;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import io.codeprimate.extensions.micrometer.observation.ChatModelCallLatencyObservationHandler;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import io.micrometer.observation.Observation;
-import io.micrometer.observation.ObservationHandler;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.observation.ChatModelObservationContext;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
@@ -35,19 +32,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate Observability with Micrometer
  * to measure the latency of chat model interactions.
  *
  * @author John Blum
+ * @see io.codeprimate.extensions.micrometer.observation.ChatModelCallLatencyObservationHandler
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see io.micrometer.core.instrument.Timer
  * @see io.micrometer.observation.Observation
@@ -82,37 +76,9 @@ public class TimedChatModelCallObservationApplication extends AbstractSpringBoot
 		return new SimpleMeterRegistry();
 	}
 
-	@Component
-	@RequiredArgsConstructor
-	@Getter(AccessLevel.PROTECTED)
-	static class ChatModelLatencyObservationHandler implements ObservationHandler<ChatModelObservationContext> {
-
-		private final MeterRegistry meterRegistry;
-
-		@Override
-		public void onStart(ChatModelObservationContext context) {
-			context.put("chat.model.call.start-time", System.currentTimeMillis());
-		}
-
-		@Override
-		@SuppressWarnings("all")
-		public void onStop(ChatModelObservationContext context) {
-
-			long endTime = System.currentTimeMillis();
-			long startTime = context.get("chat.model.call.start-time");
-			long durationMillis = endTime - startTime;
-
-			Timer.builder("chat.model.call.latency")
-				.description("Metric measuring the latency between an AI model prompt and generated response")
-				.withRegistry(getMeterRegistry())
-				.withTags()
-				.record(Duration.ofMillis(durationMillis));
-		}
-
-		@Override
-		public boolean supportsContext(@NonNull Observation.Context context) {
-			return context instanceof ChatModelObservationContext;
-		}
+	@Bean
+	ChatModelCallLatencyObservationHandler chatModelObservationHandler(MeterRegistry meterRegistry) {
+		return new ChatModelCallLatencyObservationHandler(meterRegistry);
 	}
 
 	@Bean
@@ -138,7 +104,8 @@ public class TimedChatModelCallObservationApplication extends AbstractSpringBoot
 	private TimeMeasurement getObservedLatency(MeterRegistry meterRegistry) {
 
 		return meterRegistry.getMeters().stream()
-			.filter(meter -> "chat.model.call.latency".equalsIgnoreCase(meter.getId().getName()))
+			.filter(meter -> ChatModelCallLatencyObservationHandler.METER_NAME
+				.equalsIgnoreCase(meter.getId().getName()))
 			.findFirst()
 			.filter(Timer.class::isInstance)
 			.map(Timer.class::cast)
