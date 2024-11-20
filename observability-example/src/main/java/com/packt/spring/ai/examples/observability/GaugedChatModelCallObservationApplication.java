@@ -57,7 +57,9 @@ import lombok.RequiredArgsConstructor;
  * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate Observability with Micrometer.
  *
  * @author John Blum
+ * @see java.util.concurrent.ExecutorService
  * @see io.codeprimate.extensions.micrometer.observation.ChatModelActiveCallCountObservationHandler
+ * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see io.micrometer.core.instrument.Gauge
  * @see io.micrometer.core.instrument.MeterRegistry
  * @see org.springframework.boot.ApplicationRunner
