@@ -19,6 +19,8 @@ import java.util.Scanner;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
+import io.codeprimate.extensions.util.Utils;
+
 import org.slf4j.Logger;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -73,7 +75,7 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	protected String getContent(ChatResponse chatResponse) {
-		return chatResponse.getResult().getOutput().getContent();
+		return Utils.generatedContent(chatResponse);
 	}
 
 	protected Logger getLogger() {
