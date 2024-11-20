@@ -25,6 +25,9 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -86,6 +89,16 @@ public abstract class Utils {
 
 	public static String promptContent(Prompt prompt) {
 		return prompt != null ? prompt.getContents() : EMPTY_STRING;
+	}
+
+	public static <T extends Meter> Optional<T> meterFrom(MeterRegistry meterRegistry,
+			String meterName, Class<T> meterType) {
+
+		return meterRegistry.getMeters().stream()
+			.filter(meter -> meter.getId().getName().equalsIgnoreCase(meterName))
+			.filter(meterType::isInstance)
+			.map(meterType::cast)
+			.findFirst();
 	}
 
 	public static <T> Stream<T> stream(Iterable<T> iterable) {
