@@ -142,21 +142,21 @@ public class GaugedChatModelCallObservationApplication extends AbstractSpringBoo
 		}
 
 		private void printActiveCallCount() {
-			print("Active Call Count [%d]%n", resolveActiveCallCount(meterRegistry));
+			print("Active Call Count [%d]%n", resolveActiveCallCount());
 		}
 
-		private long resolveActiveCallCount(MeterRegistry meterRegistry) {
+		private long resolveActiveCallCount() {
 
-			Gauge gauge = this.cachedGauge.updateAndGet(meter -> meter != null ? meter : resolveMeter(meterRegistry));
+			Gauge gauge = getCachedGauge().updateAndGet(meter -> meter != null ? meter
+				: resolveMeter(ChatModelActiveCallCountObservationHandler.METER_NAME));
 
 			return gauge != null ? Double.valueOf(gauge.value()).longValue() : 0L;
 		}
 
-		private Gauge resolveMeter(MeterRegistry meterRegistry) {
+		private Gauge resolveMeter(String meterName) {
 
-			return meterRegistry.getMeters().stream()
-				.filter(meter -> ChatModelActiveCallCountObservationHandler.METER_NAME
-					.equalsIgnoreCase(meter.getId().getName()))
+			return getMeterRegistry().getMeters().stream()
+				.filter(meter -> meter.getId().getName().equalsIgnoreCase(meterName))
 				.filter(Gauge.class::isInstance)
 				.map(Gauge.class::cast)
 				.findFirst()

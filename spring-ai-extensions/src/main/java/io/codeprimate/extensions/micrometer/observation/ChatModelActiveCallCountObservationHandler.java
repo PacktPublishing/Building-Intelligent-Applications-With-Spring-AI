@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
 
@@ -54,16 +56,20 @@ public class ChatModelActiveCallCountObservationHandler implements ObservationHa
 	@Override
 	public void onStart(@NonNull ChatModelObservationContext observationContext) {
 
-		Gauge.builder(METER_NAME, () -> activeCallCount)
+		Gauge.builder(METER_NAME, this::getActiveCallCount)
 			.description(DESCRIPTION)
-			.tag("timestamp", String.valueOf(System.currentTimeMillis()))
-			.register(meterRegistry);
+			.tags(resolveTags(observationContext))
+			.register(getMeterRegistry());
 
 		getActiveCallCount().incrementAndGet();
 	}
 
+	protected Tags resolveTags(ChatModelObservationContext observationContext) {
+		return Tags.of(Tag.of("timestamp", String.valueOf(System.currentTimeMillis())));
+	}
+
 	@Override
-	public void onStop(ChatModelObservationContext context) {
+	public void onStop(@NonNull ChatModelObservationContext context) {
 		getActiveCallCount().decrementAndGet();
 	}
 
