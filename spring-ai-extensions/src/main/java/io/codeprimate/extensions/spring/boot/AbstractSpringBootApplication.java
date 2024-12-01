@@ -15,19 +15,25 @@
  */
 package io.codeprimate.extensions.spring.boot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +54,7 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String EMPTY_STRING = "";
 	protected static final String EXIT = "exit";
 	protected static final String NEWLINE = System.lineSeparator();
+	protected static final String USER_PROFILE = "user";
 	protected static final String USER_PROMPT = "user> %s";
 
 	protected static void print(String message, Object... arguments) {
@@ -61,6 +68,39 @@ public abstract class AbstractSpringBootApplication {
 			.mapToObj(index -> NEWLINE)
 			.reduce("%s%s"::formatted)
 			.ifPresent(AbstractSpringBootApplication::print);
+	}
+
+	protected SpringApplicationBuilder newSpringApplicationBuilder() {
+		return newSpringApplicationBuilder(WebApplicationType.NONE, USER_PROFILE);
+	}
+
+	protected SpringApplicationBuilder newSpringApplicationBuilder(String... profiles) {
+		return newSpringApplicationBuilder(WebApplicationType.NONE, profiles);
+	}
+
+	protected SpringApplicationBuilder newSpringApplicationBuilder(WebApplicationType webApplicationType) {
+		return newSpringApplicationBuilder(webApplicationType, USER_PROFILE);
+	}
+
+	protected SpringApplicationBuilder newSpringApplicationBuilder(WebApplicationType webApplicationType,
+			String... profiles) {
+
+		return new SpringApplicationBuilder(getClass())
+			.web(webApplicationType)
+			.profiles(profiles);
+	}
+
+	private String[] resolveProfiles(String... profiles) {
+
+		List<String> profileList = new ArrayList<>(Arrays.stream(ArrayUtils.nullSafeArray(profiles))
+			.filter(StringUtils::hasText)
+			.toList());
+
+		if (!profileList.contains(USER_PROFILE)) {
+			profileList.add(USER_PROFILE);
+		}
+
+		return profileList.toArray(new String[0]);
 	}
 
 	// REPL
