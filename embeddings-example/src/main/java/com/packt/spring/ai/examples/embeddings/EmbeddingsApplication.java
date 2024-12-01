@@ -37,10 +37,13 @@ import org.springframework.context.annotation.Bean;
 @SuppressWarnings("unused")
 public class EmbeddingsApplication {
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(EmbeddingsApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

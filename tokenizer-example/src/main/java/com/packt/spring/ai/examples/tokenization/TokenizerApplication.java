@@ -45,10 +45,13 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings("unused")
 public class TokenizerApplication {
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(TokenizerApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

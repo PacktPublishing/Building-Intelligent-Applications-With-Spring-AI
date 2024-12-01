@@ -52,14 +52,13 @@ import org.springframework.context.annotation.Profile;
 @SuppressWarnings("unused")
 public class TokenCountObservationApplication extends AbstractSpringBootApplication {
 
-	protected static final String EXIT = "exit";
-
 	protected static final String SPRING_APPLICATION_PROFILE = "token-count-observation";
+	protected static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(TokenCountObservationApplication.class)
-			.profiles(SPRING_APPLICATION_PROFILE)
+			.profiles(SPRING_APPLICATION_PROFILE, USER_PROFILE)
 			.web(WebApplicationType.NONE)
 			.build()
 			.run(args);

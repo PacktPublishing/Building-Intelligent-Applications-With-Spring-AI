@@ -49,10 +49,13 @@ import org.springframework.context.annotation.Bean;
 @SuppressWarnings("unused")
 public class PromptApplication {
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(PromptApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

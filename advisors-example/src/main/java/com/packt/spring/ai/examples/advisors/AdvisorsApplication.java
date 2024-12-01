@@ -48,10 +48,13 @@ import org.springframework.core.convert.support.DefaultConversionService;
 @SuppressWarnings("unused")
 public class AdvisorsApplication extends AbstractSpringBootApplication {
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(AdvisorsApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

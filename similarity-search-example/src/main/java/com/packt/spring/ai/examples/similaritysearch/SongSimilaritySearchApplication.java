@@ -86,6 +86,8 @@ public class SongSimilaritySearchApplication {
 	private static final Predicate<String> NON_ESSENTIAL_SONG_WORDS_PREDICATE =
 		word -> !Set.of("be", "do", "to").contains(word);
 
+	private static final String USER_PROFILE = "user";
+
 	private static final String[] SONG_JSON_FILES = {
 		"acdc-backinblack.json",
 		"beegees-stayinalive.json",
@@ -97,6 +99,7 @@ public class SongSimilaritySearchApplication {
 
 		new SpringApplicationBuilder(SongSimilaritySearchApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

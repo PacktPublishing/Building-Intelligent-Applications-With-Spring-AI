@@ -52,10 +52,13 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings("unused")
 public class StructuredOutputConverterApplication {
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(StructuredOutputConverterApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

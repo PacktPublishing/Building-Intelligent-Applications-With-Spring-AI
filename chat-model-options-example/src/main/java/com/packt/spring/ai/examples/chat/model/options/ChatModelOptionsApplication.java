@@ -48,10 +48,13 @@ public class ChatModelOptionsApplication {
 	private static final int GENERATION_COUNT = 8;
 	private static final int SEED = 533081924;
 
+	private static final String USER_PROFILE = "user";
+
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(ChatModelOptionsApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

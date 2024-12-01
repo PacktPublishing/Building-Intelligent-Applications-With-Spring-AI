@@ -53,11 +53,13 @@ public class DocumentEtlApplication {
 
 	private static final String DOCUMENT_NAME = "WhatIsArtificialIntelligenceByIBM.pdf";
 	private static final String EXCERPT_KEYWORDS = "excerpt_keywords";
+	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(DocumentEtlApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

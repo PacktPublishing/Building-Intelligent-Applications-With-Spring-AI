@@ -59,11 +59,13 @@ import reactor.core.publisher.Flux;
 public class StreamingApplication {
 
 	private static final String EXIT = "exit";
+	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(StreamingApplication.class)
 			.web(WebApplicationType.NONE)
+			.profiles(USER_PROFILE)
 			.build()
 			.run(args);
 	}

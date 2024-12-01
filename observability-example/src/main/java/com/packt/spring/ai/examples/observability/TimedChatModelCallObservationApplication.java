@@ -56,11 +56,12 @@ import lombok.Getter;
 public class TimedChatModelCallObservationApplication extends AbstractSpringBootApplication {
 
 	protected static final String SPRING_APPLICATION_PROFILE = "timed-chat-model-call-observation";
+	protected static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(TimedChatModelCallObservationApplication.class)
-			.profiles(SPRING_APPLICATION_PROFILE)
+			.profiles(SPRING_APPLICATION_PROFILE, USER_PROFILE)
 			.web(WebApplicationType.NONE)
 			.build()
 			.run(args);
