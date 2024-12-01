@@ -15,8 +15,9 @@
  */
 package com.packt.spring.ai.examples;
 
-import java.util.Scanner;
 import java.util.function.Consumer;
+
+import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
@@ -25,7 +26,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link SpringBootApplication} usig Spring AI with Ollama ({@literal llama3.2} model) to get the opposite of
@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * For example, when the user prompts "day", AI should generate a response of "night".
  *
  * @author John Blum
+ * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.boot.ApplicationRunner
@@ -43,7 +44,7 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
-public class OppositesApplication {
+public class OppositesApplication extends AbstractSpringBootApplication {
 
 	private static final String EXIT = "exit";
 	private static final String USER_PROFILE = "user";
@@ -65,32 +66,20 @@ public class OppositesApplication {
 	@Bean
 	ApplicationRunner programRunner(ChatClient chatClient) {
 
-		return args -> {
+		print("The opposite of: ");
 
-			Scanner scanner = new Scanner(System.in);
-			String input;
+		return repl((args, input) -> {
 
-			System.out.print("The opposite of: ");
+			Consumer<ChatClient.PromptUserSpec> promptUserSpecConsumer = promptUserSpec ->
+				promptUserSpec.text("In a single word, what is opposite of {value}?").param("value", input);
 
-			while (isNotExit(input = scanner.nextLine())) {
+			String opposite = chatClient.prompt()
+				.user(promptUserSpecConsumer)
+				.call()
+				.content();
 
-				String value = input;
-
-				Consumer<ChatClient.PromptUserSpec> promptUserSpecConsumer = promptUserSpec ->
-					promptUserSpec.text("In a single word, what is opposite of {value}?").param("value", value);
-
-				String opposite = chatClient.prompt()
-					.user(promptUserSpecConsumer)
-					.call()
-					.content();
-
-				System.out.printf("> %s%n%n", opposite);
-				System.out.print("The opposite of: ");
-			}
-		};
-	}
-
-	private boolean isNotExit(String input) {
-		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input);
+			print("%s%n%n", opposite);
+			print("The opposite of: ");
+		});
 	}
 }
