@@ -22,6 +22,7 @@ import java.util.stream.IntStream;
 import io.codeprimate.extensions.util.Utils;
 
 import org.slf4j.Logger;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationArguments;
@@ -57,7 +58,7 @@ public abstract class AbstractSpringBootApplication {
 	protected static void printNewline(int count) {
 
 		IntStream.range(0, Math.max(0, count))
-			.mapToObj(it -> NEWLINE)
+			.mapToObj(index -> NEWLINE)
 			.reduce("%s%s"::formatted)
 			.ifPresent(AbstractSpringBootApplication::print);
 	}
@@ -114,6 +115,11 @@ public abstract class AbstractSpringBootApplication {
 
 	protected void userPrompt() {
 		userPrompt(EMPTY_STRING);
+	}
+
+	protected Message userPrompt(Message message) {
+		userPrompt(message.getContent());
+		return message;
 	}
 
 	protected Prompt userPrompt(Prompt prompt) {
