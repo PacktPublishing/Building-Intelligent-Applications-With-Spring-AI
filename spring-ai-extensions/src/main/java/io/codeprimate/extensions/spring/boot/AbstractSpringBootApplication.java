@@ -57,6 +57,43 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String USER_PROFILE = "user";
 	protected static final String USER_PROMPT = "user> %s";
 
+	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass) {
+		return newSpringApplicationBuilder(applicationMainClass, WebApplicationType.NONE, USER_PROFILE);
+	}
+
+	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
+			String... profiles) {
+
+		return newSpringApplicationBuilder(applicationMainClass, WebApplicationType.NONE, profiles);
+	}
+
+	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
+			WebApplicationType webApplicationType) {
+
+		return newSpringApplicationBuilder(applicationMainClass, webApplicationType, USER_PROFILE);
+	}
+
+	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
+			WebApplicationType webApplicationType, String... profiles) {
+
+		return new SpringApplicationBuilder(applicationMainClass)
+			.web(webApplicationType)
+			.profiles(resolveProfiles(profiles));
+	}
+
+	private static String[] resolveProfiles(String... profiles) {
+
+		List<String> profileList = new ArrayList<>(Arrays.stream(ArrayUtils.nullSafeArray(profiles))
+			.filter(StringUtils::hasText)
+			.toList());
+
+		if (!profileList.contains(USER_PROFILE)) {
+			profileList.add(USER_PROFILE);
+		}
+
+		return profileList.toArray(new String[0]);
+	}
+
 	protected static void print(String message, Object... arguments) {
 		System.out.printf(message, arguments);
 		System.out.flush();
@@ -68,39 +105,6 @@ public abstract class AbstractSpringBootApplication {
 			.mapToObj(index -> NEWLINE)
 			.reduce("%s%s"::formatted)
 			.ifPresent(AbstractSpringBootApplication::print);
-	}
-
-	protected SpringApplicationBuilder newSpringApplicationBuilder() {
-		return newSpringApplicationBuilder(WebApplicationType.NONE, USER_PROFILE);
-	}
-
-	protected SpringApplicationBuilder newSpringApplicationBuilder(String... profiles) {
-		return newSpringApplicationBuilder(WebApplicationType.NONE, profiles);
-	}
-
-	protected SpringApplicationBuilder newSpringApplicationBuilder(WebApplicationType webApplicationType) {
-		return newSpringApplicationBuilder(webApplicationType, USER_PROFILE);
-	}
-
-	protected SpringApplicationBuilder newSpringApplicationBuilder(WebApplicationType webApplicationType,
-			String... profiles) {
-
-		return new SpringApplicationBuilder(getClass())
-			.web(webApplicationType)
-			.profiles(profiles);
-	}
-
-	private String[] resolveProfiles(String... profiles) {
-
-		List<String> profileList = new ArrayList<>(Arrays.stream(ArrayUtils.nullSafeArray(profiles))
-			.filter(StringUtils::hasText)
-			.toList());
-
-		if (!profileList.contains(USER_PROFILE)) {
-			profileList.add(USER_PROFILE);
-		}
-
-		return profileList.toArray(new String[0]);
 	}
 
 	// REPL
