@@ -34,7 +34,7 @@ public class AdminController {
 
 	private static final String PONG = "PONG";
 
-	@GetMapping
+	@GetMapping("/ping")
 	public String ping() {
 		return PONG;
 	}
