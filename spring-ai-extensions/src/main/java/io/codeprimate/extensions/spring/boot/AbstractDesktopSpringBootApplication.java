@@ -17,10 +17,12 @@ package io.codeprimate.extensions.spring.boot;
 
 import java.awt.Desktop;
 import java.net.URI;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
@@ -37,19 +39,32 @@ import org.springframework.context.annotation.Bean;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public class AbstractDesktopSpringBootApplication extends AbstractSpringBootApplication {
+public abstract class AbstractDesktopSpringBootApplication extends AbstractSpringBootApplication {
+
+	private static final boolean NOT_HEADLESS = false;
+
+	private static final Function<SpringApplicationBuilder, SpringApplicationBuilder> DESKTOP_APPLICATION_FUNCTION =
+		springApplicationBuilder -> springApplicationBuilder.headless(NOT_HEADLESS);
 
 	private static final String JAVA_AWT_HEADLESS_SYSTEM_PROPERTY = "java.awt.headless";
 	private static final String WEBAPP_URL = "http://localhost:%d%s";
 
-	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
-			WebApplicationType webApplicationType, String... profiles) {
+	protected static SpringApplication runSpringReactiveWebApplication(Class<?> mainApplicationClass, String[] profiles,
+			String... args) {
 
-		return AbstractSpringBootApplication.newSpringApplicationBuilder(applicationMainClass, webApplicationType, profiles)
-			.headless(false);
+		return runSpringApplication(mainApplicationClass, profiles,
+			REACTIVE_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION), args);
+	}
+
+	protected static SpringApplication runSpringServletWebApplication(Class<?> mainApplicationClass, String[] profiles,
+			String... args) {
+
+		return runSpringApplication(mainApplicationClass, profiles,
+			SERVLET_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION), args);
 	}
 
 	@Bean
+	@ConditionalOnWebApplication
 	ApplicationRunner launchWebApplication(
 			@Value("${spring.application.name:UNSET}") String applicationName,
 			@Value("${server.servlet.contextPath:/}") String serverServletContextPath,

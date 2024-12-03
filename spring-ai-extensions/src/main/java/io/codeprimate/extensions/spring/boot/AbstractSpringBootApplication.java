@@ -20,10 +20,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.springframework.ai.chat.messages.Message;
@@ -31,9 +33,12 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +49,25 @@ import lombok.extern.slf4j.Slf4j;
  * @author John Blum
  * @see org.springframework.boot.ApplicationArguments
  * @see org.springframework.boot.ApplicationRunner
+ * @see org.springframework.boot.SpringApplication
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.boot.builder.SpringApplicationBuilder
+ * @see org.springframework.context.ConfigurableApplicationContext
  */
 @Slf4j
 @SuppressWarnings("unused")
 public abstract class AbstractSpringBootApplication {
+
+	private static volatile ConfigurableApplicationContext applicationContext;
+
+	protected static final Function<SpringApplicationBuilder, SpringApplicationBuilder> NON_WEB_APPLICATION_FUNCTION =
+		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.NONE);
+
+	protected static final Function<SpringApplicationBuilder, SpringApplicationBuilder> REACTIVE_WEB_APPLICATION_FUNCTION =
+		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.SERVLET);
+
+	protected static final Function<SpringApplicationBuilder, SpringApplicationBuilder> SERVLET_WEB_APPLICATION_FUNCTION =
+		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.SERVLET);
 
 	protected static final String AI_PROMPT = "ai> %s%n";
 	protected static final String EMPTY_STRING = "";
@@ -57,41 +76,77 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String USER_PROFILE = "user";
 	protected static final String USER_PROMPT = "user> %s";
 
-	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass) {
-		return newSpringApplicationBuilder(applicationMainClass, WebApplicationType.NONE, USER_PROFILE);
+	protected static final String[] NO_PROFILES = new String[0];
+
+	protected static ConfigurableApplicationContext getApplicationContext() {
+		return applicationContext;
 	}
 
-	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
-			String... profiles) {
-
-		return newSpringApplicationBuilder(applicationMainClass, WebApplicationType.NONE, profiles);
+	protected static SpringApplication runSpringApplication(Class<?> mainApplicationClass, String... args) {
+		return runSpringApplication(mainApplicationClass, NO_PROFILES, Function.identity(), args);
 	}
 
-	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
-			WebApplicationType webApplicationType) {
+	protected static SpringApplication runSpringApplication(Class<?> mainApplicationClass, String[] profiles,
+			String... args) {
 
-		return newSpringApplicationBuilder(applicationMainClass, webApplicationType, USER_PROFILE);
+		return runSpringApplication(mainApplicationClass, profiles, Function.identity(), args);
 	}
 
-	protected static SpringApplicationBuilder newSpringApplicationBuilder(Class<?> applicationMainClass,
-			WebApplicationType webApplicationType, String... profiles) {
+	protected static SpringApplication runSpringApplication(Class<?> mainApplicationClass,
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> function, String... args) {
 
-		return new SpringApplicationBuilder(applicationMainClass)
-			.web(webApplicationType)
+		return runSpringApplication(mainApplicationClass, NO_PROFILES, function, args);
+	}
+
+	@SuppressWarnings("all")
+	protected static SpringApplication runSpringApplication(Class<?> mainApplicationClass, String[] profiles,
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> function, String... args) {
+
+		assertApplicationContextClosed(applicationContext);
+
+		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(mainApplicationClass)
+			.web(WebApplicationType.NONE)
 			.profiles(resolveProfiles(profiles));
+
+		springApplicationBuilder = function.apply(springApplicationBuilder);
+
+		SpringApplication springApplication = springApplicationBuilder.build();
+
+		applicationContext = springApplication.run(args);
+
+		return springApplication;
+	}
+
+	private static void assertApplicationContextClosed(ConfigurableApplicationContext applicationContext) {
+
+		Assert.state(isApplicationContextClosed(applicationContext),
+			() -> "ApplicationContext [%s] already exists and is running".formatted(applicationContext.getId()));
+	}
+
+	private static boolean isApplicationContextClosed(ConfigurableApplicationContext applicationContext) {
+		return applicationContext == null || applicationContext.isClosed();
+	}
+
+	protected static ConfigurableApplicationContext requireApplicationContext() {
+		return ObjectUtils.requireState(applicationContext, "ApplicationContext not initialized");
 	}
 
 	private static String[] resolveProfiles(String... profiles) {
 
-		List<String> profileList = new ArrayList<>(Arrays.stream(ArrayUtils.nullSafeArray(profiles))
+		List<String> profileList = Arrays.stream(ArrayUtils.nullSafeArray(profiles))
 			.filter(StringUtils::hasText)
-			.toList());
+			.toList();
 
 		if (!profileList.contains(USER_PROFILE)) {
+			profileList = new ArrayList<>(profileList);
 			profileList.add(USER_PROFILE);
 		}
 
 		return profileList.toArray(new String[0]);
+	}
+
+	protected static String[] useProfiles(String... profiles) {
+		return profiles;
 	}
 
 	protected static void print(String message, Object... arguments) {
