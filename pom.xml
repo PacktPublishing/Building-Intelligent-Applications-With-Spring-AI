@@ -39,6 +39,7 @@
 		<module>tokenizer-example</module>
 		<module>opposites-application</module>
 		<module>spring-ai-tools</module>
+		<module>connect-four-app</module>
 	</modules>
 
 	<licenses>
