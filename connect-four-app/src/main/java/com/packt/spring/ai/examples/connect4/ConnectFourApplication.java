@@ -15,18 +15,32 @@
  */
 package com.packt.spring.ai.examples.connect4;
 
-import java.util.Arrays;
-import java.util.function.BiFunction;
-import java.util.stream.IntStream;
+import static org.cp.elements.lang.RuntimeExceptionsFactory.newIllegalStateException;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
+import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 
 import org.cp.elements.lang.StringUtils;
+import org.cp.elements.util.stream.StreamUtils;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -34,6 +48,8 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
+ * @see org.springframework.ai.chat.client.ChatClient
+ * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @since 0.1.0
  */
@@ -50,8 +66,8 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
 
 	public static void main(String[] args) {
-		printExampleGameBoard();
-		//runSpringApplication(ConnectFourApplication.class, useProfiles(CONNECT_FOUR_PROFILE), args);
+		runSpringApplication(ConnectFourApplication.class, useProfiles(CONNECT_FOUR_PROFILE), args);
+		//printExampleGameBoard();
 	}
 
 	private static void printExampleGameBoard() {
@@ -64,14 +80,29 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 			.printGameBoard();
 	}
 
+	@SpringBootConfiguration
+	@EnableChatClient
+	static class ConnectFourConfiguration {
+
+	}
+
+	@Bean
+	ApplicationRunner playGame(ChatClient chatClient, CompositeChatModel chatModel) {
+
+		return args -> {
+
+		};
+	}
+
+	@Getter(AccessLevel.PROTECTED)
 	static class ConnectFourBoardGame {
 
 		private static final int ROWS = 6;
 		private static final int COLUMNS = 7;
 
-		private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
+		private final Columns columns;
 
-		private final int[] columns = new int[COLUMNS];
+		private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
 
 		ConnectFourBoardGame() {
 
@@ -79,11 +110,20 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 				Arrays.fill(this.gameBoard[rowIndex], null);
 			}
 
-			Arrays.fill(this.columns, ROWS);
+			// Not Thread-safe; this reference escapes!
+			this.columns = Columns.from(this);
+		}
+
+		Columns getPlayableColumns() {
+			return getColumns().findPlayableColumns();
 		}
 
 		boolean isWinner() {
 			return getWinner() != null;
+		}
+
+		boolean isNotWinner() {
+			return !isWinner();
 		}
 
 		@Nullable Disc getWinner() {
@@ -110,7 +150,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 		private boolean isBackwardPossible(int columnIndex) {
 			// return columnIndex >= 2;
-			return column(columnIndex) - CONNECT_FOUR >= 0;
+			return Column.asColumnNumber(columnIndex) - CONNECT_FOUR >= 0;
 		}
 
 		private boolean isDiagonalPossible(int rowIndex, int columnIndex) {
@@ -185,36 +225,17 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 				: null;
 		}
 
-		int column(int columnIndex) {
-			return columnIndex + 1;
-		}
-
-		int columnIndex(int column) {
-			return column - 1;
-		}
-
-		int row(int rowIndex) {
-			return rowIndex + 1;
-		}
-
-		int rowIndex(int row) {
-			return row - 1;
-		}
-
 		int subtract(int valueOne, int valueTwo) {
 			return valueOne - valueTwo;
 		}
 
-		ConnectFourBoardGame play(Disc disc, int column) {
+		ConnectFourBoardGame play(Disc disc, int columnNumber) {
+			getColumns().findByColumnNumber(columnNumber).play(disc);
+			return this;
+		}
 
-			int columnIndex = columnIndex(column);
-			int rowIndex = rowIndex(this.columns[columnIndex]);
-
-			Assert.isTrue(rowIndex >= 0, () -> "Cannot play column [%d]".formatted(column));
-
-			this.columns[columnIndex] = rowIndex;
+		ConnectFourBoardGame play(Disc disc, int rowIndex, int columnIndex) {
 			this.gameBoard[rowIndex][columnIndex] = disc;
-
 			return this;
 		}
 
@@ -265,13 +286,129 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	}
 
 	@Getter
+	static class Column {
+
+		static final String COLUMN_TO_STRING = "Column %d";
+
+		static int asColumnIndex(int columnNumber) {
+			return columnNumber - 1;
+		}
+
+		static int asColumnNumber(int columnIndex) {
+			return columnIndex + 1;
+		}
+
+		static Column from(ConnectFourBoardGame boardGame, int columnIndex) {
+			return new Column(boardGame, columnIndex);
+		}
+
+		private final int index;
+
+		private int row = ConnectFourBoardGame.ROWS;
+
+		private final ConnectFourBoardGame boardGame;
+
+		Column(ConnectFourBoardGame boardGame, int columnIndex) {
+
+			Assert.notNull(boardGame, "ConnectFourBoardGame is required");
+			Assert.isTrue(columnIndex > -1, "Column Index [%d] must be greater than equal to 0");
+
+			this.boardGame = boardGame;
+			this.index = columnIndex;
+		}
+
+		int getNumber() {
+			return asColumnNumber(getIndex());
+		}
+
+		boolean isPlayable() {
+			return getRow() > 0;
+		}
+
+		int getRowIndex() {
+			return rowIndex(getRow());
+		}
+
+		Column play(Disc disc) {
+			int rowIndex = nextRowIndex();
+			int columnIndex = getIndex();
+			getBoardGame().play(disc, rowIndex, columnIndex);
+			return this;
+		}
+
+		private int nextRow() {
+			return this.row--;
+		}
+
+		private int nextRowIndex() {
+			return rowIndex(nextRow());
+		}
+
+		private int rowIndex(int row) {
+			return row - 1;
+		}
+
+		@Override
+		public String toString() {
+			return COLUMN_TO_STRING.formatted(getNumber());
+		}
+	}
+
+	interface Columns extends Iterable<Column> {
+
+		static Columns from(ConnectFourBoardGame boardGame) {
+
+			Assert.notNull(boardGame, "ConnectFourBoardGame is required");
+
+			List<Column> columns = IntStream.range(0, ConnectFourBoardGame.COLUMNS)
+				.mapToObj(columnIndex -> Column.from(boardGame, columnIndex))
+				.toList();
+
+			return Columns.of(columns);
+		}
+
+		static Columns of(Column... columns) {
+			return of(Arrays.asList(columns));
+		}
+
+		static Columns of(Iterable<Column> columns) {
+			return columns::iterator;
+		}
+
+		default Optional<Column> findBy(Predicate<Column> predicate) {
+			return stream().filter(predicate).findFirst();
+		}
+
+		default Column findByColumnIndex(int columnIndex) {
+			return findBy(column -> column.getIndex() == columnIndex)
+				.orElseThrow(() -> newIllegalStateException("Column with index [%d] not found"
+					.formatted(columnIndex)));
+		}
+
+		default Column findByColumnNumber(int columnNumber) {
+			return findBy(column -> column.getNumber() == columnNumber)
+				.orElseThrow(() -> newIllegalStateException("Column with number [%d] not found"
+					.formatted(columnNumber)));
+		}
+
+		default Columns findPlayableColumns() {
+			List<Column> playableColumns = stream().filter(Column::isPlayable).toList();
+			return of(playableColumns);
+		}
+
+		default int size() {
+			return Long.valueOf(stream().count()).intValue();
+		}
+
+		default Stream<Column> stream() {
+			return StreamUtils.stream(this);
+		}
+	}
+
+	@Getter
 	enum Disc {
 
 		RED("X"), GOLD("O");
-
-		static boolean exists(Disc disc) {
-			return disc != null;
-		}
 
 		private final String symbol;
 
@@ -279,5 +416,8 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 			this.symbol = StringUtils.requireText(symbol, "Symbol is required");
 		}
 
+		static boolean exists(Disc disc) {
+			return disc != null;
+		}
 	}
 }
