@@ -105,6 +105,11 @@
 				<artifactId>spring-ai-extensions</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.packt.spring.ai</groupId>
+				<artifactId>spring-ai-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
