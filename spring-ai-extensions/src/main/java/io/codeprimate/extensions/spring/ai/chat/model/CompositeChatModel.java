@@ -109,7 +109,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 	@Override
 	public @NonNull Iterator<ChatModel> iterator() {
-		return Utils.nullSafeIterator(Collections.unmodifiableSet(getChatModels()));
+		return Collections.unmodifiableSet(getChatModels()).iterator();
 	}
 
 	public Stream<ChatModel> stream() {

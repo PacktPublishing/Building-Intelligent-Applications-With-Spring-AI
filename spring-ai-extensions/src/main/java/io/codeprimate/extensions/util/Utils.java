@@ -28,13 +28,14 @@ import java.util.stream.StreamSupport;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 
 /**
- * Abstract utility class containing common, useful functions.
+ * Abstract utility class containing common, useful functions for Spring AI, Micrometer and Java.
  *
  * @author John Blum
  */
@@ -72,14 +73,6 @@ public abstract class Utils {
 		return array != null && array.length > 0;
 	}
 
-	public static <T> Iterator<T> nullSafeIterator(Iterable<T> iterable) {
-		return nullSafeIterator(nullSafeIterable(iterable).iterator());
-	}
-
-	public static <T> Iterator<T> nullSafeIterator(Iterator<T> iterator) {
-		return iterator != null ? iterator : Collections.emptyIterator();
-	}
-
 	public static <T> Consumer<T> nullSafeConsumer(Consumer<T> consumer) {
 		return consumer != null ? consumer : target -> {};
 	}
@@ -88,12 +81,24 @@ public abstract class Utils {
 		return iterable != null ? iterable : Collections::emptyIterator;
 	}
 
+	public static <T> Iterator<T> nullSafeIterator(Iterator<T> iterator) {
+		return iterator != null ? iterator : Collections.emptyIterator();
+	}
+
 	public static <T> List<T> nullSafeList(List<T> list) {
 		return list != null ? list : Collections.emptyList();
 	}
 
-	public static <T> Set<T> nullSafeList(Set<T> set) {
+	public static <T> Set<T> nullSafeSet(Set<T> set) {
 		return set != null ? set : Collections.emptySet();
+	}
+
+	public static String nullSafeString(String value) {
+		return String.valueOf(value);
+	}
+
+	public static String nullSafeTypeName(Object target) {
+		return nullSafeString(ObjectUtils.getClassName(target));
 	}
 
 	public static String promptContent(Prompt prompt) {
