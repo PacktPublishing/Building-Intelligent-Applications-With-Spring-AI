@@ -15,6 +15,7 @@
  */
 package io.codeprimate.extensions.spring.ai.provider.support;
 
+import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.AiProviderNotFoundException;
 import io.codeprimate.extensions.spring.ai.provider.model.ModelNameResolver;
@@ -36,10 +37,16 @@ public record SpringAiProviderModel(AiProvider aiProvider, Model<?, ?> model) im
 
 	public static SpringAiProviderModel from(Model<?, ?> model) {
 
-		AiProvider aiProvider = SpringAiProvider.findByModel(model)
-			.orElseThrow(() -> AiProviderNotFoundException.from(model));
+		Model<?, ?> resolvedModel = resolveModel(model);
 
-		return new SpringAiProviderModel(aiProvider, model);
+		AiProvider aiProvider = SpringAiProvider.findByModel(resolvedModel)
+			.orElseThrow(() -> AiProviderNotFoundException.from(resolvedModel));
+
+		return new SpringAiProviderModel(aiProvider, resolvedModel);
+	}
+
+	private static Model<?, ?> resolveModel(Model<?, ?> model) {
+		return model instanceof ChatModelWrapper chatModelWrapper ? chatModelWrapper.getChatModel() : model;
 	}
 
 	public SpringAiProviderModel {
