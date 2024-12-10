@@ -26,6 +26,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.codeprimate.extensions.spring.ai.provider.AiProvider;
+import io.codeprimate.extensions.spring.ai.provider.AiProviderModel;
+import io.codeprimate.extensions.spring.ai.provider.AiProviders;
 import io.codeprimate.extensions.util.Utils;
 
 import org.springframework.ai.chat.model.ChatModel;
@@ -62,6 +65,8 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		return new CompositeChatModel(Utils.stream(chatModels).toList());
 	}
 
+	private final AiProviders aiProviders;
+
 	private volatile ChatModel currentChatModel;
 
 	private final Set<ChatModel> chatModels;
@@ -70,14 +75,30 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 		List<ChatModel> resolvedChatModels = resolveChatModels(chatModels);
 
-		this.currentChatModel = resolvedChatModels.stream().findFirst().orElse(null);
 		this.chatModels = new HashSet<>(resolvedChatModels);
+		this.currentChatModel = resolveCurrentChatModel(resolvedChatModels);
+		this.aiProviders = resolveAiProviders(resolvedChatModels);
+	}
+
+	private AiProviders resolveAiProviders(List<ChatModel> chatModels) {
+
+		List<AiProvider> aiProviderList = chatModels.stream()
+			.map(AiProviderModel::from)
+			.map(AiProvider.class::cast)
+			.toList();
+
+		return AiProviders.of(aiProviderList);
 	}
 
 	private List<ChatModel> resolveChatModels(List<ChatModel> chatModels) {
+
 		return Utils.nullSafeList(chatModels).stream()
 			.filter(Objects::nonNull)
 			.toList();
+	}
+
+	private ChatModel resolveCurrentChatModel(List<ChatModel> chatModels) {
+		return chatModels.stream().findFirst().orElse(null);
 	}
 
 	public ChatModel getCurrentChatModel() {
@@ -116,6 +137,21 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		return Utils.stream(this);
 	}
 
+	public CompositeChatModel use(AiProvider aiProvider) {
+
+		Assert.notNull(aiProvider, "AI provider to use is required");
+
+		Predicate<AiProvider> matchingAiProviderPredicate = configuredAiProvider ->
+			((AiProviderModel) configuredAiProvider).aiProvider().equals(aiProvider);
+
+		getAiProviders().findBy(matchingAiProviderPredicate)
+			.map(AiProviderModel.class::cast)
+			.<ChatModel>map(AiProviderModel::getTypedModel)
+			.ifPresent(this::use);
+
+		return this;
+	}
+
 	public CompositeChatModel use(ChatModel chatModel) {
 
 		Assert.notNull(chatModel, "ChatModel is required");
@@ -126,11 +162,11 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		return this;
 	}
 
-	public CompositeChatModel use(Class<ChatModel> type) {
+	public CompositeChatModel use(Class<ChatModel> chatModelType) {
 
-		Assert.notNull(type, "Type of ChatModel is required");
+		Assert.notNull(chatModelType, "Type of ChatModel is required");
 
-		Predicate<ChatModel> chatModelByType = type::isInstance;
+		Predicate<ChatModel> chatModelByType = chatModelType::isInstance;
 		ChatModel chatModel = requireBy(chatModelByType);
 
 		return use(chatModel);
