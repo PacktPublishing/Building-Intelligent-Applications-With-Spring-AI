@@ -55,6 +55,7 @@ public enum SpringAiProvider implements AiProvider {
 	HUGGING_FACE("Hugging Face", match("huggingface")),
 	MINI_MAX("MiniMax AI", match("minimax")),
 	MISTRAL_AI("Mistral AI", match("mistral")),
+	MOCK("Mock AI", match("mock")),
 	MOONSHOT("Moonshot AI", match("moonshot")),
 	OCI_COHERE("Oracle OCI Cohere AI", match("oci").and(match("cohere"))),
 	OCI("Oracle OCI AI", match("oci")),
@@ -91,7 +92,8 @@ public enum SpringAiProvider implements AiProvider {
 	}
 
 	private static Predicate<Object> match(String qualifier) {
-		return target -> Utils.nullSafeTypeName(target).contains(qualifier);
+		String resolveQualifier = String.valueOf(qualifier).toLowerCase();
+		return target -> Utils.nullSafeTypeName(target).toLowerCase().contains(resolveQualifier);
 	}
 
 	private static AiProvider resolveAiProvider(AiProvider aiProvider) {
