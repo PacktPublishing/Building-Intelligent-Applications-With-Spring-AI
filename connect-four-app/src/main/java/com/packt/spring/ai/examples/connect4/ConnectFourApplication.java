@@ -53,6 +53,8 @@ import lombok.Getter;
  * {@link SpringBootApplication} using Spring AI with Ollama to implement the Connect 4 Game.
  *
  * @author John Blum
+ * @see io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel
+ * @see io.codeprimate.extensions.spring.ai.config.EnableChatClient
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.boot.ApplicationRunner
@@ -66,6 +68,9 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	private static final int CONNECT_FOUR = 4;
 
+	private static final AiProvider PLAYER_ONE = SpringAiProvider.OLLAMA;
+	private static final AiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
+
 	private static final BiFunction<Integer, Integer, Integer> BI_FUNCTION_IDENTITY =
 		(argumentOne, argumentTwo) -> argumentOne;
 
@@ -74,14 +79,14 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	private final String SYSTEM_PROMPT_TEMPLATE = """
 		You are a player in the 2-player game Connect 4. The game board is 6 rows by 7 columns. Let R1 represent row 1.
 		Let R2 represent row 2 and so up to R6 representing row 6. Let C1 represent column 1. Let C2 represent column 2
-		and so on up to C7 representing column 7. Your objective is to connect 4 chips of the same color horizontally
-		in a single row, or vertically in a single column, or diagonally by row and column with a distance no greater than
-		1 between the chips. For example, you can connect 4 by row with [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. You can also
-		connect 4 by column, for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. And, you can connect 4 diagonally, for example:
-		[(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. If you connect 4, you win! You must also prevent your opponent from winning
-		by connecting 4. A position on the game board maybe empty, for example (R1,C1)=empty, or may contain a chip,
-		for example (R2,C4)=GOLD. Chip colors are 'GOLD' and 'RED'. You will play until you or your opponent connects 4
-		or there are no more available moves.
+		and so on up to C7 representing column 7. Your objective is to connect 4 adjacent chips of the same color
+		horizontally in a single row, or vertically in a single column, or diagonally by row and column. For example,
+		you can connect 4 chips in a row with [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. You can also connect 4 chips by column,
+		for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. And, you can connect 4 chips diagonally, for example:
+		[(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. If you connect 4 adjacent chips, you win! You must also be careful to prevent
+		your opponent from connecting 4. The first player to connect 4 adjacent chips wins! A position on the game board
+		maybe empty, for example (R1,C1)=empty, or contain a chip, for example (R2,C4)=GOLD. Chip colors are 'GOLD'
+		and 'RED'. You will play until you or your opponent connects 4, or there are no more available moves.
 	""";
 
 	private final String USER_PROMPT_TEMPLATE = """
@@ -92,17 +97,6 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	public static void main(String[] args) {
 		runSpringApplication(ConnectFourApplication.class, useProfiles(CONNECT_FOUR_PROFILE), args);
-		//printExampleGameBoard();
-	}
-
-	private static void printExampleGameBoard() {
-		new ConnectFourBoardGame()
-			.play(Disc.GOLD, 1)
-			.play(Disc.RED, 1)
-			.play(Disc.GOLD, 2)
-			.play(Disc.RED, 3)
-			.play(Disc.GOLD, 3)
-			.printGameBoard();
 	}
 
 	@SpringBootConfiguration
@@ -120,11 +114,11 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 		return args -> {
 
-			AiProvider currentPlayer = SpringAiProvider.OLLAMA;
+			AiProvider currentPlayer = PLAYER_ONE;
 
 			Map<AiProvider, Disc> playerDisc = Map.of(
-				SpringAiProvider.VERTEX_AI_GEMINI, Disc.GOLD,
-				SpringAiProvider.OLLAMA, Disc.RED
+				PLAYER_ONE, Disc.RED,
+				PLAYER_TWO, Disc.GOLD
 			);
 
 			Scanner input = new Scanner(System.in);
@@ -147,7 +141,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 				RowColumn rowColumn = RowColumn.parse(response);
 
-				boardGame.play(currentPlayerDisc, rowColumn.asRowNumber(), rowColumn.asColumnNumber());
+				boardGame.play(currentPlayerDisc, rowColumn.columnNumber());
 				boardGame.printGameBoard();
 
 				print("Hit <enter> to continue next play");
@@ -182,6 +176,11 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		private static final int ROWS = 6;
 		private static final int COLUMNS = 7;
 
+		private static final String COLUMN_SYMBOL = "C%d";
+		private static final String ROW_SYMBOL = "R%d";
+		private static final String ROW_COLUMN_SYMBOL = "("+ROW_SYMBOL+","+COLUMN_SYMBOL+")";
+		private static final String ROW_COLUMN_VALUE = ROW_COLUMN_SYMBOL+"=%s";
+
 		private final Columns columns;
 
 		private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
@@ -197,7 +196,20 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		}
 
 		String[] getGameBoardStateBySymbol() {
-			return null;
+
+			String[] rowColumnValues = new String[ROWS * COLUMNS];
+
+			for (int rowIndex = 0; rowIndex < ROWS; rowIndex++) {
+				for (int columnIndex = 0; columnIndex < COLUMNS; columnIndex++) {
+					int index = rowIndex * COLUMNS + columnIndex;
+					Disc disc = this.gameBoard[rowIndex][columnIndex];
+					String value = disc != null ? disc.name() : "empty";
+					rowColumnValues[index] = ROW_COLUMN_VALUE
+						.formatted(RowColumn.asRowNumber(rowIndex), RowColumn.asColumnNumber(columnIndex), value);
+				}
+			}
+
+			return rowColumnValues;
 		}
 
 		Columns getPlayableColumns() {
@@ -208,7 +220,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 			return getPlayableColumns().stream()
 				.map(Column::getNumber)
-				.map("C%d"::formatted)
+				.map(COLUMN_SYMBOL::formatted)
 				.toList()
 				.toArray(String[]::new);
 		}
@@ -504,11 +516,29 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		}
 	}
 
-	record RowColumn(int asRowNumber, int asColumnNumber) {
+	@Getter
+	enum Disc {
 
-		static final String REGEX = "R(\\d+),C(\\d+)";
+		RED("X"), GOLD("O");
 
-		static final Pattern PATTERN = Pattern.compile(REGEX);
+		private final String symbol;
+
+		Disc(String symbol) {
+			this.symbol = StringUtils.requireText(symbol, "Symbol is required");
+		}
+
+		static boolean exists(Disc disc) {
+			return disc != null;
+		}
+	}
+
+	record RowColumn(int rowNumber, int columnNumber) {
+
+		static final String COLUMN_REGEX = "C(\\d+)";
+		static final String ROW_COLUMN_REGEX = "R(\\d+),"+ COLUMN_REGEX;
+
+		static final Pattern COLUMN_PATTERN = Pattern.compile(COLUMN_REGEX);
+		static final Pattern ROW_COLUMN_PATTERN = Pattern.compile(ROW_COLUMN_REGEX);
 
 		static int asColumnIndex(int columnNumber) {
 			return columnNumber - 1;
@@ -530,39 +560,30 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 			Assert.hasText(value, () -> "Value [%s] to parse as a row/column is required".formatted(value));
 
-			Matcher matcher = PATTERN.matcher(value);
+			Matcher matcher = ROW_COLUMN_PATTERN.matcher(value);
 
 			if (matcher.find()) {
 				int row = Integer.parseInt(matcher.group(1));
 				int column = Integer.parseInt(matcher.group(2));
 				return new RowColumn(row, column);
 			}
+			else {
+				matcher = COLUMN_PATTERN.matcher(value);
+				if (matcher.find()) {
+					int column = Integer.parseInt(matcher.group());
+					return new RowColumn(-1, column);
+				}
+			}
 
 			throw new IllegalArgumentException("Failed to parse row/column from [%s]".formatted(value));
 		}
 
 		int getColumnIndex() {
-			return asColumnIndex(asColumnNumber());
+			return asColumnIndex(columnNumber());
 		}
 
 		int getRowIndex() {
-			return asRowIndex(asRowNumber());
-		}
-	}
-
-	@Getter
-	enum Disc {
-
-		RED("X"), GOLD("O");
-
-		private final String symbol;
-
-		Disc(String symbol) {
-			this.symbol = StringUtils.requireText(symbol, "Symbol is required");
-		}
-
-		static boolean exists(Disc disc) {
-			return disc != null;
+			return asRowIndex(rowNumber());
 		}
 	}
 }
