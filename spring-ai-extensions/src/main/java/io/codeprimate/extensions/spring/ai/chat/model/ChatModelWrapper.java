@@ -23,7 +23,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.util.StringUtils;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
@@ -31,9 +30,10 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.beans.factory.BeanNameAware
  * @since 0.1.0
  */
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @SuppressWarnings("unused")
 public class ChatModelWrapper implements ChatModel, BeanNameAware {
 
