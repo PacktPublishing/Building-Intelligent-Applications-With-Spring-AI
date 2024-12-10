@@ -78,9 +78,9 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 		List<ChatModel> resolvedChatModels = resolveChatModels(chatModels);
 
+		this.aiProviders = resolveAiProviders(resolvedChatModels);
 		this.chatModels = new HashSet<>(resolvedChatModels);
 		this.currentChatModel = resolveCurrentChatModel(resolvedChatModels);
-		this.aiProviders = resolveAiProviders(resolvedChatModels);
 	}
 
 	private AiProviders resolveAiProviders(List<ChatModel> chatModels) {
