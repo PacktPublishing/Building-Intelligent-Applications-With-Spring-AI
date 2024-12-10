@@ -21,7 +21,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
-import io.codeprimate.extensions.spring.ai.provider.AiProviderModel;
 import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.ObjectUtils;
@@ -97,7 +96,7 @@ public enum SpringAiProvider implements AiProvider {
 
 	private static AiProvider resolveAiProvider(AiProvider aiProvider) {
 
-		return aiProvider instanceof AiProviderModel aiProviderModel
+		return aiProvider instanceof SpringAiProviderModel aiProviderModel
 			? aiProviderModel.aiProvider()
 			: aiProvider;
 	}

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.extensions.spring.ai.provider;
+package io.codeprimate.extensions.spring.ai.provider.support;
 
+import io.codeprimate.extensions.spring.ai.provider.AiProvider;
+import io.codeprimate.extensions.spring.ai.provider.AiProviderNotFoundException;
 import io.codeprimate.extensions.spring.ai.provider.model.ModelNameResolver;
-import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.model.Model;
@@ -31,17 +32,17 @@ import org.springframework.ai.model.Model;
  * @see org.springframework.ai.model.Model
  */
 @SuppressWarnings("unused")
-public record AiProviderModel(AiProvider aiProvider, Model<?, ?> model) implements AiProvider {
+public record SpringAiProviderModel(AiProvider aiProvider, Model<?, ?> model) implements AiProvider {
 
-	public static AiProviderModel from(Model<?, ?> model) {
+	public static SpringAiProviderModel from(Model<?, ?> model) {
 
 		AiProvider aiProvider = SpringAiProvider.findByModel(model)
 			.orElseThrow(() -> AiProviderNotFoundException.from(model));
 
-		return new AiProviderModel(aiProvider, model);
+		return new SpringAiProviderModel(aiProvider, model);
 	}
 
-	public AiProviderModel {
+	public SpringAiProviderModel {
 		Assert.notNull(aiProvider, "AiProvider is required");
 		Assert.notNull(model, "AiProvider [%s] Model is required", aiProvider.getName());
 	}

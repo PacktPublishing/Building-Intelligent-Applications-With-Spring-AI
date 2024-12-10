@@ -27,8 +27,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
-import io.codeprimate.extensions.spring.ai.provider.AiProviderModel;
 import io.codeprimate.extensions.spring.ai.provider.AiProviders;
+import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderModel;
 import io.codeprimate.extensions.util.Utils;
 
 import org.springframework.ai.chat.model.ChatModel;
@@ -46,6 +46,9 @@ import lombok.NonNull;
  *
  * @author John Blum
  * @see java.lang.Iterable
+ * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
+ * @see io.codeprimate.extensions.spring.ai.provider.AiProviders
+ * @see io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderModel
  * @see org.springframework.ai.chat.model.ChatModel
  * @see <a href="https://en.wikipedia.org/wiki/Composite_pattern">Composite Software Design Pattern</a>
  */
@@ -83,7 +86,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 	private AiProviders resolveAiProviders(List<ChatModel> chatModels) {
 
 		List<AiProvider> aiProviderList = chatModels.stream()
-			.map(AiProviderModel::from)
+			.map(SpringAiProviderModel::from)
 			.map(AiProvider.class::cast)
 			.toList();
 
@@ -142,11 +145,11 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		Assert.notNull(aiProvider, "AI provider to use is required");
 
 		Predicate<AiProvider> matchingAiProviderPredicate = configuredAiProvider ->
-			((AiProviderModel) configuredAiProvider).aiProvider().equals(aiProvider);
+			((SpringAiProviderModel) configuredAiProvider).aiProvider().equals(aiProvider);
 
 		getAiProviders().findBy(matchingAiProviderPredicate)
-			.map(AiProviderModel.class::cast)
-			.<ChatModel>map(AiProviderModel::getTypedModel)
+			.map(SpringAiProviderModel.class::cast)
+			.<ChatModel>map(SpringAiProviderModel::getTypedModel)
 			.ifPresent(this::use);
 
 		return this;
