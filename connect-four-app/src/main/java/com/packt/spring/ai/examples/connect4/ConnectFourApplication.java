@@ -19,14 +19,20 @@ import static org.cp.elements.lang.RuntimeExceptionsFactory.newIllegalStateExcep
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
+import io.codeprimate.extensions.spring.ai.provider.AiProvider;
+import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 
 import org.cp.elements.lang.StringUtils;
@@ -65,6 +71,25 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
 
+	private final String SYSTEM_PROMPT_TEMPLATE = """
+		You are a player in the 2-player game Connect 4. The game board is 6 rows by 7 columns. Let R1 represent row 1.
+		Let R2 represent row 2 and so up to R6 representing row 6. Let C1 represent column 1. Let C2 represent column 2
+		and so on up to C7 representing column 7. Your objective is to connect 4 chips of the same color horizontally
+		in a single row, or vertically in a single column, or diagonally by row and column with a distance no greater than
+		1 between the chips. For example, you can connect 4 by row with [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. You can also
+		connect 4 by column, for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. And, you can connect 4 diagonally, for example:
+		[(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. If you connect 4, you win! You must also prevent your opponent from winning
+		by connecting 4. A position on the game board maybe empty, for example (R1,C1)=empty, or may contain a chip,
+		for example (R2,C4)=GOLD. Chip colors are 'GOLD' and 'RED'. You will play until you or your opponent connects 4
+		or there are no more available moves.
+	""";
+
+	private final String USER_PROMPT_TEMPLATE = """
+        The current state of the game board is {gameBoard}. Your chip color is {playerColor}. Your possible moves
+        by column are {availableMoves}. Try to connect 4 or block your opponent. You have a single move. What is
+        your move?
+    """;
+
 	public static void main(String[] args) {
 		runSpringApplication(ConnectFourApplication.class, useProfiles(CONNECT_FOUR_PROFILE), args);
 		//printExampleGameBoard();
@@ -84,13 +109,70 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	@EnableChatClient
 	static class ConnectFourConfiguration {
 
+		@Bean
+		ConnectFourBoardGame boardGame() {
+			return new ConnectFourBoardGame();
+		}
 	}
 
 	@Bean
-	ApplicationRunner playGame(ChatClient chatClient, CompositeChatModel chatModel) {
+	ApplicationRunner playGame(ChatClient chatClient, CompositeChatModel chatModel, ConnectFourBoardGame boardGame) {
 
 		return args -> {
 
+			AiProvider currentPlayer = SpringAiProvider.OLLAMA;
+
+			Map<AiProvider, Disc> playerDisc = Map.of(
+				SpringAiProvider.VERTEX_AI_GEMINI, Disc.GOLD,
+				SpringAiProvider.OLLAMA, Disc.RED
+			);
+
+			Scanner input = new Scanner(System.in);
+
+			while (boardGame.isPlayable()) {
+
+				Disc currentPlayerDisc = playerDisc.get(currentPlayer);
+
+				Map<String, Object> promptTemplateArguments = Map.of(
+					"gameBoard", Arrays.toString(boardGame.getGameBoardStateBySymbol()),
+					"playerColor", currentPlayerDisc.name(),
+					"availableMoves", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
+				);
+
+				String response = chatClient.prompt()
+					.system(SYSTEM_PROMPT_TEMPLATE)
+					.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
+					.call()
+					.content();
+
+				RowColumn rowColumn = RowColumn.parse(response);
+
+				boardGame.play(currentPlayerDisc, rowColumn.asRowNumber(), rowColumn.asColumnNumber());
+				boardGame.printGameBoard();
+
+				print("Hit <enter> to continue next play");
+				input.nextLine();
+
+				currentPlayer = currentPlayer == SpringAiProvider.OLLAMA
+					? SpringAiProvider.VERTEX_AI_GEMINI
+					: SpringAiProvider.OLLAMA;
+			}
+
+			Disc winner = boardGame.getWinner();
+
+			if (winner != null) {
+
+				AiProvider winningAiProvider = playerDisc.entrySet().stream()
+					.filter(entry -> entry.getValue().equals(winner))
+					.map(Map.Entry::getKey).findFirst()
+					.orElseThrow(() -> new IllegalStateException("No AI provider mapped to Disc [%s]"
+						.formatted(winner)));
+
+				print("[%s] as [%s] wins!", winningAiProvider.getName(), winner.name());
+			}
+			else {
+				print("No Winner!");
+			}
 		};
 	}
 
@@ -114,15 +196,36 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 			this.columns = Columns.from(this);
 		}
 
+		String[] getGameBoardStateBySymbol() {
+			return null;
+		}
+
 		Columns getPlayableColumns() {
 			return getColumns().findPlayableColumns();
+		}
+
+		String[] getPlayableColumnsBySymbol() {
+
+			return getPlayableColumns().stream()
+				.map(Column::getNumber)
+				.map("C%d"::formatted)
+				.toList()
+				.toArray(String[]::new);
+		}
+
+		boolean canPlay() {
+			return getPlayableColumns().isNotEmpty();
+		}
+
+		boolean isPlayable() {
+			return isNoWinner() && canPlay();
 		}
 
 		boolean isWinner() {
 			return getWinner() != null;
 		}
 
-		boolean isNotWinner() {
+		boolean isNoWinner() {
 			return !isWinner();
 		}
 
@@ -150,7 +253,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 		private boolean isBackwardPossible(int columnIndex) {
 			// return columnIndex >= 2;
-			return Column.asColumnNumber(columnIndex) - CONNECT_FOUR >= 0;
+			return RowColumn.asColumnNumber(columnIndex) - CONNECT_FOUR >= 0;
 		}
 
 		private boolean isDiagonalPossible(int rowIndex, int columnIndex) {
@@ -290,14 +393,6 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 		static final String COLUMN_TO_STRING = "Column %d";
 
-		static int asColumnIndex(int columnNumber) {
-			return columnNumber - 1;
-		}
-
-		static int asColumnNumber(int columnIndex) {
-			return columnIndex + 1;
-		}
-
 		static Column from(ConnectFourBoardGame boardGame, int columnIndex) {
 			return new Column(boardGame, columnIndex);
 		}
@@ -318,7 +413,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		}
 
 		int getNumber() {
-			return asColumnNumber(getIndex());
+			return RowColumn.asColumnNumber(getIndex());
 		}
 
 		boolean isPlayable() {
@@ -326,7 +421,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		}
 
 		int getRowIndex() {
-			return rowIndex(getRow());
+			return RowColumn.asRowIndex(getRow());
 		}
 
 		Column play(Disc disc) {
@@ -341,11 +436,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		}
 
 		private int nextRowIndex() {
-			return rowIndex(nextRow());
-		}
-
-		private int rowIndex(int row) {
-			return row - 1;
+			return RowColumn.asRowIndex(nextRow());
 		}
 
 		@Override
@@ -396,12 +487,66 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 			return of(playableColumns);
 		}
 
+		default boolean isEmpty() {
+			return size() < 1;
+		}
+
+		default boolean isNotEmpty() {
+			return !isEmpty();
+		}
+
 		default int size() {
 			return Long.valueOf(stream().count()).intValue();
 		}
 
 		default Stream<Column> stream() {
 			return StreamUtils.stream(this);
+		}
+	}
+
+	record RowColumn(int asRowNumber, int asColumnNumber) {
+
+		static final String REGEX = "R(\\d+),C(\\d+)";
+
+		static final Pattern PATTERN = Pattern.compile(REGEX);
+
+		static int asColumnIndex(int columnNumber) {
+			return columnNumber - 1;
+		}
+
+		static int asColumnNumber(int columnIndex) {
+			return columnIndex + 1;
+		}
+
+		static int asRowIndex(int rowNumber) {
+			return rowNumber - 1;
+		}
+
+		static int asRowNumber(int rowIndex) {
+			return rowIndex + 1;
+		}
+
+		static RowColumn parse(String value) {
+
+			Assert.hasText(value, () -> "Value [%s] to parse as a row/column is required".formatted(value));
+
+			Matcher matcher = PATTERN.matcher(value);
+
+			if (matcher.find()) {
+				int row = Integer.parseInt(matcher.group(1));
+				int column = Integer.parseInt(matcher.group(2));
+				return new RowColumn(row, column);
+			}
+
+			throw new IllegalArgumentException("Failed to parse row/column from [%s]".formatted(value));
+		}
+
+		int getColumnIndex() {
+			return asColumnIndex(asColumnNumber());
+		}
+
+		int getRowIndex() {
+			return asRowIndex(asRowNumber());
 		}
 	}
 
