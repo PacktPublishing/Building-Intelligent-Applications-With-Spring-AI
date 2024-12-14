@@ -34,10 +34,12 @@ import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
+import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.stream.StreamUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,7 +52,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama to implement the Connect 4 Game.
+ * {@link SpringBootApplication} using Spring AI with Ollama and either Google Gemini or OpenAI
+ * to implement the Connect 4 Game.
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel
@@ -59,20 +62,21 @@ import lombok.Getter;
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see <a href="https://en.wikipedia.org/wiki/Connect_Four">connect4</a>
  * @since 0.1.0
  */
 @SpringBootApplication
 @Profile(ConnectFourApplication.CONNECT_FOUR_PROFILE)
 @SuppressWarnings("unused")
-public class ConnectFourApplication extends AbstractSpringBootApplication {
+public class  ConnectFourApplication extends AbstractSpringBootApplication {
 
 	private static final int CONNECT_FOUR = 4;
 
-	private static final AiProvider PLAYER_ONE = SpringAiProvider.OLLAMA;
-	private static final AiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
-
 	private static final BiFunction<Integer, Integer, Integer> BI_FUNCTION_IDENTITY =
 		(argumentOne, argumentTwo) -> argumentOne;
+
+	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OLLAMA;
+	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
 
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
 
@@ -133,41 +137,58 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 					"availableMoves", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
 				);
 
-				String response = chatClient.prompt()
-					.system(SYSTEM_PROMPT_TEMPLATE)
-					.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
-					.call()
-					.content();
+				String response = promptAiModel(chatClient, promptTemplateArguments);
 
 				RowColumn rowColumn = RowColumn.parse(response);
 
-				boardGame.play(currentPlayerDisc, rowColumn.columnNumber());
+				boardGame.play(currentPlayerDisc, rowColumn);
 				boardGame.printGameBoard();
 
-				print("Hit <enter> to continue next play");
-				input.nextLine();
-
-				currentPlayer = currentPlayer == SpringAiProvider.OLLAMA
-					? SpringAiProvider.VERTEX_AI_GEMINI
-					: SpringAiProvider.OLLAMA;
+				print("%nHit <enter> to continue to next play");
+				waitForUserInput(input);
+				currentPlayer = switchPlayer(currentPlayer);
 			}
 
-			Disc winner = boardGame.getWinner();
-
-			if (winner != null) {
-
-				AiProvider winningAiProvider = playerDisc.entrySet().stream()
-					.filter(entry -> entry.getValue().equals(winner))
-					.map(Map.Entry::getKey).findFirst()
-					.orElseThrow(() -> new IllegalStateException("No AI provider mapped to Disc [%s]"
-						.formatted(winner)));
-
-				print("[%s] as [%s] wins!", winningAiProvider.getName(), winner.name());
-			}
-			else {
-				print("No Winner!");
-			}
+			endGame(boardGame, playerDisc);
 		};
+	}
+
+	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments) {
+
+		ChatResponse chatResponse = chatClient.prompt()
+			.system(SYSTEM_PROMPT_TEMPLATE)
+			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
+			.call()
+			.chatResponse();
+
+		return Utils.generatedContent(chatResponse);
+	}
+
+	private SpringAiProvider switchPlayer(AiProvider currentPlayer) {
+		return currentPlayer == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+	}
+
+	private void waitForUserInput(Scanner input) {
+		input.nextLine();
+	}
+
+	private void endGame(ConnectFourBoardGame boardGame, Map<AiProvider, Disc> playerDisc) {
+
+		Disc winner = boardGame.getWinner();
+
+		if (winner != null) {
+
+			AiProvider winningAiProvider = playerDisc.entrySet().stream()
+				.filter(entry -> entry.getValue().equals(winner))
+				.map(Map.Entry::getKey).findFirst()
+				.orElseThrow(() -> new IllegalStateException("No AI provider mapped to Disc [%s]"
+					.formatted(winner)));
+
+			print("[%s] as [%s] wins!", winningAiProvider.getName(), winner.name());
+		}
+		else {
+			print("No Winner!");
+		}
 	}
 
 	@Getter(AccessLevel.PROTECTED)
@@ -340,12 +361,17 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 				: null;
 		}
 
-		int subtract(int valueOne, int valueTwo) {
+		private int subtract(int valueOne, int valueTwo) {
 			return valueOne - valueTwo;
 		}
 
 		ConnectFourBoardGame play(Disc disc, int columnNumber) {
 			getColumns().findByColumnNumber(columnNumber).play(disc);
+			return this;
+		}
+
+		ConnectFourBoardGame play(Disc disc, RowColumn rowColumn) {
+			getColumns().findByColumnNumber(rowColumn.columnNumber()).play(disc);
 			return this;
 		}
 
