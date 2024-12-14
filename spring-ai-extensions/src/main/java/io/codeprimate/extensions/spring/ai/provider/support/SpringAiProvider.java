@@ -82,8 +82,8 @@ public enum SpringAiProvider implements AiProvider {
 
 	public static Optional<? extends AiProvider> findByModel(Model<?, ?> model) {
 
-		return findBy(aiProvider -> resolveAiProvider(aiProvider) instanceof SpringAiProvider namedAiProvider
-			&& namedAiProvider.getPredicate().test(model));
+		return findBy(aiProvider -> resolveAiProvider(aiProvider) instanceof SpringAiProvider springAiProvider
+			&& springAiProvider.getPredicate().test(model));
 	}
 
 	public static Optional<? extends AiProvider> findByName(String name) {
