@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -55,7 +55,7 @@ public class ConnectFourAiModelSwitchingIntegrationTests {
 
 		assertThat(this.chatModel).isNotNull();
 		assertThat(toConfiguredChatModelTypes(this.chatModel))
-			.containsExactlyInAnyOrder(OllamaChatModel.class, VertexAiGeminiChatModel.class);
+			.containsExactlyInAnyOrder(OpenAiChatModel.class, VertexAiGeminiChatModel.class);
 	}
 
 	private Iterable<Class<?>> toConfiguredChatModelTypes(Iterable<ChatModel> chatModels) {
@@ -71,12 +71,12 @@ public class ConnectFourAiModelSwitchingIntegrationTests {
 
 		this.chatModel.use(SpringAiProvider.OLLAMA);
 
-		ChatModel currentChatModel = this.chatModel.getCurrentChatModel();
+		ChatModel currentChatModel = Utils.resolveChatModel(this.chatModel.getCurrentChatModel());
 
-		assertThat(currentChatModel.getClass()).isEqualTo(OllamaChatModel.class);
+		assertThat(currentChatModel.getClass()).isEqualTo(OpenAiChatModel.class);
 
 		this.chatModel.use(SpringAiProvider.VERTEX_AI_GEMINI);
-		currentChatModel = this.chatModel.getCurrentChatModel();
+		currentChatModel = Utils.resolveChatModel(this.chatModel.getCurrentChatModel());
 
 		assertThat(currentChatModel.getClass()).isEqualTo(VertexAiGeminiChatModel.class);
 	}

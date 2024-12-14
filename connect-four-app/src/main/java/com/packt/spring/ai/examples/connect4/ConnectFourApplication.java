@@ -52,8 +52,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama and either Google Gemini or OpenAI
- * to implement the Connect 4 Game.
+ * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel
@@ -75,7 +74,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	private static final BiFunction<Integer, Integer, Integer> BI_FUNCTION_IDENTITY =
 		(argumentOne, argumentTwo) -> argumentOne;
 
-	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OLLAMA;
+	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
 	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
 
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
@@ -158,6 +157,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		ChatResponse chatResponse = chatClient.prompt()
 			.system(SYSTEM_PROMPT_TEMPLATE)
 			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
+			//.options(ChatOptionsBuilder.builder().withModel().build())
 			.call()
 			.chatResponse();
 
@@ -165,7 +165,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	}
 
 	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
-		SpringAiProvider nextPlayer = currentPlayer == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+		SpringAiProvider nextPlayer = currentPlayer.equals(PLAYER_ONE) ? PLAYER_TWO : PLAYER_ONE;
 		getLogger().info("Using AI provider model [{}]", chatModel.use(nextPlayer).getCurrentChatModel());
 		return nextPlayer;
 	}
