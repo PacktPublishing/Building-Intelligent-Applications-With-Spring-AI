@@ -40,11 +40,13 @@ import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.stream.StreamUtils;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -57,6 +59,7 @@ import lombok.Getter;
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel
  * @see io.codeprimate.extensions.spring.ai.config.EnableChatClient
+ * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
  * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
  * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.boot.ApplicationRunner
@@ -113,11 +116,12 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	}
 
 	@Bean
-	ApplicationRunner playGame(ChatClient chatClient, CompositeChatModel chatModel, ConnectFourBoardGame boardGame) {
+	ApplicationRunner playGame(Environment environment, ChatClient chatClient, CompositeChatModel chatModel,
+			ConnectFourBoardGame boardGame) {
 
 		return args -> {
 
-			AiProvider currentPlayer = PLAYER_ONE;
+			SpringAiProvider currentPlayer = PLAYER_ONE;
 
 			Map<AiProvider, Disc> playerDisc = Map.of(
 				PLAYER_ONE, Disc.RED,
@@ -136,7 +140,9 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 					"availableMoves", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
 				);
 
-				String response = promptAiModel(chatClient, promptTemplateArguments);
+				String model = resolveModel(environment, currentPlayer);
+
+				String response = promptAiModel(chatClient, promptTemplateArguments, model);
 
 				RowColumn rowColumn = RowColumn.parse(response);
 
@@ -152,16 +158,24 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		};
 	}
 
-	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments) {
+	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
 
 		ChatResponse chatResponse = chatClient.prompt()
 			.system(SYSTEM_PROMPT_TEMPLATE)
 			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
-			//.options(ChatOptionsBuilder.builder().withModel().build())
+			.options(ChatOptionsBuilder.builder().withModel(model).build())
 			.call()
 			.chatResponse();
 
 		return Utils.generatedContent(chatResponse);
+	}
+
+	private String resolveModel(Environment environment, SpringAiProvider aiProvider) {
+
+		String propertyName = SpringAiProvider.SPRING_AI_CHAT_OPTIONS_MODEL_PROPERTY_TEMPLATE
+			.formatted(aiProvider.getPropertyName());
+
+		return environment.getProperty(propertyName);
 	}
 
 	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
