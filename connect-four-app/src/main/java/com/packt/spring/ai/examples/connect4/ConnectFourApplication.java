@@ -68,7 +68,7 @@ import lombok.Getter;
 @SpringBootApplication
 @Profile(ConnectFourApplication.CONNECT_FOUR_PROFILE)
 @SuppressWarnings("unused")
-public class  ConnectFourApplication extends AbstractSpringBootApplication {
+public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	private static final int CONNECT_FOUR = 4;
 
@@ -146,7 +146,7 @@ public class  ConnectFourApplication extends AbstractSpringBootApplication {
 
 				print("%nHit <enter> to continue to next play");
 				waitForUserInput(input);
-				currentPlayer = switchPlayer(currentPlayer);
+				currentPlayer = switchPlayer(currentPlayer, chatModel);
 			}
 
 			endGame(boardGame, playerDisc);
@@ -164,8 +164,10 @@ public class  ConnectFourApplication extends AbstractSpringBootApplication {
 		return Utils.generatedContent(chatResponse);
 	}
 
-	private SpringAiProvider switchPlayer(AiProvider currentPlayer) {
-		return currentPlayer == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
+		SpringAiProvider nextPlayer = currentPlayer == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+		getLogger().info("Using AI provider model [{}]", chatModel.use(nextPlayer).getCurrentChatModel());
+		return nextPlayer;
 	}
 
 	private void waitForUserInput(Scanner input) {
