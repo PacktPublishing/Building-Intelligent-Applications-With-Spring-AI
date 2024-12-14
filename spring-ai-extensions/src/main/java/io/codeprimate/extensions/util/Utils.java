@@ -25,11 +25,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -108,10 +110,6 @@ public abstract class Utils {
 		return nullSafeString(ObjectUtils.getClassName(target));
 	}
 
-	public static String promptContent(Prompt prompt) {
-		return prompt != null ? prompt.getContents() : EMPTY_STRING;
-	}
-
 	public static <T extends Meter> Optional<T> meterFrom(MeterRegistry meterRegistry,
 			String meterName, Class<T> meterType) {
 
@@ -120,6 +118,17 @@ public abstract class Utils {
 			.filter(meterType::isInstance)
 			.map(meterType::cast)
 			.findFirst();
+	}
+
+	public static String promptContent(Prompt prompt) {
+		return prompt != null ? prompt.getContents() : EMPTY_STRING;
+	}
+
+	public static ChatModel resolveChatModel(ChatModel chatModel) {
+
+		return chatModel instanceof ChatModelWrapper chatModelWrapper
+			? chatModelWrapper.getChatModel()
+			: chatModel;
 	}
 
 	public static <T> Stream<T> stream(Iterable<T> iterable) {
