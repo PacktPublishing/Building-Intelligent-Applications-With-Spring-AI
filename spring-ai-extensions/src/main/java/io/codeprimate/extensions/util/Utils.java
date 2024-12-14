@@ -29,7 +29,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.cp.elements.lang.ObjectUtils;
-import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -65,7 +65,14 @@ public abstract class Utils {
 
 		return Optional.ofNullable(generation)
 			.map(Generation::getOutput)
-			.map(AssistantMessage::getContent)
+			.map(Utils::generatedContent)
+			.orElse(EMPTY_STRING);
+	}
+
+	public static String generatedContent(Message message) {
+
+		return Optional.ofNullable(message)
+			.map(Message::getContent)
 			.orElse(EMPTY_STRING);
 	}
 
