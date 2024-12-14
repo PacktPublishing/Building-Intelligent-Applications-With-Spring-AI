@@ -596,7 +596,7 @@ public class  ConnectFourApplication extends AbstractSpringBootApplication {
 			else {
 				matcher = COLUMN_PATTERN.matcher(value);
 				if (matcher.find()) {
-					int column = Integer.parseInt(matcher.group());
+					int column = Integer.parseInt(StringUtils.getDigits(matcher.group()));
 					return new RowColumn(-1, column);
 				}
 			}
