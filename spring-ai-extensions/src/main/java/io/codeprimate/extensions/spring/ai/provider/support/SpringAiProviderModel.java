@@ -46,7 +46,10 @@ public record SpringAiProviderModel(SpringAiProvider aiProvider, Model<?, ?> mod
 	}
 
 	private static Model<?, ?> resolveModel(Model<?, ?> model) {
-		return model instanceof ChatModelWrapper chatModelWrapper ? chatModelWrapper.getChatModel() : model;
+
+		return model instanceof ChatModelWrapper chatModelWrapper
+			? chatModelWrapper.getChatModel()
+			: model;
 	}
 
 	public SpringAiProviderModel {
