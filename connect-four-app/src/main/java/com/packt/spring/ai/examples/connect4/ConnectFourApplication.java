@@ -80,7 +80,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
 
-	private final String SYSTEM_PROMPT_TEMPLATE = """
+	private static final String SYSTEM_PROMPT_TEMPLATE = """
 		You are a player in the 2-player game Connect 4. The game board is 6 rows by 7 columns. Let R1 represent row 1.
 		Let R2 represent row 2 and so up to R6 representing row 6. Let C1 represent column 1. Let C2 represent column 2
 		and so on up to C7 representing column 7. Your objective is to connect 4 adjacent chips of the same color
@@ -93,7 +93,7 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		and 'RED'. You will play until you or your opponent connects 4, or there are no more available moves.
 	""";
 
-	private final String USER_PROMPT_TEMPLATE = """
+	private static final String USER_PROMPT_TEMPLATE = """
         The current state of the game board is {gameBoard}. Your chip color is {playerColor}. Your possible moves
         by column are {availableMoves}. Try to connect 4 or block your opponent. You have a single move. What is
         your move?
