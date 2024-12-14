@@ -33,13 +33,13 @@ import org.springframework.ai.model.Model;
  * @see org.springframework.ai.model.Model
  */
 @SuppressWarnings("unused")
-public record SpringAiProviderModel(AiProvider aiProvider, Model<?, ?> model) implements AiProvider {
+public record SpringAiProviderModel(SpringAiProvider aiProvider, Model<?, ?> model) implements AiProvider {
 
 	public static SpringAiProviderModel from(Model<?, ?> model) {
 
 		Model<?, ?> resolvedModel = resolveModel(model);
 
-		AiProvider aiProvider = SpringAiProvider.findByModel(resolvedModel)
+		SpringAiProvider aiProvider = (SpringAiProvider) SpringAiProvider.findByModel(resolvedModel)
 			.orElseThrow(() -> AiProviderNotFoundException.from(resolvedModel));
 
 		return new SpringAiProviderModel(aiProvider, resolvedModel);
