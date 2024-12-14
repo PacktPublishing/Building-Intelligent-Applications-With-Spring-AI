@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import io.codeprimate.extensions.util.Utils;
@@ -201,6 +203,35 @@ public abstract class AbstractSpringBootApplication {
 
 	private boolean isNotExit(String value) {
 		return !isExit(value);
+	}
+
+	private void logAtLevel(Predicate<Logger> levelPredicate, Consumer<Logger> logConsumer) {
+
+		Logger logger = getLogger();
+
+		if (levelPredicate.test(logger)) {
+			logConsumer.accept(logger);
+		}
+	}
+
+	protected void logDebug(String message, Object... arguments) {
+		logAtLevel(Logger::isDebugEnabled, logger -> logger.debug(message, arguments));
+	}
+
+	protected void logTrace(String message, Object... arguments) {
+		logAtLevel(Logger::isTraceEnabled, logger -> logger.trace(message, arguments));
+	}
+
+	protected void logInfo(String message, Object... arguments) {
+		logAtLevel(Logger::isInfoEnabled, logger -> logger.info(message, arguments));
+	}
+
+	protected void logWarn(String message, Object... arguments) {
+		logAtLevel(Logger::isWarnEnabled, logger -> logger.warn(message, arguments));
+	}
+
+	protected void logError(String message, Object... arguments) {
+		logAtLevel(Logger::isErrorEnabled, logger -> logger.error(message, arguments));
 	}
 
 	protected String outputAiResponse(ChatResponse chatResponse) {
