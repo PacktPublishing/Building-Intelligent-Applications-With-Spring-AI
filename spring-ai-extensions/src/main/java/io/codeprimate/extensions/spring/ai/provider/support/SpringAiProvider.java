@@ -43,36 +43,40 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public enum SpringAiProvider implements AiProvider {
 
-	ANTHROPIC("Anthropic", match("anthropic").or(match("claude"))),
-	AZURE_OPEN_AI("Microsoft Azure OpenAI", match("azure").and(match("openai"))),
-	BEDROCK_ANTHROPIC3("Amazon Bedrock Anthropic3", match("bedrock").and(match("anthropic3"))),
-	BEDROCK_ANTHROPIC("Amazon Bedrock Anthropic", match("bedrock").and(match("anthropic"))),
-	BEDROCK_COHERE("Amazon Bedrock Cohere", match("bedrock").and(match("cohere"))),
-	BEDROCK_CONVERSE("Amazon Bedrock Converse", match("bedrock").and(match("converse").or(match("proxy")))),
-	BEDROCK_JURASSIC2("Amazon Bedrock AI21 Jurassic2", match("bedrock").and(match("jurassic2"))),
-	BEDROCK_LLAMA("Amazon Bedrock Llama", match("bedrock").and(match("llama"))),
-	BEDROCK_TITAN("Amazon Bedrock Titan", match("bedrock").and(match("titan"))),
-	HUGGING_FACE("Hugging Face", match("huggingface")),
-	MINI_MAX("MiniMax AI", match("minimax")),
-	MISTRAL_AI("Mistral AI", match("mistral")),
-	MOCK("Mock AI", match("mock")),
-	MOONSHOT("Moonshot AI", match("moonshot")),
-	OCI_COHERE("Oracle OCI Cohere AI", match("oci").and(match("cohere"))),
-	OCI("Oracle OCI AI", match("oci")),
-	OLLAMA("Ollama", match("ollama")),
-	OPEN_AI("OpenAI", match("openai")),
-	POSTGRES_ML("Postgres ML", match("postgres")),
-	QIAN_FAN("Qian Fan AI", match("qianfan")),
-	STABILITY("Stability AI", match("stability")),
-	VERTEX_AI_GEMINI("Google Vertex AI Gemini", match("gemini")),
-	WATSONX("IBM Watsonx AI", match("watson")),
-	ZHI_PU("Zhipu AI", match("zhipu"));
+	ANTHROPIC("Anthropic", "anthropic", match("anthropic").or(match("claude"))),
+	AZURE_OPEN_AI("Microsoft Azure OpenAI", "azure.openai", match("azure").and(match("openai"))),
+	BEDROCK_ANTHROPIC3("Amazon Bedrock Anthropic3", "bedrock.anthropic3", match("bedrock").and(match("anthropic3"))),
+	BEDROCK_ANTHROPIC("Amazon Bedrock Anthropic", "bedrock.anthropic", match("bedrock").and(match("anthropic"))),
+	BEDROCK_COHERE("Amazon Bedrock Cohere", "bedrock.cohere", match("bedrock").and(match("cohere"))),
+	BEDROCK_CONVERSE("Amazon Bedrock Converse", "?", match("bedrock").and(match("converse").or(match("proxy")))),
+	BEDROCK_JURASSIC2("Amazon Bedrock AI21 Jurassic2", "bedrock.jurassic2", match("bedrock").and(match("jurassic2"))),
+	BEDROCK_LLAMA("Amazon Bedrock Llama", "bedrock.llama", match("bedrock").and(match("llama"))),
+	BEDROCK_TITAN("Amazon Bedrock Titan", "bedrock.titan", match("bedrock").and(match("titan"))),
+	HUGGING_FACE("Hugging Face", "huggingface", match("huggingface")),
+	MINI_MAX("MiniMax AI", "minimax", match("minimax")),
+	MISTRAL_AI("Mistral AI", "mistralai", match("mistral")),
+	MOCK("Mock AI", "mock-ai", match("mock")),
+	MOONSHOT("Moonshot AI", "moonshot", match("moonshot")),
+	OCI_COHERE("Oracle OCI Cohere AI", "oci.genai.chat.cohere", match("oci").and(match("cohere"))),
+	OCI("Oracle OCI AI", "oci.genai", match("oci")),
+	OLLAMA("Ollama", "ollama", match("ollama")),
+	OPEN_AI("OpenAI", "openai", match("openai")),
+	POSTGRES_ML("Postgres ML", "postgresml", match("postgres")),
+	QIAN_FAN("Qian Fan AI", "qianfan", match("qianfan")),
+	STABILITY("Stability AI", "stabilityai", match("stability")),
+	VERTEX_AI_GEMINI("Google Vertex AI Gemini", "vertex.ai.gemini", match("gemini")),
+	WATSONX("IBM Watsonx AI", "watsonx", match("watson")),
+	ZHI_PU("Zhipu AI", "zhipuai", match("zhipu"));
+
+	public static final String SPRING_AI_CHAT_OPTIONS_MODEL_PROPERTY_TEMPLATE = "spring.ai.%s.chat.options.model";
 
 	private final String name;
+	private final String propertyName;
 	private final Predicate<Object> predicate;
 
-	SpringAiProvider(String name, Predicate<Object> predicate) {
+	SpringAiProvider(String name, String propertyName, Predicate<Object> predicate) {
 		this.name = StringUtils.requireText(name, "Name of AI provider is required");
+		this.propertyName = StringUtils.requireText(propertyName, "AI provider property name is required");
 		this.predicate = ObjectUtils.requireObject(predicate, "Predicate used to match an enum is required");
 	}
 
