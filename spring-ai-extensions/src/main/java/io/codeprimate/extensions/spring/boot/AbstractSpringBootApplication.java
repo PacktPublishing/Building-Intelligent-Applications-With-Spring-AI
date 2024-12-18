@@ -30,6 +30,7 @@ import io.codeprimate.extensions.util.Utils;
 import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.util.ArrayUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -43,8 +44,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Abstract base class for all {@link SpringBootApplication SpringBootApplications}.
  *
@@ -56,7 +55,6 @@ import lombok.extern.slf4j.Slf4j;
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  * @see org.springframework.context.ConfigurableApplicationContext
  */
-@Slf4j
 @SuppressWarnings("unused")
 public abstract class AbstractSpringBootApplication {
 
@@ -79,6 +77,8 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String USER_PROMPT = "user> %s";
 
 	protected static final String[] NO_PROFILES = new String[0];
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected static ConfigurableApplicationContext getApplicationContext() {
 		return applicationContext;
@@ -194,7 +194,7 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	protected Logger getLogger() {
-		return log;
+		return this.logger;
 	}
 
 	private boolean isExit(String value) {
