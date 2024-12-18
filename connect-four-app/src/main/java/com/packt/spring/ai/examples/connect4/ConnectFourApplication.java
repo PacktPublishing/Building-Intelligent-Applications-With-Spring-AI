@@ -39,7 +39,9 @@ import io.codeprimate.extensions.util.Utils;
 import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.stream.StreamUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
@@ -140,16 +142,20 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 					"availableMoves", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
 				);
 
+				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
+
 				String model = resolveModel(environment, currentPlayer);
 
 				String response = promptAiModel(chatClient, promptTemplateArguments, model);
+
+				logDebug("AI model response [{}]", response);
 
 				RowColumn rowColumn = RowColumn.parse(response);
 
 				boardGame.play(currentPlayerDisc, rowColumn);
 				boardGame.printGameBoard();
 
-				print("%nHit <enter> to continue to next play");
+				print("%nHit <enter> to continue to next play ");
 				waitForUserInput(input);
 				currentPlayer = switchPlayer(currentPlayer, chatModel);
 			}
@@ -163,11 +169,15 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 		ChatResponse chatResponse = chatClient.prompt()
 			.system(SYSTEM_PROMPT_TEMPLATE)
 			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
-			.options(ChatOptionsBuilder.builder().withModel(model).build())
+			.options(buildChatOptions(model))
 			.call()
 			.chatResponse();
 
 		return Utils.generatedContent(chatResponse);
+	}
+
+	private ChatOptions buildChatOptions(String model) {
+		return ChatOptionsBuilder.builder().withModel(model).build();
 	}
 
 	private String resolveModel(Environment environment, SpringAiProvider aiProvider) {
@@ -180,7 +190,8 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
 		SpringAiProvider nextPlayer = currentPlayer.equals(PLAYER_ONE) ? PLAYER_TWO : PLAYER_ONE;
-		getLogger().info("Using AI provider model [{}]", chatModel.use(nextPlayer).getCurrentChatModel());
+		ChatModel currentChatModel = chatModel.use(nextPlayer).getCurrentChatModel();
+		getLogger().info("Using AI provider model [{}]", currentChatModel);
 		return nextPlayer;
 	}
 
