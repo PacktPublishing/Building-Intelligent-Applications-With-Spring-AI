@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import io.codeprimate.extensions.util.Utils;
@@ -215,23 +216,43 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	protected void logDebug(String message, Object... arguments) {
-		logAtLevel(Logger::isDebugEnabled, logger -> logger.debug(message, arguments));
+		logDebug(message, () -> arguments);
+	}
+
+	protected void logDebug(String message, Supplier<Object[]> arguments) {
+		logAtLevel(Logger::isDebugEnabled, logger -> logger.debug(message, arguments.get()));
 	}
 
 	protected void logTrace(String message, Object... arguments) {
-		logAtLevel(Logger::isTraceEnabled, logger -> logger.trace(message, arguments));
+		logTrace(message, () -> arguments);
+	}
+
+	protected void logTrace(String message, Supplier<Object[]> arguments) {
+		logAtLevel(Logger::isTraceEnabled, logger -> logger.trace(message, arguments.get()));
 	}
 
 	protected void logInfo(String message, Object... arguments) {
-		logAtLevel(Logger::isInfoEnabled, logger -> logger.info(message, arguments));
+		logInfo(message, () -> arguments);
+	}
+
+	protected void logInfo(String message, Supplier<Object[]> arguments) {
+		logAtLevel(Logger::isInfoEnabled, logger -> logger.info(message, arguments.get()));
 	}
 
 	protected void logWarn(String message, Object... arguments) {
-		logAtLevel(Logger::isWarnEnabled, logger -> logger.warn(message, arguments));
+		logWarn(message, () -> arguments);
+	}
+
+	protected void logWarn(String message, Supplier<Object[]> arguments) {
+		logAtLevel(Logger::isWarnEnabled, logger -> logger.warn(message, arguments.get()));
 	}
 
 	protected void logError(String message, Object... arguments) {
-		logAtLevel(Logger::isErrorEnabled, logger -> logger.error(message, arguments));
+		logError(message, () -> arguments);
+	}
+
+	protected void logError(String message, Supplier<Object[]> arguments) {
+		logAtLevel(Logger::isErrorEnabled, logger -> logger.error(message, arguments.get()));
 	}
 
 	protected String outputAiResponse(ChatResponse chatResponse) {
