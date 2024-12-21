@@ -85,22 +85,18 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 	protected static final String CONNECT_FOUR_PROFILE = "connect4";
 
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
-		You are a player in the 2-player game Connect 4. The game board is 6 rows by 7 columns. Let R1 represent row 1.
-		Let R2 represent row 2 and so up to R6 representing row 6. Let C1 represent column 1. Let C2 represent column 2
-		and so on up to C7 representing column 7. Your objective is to connect 4 adjacent chips of the same color
-		horizontally in a single row, or vertically in a single column, or diagonally by row and column. For example,
-		you can connect 4 chips in a row with [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. You can also connect 4 chips by column,
-		for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. And, you can connect 4 chips diagonally, for example:
-		[(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. If you connect 4 adjacent chips, you win! You must also be careful to prevent
-		your opponent from connecting 4. The first player to connect 4 adjacent chips wins! A position on the game board
-		maybe empty, for example (R1,C1)=empty, or contain a chip, for example (R2,C4)=GOLD. Chip colors are 'GOLD'
-		and 'RED'. You will play until you or your opponent connects 4, or there are no more available moves.
+		You are a player in the 2-player game Connect 4. To win connect 4 adjacent discs of the same color before your
+		opponent. The game board is 6 rows by 7 columns. R1 represent row 1. R2 represents row 2 up to R6 representing
+		row 6. C1 represents column 1, C2 represents column 2 up to C7 representing column 7. You can connect 4 adjacent
+		chips in the same row, for example: [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. Or, you can connect 4 adjacent chips in
+		the same column, for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. Or, you can connect 4 adjacent chips diagonally,
+		in adjacent rows and columns, for example: [(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. The first player to connect 4
+		adjacent chips wins! Play continues until someone wins or there are no more available moves.
 	""";
 
 	private static final String USER_PROMPT_TEMPLATE = """
-        The current state of the game board is {gameBoard}. Your chip color is {playerColor}. Your possible moves
-        by column are {availableMoves}. Try to connect 4 or block your opponent. You have a single move. What is
-        your move?
+        The current state of the game board is {gameBoard}. Your chip color is {playerColor}. You may play 1 of the
+        available columns {availableColumns}. Respond with only 1 of the given columns. What is your move?
     """;
 
 	public static void main(String[] args) {
@@ -139,10 +135,11 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 				Map<String, Object> promptTemplateArguments = Map.of(
 					"gameBoard", Arrays.toString(boardGame.getGameBoardStateBySymbol()),
 					"playerColor", currentPlayerDisc.name(),
-					"availableMoves", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
+					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
 				);
 
 				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
+				logDebug("Playable Columns {}", Arrays.toString(boardGame.getPlayableColumnsBySymbol()));
 
 				String model = resolveModel(environment, currentPlayer);
 
