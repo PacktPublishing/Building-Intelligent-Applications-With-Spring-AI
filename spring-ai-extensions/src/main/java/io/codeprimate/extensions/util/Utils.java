@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -46,6 +47,14 @@ public abstract class Utils {
 
 	public static final String EMPTY_STRING = "";
 	public static final String SINGLE_SPACE = " ";
+
+	public static <T, S> BiFunction<T, S, T> biFunctionReturnArgumentOne() {
+		return (argumentOne, argumentTwo) -> argumentOne;
+	}
+
+	public static <T, S> BiFunction<T, S, S> biFunctionReturnArgumentTwo() {
+		return (argumentOne, argumentTwo) -> argumentTwo;
+	}
 
 	public static <T> T defaultIfNull(T value, T defaultValue) {
 		return defaultIfNull(value, () -> defaultValue);

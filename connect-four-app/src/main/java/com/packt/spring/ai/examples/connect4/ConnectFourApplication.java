@@ -76,9 +76,6 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 	private static final int CONNECT_FOUR = 4;
 
-	private static final BiFunction<Integer, Integer, Integer> BI_FUNCTION_IDENTITY =
-		(argumentOne, argumentTwo) -> argumentOne;
-
 	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
 	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
 
@@ -374,14 +371,14 @@ public class ConnectFourApplication extends AbstractSpringBootApplication {
 
 		private Disc checkConnectFourForward(Disc disc, int rowIndex, int columnIndex) {
 			return isForwardPossible(columnIndex)
-				? checkConnectFour(disc, rowIndex, columnIndex, BI_FUNCTION_IDENTITY, Integer::sum)
+				? checkConnectFour(disc, rowIndex, columnIndex, Utils.biFunctionReturnArgumentOne(), Integer::sum)
 				: null;
 		}
 
 		private Disc checkConnectFourUp(Disc disc, int rowIndex, int columnIndex) {
 
 			return isUpPossible(rowIndex)
-				? checkConnectFour(disc, rowIndex, columnIndex, Integer::sum, BI_FUNCTION_IDENTITY)
+				? checkConnectFour(disc, rowIndex, columnIndex, Integer::sum, Utils.biFunctionReturnArgumentOne())
 				: null;
 		}
 
