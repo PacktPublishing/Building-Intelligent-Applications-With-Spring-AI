@@ -23,7 +23,7 @@ import com.knuddels.jtokkit.api.EncodingRegistry;
 
 import io.codeprimate.tools.spring.ai.tokens.jtokkit.api.EncodingWrapper;
 import io.codeprimate.tools.spring.ai.tokens.service.TokenizerService;
-import io.codeprimate.tools.spring.ai.tokens.util.ModelNotFoundException;
+import io.codeprimate.extensions.spring.ai.provider.model.ModelNotFoundException;
 
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;

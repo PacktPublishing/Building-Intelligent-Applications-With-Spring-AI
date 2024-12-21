@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.codeprimate.tools.spring.ai.tokens.util;
+package io.codeprimate.extensions.spring.ai.provider.model;
 
 /**
  * Java {@link RuntimeException} thrown when a AI model cannot be found by {@link String name}.
