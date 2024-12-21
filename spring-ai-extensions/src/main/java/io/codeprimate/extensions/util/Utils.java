@@ -35,6 +35,8 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
 import org.springframework.ai.chat.prompt.Prompt;
 
 /**
@@ -54,6 +56,10 @@ public abstract class Utils {
 
 	public static <T, S> BiFunction<T, S, S> biFunctionReturnArgumentTwo() {
 		return (argumentOne, argumentTwo) -> argumentTwo;
+	}
+
+	public static ChatOptions buildChatOptions(String model) {
+		return ChatOptionsBuilder.builder().withModel(model).build();
 	}
 
 	public static <T> T defaultIfNull(T value, T defaultValue) {
