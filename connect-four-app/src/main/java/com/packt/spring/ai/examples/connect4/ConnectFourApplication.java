@@ -154,7 +154,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
-		SpringAiProvider nextPlayer = currentPlayer.equals(PLAYER_ONE) ? PLAYER_TWO : PLAYER_ONE;
+		SpringAiProvider nextPlayer = PLAYER_ONE.equals(currentPlayer) ? PLAYER_TWO : PLAYER_ONE;
 		ChatModel currentChatModel = chatModel.use(nextPlayer).getCurrentChatModel();
 		getLogger().info("Using AI provider model [{}]", currentChatModel);
 		return nextPlayer;
