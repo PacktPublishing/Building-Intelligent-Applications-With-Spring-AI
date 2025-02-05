@@ -24,21 +24,24 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -105,26 +108,27 @@ public class SongSimilaritySearchApplication {
 	}
 
 	@Bean
-	VectorStore vectorStore(EmbeddingModel embeddingModel) {
-		return new SimpleVectorStore(embeddingModel);
+	DecoratedSimpleVectorStore vectorStore(EmbeddingModel embeddingModel) {
+		return new DecoratedSimpleVectorStore(embeddingModel);
 	}
 
 	@Bean
 	@Profile("!vector-similarity")
-	ApplicationRunner programRunner(VectorStore vectorStore, ObjectMapper objectMapper) {
+	ApplicationRunner programRunner(DecoratedSimpleVectorStore vectorStore, ObjectMapper objectMapper) {
 
 		return args -> {
 
-			loadSongs(objectMapper, vectorStore);
+			loadSongs(objectMapper, embeddingFunction(vectorStore));
 
 			print("Using Similarity Threshold [%s]%n", SIMILARITY_THRESHOLD);
 			print("Using Top K [%d]%n", TOP_K);
 
 			List.of("alive", "back in black", "do I deserve to be").forEach(query -> {
 
-				SearchRequest searchRequest = SearchRequest.query(query)
-					.withSimilarityThreshold(SIMILARITY_THRESHOLD)
-					.withTopK(TOP_K);
+				SearchRequest searchRequest = newSearchRequest(query)
+					.similarityThreshold(SIMILARITY_THRESHOLD)
+					.topK(TOP_K)
+					.build();
 
 				List<Document> similarDocuments = vectorStore.similaritySearch(searchRequest);
 
@@ -143,8 +147,7 @@ public class SongSimilaritySearchApplication {
 
 	@Bean
 	@Profile("vector-similarity")
-	ApplicationRunner vectorSimilarity(VectorStore vectorStore, ObjectMapper objectMapper,
-		EmbeddingModel embeddingModel) {
+	ApplicationRunner vectorSimilarity(ObjectMapper objectMapper, EmbeddingModel embeddingModel) {
 
 		return args -> {
 
@@ -161,7 +164,7 @@ public class SongSimilaritySearchApplication {
 
 			float[] queryEmbedding = embeddingModel.embed(textSplitter.preProcess(query));
 
-			loadSongs(objectMapper, vectorStore).forEach(document -> {
+			loadSongs(objectMapper, embeddingFunction(embeddingModel)).forEach(document -> {
 
 				float[] documentEmbedding = document.getEmbedding();
 
@@ -170,15 +173,28 @@ public class SongSimilaritySearchApplication {
 
 				if (SHOW_ALL || cosineSimilarity >= SIMILARITY_THRESHOLD) {
 					print("Document [%s] Content [%s] compare to Query [%s] has Cosine Similarity: %s%n%n",
-						document.getId(), document.getContent(), query, cosineSimilarity);
+						document.getId(), document.getText(), query, cosineSimilarity);
 				}
 			});
 		};
 	}
 
-	protected List<Document> loadSongs(ObjectMapper objectMapper, VectorStore vectorStore) {
+	protected Function<Document, EmbeddedDocument> embeddingFunction(DecoratedSimpleVectorStore vectorStore) {
 
-		List<Document> documents = Arrays.stream(SONG_JSON_FILES)
+		return document -> {
+			vectorStore.add(document);
+			return vectorStore.get(document.getId());
+		};
+	}
+
+	protected Function<Document, EmbeddedDocument> embeddingFunction(EmbeddingModel embeddingModel) {
+		return EmbeddingModelWrapper.from(embeddingModel)::embedThenReturn;
+	}
+
+	protected List<EmbeddedDocument> loadSongs(ObjectMapper objectMapper,
+			Function<Document, EmbeddedDocument> embeddingFunction) {
+
+		return Arrays.stream(SONG_JSON_FILES)
 			.filter(songPredicate())
 			.map(ClassPathResource::new)
 			.map(doSafely(ClassPathResource::getContentAsByteArray))
@@ -186,11 +202,8 @@ public class SongSimilaritySearchApplication {
 			.map(this::logSong)
 			.map(Song::toChunkedDocuments)
 			.flatMap(List::stream)
+			.map(embeddingFunction)
 			.toList();
-
-		vectorStore.accept(documents);
-
-		return documents;
 	}
 
 	private Song logSong(Song song) {
@@ -207,6 +220,10 @@ public class SongSimilaritySearchApplication {
 		}
 	}
 
+	protected SearchRequest.Builder newSearchRequest(String query) {
+		return new SearchRequest.Builder().query(query);
+	}
+
 	protected void print(String message, Object... arguments) {
 		System.out.printf(message, arguments);
 		System.out.flush();
@@ -218,7 +235,7 @@ public class SongSimilaritySearchApplication {
 		Predicate<String> songPredicate = song -> true;
 
 		Predicate<String> songArtistPredicate = IntStream.range(0, SONG_JSON_FILES.length)
-			//Predicate<String> songArtistPredicate =  IntStream.of(1, 2)
+		//Predicate<String> songArtistPredicate =  IntStream.of(1, 2)
 			.mapToObj(index -> SONG_JSON_FILES[index])
 			.<Predicate<String>>map(song -> song::equalsIgnoreCase)
 			.reduce(Predicate::or)
@@ -256,7 +273,7 @@ public class SongSimilaritySearchApplication {
 			return Song.builder()
 				.artist(titleAndArtist[1].trim())
 				.title(titleAndArtist[0].trim())
-				.lyrics(document.getContent())
+				.lyrics(document.getText())
 				.build();
 		}
 
@@ -294,8 +311,8 @@ public class SongSimilaritySearchApplication {
 			for (TextSplitter textSplitter : getTextSplitters()) {
 
 				List<Document> documents = textSplitter.split(toDocument()).stream()
-					.filter(document -> StringUtils.hasText(document.getContent()))
-					.map(document -> buildDocument(getIdWithCount(), document.getContent()))
+					.filter(document -> StringUtils.hasText(document.getText()))
+					.map(document -> buildDocument(getIdWithCount(), document.getText()))
 					.toList();
 
 				chunkedDocuments.addAll(documents);
@@ -311,8 +328,8 @@ public class SongSimilaritySearchApplication {
 		private Document buildDocument(String id, String content) {
 
 			return Document.builder()
-				.withContent(content)
-				.withId(id)
+				.text(content)
+				.id(id)
 				.build();
 		}
 
