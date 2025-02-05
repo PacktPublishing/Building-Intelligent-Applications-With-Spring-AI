@@ -18,13 +18,13 @@ package io.codeprimate.extensions.spring.ai.vectorstore;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.codeprimate.extensions.util.Utils;
-import io.micrometer.observation.ObservationRegistry;
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
-import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
+import org.springframework.ai.vectorstore.SimpleVectorStoreContent;
+import org.springframework.lang.NonNull;
 
 /**
  * Decorated {@link SimpleVectorStore} that stores {@link Document embedded documents}
@@ -35,22 +35,21 @@ import org.springframework.ai.vectorstore.observation.VectorStoreObservationConv
  * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.vectorstore.SimpleVectorStore
  * @see <a href="https://en.wikipedia.org/wiki/Decorator_pattern">Decorator Software Design Pattern</a>
+ * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 
 	public DecoratedSimpleVectorStore(EmbeddingModel embeddingModel) {
-		super(embeddingModel);
+		super(SimpleVectorStore.builder(embeddingModel));
 	}
 
-	public DecoratedSimpleVectorStore(EmbeddingModel embeddingModel, ObservationRegistry observationRegistry,
-			VectorStoreObservationConvention customObservationConvention) {
-
-		super(embeddingModel, observationRegistry, customObservationConvention);
+	public DecoratedSimpleVectorStore(SimpleVectorStoreBuilder vectorStoreBuilder) {
+		super(vectorStoreBuilder);
 	}
 
 	@Override
-	public void accept(List<Document> documents) {
+	public void accept(@NonNull List<Document> documents) {
 
 		List<Document> embeddedDocuments = store(documents);
 
@@ -68,17 +67,19 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	private List<Document> store(List<Document> documents) {
 
 		return documents.stream()
-			.filter(this::isEmbeddingPresent)
+			.filter(EmbeddedDocument::isEmbeddingPresent)
+			.map(EmbeddedDocument.class::cast)
 			.map(this::store)
 			.toList();
 	}
 
-	private Document store(Document document) {
-		this.store.put(document.getId(), document);
+	private Document store(EmbeddedDocument document) {
+		this.store.put(document.getId(), simpleVectorStoreContent(document));
 		return document;
 	}
 
-	private boolean isEmbeddingPresent(Document document) {
-		return document != null && Utils.isNotEmpty(document.getEmbedding());
+	private SimpleVectorStoreContent simpleVectorStoreContent(EmbeddedDocument document) {
+		return new SimpleVectorStoreContent(document.getId(), document.getText(), document.getMetadata(),
+			document.getEmbedding());
 	}
 }

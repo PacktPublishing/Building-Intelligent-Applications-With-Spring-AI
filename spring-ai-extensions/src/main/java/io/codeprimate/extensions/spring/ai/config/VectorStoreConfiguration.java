@@ -15,14 +15,12 @@
  */
 package io.codeprimate.extensions.spring.ai.config;
 
-import java.util.function.Supplier;
-
 import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.vectorstore.observation.DefaultVectorStoreObservationConvention;
 import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -49,18 +47,25 @@ public class VectorStoreConfiguration {
 			@Autowired(required = false) ObservationRegistry observationRegistry,
 			@Autowired(required = false) VectorStoreObservationConvention observationConvention) {
 
-		Supplier<VectorStoreObservationConvention> observationConventionResolver =
-			() -> resolveObservationConvention(observationConvention);
+		SimpleVectorStore.SimpleVectorStoreBuilder vectorStoreBuilder =
+			simpleVectorStoreBuilder(embeddingModel, observationRegistry, observationConvention);
 
-		return observationRegistry != null
-			? new DecoratedSimpleVectorStore(embeddingModel, observationRegistry, observationConventionResolver.get())
-			: new DecoratedSimpleVectorStore(embeddingModel);
+		return new DecoratedSimpleVectorStore(vectorStoreBuilder);
 	}
 
-	protected VectorStoreObservationConvention resolveObservationConvention(
-			VectorStoreObservationConvention observationConvention) {
+	protected SimpleVectorStore.SimpleVectorStoreBuilder simpleVectorStoreBuilder(EmbeddingModel embeddingModel,
+			ObservationRegistry observationRegistry, VectorStoreObservationConvention observationConvention) {
 
-		return observationConvention != null ? observationConvention
-			: new DefaultVectorStoreObservationConvention();
+		SimpleVectorStore.SimpleVectorStoreBuilder vectorStoreBuilder = SimpleVectorStore.builder(embeddingModel);
+
+		vectorStoreBuilder = observationRegistry != null
+			? vectorStoreBuilder.observationRegistry(observationRegistry)
+			: vectorStoreBuilder;
+
+		vectorStoreBuilder = observationConvention != null
+			? vectorStoreBuilder.customObservationConvention(observationConvention)
+			: vectorStoreBuilder;
+
+		return vectorStoreBuilder;
 	}
 }
