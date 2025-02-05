@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.codeprimate.extensions.spring.ai.document.DocumentNotFoundException;
 import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
 import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
 
@@ -46,6 +47,8 @@ import org.springframework.lang.NonNull;
 @SuppressWarnings("unused")
 public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 
+	protected static final double SCORE = 0.0d;
+
 	public DecoratedSimpleVectorStore(@NonNull EmbeddingModel embeddingModel) {
 		super(SimpleVectorStoreBuilderSupport.builder(embeddingModel));
 	}
@@ -67,6 +70,19 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	public void add(@NonNull Document document) {
 		Assert.notNull(document, "Document to add is required");
 		accept(Collections.singletonList(document));
+	}
+
+	@SuppressWarnings("all")
+	public EmbeddedDocument get(String documentId) {
+
+		SimpleVectorStoreContent vectorStoreContent = this.store.get(documentId);
+
+		Assert.state(vectorStoreContent != null, DocumentNotFoundException.forDocumentId(documentId));
+
+		Document document = vectorStoreContent.toDocument(SCORE);
+
+		return EmbeddedDocument.from(document)
+			.withEmbedding(vectorStoreContent.getEmbedding());
 	}
 
 	private List<Document> reduce(List<Document> source, List<Document> exclude) {
