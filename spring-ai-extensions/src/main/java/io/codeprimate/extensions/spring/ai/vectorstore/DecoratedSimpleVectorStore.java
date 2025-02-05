@@ -16,14 +16,18 @@
 package io.codeprimate.extensions.spring.ai.vectorstore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
 
+import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.SimpleVectorStoreContent;
+import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
 import org.springframework.lang.NonNull;
 
 /**
@@ -34,18 +38,20 @@ import org.springframework.lang.NonNull;
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.vectorstore.SimpleVectorStore
+ * @see io.codeprimate.extensions.spring.ai.document.EmbeddedDocument
+ * @see io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper
  * @see <a href="https://en.wikipedia.org/wiki/Decorator_pattern">Decorator Software Design Pattern</a>
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 
-	public DecoratedSimpleVectorStore(EmbeddingModel embeddingModel) {
-		super(SimpleVectorStore.builder(embeddingModel));
+	public DecoratedSimpleVectorStore(@NonNull EmbeddingModel embeddingModel) {
+		super(SimpleVectorStoreBuilderSupport.builder(embeddingModel));
 	}
 
 	public DecoratedSimpleVectorStore(SimpleVectorStoreBuilder vectorStoreBuilder) {
-		super(vectorStoreBuilder);
+		super(SimpleVectorStoreBuilderSupport.copy(vectorStoreBuilder));
 	}
 
 	@Override
@@ -56,6 +62,11 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 		documents = reduce(documents, embeddedDocuments);
 
 		super.accept(documents);
+	}
+
+	public void add(@NonNull Document document) {
+		Assert.notNull(document, "Document to add is required");
+		accept(Collections.singletonList(document));
 	}
 
 	private List<Document> reduce(List<Document> source, List<Document> exclude) {
@@ -81,5 +92,30 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	private SimpleVectorStoreContent simpleVectorStoreContent(EmbeddedDocument document) {
 		return new SimpleVectorStoreContent(document.getId(), document.getText(), document.getMetadata(),
 			document.getEmbedding());
+	}
+
+	protected static class SimpleVectorStoreBuilderSupport {
+
+		public static SimpleVectorStoreBuilder builder(EmbeddingModel embeddingModel) {
+			return SimpleVectorStore.builder(EmbeddingModelWrapper.from(embeddingModel));
+		}
+
+		@SuppressWarnings("all")
+		public static SimpleVectorStoreBuilder copy(SimpleVectorStoreBuilder vectorStoreBuilder) {
+
+			Assert.notNull(vectorStoreBuilder, "SimpleVectorStoreBuilder to copy is required");
+
+			EmbeddingModel embeddingModel = vectorStoreBuilder.getEmbeddingModel();
+
+			SimpleVectorStoreBuilder copy = builder(embeddingModel)
+				.observationRegistry(vectorStoreBuilder.getObservationRegistry());
+
+			VectorStoreObservationConvention observationConvention =
+				vectorStoreBuilder.getCustomObservationConvention();
+
+			copy = observationConvention != null ? copy.customObservationConvention(observationConvention) : copy;
+
+			return copy;
+		}
 	}
 }
