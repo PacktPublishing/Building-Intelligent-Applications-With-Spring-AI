@@ -35,7 +35,9 @@ import org.springframework.util.StringUtils;
  *
  * @author John Blum
  * @see org.springframework.ai.document.Document
+ * @see org.springframework.ai.embedding.Embedding
  * @see org.springframework.ai.embedding.EmbeddingModel
+ * @see org.springframework.ai.model.Media
  * @since 0.1.0
  */
 @SuppressWarnings("all")
