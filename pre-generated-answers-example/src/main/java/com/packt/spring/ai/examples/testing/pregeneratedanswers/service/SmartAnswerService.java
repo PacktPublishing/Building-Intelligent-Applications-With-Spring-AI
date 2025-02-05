@@ -95,9 +95,10 @@ public class SmartAnswerService implements AnswerService {
 
 		String query = question.get();
 
-		SearchRequest request = SearchRequest.query(query)
-			.withSimilarityThreshold(getSimilarityThreshold())
-			.withTopK(getTopK());
+		SearchRequest request = new SearchRequest.Builder().query(query)
+			.similarityThreshold(getSimilarityThreshold())
+			.topK(getTopK())
+			.build();
 
 		return getVectorStore().similaritySearch(request);
 	}

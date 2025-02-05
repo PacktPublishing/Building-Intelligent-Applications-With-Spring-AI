@@ -74,8 +74,8 @@ public record Question(String name, Document document, Answer answer)
 	private static Document buildDocument(String content) {
 
 		return Document.builder()
-			.withId(UUID.randomUUID().toString())
-			.withContent(Assertions.assertQuestion(content))
+			.text(Assertions.assertQuestion(content))
+			.id(UUID.randomUUID().toString())
 			.build();
 	}
 
@@ -88,7 +88,7 @@ public record Question(String name, Document document, Answer answer)
 	}
 
 	public String get() {
-		return document().getContent();
+		return document().getText();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public record Question(String name, Document document, Answer answer)
 	}
 
 	public boolean isMatch(Document document) {
-		return document != null && isMatch(document.getContent());
+		return document != null && isMatch(document.getText());
 	}
 
 	public boolean isMatch(Question question) {
@@ -114,7 +114,7 @@ public record Question(String name, Document document, Answer answer)
 	}
 
 	public boolean isMatch(String question) {
-		return StringUtils.hasText(question) && document().getContent().equalsIgnoreCase(question);
+		return StringUtils.hasText(question) && document().getText().equalsIgnoreCase(question);
 	}
 
 	@Override

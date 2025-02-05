@@ -22,6 +22,8 @@ import java.util.stream.StreamSupport;
 
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
 
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+
 import org.springframework.ai.document.Document;
 
 /**
@@ -34,7 +36,7 @@ import org.springframework.ai.document.Document;
 public abstract class Utils {
 
 	public static boolean isEmbeddingPresent(Document document) {
-		return document != null && isNotEmpty(document.getEmbedding());
+		return document instanceof EmbeddedDocument embeddedDocument && embeddedDocument.isEmbeddingPresent();
 	}
 
 	public static boolean isEmbeddingPresent(Question question) {

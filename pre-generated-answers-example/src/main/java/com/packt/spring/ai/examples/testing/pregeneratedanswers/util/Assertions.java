@@ -38,7 +38,7 @@ public abstract class Assertions extends Utils {
 
 	public static void assertDocument(Document document) {
 		Assert.notNull(document, "Document is required");
-		assertQuestion(document.getContent());
+		assertQuestion(document.getText());
 	}
 
 	public static void assertEmbedding(Question question) {
