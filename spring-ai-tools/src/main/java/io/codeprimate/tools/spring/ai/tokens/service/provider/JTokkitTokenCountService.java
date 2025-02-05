@@ -15,8 +15,8 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.service.provider;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter;
@@ -77,8 +77,8 @@ public class JTokkitTokenCountService implements TokenCountService {
 		return new MediaContent() {
 
 			@Override
-			public Collection<Media> getMedia() {
-				return Collections.singleton(media);
+			public List<Media> getMedia() {
+				return Collections.singletonList(media);
 			}
 
 			@Override
@@ -89,6 +89,11 @@ public class JTokkitTokenCountService implements TokenCountService {
 			@Override
 			public Map<String, Object> getMetadata() {
 				return Collections.emptyMap();
+			}
+
+			@Override
+			public String getText() {
+				return null;
 			}
 		};
 	}
