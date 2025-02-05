@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.model.Media;
 import org.springframework.lang.NonNull;
@@ -39,6 +40,8 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("all")
 public class EmbeddedDocument extends Document {
+
+	private static final int EMBEDDING_INDEX = 0;
 
 	public static EmbeddedDocument from(@NonNull Document document) {
 
@@ -83,6 +86,10 @@ public class EmbeddedDocument extends Document {
 
 	public float[] getEmbedding() {
 		return this.embedding;
+	}
+
+	public Embedding getEmbeddingWrapper() {
+		return new Embedding(getEmbedding(), EMBEDDING_INDEX);
 	}
 
 	public boolean isEmbeddingPresent() {
