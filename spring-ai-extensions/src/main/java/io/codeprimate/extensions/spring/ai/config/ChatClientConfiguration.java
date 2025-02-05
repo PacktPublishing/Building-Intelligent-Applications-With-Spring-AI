@@ -43,6 +43,7 @@ import org.springframework.context.annotation.Import;
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.context.annotation.Bean
  * @see org.springframework.context.annotation.Configuration
+ * @since 0.1.0
  */
 @Configuration
 @Import(ChatModelConfiguration.class)
