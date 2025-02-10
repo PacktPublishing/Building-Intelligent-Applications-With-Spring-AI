@@ -36,8 +36,8 @@ import lombok.Getter;
  * Abstract Data Type (ADT) modeling, identifying and classifying AI providers.
  *
  * @author John Blum
- * @see java.lang.FunctionalInterface
  * @see java.lang.Iterable
+ * @see java.lang.FunctionalInterface
  * @see org.cp.elements.lang.Nameable
  * @see io.codeprimate.extensions.spring.ai.provider.model.NamedModel
  * @see io.codeprimate.extensions.spring.ai.provider.model.NamedModels
@@ -137,7 +137,7 @@ public interface AiProvider extends Iterable<NamedModel>, Nameable<String> {
 
 				@Override
 				public Iterable<NamedModel> namedModels() {
-					return Builder.this.getNamedModels();
+					return namedModels;
 				}
 			};
 		}
