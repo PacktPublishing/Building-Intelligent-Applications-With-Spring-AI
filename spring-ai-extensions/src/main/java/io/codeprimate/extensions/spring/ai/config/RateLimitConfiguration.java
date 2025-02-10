@@ -36,7 +36,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * Spring {@link Configuration} used to configure an AI model interaction rate limit.
+ * Spring {@link Configuration} used to configure rate limiting for AI model interactions.
  *
  * @author John Blum
  * @see org.springframework.context.EnvironmentAware
