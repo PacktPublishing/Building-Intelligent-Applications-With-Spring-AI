@@ -18,7 +18,7 @@ package io.codeprimate.extensions.spring.ai.chat.model;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
+import org.springframework.ai.chat.prompt.DefaultChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 
 /**
@@ -38,6 +38,6 @@ public class NoOpChatModel implements ChatModel {
 
 	@Override
 	public ChatOptions getDefaultOptions() {
-		return ChatOptionsBuilder.builder().build();
+		return new DefaultChatOptions();
 	}
 }
