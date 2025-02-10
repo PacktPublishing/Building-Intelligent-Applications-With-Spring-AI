@@ -41,7 +41,8 @@ import org.springframework.context.annotation.Bean;
 @SuppressWarnings("unused")
 public abstract class AbstractDesktopSpringBootApplication extends AbstractSpringBootApplication {
 
-	private static final boolean NOT_HEADLESS = false;
+	protected static final boolean HEADLESS = true;
+	protected static final boolean NOT_HEADLESS = false;
 
 	private static final Function<SpringApplicationBuilder, SpringApplicationBuilder> DESKTOP_APPLICATION_FUNCTION =
 		springApplicationBuilder -> springApplicationBuilder.headless(NOT_HEADLESS);
