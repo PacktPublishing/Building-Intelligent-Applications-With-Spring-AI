@@ -20,7 +20,7 @@ import io.codeprimate.extensions.util.Utils;
 import org.springframework.ai.model.Model;
 
 /**
- * Java {@link RuntimeException} throws when an {@link AiProvider AI provider} cannot be found.
+ * Java {@link RuntimeException} throws when an {@link AiProvider} cannot be found.
  *
  * @author John Blum
  * @see java.lang.RuntimeException
@@ -29,9 +29,10 @@ import org.springframework.ai.model.Model;
 @SuppressWarnings("unused")
 public class AiProviderNotFoundException extends RuntimeException {
 
+	protected static final String NOT_FOUND_MESSAGE = "AI provider for Model [%s] was not found";
+
 	public static AiProviderNotFoundException from(Model<?, ?> model) {
-		return new AiProviderNotFoundException("AI provider for Model [%s] was not found"
-			.formatted(Utils.nullSafeTypeName(model)));
+		return new AiProviderNotFoundException(NOT_FOUND_MESSAGE.formatted(Utils.nullSafeTypeName(model)));
 	}
 
 	public AiProviderNotFoundException() {
