@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore
- * @see io.micrometer.observation.ObservationRegistry
+ * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.context.annotation.Bean
  * @see org.springframework.context.annotation.Configuration
