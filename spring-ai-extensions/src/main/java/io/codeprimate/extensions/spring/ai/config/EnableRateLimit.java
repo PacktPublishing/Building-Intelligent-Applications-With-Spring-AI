@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 /**
- * Spring {@link Annotation} used to enable an AI model interaction rate limit.
+ * Spring {@link Annotation} used to enable rate limiting for AI model interactions.
  * <p/>
  * Defaults to {@link Integer#MAX_VALUE} every {@literal 1 second}.
  *
