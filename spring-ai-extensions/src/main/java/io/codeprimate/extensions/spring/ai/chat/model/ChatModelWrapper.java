@@ -21,12 +21,13 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import lombok.Getter;
 
 /**
- * Spring AI {@link ChatModel} implementation and wrapper for an existing {@link ChatModel}.
+ * Spring AI {@link ChatModel} implementation wrapping an existing {@link ChatModel}.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
@@ -69,7 +70,7 @@ public class ChatModelWrapper implements ChatModel, BeanNameAware {
 	}
 
 	@Override
-	public void setBeanName(String name) {
+	public void setBeanName(@NonNull String name) {
 		this.beanName = name;
 	}
 
