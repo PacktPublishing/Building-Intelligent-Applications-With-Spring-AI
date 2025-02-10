@@ -52,6 +52,7 @@ import lombok.NonNull;
  * @see io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderModel
  * @see org.springframework.ai.chat.model.ChatModel
  * @see <a href="https://en.wikipedia.org/wiki/Composite_pattern">Composite Software Design Pattern</a>
+ * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")

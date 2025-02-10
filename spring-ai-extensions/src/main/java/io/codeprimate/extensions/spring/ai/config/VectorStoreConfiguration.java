@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.context.annotation.Bean
  * @see org.springframework.context.annotation.Configuration
+ * @since 0.1.0
  */
 @Configuration
 @SuppressWarnings("unused")

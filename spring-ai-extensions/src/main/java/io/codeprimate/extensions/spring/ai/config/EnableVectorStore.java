@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
  * @see io.codeprimate.extensions.spring.ai.config.VectorStoreConfiguration
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.context.annotation.Import
+ * @since 0.1.0
  */
 @Documented
 @Inherited
