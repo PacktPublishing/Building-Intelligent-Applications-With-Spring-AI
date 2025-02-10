@@ -66,7 +66,7 @@ public abstract class AbstractSpringBootApplication {
 		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.NONE);
 
 	protected static final Function<SpringApplicationBuilder, SpringApplicationBuilder> REACTIVE_WEB_APPLICATION_FUNCTION =
-		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.SERVLET);
+		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.REACTIVE);
 
 	protected static final Function<SpringApplicationBuilder, SpringApplicationBuilder> SERVLET_WEB_APPLICATION_FUNCTION =
 		springApplicationBuilder -> springApplicationBuilder.web(WebApplicationType.SERVLET);
