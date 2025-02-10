@@ -37,9 +37,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.config.ChatModelConfiguration
- * @see io.micrometer.observation.ObservationRegistry
  * @see org.springframework.ai.chat.client.ChatClient
- * @see org.springframework.ai.chat.client.observation.ChatClientObservationConvention
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.context.annotation.Bean
  * @see org.springframework.context.annotation.Configuration
