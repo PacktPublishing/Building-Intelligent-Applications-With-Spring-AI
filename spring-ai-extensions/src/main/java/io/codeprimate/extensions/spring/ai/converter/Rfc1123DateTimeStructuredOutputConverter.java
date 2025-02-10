@@ -29,6 +29,7 @@ import org.springframework.lang.NonNull;
  * @see java.time.ZonedDateTime
  * @see java.time.format.DateTimeFormatter#RFC_1123_DATE_TIME
  * @see org.springframework.ai.converter.StructuredOutputConverter
+ * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutputConverter<ZonedDateTime> {
@@ -42,7 +43,7 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 	}
 
 	@Override
-	public ZonedDateTime convert(@NonNull String source) {
+	public @NonNull ZonedDateTime convert(@NonNull String source) {
 		return ZonedDateTime.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(source));
 		//return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
 	}
