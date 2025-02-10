@@ -31,6 +31,7 @@ import org.springframework.ai.model.Model;
  * @param model {@link Model} provided by the given {@link AiProvider}.
  * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
  * @see org.springframework.ai.model.Model
+ * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public record SpringAiProviderModel(SpringAiProvider aiProvider, Model<?, ?> model) implements AiProvider {
