@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  * @see org.springframework.context.ConfigurableApplicationContext
+ * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public abstract class AbstractSpringBootApplication {
@@ -269,7 +270,7 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	protected Message userPrompt(Message message) {
-		userPrompt(message.getContent());
+		userPrompt(message.getText());
 		return message;
 	}
 
