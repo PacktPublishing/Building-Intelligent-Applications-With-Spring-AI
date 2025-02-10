@@ -59,6 +59,7 @@ public class EmbeddedDocument extends Document {
 		return hasText ? new EmbeddedDocument(id, text, metadata)
 			: new EmbeddedDocument(id, document.getMedia(), metadata);
 	}
+
 	private volatile float[] embedding;
 
 	public static boolean isEmbeddingPresent(Document document) {
