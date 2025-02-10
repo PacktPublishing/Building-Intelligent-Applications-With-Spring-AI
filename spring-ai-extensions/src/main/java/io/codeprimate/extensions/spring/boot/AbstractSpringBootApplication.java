@@ -82,6 +82,10 @@ public abstract class AbstractSpringBootApplication {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	protected static String[] asStringArray(String... array) {
+		return array;
+	}
+
 	protected static ConfigurableApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
