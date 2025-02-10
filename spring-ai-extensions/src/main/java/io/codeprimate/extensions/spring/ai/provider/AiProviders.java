@@ -59,6 +59,14 @@ public interface AiProviders extends Iterable<AiProvider>, Streamable<AiProvider
 		return findBy(aiProvider -> aiProvider.getName().equalsIgnoreCase(aiProviderName));
 	}
 
+	default boolean isEmpty() {
+		return size() == 0;
+	}
+
+	default boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	default int size() {
 		return Long.valueOf(stream().count()).intValue();
 	}
