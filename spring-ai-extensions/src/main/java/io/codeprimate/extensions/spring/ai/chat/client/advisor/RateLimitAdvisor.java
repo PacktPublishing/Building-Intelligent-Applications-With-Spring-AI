@@ -36,11 +36,13 @@ import org.springframework.util.Assert;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import reactor.core.publisher.Flux;
 
 /**
- * Spring AI {@link CallAroundAdvisor} and {@link StreamAroundAdvisor} enforcing a configured rate limit.
+ * Spring AI {@link CallAroundAdvisor} and {@link StreamAroundAdvisor} enforcing a configured rate limit
+ * when making requests to an AI model.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.advisor.api.CallAroundAdvisor
@@ -61,6 +63,10 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 
 	public static RateLimitAdvisor countPerMinute(int count) {
 		return countPerDuration(count, Duration.ofMinutes(1L));
+	}
+
+	public static RateLimitAdvisor countPerHour(int count) {
+		return countPerDuration(count, Duration.ofHours(1L));
 	}
 
 	public static RateLimitAdvisor countPerDuration(int count, Duration duration) {
@@ -95,7 +101,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	}
 
 	@Override
-	public String getName() {
+	public @NonNull String getName() {
 		return getClass().getSimpleName();
 	}
 
@@ -144,7 +150,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 			Generation generation = new Generation(assistantMessage);
 
 			ChatResponse chatResponse = ChatResponse.builder()
-				.withGenerations(List.of(generation))
+				.generations(List.of(generation))
 				.build();
 
 			return advisedResponseFunction.apply(chatResponse);
@@ -156,8 +162,8 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	protected AdvisedResponse buildAdvisedResponse(AdvisedRequest request, ChatResponse response) {
 
 		return AdvisedResponse.builder()
-			.withResponse(response)
-			.withAdviseContext(request.adviseContext())
+			.response(response)
+			.adviseContext(request.adviseContext())
 			.build();
 	}
 
