@@ -50,17 +50,17 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 	private static final String WEBAPP_URL = "http://localhost:%d%s";
 
 	protected static SpringApplication runSpringReactiveWebApplication(Class<?> mainApplicationClass, String[] profiles,
-			String... args) {
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> function, String... args) {
 
 		return runSpringApplication(mainApplicationClass, profiles,
-			REACTIVE_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION), args);
+			REACTIVE_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION).andThen(function), args);
 	}
 
 	protected static SpringApplication runSpringServletWebApplication(Class<?> mainApplicationClass, String[] profiles,
-			String... args) {
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> function, String... args) {
 
 		return runSpringApplication(mainApplicationClass, profiles,
-			SERVLET_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION), args);
+			SERVLET_WEB_APPLICATION_FUNCTION.andThen(DESKTOP_APPLICATION_FUNCTION).andThen(function), args);
 	}
 
 	@Bean
