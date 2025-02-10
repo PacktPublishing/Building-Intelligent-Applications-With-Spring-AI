@@ -20,8 +20,6 @@ import io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplicatio
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Profile;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SpringBootApplication
-@Getter(AccessLevel.PROTECTED)
 @Profile(TokenMetadataApplication.SPRING_APPLICATION_PROFILE)
 @SuppressWarnings("unused")
 public class TokenMetadataApplication extends AbstractDesktopSpringBootApplication {
@@ -43,11 +40,6 @@ public class TokenMetadataApplication extends AbstractDesktopSpringBootApplicati
 	public static final String SPRING_APPLICATION_PROFILE = "token-metadata-app";
 
 	public static void main(String[] args) {
-		runSpringServletWebApplication(TokenMetadataApplication.class, asStringArray(SPRING_APPLICATION_PROFILE),
-			springApplicationBuilder -> springApplicationBuilder.headless(isHeadless()), args);
-	}
-
-	private static boolean isHeadless() {
-		return Boolean.getBoolean("app.token-cost-estimator.headless");
+		runSpringServletWebApplication(TokenMetadataApplication.class, asStringArray(SPRING_APPLICATION_PROFILE), args);
 	}
 }
