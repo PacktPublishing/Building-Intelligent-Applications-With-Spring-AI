@@ -34,7 +34,7 @@ import io.codeprimate.extensions.util.Utils;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
+import org.springframework.ai.chat.prompt.DefaultChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.util.Assert;
 
@@ -122,7 +122,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 		return getOptionalCurrentChatModel()
 			.map(ChatModel::getDefaultOptions)
-			.orElseGet(ChatOptionsBuilder.builder()::build);
+			.orElseGet(DefaultChatOptions::new);
 	}
 
 	@Override
