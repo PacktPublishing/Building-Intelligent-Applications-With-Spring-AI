@@ -62,7 +62,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 	}
 
 	public static CompositeChatModel of(ChatModel... chatModels) {
-		return of(Arrays.asList(chatModels));
+		return new CompositeChatModel(Arrays.asList(chatModels));
 	}
 
 	public static CompositeChatModel of(Iterable<ChatModel> chatModels) {
