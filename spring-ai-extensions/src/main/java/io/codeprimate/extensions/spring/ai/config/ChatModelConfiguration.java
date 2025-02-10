@@ -36,10 +36,10 @@ import org.springframework.lang.NonNull;
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.config.ChatModelProperties
- * @see org.springframework.context.annotation.Bean
- * @see org.springframework.context.annotation.Configuration
  * @see org.springframework.ai.chat.model.ChatModel
  * @see org.springframework.boot.context.properties.EnableConfigurationProperties
+ * @see org.springframework.context.annotation.Bean
+ * @see org.springframework.context.annotation.Configuration
  * @since 0.1.0
  */
 @Configuration
@@ -59,7 +59,7 @@ public class ChatModelConfiguration {
 		return new BeanPostProcessor() {
 
 			@Override
-			public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
+			public @NonNull Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) {
 
 				if (bean instanceof ChatModel chatModel) {
 					if (isNotCompositeChatModel(chatModel)) {
@@ -75,13 +75,18 @@ public class ChatModelConfiguration {
 		};
 	}
 
+	private boolean isCompositeChatModel(Object target) {
+		return target instanceof CompositeChatModel;
+	}
+
 	private boolean isNotCompositeChatModel(Object target) {
-		return !(target instanceof CompositeChatModel);
+		return !isCompositeChatModel(target);
 	}
 
 	private boolean isLoggingEnabled(ChatModel chatModel, Level level) {
 
-		Logger chatModelLogger = LoggerFactory.getLogger(resolveLoggerType(chatModel));
+		Class<? extends ChatModel> loggerType = resolveLoggerType(chatModel);
+		Logger chatModelLogger = LoggerFactory.getLogger(loggerType);
 
 		return chatModelLogger.isEnabledForLevel(level);
 	}
