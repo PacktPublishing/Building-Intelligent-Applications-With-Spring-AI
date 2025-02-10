@@ -91,8 +91,12 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 		return Desktop.isDesktopSupported();
 	}
 
+	private boolean isHeadless() {
+		return Boolean.getBoolean(JAVA_AWT_HEADLESS_SYSTEM_PROPERTY);
+	}
+
 	private boolean isNotHeadless() {
-		return !Boolean.getBoolean(JAVA_AWT_HEADLESS_SYSTEM_PROPERTY);
+		return !isHeadless();
 	}
 
 	private boolean isWebApplicationLaunchEnabled() {
