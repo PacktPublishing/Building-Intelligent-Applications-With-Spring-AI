@@ -27,13 +27,13 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Import;
 
 /**
- * Java {@link Annotation} used to import configuraiton used to enable a Spring AI {@link VectorStore}.
+ * Java {@link Annotation} importing configuration to configure a Spring AI {@link VectorStore}.
  *
  * @author John Blum
  * @see java.lang.annotation.Annotation
+ * @see io.codeprimate.extensions.spring.ai.config.VectorStoreConfiguration
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.context.annotation.Import
- * @see io.codeprimate.extensions.spring.ai.config.VectorStoreConfiguration
  */
 @Documented
 @Inherited
