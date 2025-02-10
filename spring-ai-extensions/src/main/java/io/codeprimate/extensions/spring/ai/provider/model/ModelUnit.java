@@ -16,7 +16,7 @@
 package io.codeprimate.extensions.spring.ai.provider.model;
 
 /**
- * {@link Enum Enumertion} of units of data processed and used by an AI model.
+ * {@link Enum Enumertion} for the unit of data processed and used by an AI model.
  *
  * @author John Blum
  * @see java.lang.Enum
