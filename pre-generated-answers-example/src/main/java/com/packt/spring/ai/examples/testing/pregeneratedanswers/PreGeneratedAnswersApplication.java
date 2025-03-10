@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama to test with pre-generated answers.
+ * {@link SpringBootApplication} using Spring AI with Ollama to test pre-generated answers.
  *
  * @author John Blum
  * @see org.springframework.boot.ApplicationRunner

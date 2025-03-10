@@ -63,6 +63,7 @@ public interface HowToRepository extends Iterable<HowTo> {
 			.findFirst();
 	}
 
+	@SuppressWarnings("unchecked")
 	default boolean load(Nameable<String>... namedHowTos) {
 		return false;
 	}

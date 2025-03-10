@@ -38,8 +38,8 @@ import lombok.RequiredArgsConstructor;
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
-@SuppressWarnings("unused")
 @JsonIgnoreProperties("id")
+@SuppressWarnings("unused")
 public record Question(String name, Document document, Answer answer)
 		implements Identifiable<String>, Nameable<String> {
 

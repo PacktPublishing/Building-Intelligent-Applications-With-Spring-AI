@@ -16,6 +16,7 @@
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.model;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ import org.springframework.ai.document.Document;
 public interface Questions extends Iterable<Question> {
 
 	static Questions empty() {
-		return of();
+		return Collections::emptyIterator;
 	}
 
 	static Questions nullSafe(Questions questions) {

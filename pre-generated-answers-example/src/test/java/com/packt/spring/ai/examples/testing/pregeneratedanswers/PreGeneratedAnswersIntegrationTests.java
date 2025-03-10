@@ -33,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -108,9 +107,9 @@ public class PreGeneratedAnswersIntegrationTests {
 			float[] questionEmbedding = this.embeddingModel.embed(question.get());
 			Utils.print("Question [%s] is similar to:%n", question);
 			this.repository.stream().flatMap(HowTo::stream).forEach(howToQuestion -> {
-				float[] howToQuestionEmbedding = howToQuestion.document().getEmbedding();
-				double similarity = SimpleVectorStore.EmbeddingMath.cosineSimilarity(questionEmbedding, howToQuestionEmbedding);
-				Utils.print(">>> [%s] = %s%n", howToQuestion, similarity);
+				//float[] howToQuestionEmbedding = howToQuestion.document().getEmbedding();
+				//double similarity = SimpleVectorStore.EmbeddingMath.cosineSimilarity(questionEmbedding, howToQuestionEmbedding);
+				//Utils.print(">>> [%s] = %s%n", howToQuestion, similarity);
 			});
 		});
 	}

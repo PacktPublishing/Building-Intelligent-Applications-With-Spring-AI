@@ -54,6 +54,18 @@ public class PreGeneratedAnswersRunnerConfiguration {
 	);
 
 	@Bean
+	@Order(1)
+	@ConditionalOnBean(AiEnabledSmartAnswerService.class)
+	@Profile({ "ai-enabled-answers", "pre-generated-answers" })
+	ApplicationRunner preGenerateAnswersRunner(AnswerService answerService) {
+
+		return args -> {
+			Utils.print("Creating Pre-Generated Answers...%n");
+			NAMED_QUESTIONS.forEach(answerService::answer);
+		};
+	}
+
+	@Bean
 	@Order(2)
 	@Profile("pre-generated-answers")
 	@ConditionalOnMissingBean(AiEnabledSmartAnswerService.class)
@@ -63,18 +75,6 @@ public class PreGeneratedAnswersRunnerConfiguration {
 		return args -> {
 			Utils.print("Loading Pre-Generated Answers...%n");
 			repository.load(NAMED_QUESTIONS.toArray(new Nameable[0]));
-		};
-	}
-
-	@Bean
-	@Order(1)
-	@ConditionalOnBean(AiEnabledSmartAnswerService.class)
-	@Profile({ "ai-enabled-answers", "pre-generated-answers" })
-	ApplicationRunner preGenerateAnswersRunner(AnswerService answerService) {
-
-		return args -> {
-			Utils.print("Creating Pre-Generated Answers...%n");
-			NAMED_QUESTIONS.forEach(answerService::answer);
 		};
 	}
 

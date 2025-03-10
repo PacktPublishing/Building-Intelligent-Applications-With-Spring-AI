@@ -15,19 +15,23 @@
  */
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.PreGeneratedAnswersApplication;
-
-import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
+import com.packt.spring.ai.examples.testing.pregeneratedanswers.serialization.json.DocumentDeserializer;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
+
 /**
- * {@link SpringBootConfiguration} for the {@link PreGeneratedAnswersApplication}
+ * {@link SpringBootConfiguration} for the {@link PreGeneratedAnswersApplication}.
  *
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
@@ -45,6 +49,16 @@ public class PreGeneratedAnswersConfiguration {
 	@Bean
 	ChatClient chatClient(ChatModel chatModel) {
 		return ChatClient.builder(chatModel).build();
+	}
+
+	@Bean
+	Jackson2ObjectMapperBuilderCustomizer objectMapperCustomizer() {
+
+		return jacksonObjectMapperBuilder -> {
+			SimpleModule module = new SimpleModule("customDocumentDeserializerModule");
+			module.addDeserializer(Document.class, new DocumentDeserializer());
+			jacksonObjectMapperBuilder.modules(module);
+		};
 	}
 
 	@Bean
