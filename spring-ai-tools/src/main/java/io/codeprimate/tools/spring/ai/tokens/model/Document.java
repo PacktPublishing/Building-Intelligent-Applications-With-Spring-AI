@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
+@SuppressWarnings("unused")
 public record Document(String content) {
 
 	public static Document from(String content) {
@@ -33,7 +34,7 @@ public record Document(String content) {
 
 	public static Document from(org.springframework.ai.document.Document document) {
 		Assert.notNull(document, "Document is required");
-		return new Document(document.getContent());
+		return new Document(document.getText());
 	}
 
 	@Override
