@@ -30,13 +30,6 @@ import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
-import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
-import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
-
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.transformer.splitter.TextSplitter;
@@ -51,6 +44,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -216,7 +216,7 @@ public class SongSimilaritySearchApplication {
 	private void logSongByArtistAndTitle(Song song, String artist, String title) {
 		if (Song.ARTIST_PREDICATE.test(song, artist) && Song.TITLE_PREDICATE.test(song, title)) {
 			song.toChunkedDocuments().forEach(document -> print("Document for Song [%s]: [%s]%n%n",
-				document.getId(), document.getContent()));
+				document.getId(), document.getText()));
 		}
 	}
 

@@ -78,6 +78,6 @@ public interface TokenizerService {
 	 * @see #tokenize(String, String)
 	 */
 	default List<String> tokenize(Document document, String modelName) {
-		return document != null ? tokenize(document.getContent(), modelName) : Collections.emptyList();
+		return document != null ? tokenize(document.getText(), modelName) : Collections.emptyList();
 	}
 }

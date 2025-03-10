@@ -95,7 +95,7 @@ public class StreamingApplication {
 						.map(ChatResponse::getResults)
 						.flatMapIterable(list -> list)
 						.map(Generation::getOutput)
-						.map(AssistantMessage::getContent)
+						.map(AssistantMessage::getText)
 						.map(String::toCharArray)
 						.flatMapIterable(this::toListOfCharacters)
 						.delayElements(Duration.ofMillis(5))

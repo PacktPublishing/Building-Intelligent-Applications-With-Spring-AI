@@ -88,7 +88,7 @@ public class PromptApplication {
 
 		print("user> %s%n%n", prompt.getInstructions().stream()
 			.filter(UserMessage.class::isInstance)
-			.map(Message::getContent)
+			.map(Message::getText)
 			.reduce("%s %s"::formatted)
 			.orElse(""));
 
@@ -96,7 +96,7 @@ public class PromptApplication {
 	}
 
 	private Generation print(Generation generation) {
-		print("ai> %s%n%n", generation.getOutput().getContent());
+		print("ai> %s%n%n", generation.getOutput().getText());
 		return generation;
 	}
 

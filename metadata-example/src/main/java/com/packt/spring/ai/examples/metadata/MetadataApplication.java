@@ -83,7 +83,7 @@ public class MetadataApplication {
 			Usage usage = metadata.getUsage();
 
 			print("Prompt Token Count: %d%n", usage.getPromptTokens());
-			print("Generation Token Count: %d%n", usage.getGenerationTokens());
+			print("Completion Token Count: %d%n", usage.getCompletionTokens());
 			print("Total Token Count: %d%n", usage.getTotalTokens());
 
 			RateLimit rateLimit = metadata.getRateLimit();
@@ -102,7 +102,7 @@ public class MetadataApplication {
 	}
 
 	private String getContent(ChatResponse response) {
-		return response.getResult().getOutput().getContent();
+		return response.getResult().getOutput().getText();
 	}
 
 	private int countWords(String value) {

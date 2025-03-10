@@ -50,7 +50,7 @@ public interface TokenCountService {
 	 * @see #countTokens(String)
 	 */
 	default int countTokens(Document document) {
-		return document != null ? countTokens(document.getContent()) : 0;
+		return document != null ? countTokens(document.getText()) : 0;
 	}
 
 	/**
@@ -87,6 +87,6 @@ public interface TokenCountService {
 	 * @see #countFilteredTokens(String)
 	 */
 	default int countFilteredTokens(Document document) {
-		return document != null ? countFilteredTokens(document.getContent()) : 0;
+		return document != null ? countFilteredTokens(document.getText()) : 0;
 	}
 }

@@ -102,7 +102,7 @@ public class TokenCountObservationApplication extends AbstractSpringBootApplicat
 
 		ChatResponseMetadata metadata = chatResponse.getMetadata();
 
-		return metadata.getUsage().getTotalTokens();
+		return metadata.getUsage().getTotalTokens().longValue();
 	}
 
 	@SuppressWarnings("all")

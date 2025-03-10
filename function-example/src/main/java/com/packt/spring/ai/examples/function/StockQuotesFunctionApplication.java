@@ -128,8 +128,7 @@ public class StockQuotesFunctionApplication {
 				.retrieve()
 				.body(StockQuote.class);
 
-			Assert.state(stockQuote != null,
-				() -> "Failed to retrieve quote for stock [%s]".formatted(request));
+			Assert.state(stockQuote != null, () -> "Failed to retrieve quote for stock [%s]".formatted(request));
 
 			return new StockQuote.Response(stockQuote.getFirstResult().getClose());
 		};
@@ -149,7 +148,7 @@ public class StockQuotesFunctionApplication {
 				if (StringUtils.hasText(stockSymbol)) {
 
 					ChatOptions ollamaChatOptions = OllamaOptions.builder()
-						.withFunction(STOCK_PRICE_FUNCTION_NAME)
+						.toolNames(STOCK_PRICE_FUNCTION_NAME)
 						.build();
 
 					Map<String, Object> promptArguments = Map.of("stock", stockSymbol);

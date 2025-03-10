@@ -72,8 +72,8 @@ public class ChatModelOptionsApplication {
 
 			OllamaOptions chatOptions = OllamaOptions.builder()
 				//.withSeed(SEED)
-				.withTopK(topK)
-				.withTopP(topP)
+				.topK(topK)
+				.topP(topP)
 				.build();
 
 			Prompt prompt = new Prompt(userPrompt, chatOptions);
@@ -94,7 +94,7 @@ public class ChatModelOptionsApplication {
 	}
 
 	private String getContent(ChatResponse response) {
-		return response.getResult().getOutput().getContent();
+		return response.getResult().getOutput().getText();
 	}
 
 	private String getContent(Prompt prompt) {

@@ -32,7 +32,6 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
@@ -59,7 +58,7 @@ public abstract class Utils {
 	}
 
 	public static ChatOptions buildChatOptions(String model) {
-		return ChatOptionsBuilder.builder().withModel(model).build();
+		return ChatOptions.builder().model(model).build();
 	}
 
 	public static <T> T defaultIfNull(T value, T defaultValue) {

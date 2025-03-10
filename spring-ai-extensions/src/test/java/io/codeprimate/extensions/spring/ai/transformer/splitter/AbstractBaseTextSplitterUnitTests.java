@@ -58,7 +58,7 @@ public class AbstractBaseTextSplitterUnitTests {
 
 		assertThat(documents).isNotNull();
 		assertThat(documents).hasSize(1);
-		assertThat(documents.get(0).getContent()).isEqualTo("test");
+		assertThat(documents.get(0).getText()).isEqualTo("test");
 	}
 
 	@Test
