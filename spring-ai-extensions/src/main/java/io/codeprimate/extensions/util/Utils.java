@@ -26,10 +26,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
@@ -38,6 +34,10 @@ import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
 import org.springframework.ai.chat.prompt.Prompt;
+
+import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Abstract utility class containing common, useful functions for Spring AI, Micrometer and Java.
@@ -89,12 +89,16 @@ public abstract class Utils {
 	public static String generatedContent(Message message) {
 
 		return Optional.ofNullable(message)
-			.map(Message::getContent)
+			.map(Message::getText)
 			.orElse(EMPTY_STRING);
 	}
 
 	public static boolean isNotEmpty(float[] array) {
 		return array != null && array.length > 0;
+	}
+
+	public static boolean isNotEmpty(Iterable<?> iterable) {
+		return iterable != null && iterable.iterator().hasNext();
 	}
 
 	public static <T> Consumer<T> nullSafeConsumer(Consumer<T> consumer) {
