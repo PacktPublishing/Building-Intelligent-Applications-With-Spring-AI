@@ -20,11 +20,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.transformer.KeywordMetadataEnricher;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentWriter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
-import org.springframework.ai.transformer.KeywordMetadataEnricher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
@@ -40,8 +40,8 @@ import org.springframework.core.io.Resource;
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
+ * @see org.springframework.ai.chat.transformer.KeywordMetadataEnricher
  * @see org.springframework.ai.document.Document
- * @see org.springframework.ai.transformer.KeywordMetadataEnricher
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
