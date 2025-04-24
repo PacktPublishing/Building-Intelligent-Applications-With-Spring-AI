@@ -55,6 +55,11 @@
 			<artifactId>spring-ai-autoconfigure-model-chat-client</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-vector-store</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<build>
