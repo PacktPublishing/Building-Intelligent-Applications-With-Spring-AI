@@ -21,10 +21,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.cp.elements.lang.Assert;
+import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.model.Media;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
