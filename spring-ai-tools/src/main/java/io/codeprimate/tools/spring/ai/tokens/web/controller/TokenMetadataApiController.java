@@ -15,12 +15,7 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.web.controller;
 
-import io.codeprimate.tools.spring.ai.tokens.model.Document;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
-import io.codeprimate.tools.spring.ai.tokens.service.WordCountService;
-
-import org.springframework.ai.model.Media;
+import org.springframework.ai.content.Media;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.codeprimate.tools.spring.ai.tokens.model.Document;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
+import io.codeprimate.tools.spring.ai.tokens.service.WordCountService;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
  * @see io.codeprimate.tools.spring.ai.tokens.service.TokenCountService
  * @see io.codeprimate.tools.spring.ai.tokens.service.WordCountService
  * @see io.codeprimate.tools.spring.ai.tokens.web.controller.AbstractApiBaseController
- * @see org.springframework.ai.model.Media
+ * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.bind.annotation.RequestMapping
  * @see org.springframework.web.bind.annotation.RestController

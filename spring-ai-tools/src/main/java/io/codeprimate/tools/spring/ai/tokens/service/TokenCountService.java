@@ -15,8 +15,8 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.service;
 
+import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.model.Media;
 
 /**
  * Service interface used to estimate the number of tokens in given block of {@link String content},
@@ -24,8 +24,8 @@ import org.springframework.ai.model.Media;
  *
  * @author John Blum
  * @see java.lang.FunctionalInterface
+ * @see org.springframework.ai.content.Media
  * @see org.springframework.ai.document.Document
- * @see org.springframework.ai.model.Media
  * @since 0.1.0
  */
 @FunctionalInterface
@@ -58,7 +58,7 @@ public interface TokenCountService {
 	 *
 	 * @param media {@link Media} used to count tokens.
 	 * @return the number of tokens generated from the given {@link Media}.
-	 * @see org.springframework.ai.model.Media
+	 * @see org.springframework.ai.content.Media
 	 */
 	default int countTokens(Media media) {
 		throw new UnsupportedOperationException("Counting Tokens Generated from Media is Not Implemented");

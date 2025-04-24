@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.ai.model.Media;
-import org.springframework.ai.model.MediaContent;
+import org.springframework.ai.content.Media;
+import org.springframework.ai.content.MediaContent;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
 import org.springframework.stereotype.Service;
 
