@@ -29,10 +29,10 @@ import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import org.junit.jupiter.api.Test;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.springframework.ai.autoconfigure.chat.client.ChatClientAutoConfiguration;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClientCustomizer;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.model.chat.client.autoconfigure.ChatClientAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringBootConfiguration;
