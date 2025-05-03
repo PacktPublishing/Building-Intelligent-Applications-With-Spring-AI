@@ -53,7 +53,7 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 	protected static SpringApplication runSpringReactiveWebApplication(Class<?> mainApplicationClass, String[] profiles,
 			String... args) {
 
-		return runSpringApplication(mainApplicationClass, profiles, Function.identity(), args);
+		return runSpringReactiveWebApplication(mainApplicationClass, profiles, Function.identity(), args);
 	}
 
 	protected static SpringApplication runSpringReactiveWebApplication(Class<?> mainApplicationClass, String[] profiles,
@@ -66,7 +66,7 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 	protected static SpringApplication runSpringServletWebApplication(Class<?> mainApplicationClass, String[] profiles,
 			String... args) {
 
-		return runSpringApplication(mainApplicationClass, profiles, Function.identity(), args);
+		return runSpringServletWebApplication(mainApplicationClass, profiles, Function.identity(), args);
 	}
 
 	protected static SpringApplication runSpringServletWebApplication(Class<?> mainApplicationClass, String[] profiles,
