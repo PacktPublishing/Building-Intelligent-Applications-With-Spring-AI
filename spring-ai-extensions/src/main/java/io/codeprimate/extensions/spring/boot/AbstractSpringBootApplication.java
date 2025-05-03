@@ -113,8 +113,8 @@ public abstract class AbstractSpringBootApplication {
 		assertApplicationContextClosed(applicationContext);
 
 		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(mainApplicationClass)
-			.web(WebApplicationType.NONE)
-			.profiles(resolveProfiles(profiles));
+			.profiles(resolveProfiles(profiles))
+			.web(WebApplicationType.NONE);
 
 		springApplicationBuilder = function.apply(springApplicationBuilder);
 
