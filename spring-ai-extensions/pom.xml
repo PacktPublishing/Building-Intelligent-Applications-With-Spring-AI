@@ -17,7 +17,7 @@
 	<description>
 		Extensions to Spring AI.
 	</description>
-	<url/>
+	<url>https://github.com/jxblum/building-intelligent-applications-with-spring-ai/tree/main/spring-ai-extensions</url>
 
 	<properties>
 		<codeprimate-elements.version>2.0.0-M5</codeprimate-elements.version>
