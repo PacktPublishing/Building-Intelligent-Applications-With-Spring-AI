@@ -1,20 +1,21 @@
 [[example-one]]
 = Example One
 
-The first example from the book, "Building Intelligent Applications with Spring AI".
+This is the first example from the book, "Building Intelligent Applications with Spring AI".
 
-This example uses Spring AI with OpenAI to demonstrate how to use Spring AI's `ChatModel` to prompt ChatGPT
-with a question and then receive the generated response, outputting the answer to standard out.
+This example uses Spring AI with OpenAI to demonstrate how to use `ChatModel` API to prompt ChatGPT
+with a question and receive a generated response, outputting the answer to standard out.
 
-This example can be run with from the project base directory with `mvnw` command:
+This example can be run from the project base directory with `mvnw` command:
 
 ```sh
 $ mvnw --projects example-one spring-boot:run
 ```
 
-You should see output similar to:
+You should see output similar to the following:
 
 ```txt
+$ mvnw --projects example-one spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ------------------< com.packt.spring.ai:example-one >-------------------
@@ -22,7 +23,7 @@ You should see output similar to:
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]
-[INFO] >>> spring-boot:3.3.5:run (default-cli) > test-compile @ example-one >>>
+[INFO] >>> spring-boot:3.4.5:run (default-cli) > test-compile @ example-one >>>
 [INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ example-one ---
 [INFO] Copying 2 resources from src/main/resources to target/classes
@@ -37,10 +38,10 @@ You should see output similar to:
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ example-one ---
 [INFO] No sources to compile
 [INFO]
-[INFO] <<< spring-boot:3.3.5:run (default-cli) < test-compile @ example-one <<<
+[INFO] <<< spring-boot:3.4.5:run (default-cli) < test-compile @ example-one <<<
 [INFO]
 [INFO]
-[INFO] --- spring-boot:3.3.5:run (default-cli) @ example-one ---
+[INFO] --- spring-boot:3.4.5:run (default-cli) @ example-one ---
 [INFO] Attaching agents: []
 
   .   ____          _            __ _ _
@@ -50,11 +51,11 @@ You should see output similar to:
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
 
- :: Spring Boot ::                (v3.3.5)
+ :: Spring Boot ::                (v3.4.5)
 
-2024-11-17T14:25:29.335-08:00  INFO 64839 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.12 with PID 64839 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
-2024-11-17T14:25:29.337-08:00  INFO 64839 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
-2024-11-17T14:25:30.042-08:00  INFO 64839 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.888 seconds (process running for 1.083)
+2025-05-03T10:06:20.751-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.14 with PID 40699 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
+2025-05-03T10:06:20.752-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
+2025-05-03T10:06:21.468-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.915 seconds (process running for 1.083)
 User> In a single word, 'what is the answer to life, the universe, and everything?'
 
 AI> 42
@@ -62,7 +63,19 @@ AI> 42
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.262 s
-[INFO] Finished at: 2024-11-17T14:25:31-08:00
+[INFO] Total time:  3.218 s
+[INFO] Finished at: 2025-05-03T10:06:22-07:00
 [INFO] ------------------------------------------------------------------------
+```
+
+This example currently support 3 different AI models: [ OpenAI, Google VertexAI Gemini, Ollama ]. Use the following Maven Profile IDs:
+
+* openai (default)
+* ollama
+* gemini
+
+To activate another AI model, such as Ollama (running locally), simply execute:
+
+```sh
+$ mvnw --projects example-one -P ollama spring-boot:run
 ```
