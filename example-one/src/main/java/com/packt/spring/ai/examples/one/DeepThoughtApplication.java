@@ -23,14 +23,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o}) to demonstrate
+ * {@link SpringBootApplication} using Spring AI with OpenAI's ChatGPT ({@literal gpt-4o}) to demonstrate
  * the {@link ChatModel} API.
  *
  * @author John Blum
- * @see org.springframework.ai.chat.model.ChatModel
- * @see org.springframework.boot.ApplicationRunner
- * @see org.springframework.boot.autoconfigure.SpringBootApplication
- * @see org.springframework.boot.builder.SpringApplicationBuilder
+ * @see ChatModel
  * @since 0.1.0
  */
 @SpringBootApplication
@@ -54,11 +51,9 @@ public class DeepThoughtApplication {
 		return args -> {
 
 			String prompt = "In a single word, 'what is the answer to life, the universe, and everything?'";
-
 			System.out.printf("User> %s%n%n", prompt);
 
 			String response = chatModel.call(prompt);
-
 			System.out.printf("AI> %s%n%n", response);
 		};
 	}
