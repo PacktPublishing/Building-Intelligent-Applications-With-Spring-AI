@@ -16,9 +16,9 @@
 	<name>Spring AI Tools</name>
 	<description>
 		Spring Boot Web application using Spring AI to estimate the costs and number of tokens
-		used by Prompts and generated content returned from an AI model.
+		used by Prompts and generated content returned by an AI model.
 	</description>
-	<url/>
+	<url>https://github.com/jxblum/building-intelligent-applications-with-spring-ai/tree/main/spring-ai-tools</url>
 
 	<dependencies>
 		<dependency>
