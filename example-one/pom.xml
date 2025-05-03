@@ -15,7 +15,7 @@
 
 	<name>ExampleOne</name>
 	<description>My first Spring AI application.</description>
-	<url/>
+	<url>https://github.com/jxblum/building-intelligent-applications-with-spring-ai/tree/main/example-one</url>
 
 	<dependencies>
 		<dependency>
