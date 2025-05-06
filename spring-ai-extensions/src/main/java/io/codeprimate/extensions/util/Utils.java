@@ -26,6 +26,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
@@ -33,10 +37,6 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
-
-import io.codeprimate.extensions.spring.ai.chat.model.ChatModelWrapper;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Abstract utility class containing common, useful functions for Spring AI, Micrometer and Java.
@@ -47,6 +47,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 public abstract class Utils {
 
 	public static final String EMPTY_STRING = "";
+	public static final String NEW_LINE = "\n";
 	public static final String SINGLE_SPACE = " ";
 
 	public static <T, S> BiFunction<T, S, T> biFunctionReturnArgumentOne() {
