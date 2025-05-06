@@ -15,6 +15,7 @@
  */
 package com.packt.spring.ai.examples.connect4;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
@@ -25,6 +26,7 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -54,25 +56,27 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ConnectFourApplication extends AbstractConnectFourApplication {
 
+	private static final boolean MOCKS_ENABLED = false;
+
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
-		You are a player in the 2-player game Connect 4. To win connect 4 adjacent discs of the same color before your
-		opponent. The game board is 6 rows by 7 columns. R1 represent row 1. R2 represents row 2 up to R6 representing
-		row 6. C1 represents column 1, C2 represents column 2 up to C7 representing column 7. You can connect 4 adjacent
-		chips in the same row, for example: [(R2,C2),(R2,C3),(R2,C4),(R2,C5)]. Or, you can connect 4 adjacent chips in
-		the same column, for example: [(R1,C3),(R2,C3),(R3,C3),(R4,C4)]. Or, you can connect 4 adjacent chips diagonally,
-		in adjacent rows and columns, for example: [(R1,C2),(R2,C3),(R3,C4),(R4,C5)]. The first player to connect 4
-		adjacent chips wins! Play continues until someone wins or there are no more available moves.
+		You are a player in the 2-player board game Connect 4. The game board is a 2 dimensional grid with 6 rows
+		and 7 columns. A player chooses a column then plays an 'X' or an 'O'. To win, a player must successfully play
+		the same letter in 4 adjacent cells of the grid, either in the same row, the same column, or diagonally. Play
+		continues until a player wins or there are no more available moves.
 	""";
 
 	private static final String USER_PROMPT_TEMPLATE = """
-        The current state of the game board is {gameBoard}. Your chip color is {playerColor}. You may play 1 of the
-        available columns {availableColumns}. Respond with only 1 of the given columns. What is your move?
-    """;
+		The current state of the game board is {gameBoard}. You are "{playerColor}". Play from 1 of the available
+		positions represented as a letter {availableColumns}. Respond with only 1 of the letters. What is your move?
+	""";
 
 	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
 	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
 
-	private static final Map<AiProvider, Disc> PLAYER_DISC = Map.of(
+	private static final SecureRandom SECURE_RANDOM =
+		new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes());
+
+	private static final Map<AiProvider, Disc> PLAYER_TO_DISC = Map.of(
 		PLAYER_ONE, Disc.RED,
 		PLAYER_TWO, Disc.GOLD
 	);
@@ -103,23 +107,24 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 			while (boardGame.isPlayable()) {
 
-				Disc currentPlayerDisc = PLAYER_DISC.get(currentPlayer);
+				Disc currentPlayerDisc = PLAYER_TO_DISC.get(currentPlayer);
 
 				Map<String, Object> promptTemplateArguments = Map.of(
-					"gameBoard", Arrays.toString(boardGame.getGameBoardStateBySymbol()),
+					"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
 					"playerColor", currentPlayerDisc.name(),
-					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsBySymbol())
+					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
 				);
 
 				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
 
 				String model = resolveModel(environment, currentPlayer);
 
-				String response = promptAiModel(chatClient, promptTemplateArguments, model);
+				//String response = promptAiModel(chatClient, promptTemplateArguments, model);
+				String response = promptMockAiModel(chatClient, promptTemplateArguments, model);
 
 				logDebug("AI model response [{}]", response);
 
-				RowColumn rowColumn = RowColumn.parse(response);
+				RowColumn rowColumn = RowColumn.fromColumnLetter(response);
 
 				boardGame.play(currentPlayerDisc, rowColumn);
 				boardGame.printGameBoard();
@@ -129,11 +134,29 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				currentPlayer = switchPlayer(currentPlayer, chatModel);
 			}
 
-			endGame(boardGame, PLAYER_DISC);
+			endGame(boardGame, PLAYER_TO_DISC);
 		};
 	}
 
 	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+		return MOCKS_ENABLED ? promptMockAiModel(chatClient, promptTemplateArguments, model)
+			: promptRealAiModel(chatClient, promptTemplateArguments, model);
+	}
+
+	@SuppressWarnings("all")
+	private String promptMockAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+
+		String availableColumns = String.valueOf(promptTemplateArguments.get("availableColumns"));
+		String letters = StringUtils.getLetters(availableColumns);
+
+		int index = SECURE_RANDOM.nextInt(letters.length());
+
+		String letter = String.valueOf(letters.charAt(index));
+
+		return letter;
+	}
+
+	private String promptRealAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
 
 		ChatResponse chatResponse = chatClient.prompt()
 			.system(SYSTEM_PROMPT_TEMPLATE)
