@@ -30,10 +30,10 @@ import java.util.stream.Stream;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.stream.StreamUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -57,11 +57,12 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 
 		private static final int ROWS = 6;
 		private static final int COLUMNS = 7;
+		private static final int GAME_BOARD_SIZE = ROWS * COLUMNS;
 
+		private static final String COLUMN_POSITIONS = "ABCDEFG";
 		private static final String COLUMN_SYMBOL = "C%d";
 		private static final String ROW_SYMBOL = "R%d";
-		private static final String ROW_COLUMN_SYMBOL = "("+ROW_SYMBOL+","+COLUMN_SYMBOL+")";
-		private static final String ROW_COLUMN_VALUE = ROW_COLUMN_SYMBOL+"=%s";
+		private static final String ROW_COLUMN_SYMBOL = "("+ROW_SYMBOL+", "+COLUMN_SYMBOL+")";
 
 		private final ConnectFourApplication.Columns columns;
 
@@ -77,33 +78,47 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			this.columns = ConnectFourApplication.Columns.from(this);
 		}
 
-		String[] getGameBoardStateBySymbol() {
+		String[] getGameBoardStateAsArray() {
 
 			String[] rowColumnValues = new String[ROWS * COLUMNS];
 
 			for (int rowIndex = 0; rowIndex < ROWS; rowIndex++) {
 				for (int columnIndex = 0; columnIndex < COLUMNS; columnIndex++) {
+					Disc disc = this.gameBoard[rowIndex][columnIndex];
+					String name = Disc.resolveSymbol(disc, "-");
 					int index = rowIndex * COLUMNS + columnIndex;
-					ConnectFourApplication.Disc disc = this.gameBoard[rowIndex][columnIndex];
-					String value = disc != null ? disc.name() : "empty";
-					rowColumnValues[index] = ROW_COLUMN_VALUE
-						.formatted(
-							ConnectFourApplication.RowColumn.asRowNumber(rowIndex), ConnectFourApplication.RowColumn.asColumnNumber(columnIndex), value);
+					rowColumnValues[index] = name;
 				}
 			}
 
 			return rowColumnValues;
 		}
 
+		String getGameBoardStateAsGrid() {
+
+			StringBuilder grid = new StringBuilder(GAME_BOARD_SIZE);
+			int count = 0;
+
+			for (String element : getGameBoardStateAsArray()) {
+				if (count++ % COLUMNS == 0) {
+					grid.append(Utils.NEW_LINE);
+				}
+				grid.append(element);
+			}
+
+			return grid.toString();
+		}
+
 		ConnectFourApplication.Columns getPlayableColumns() {
 			return getColumns().findPlayableColumns();
 		}
 
-		String[] getPlayableColumnsBySymbol() {
+		String[] getPlayableColumnsAsLetter() {
 
 			return getPlayableColumns().stream()
-				.map(ConnectFourApplication.Column::getNumber)
-				.map(COLUMN_SYMBOL::formatted)
+				.map(ConnectFourApplication.Column::getIndex)
+				.map(COLUMN_POSITIONS::charAt)
+				.map(String::valueOf)
 				.toList()
 				.toArray(String[]::new);
 		}
@@ -147,7 +162,6 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 		}
 
 		private boolean isBackwardPossible(int columnIndex) {
-			// return columnIndex >= 2;
 			return ConnectFourApplication.RowColumn.asColumnNumber(columnIndex) - CONNECT_FOUR >= 0;
 		}
 
@@ -163,9 +177,10 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return rowIndex + CONNECT_FOUR <= ROWS;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFour(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex,
-			BiFunction<Integer, Integer, Integer> rowIndexFunction,
-			BiFunction<Integer, Integer, Integer> columnIndexFunction) {
+		private ConnectFourApplication.Disc checkConnectFour(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex,
+				BiFunction<Integer, Integer, Integer> rowIndexFunction,
+				BiFunction<Integer, Integer, Integer> columnIndexFunction) {
 
 			for (int indexOffset = 1; indexOffset < CONNECT_FOUR; indexOffset++) {
 				int nextRowIndex = rowIndexFunction.apply(rowIndex, indexOffset);
@@ -197,26 +212,35 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return null;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonally(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex,
-			BiFunction<Integer, Integer, Integer> columnIndexFunction) {
+		private ConnectFourApplication.Disc checkConnectFourDiagonally(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex,
+				BiFunction<Integer, Integer, Integer> columnIndexFunction) {
+
 			return checkConnectFour(disc, rowIndex, columnIndex, Integer::sum, columnIndexFunction);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonallyBackward(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		private ConnectFourApplication.Disc checkConnectFourDiagonallyBackward(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex) {
+
 			return checkConnectFourDiagonally(disc, rowIndex, columnIndex, this::subtract);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonallyForward(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		private ConnectFourApplication.Disc checkConnectFourDiagonallyForward(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex) {
+
 			return checkConnectFourDiagonally(disc, rowIndex, columnIndex, Integer::sum);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourForward(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		private ConnectFourApplication.Disc checkConnectFourForward(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex) {
+
 			return isForwardPossible(columnIndex)
 				? checkConnectFour(disc, rowIndex, columnIndex, Utils.biFunctionReturnArgumentOne(), Integer::sum)
 				: null;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourUp(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		private ConnectFourApplication.Disc checkConnectFourUp(ConnectFourApplication.Disc disc,
+				int rowIndex, int columnIndex) {
 
 			return isUpPossible(rowIndex)
 				? checkConnectFour(disc, rowIndex, columnIndex, Integer::sum, Utils.biFunctionReturnArgumentOne())
@@ -227,17 +251,16 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return valueOne - valueTwo;
 		}
 
-		ConnectFourBoardGame play(ConnectFourApplication.Disc disc, int columnNumber) {
+		ConnectFourBoardGame play(Disc disc, int columnNumber) {
 			getColumns().findByColumnNumber(columnNumber).play(disc);
 			return this;
 		}
 
-		ConnectFourBoardGame play(ConnectFourApplication.Disc disc, ConnectFourApplication.RowColumn rowColumn) {
-			getColumns().findByColumnNumber(rowColumn.columnNumber()).play(disc);
-			return this;
+		ConnectFourBoardGame play(Disc disc, RowColumn rowColumn) {
+			return play(disc, rowColumn.columnNumber());
 		}
 
-		ConnectFourBoardGame play(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		ConnectFourBoardGame play(Disc disc, int rowIndex, int columnIndex) {
 			this.gameBoard[rowIndex][columnIndex] = disc;
 			return this;
 		}
@@ -418,6 +441,14 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 		static boolean exists(Disc disc) {
 			return disc != null;
 		}
+
+		static String resolveName(Disc disc, String defaultName) {
+			return disc != null ? disc.name() : defaultName;
+		}
+
+		static String resolveSymbol(Disc disc, String defaultSymbol) {
+			return disc != null ? disc.getSymbol() : defaultSymbol;
+		}
 	}
 
 	record RowColumn(int rowNumber, int columnNumber) {
@@ -444,9 +475,23 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return rowIndex + 1;
 		}
 
+		static RowColumn fromColumn(int columnNumber) {
+			return new RowColumn(0, columnNumber);
+		}
+
+		static RowColumn fromRow(int rowNumber) {
+			return new RowColumn(rowNumber, 0);
+		}
+
+		static RowColumn fromColumnLetter(String letter) {
+			int index = ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(letter);
+			Assert.isTrue(index > -1, new IndexOutOfBoundsException("Index [%d] is not valid".formatted(index)));
+			return RowColumn.fromColumn(RowColumn.asColumnNumber(index));
+		}
+
 		static RowColumn parse(String value) {
 
-			Assert.hasText(value, () -> "Value [%s] to parse as a row/column is required".formatted(value));
+			Assert.hasText(value, () -> "Value [%s] to parse as a (row, column) is required".formatted(value));
 
 			Matcher matcher = ROW_COLUMN_PATTERN.matcher(value);
 
@@ -463,14 +508,14 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 				}
 			}
 
-			throw new IllegalArgumentException("Failed to parse row/column from [%s]".formatted(value));
+			throw new IllegalArgumentException("Failed to parse (row, column) from [%s]".formatted(value));
 		}
 
-		int getColumnIndex() {
+		int columnIndex() {
 			return asColumnIndex(columnNumber());
 		}
 
-		int getRowIndex() {
+		int rowIndex() {
 			return asRowIndex(rowNumber());
 		}
 	}
