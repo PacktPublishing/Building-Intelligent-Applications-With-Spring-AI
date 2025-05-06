@@ -67,7 +67,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	private static final String USER_PROMPT_TEMPLATE = """
 		The current state of the game board is {gameBoard}. You are "{playerColor}". Play from 1 of the available
-		positions represented as a letter {availableColumns}. Respond with only 1 of the letters. What is your move?
+		positions represented as a letter {availableColumns}. Respond with only 1 of the letters. Think carefully
+		and prioritize your move to maximize your potential to connect 4 or prevent your opponent from winning.
+		What is your move?
 	""";
 
 	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
@@ -111,7 +113,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				Map<String, Object> promptTemplateArguments = Map.of(
 					"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
-					"playerColor", currentPlayerDisc.name(),
+					"playerColor", currentPlayerDisc.getSymbol(),
 					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
 				);
 
