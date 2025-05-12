@@ -3,8 +3,15 @@
 
 This is the first example from the book, "Building Intelligent Applications with Spring AI".
 
-This example uses Spring AI with OpenAI to demonstrate how to use `ChatModel` API to prompt ChatGPT
-with a question and receive a generated response, outputting the answer to standard out.
+This example uses Spring AI with OpenAI to demonstrate how to use Spring AI's `ChatModel` API to prompt ChatGPT with a question and receive a generated answer, outputting the response to standard out.
+
+[[example-one-requirements]]
+REQUIREMENTS:
+
+1. JDK 17
+
+[[example-one-run]]
+RUN:
 
 This example can be run from the project base directory with `mvnw` command:
 
@@ -12,10 +19,10 @@ This example can be run from the project base directory with `mvnw` command:
 $ mvnw --projects example-one spring-boot:run
 ```
 
-You should see output similar to the following:
+The program will output content similar to the following:
 
 ```txt
-$ mvnw --projects example-one spring-boot:run
+ $ mvnw --projects example-one spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ------------------< com.packt.spring.ai:example-one >-------------------
@@ -30,7 +37,8 @@ $ mvnw --projects example-one spring-boot:run
 [INFO] Copying 0 resource from src/main/resources to target/classes
 [INFO]
 [INFO] --- compiler:3.13.0:compile (default-compile) @ example-one ---
-[INFO] Nothing to compile - all classes are up to date.
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target/classes
 [INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ example-one ---
 [INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/src/test/resources
@@ -53,9 +61,9 @@ $ mvnw --projects example-one spring-boot:run
 
  :: Spring Boot ::                (v3.4.5)
 
-2025-05-03T10:06:20.751-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.14 with PID 40699 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
-2025-05-03T10:06:20.752-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
-2025-05-03T10:06:21.468-07:00  INFO 40699 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.915 seconds (process running for 1.083)
+2025-05-10T15:06:17.507-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.14 with PID 74560 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
+2025-05-10T15:06:17.508-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
+2025-05-10T15:06:18.033-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.661 seconds (process running for 0.787)
 User> In a single word, 'what is the answer to life, the universe, and everything?'
 
 AI> 42
@@ -63,18 +71,20 @@ AI> 42
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.218 s
-[INFO] Finished at: 2025-05-03T10:06:22-07:00
+[INFO] Total time:  3.548 s
+[INFO] Finished at: 2025-05-10T15:06:19-07:00
 [INFO] ------------------------------------------------------------------------
 ```
 
-This example currently support 3 different AI models: [ OpenAI, Google VertexAI Gemini, Ollama ]. Use the following Maven Profile IDs:
+This example currently supports 3 different AI models: [ OpenAI, Google VertexAI Gemini, Ollama ].
+
+Use the following Maven Profile IDs:
 
 * openai (default)
 * ollama
 * gemini
 
-To activate another AI model, such as Ollama (running locally), simply execute:
+To activate another AI provider model, such as Ollama (running locally), simply execute:
 
 ```sh
 $ mvnw --projects example-one -P ollama spring-boot:run
