@@ -56,24 +56,25 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ConnectFourApplication extends AbstractConnectFourApplication {
 
-	private static final boolean MOCKS_ENABLED = false;
+	private static final boolean MOCK_AI_ENABLED = false;
 
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
 		You are a player in the 2-player board game Connect 4. The game board is a 2 dimensional grid with 6 rows
-		and 7 columns. A player chooses a column then plays an 'X' or an 'O'. To win, a player must successfully play
-		the same letter in 4 adjacent cells of the grid, either in the same row, the same column, or diagonally. Play
-		continues until a player wins or there are no more available moves.
+		and 7 columns. A player chooses a column and plays either the letter "X" or the letter "O". To win, a player
+		must be the first to play the same letter in 4 adjacent cells of the grid, either in the same row,
+		the same column, or diagonally. Play continues until a player wins or there are no more available moves.
 	""";
 
 	private static final String USER_PROMPT_TEMPLATE = """
-		The current state of the game board is {gameBoard}. You are "{playerColor}". Play from 1 of the available
-		positions represented as a letter {availableColumns}. Respond with only 1 of the letters. Think carefully
-		and prioritize your move to maximize your potential to connect 4 or prevent your opponent from winning.
-		What is your move?
+		You will be playing the letter "{playerDisc}". The current state of the game board is "{gameBoard}". Think
+		carefully and strategically in order to minimize the number of moves needed to connect 4 and beat your opponent.
+		Select from 1 of the available columns represented as a letter in {availableColumns}. What is your move?
+		Respond with only a single column letter.
 	""";
 
 	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
 	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
+	private static final SpringAiProvider FIRST_PLAYER = PLAYER_TWO;
 
 	private static final SecureRandom SECURE_RANDOM =
 		new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes());
@@ -103,17 +104,23 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		return args -> {
 
-			SpringAiProvider currentPlayer = PLAYER_ONE;
+			print("%n%nWelcome to Connect 4!%n%n");
+			print("Player 1 is [%s] playing [%s]%n%n", PLAYER_ONE.getName(), PLAYER_TO_DISC.get(PLAYER_ONE).getSymbol());
+			print("Player 2 is [%s] playing [%s]%n%n", PLAYER_TWO.getName(), PLAYER_TO_DISC.get(PLAYER_TWO).getSymbol());
+
+			SpringAiProvider currentPlayer = randomPlayer();
 
 			Scanner input = new Scanner(System.in);
 
 			while (boardGame.isPlayable()) {
 
+				print("Current player is [%s]%n%n", currentPlayer.getName());
+
 				Disc currentPlayerDisc = PLAYER_TO_DISC.get(currentPlayer);
 
 				Map<String, Object> promptTemplateArguments = Map.of(
 					"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
-					"playerColor", currentPlayerDisc.getSymbol(),
+					"playerDisc", currentPlayerDisc.getSymbol(),
 					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
 				);
 
@@ -121,10 +128,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				String model = resolveModel(environment, currentPlayer);
 
-				//String response = promptAiModel(chatClient, promptTemplateArguments, model);
-				String response = promptMockAiModel(chatClient, promptTemplateArguments, model);
+				String response = promptAiModel(chatClient, promptTemplateArguments, model);
 
-				logDebug("AI model response [{}]", response);
+				logInfo("AI model response [{}]", response);
 
 				RowColumn rowColumn = RowColumn.fromColumnLetter(response);
 
@@ -141,7 +147,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
-		return MOCKS_ENABLED ? promptMockAiModel(chatClient, promptTemplateArguments, model)
+		return MOCK_AI_ENABLED ? promptMockAiModel(chatClient, promptTemplateArguments, model)
 			: promptRealAiModel(chatClient, promptTemplateArguments, model);
 	}
 
@@ -176,6 +182,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 			.formatted(aiProvider.getPropertyName());
 
 		return environment.getProperty(propertyName);
+	}
+
+	private SpringAiProvider randomPlayer() {
+		return SECURE_RANDOM.nextInt(2) == 1 ? PLAYER_ONE : PLAYER_TWO;
 	}
 
 	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {

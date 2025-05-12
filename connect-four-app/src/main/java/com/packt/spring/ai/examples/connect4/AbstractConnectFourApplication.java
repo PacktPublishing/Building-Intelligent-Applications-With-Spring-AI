@@ -479,14 +479,29 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return new RowColumn(0, columnNumber);
 		}
 
-		static RowColumn fromRow(int rowNumber) {
-			return new RowColumn(rowNumber, 0);
+		static RowColumn fromColumnLetter(String letter) {
+			String singleLetter = assertSingleLetter(StringUtils.getLetters(letter));
+			int index = assertIndexInbounds(ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(singleLetter), singleLetter);
+			return RowColumn.fromColumn(RowColumn.asColumnNumber(index));
 		}
 
-		static RowColumn fromColumnLetter(String letter) {
-			int index = ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(letter);
-			Assert.isTrue(index > -1, new IndexOutOfBoundsException("Index [%d] is not valid".formatted(index)));
-			return RowColumn.fromColumn(RowColumn.asColumnNumber(index));
+		private static int assertIndexInbounds(int index, String letter) {
+			Assert.isTrue(index > -1, new IndexOutOfBoundsException("Index [%d] for letter [%s] is not valid"
+				.formatted(index, letter)));
+			return index;
+		}
+
+		private static String assertSingleLetter(String value) {
+			Assert.isTrue(isSingleLetter(value), "Expected [%s] to be a single letter", value);
+			return value;
+		}
+
+		private static boolean isSingleLetter(String value) {
+			return value != null && value.length() == 1 && Character.isLetter(value.charAt(0));
+		}
+
+		static RowColumn fromRow(int rowNumber) {
+			return new RowColumn(rowNumber, 0);
 		}
 
 		static RowColumn parse(String value) {
