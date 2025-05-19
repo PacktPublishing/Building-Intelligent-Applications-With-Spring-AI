@@ -21,12 +21,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.springframework.ai.chat.client.advisor.api.AdvisedRequest;
-import org.springframework.ai.chat.client.advisor.api.AdvisedResponse;
-import org.springframework.ai.chat.client.advisor.api.CallAroundAdvisor;
-import org.springframework.ai.chat.client.advisor.api.CallAroundAdvisorChain;
-import org.springframework.ai.chat.client.advisor.api.StreamAroundAdvisor;
-import org.springframework.ai.chat.client.advisor.api.StreamAroundAdvisorChain;
+import org.cp.elements.lang.Nameable;
+import org.springframework.ai.chat.client.ChatClientRequest;
+import org.springframework.ai.chat.client.ChatClientResponse;
+import org.springframework.ai.chat.client.advisor.api.CallAdvisor;
+import org.springframework.ai.chat.client.advisor.api.CallAdvisorChain;
+import org.springframework.ai.chat.client.advisor.api.StreamAdvisor;
+import org.springframework.ai.chat.client.advisor.api.StreamAdvisorChain;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
@@ -41,16 +42,20 @@ import lombok.Setter;
 import reactor.core.publisher.Flux;
 
 /**
- * Spring AI {@link CallAroundAdvisor} and {@link StreamAroundAdvisor} enforcing a configured rate limit
+ * Spring AI {@link CallAdvisor} and {@link StreamAdvisor} enforcing a configured rate limit
  * when making requests to an AI model.
  *
  * @author John Blum
- * @see org.springframework.ai.chat.client.advisor.api.CallAroundAdvisor
+ * @see java.time.Duration
+ * @see java.util.concurrent.atomic.AtomicInteger
+ * @see org.cp.elements.lang.Nameable
+ * @see org.springframework.ai.chat.client.advisor.api.CallAdvisor
+ * @see org.springframework.ai.chat.client.advisor.api.StreamAdvisor
  * @since 0.1.0
  */
 @Getter
 @SuppressWarnings("unused")
-public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
+public class RateLimitAdvisor implements CallAdvisor, Nameable<String>, StreamAdvisor {
 
 	public static final int DEFAULT_COUNT = Integer.MAX_VALUE;
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 1_000;
@@ -93,7 +98,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	@Builder
 	public RateLimitAdvisor(int count, Duration duration) {
 
-		Assert.isTrue(count > 0 , "Count [%d] must be greater than equal to 1".formatted(count));
+		Assert.isTrue(count > 0 , "Count [%d] must be greater than 0".formatted(count));
 		Assert.notNull(duration, "Duration is required");
 
 		this.count = count;
@@ -111,23 +116,23 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 	}
 
 	@Override
-	public AdvisedResponse aroundCall(AdvisedRequest advisedRequest, CallAroundAdvisorChain chain) {
+	public ChatClientResponse adviseCall(ChatClientRequest request, CallAdvisorChain chain) {
 
-		Function<ChatResponse, AdvisedResponse> advisedResponseFunction = chatResponse ->
-			buildAdvisedResponse(advisedRequest, chatResponse);
+		Function<ChatResponse, ChatClientResponse> advisedResponseFunction = chatResponse ->
+			buildChatClientResponse(request, chatResponse);
 
-		Supplier<AdvisedResponse> advisedResponseSupplier = () -> chain.nextAroundCall(advisedRequest);
+		Supplier<ChatClientResponse> advisedResponseSupplier = () -> chain.nextCall(request);
 
 		return advisedResponse(System.currentTimeMillis(), advisedResponseFunction, advisedResponseSupplier);
 	}
 
 	@Override
-	public Flux<AdvisedResponse> aroundStream(AdvisedRequest advisedRequest, StreamAroundAdvisorChain chain) {
+	public Flux<ChatClientResponse> adviseStream(ChatClientRequest request, StreamAdvisorChain chain) {
 
-		Function<ChatResponse, Flux<AdvisedResponse>> advisedResponseFunction = chatResponse ->
-			Flux.just(buildAdvisedResponse(advisedRequest, chatResponse));
+		Function<ChatResponse, Flux<ChatClientResponse>> advisedResponseFunction = chatResponse ->
+			Flux.just(buildChatClientResponse(request, chatResponse));
 
-		Supplier<Flux<AdvisedResponse>> advisedResponseSupplier = () -> chain.nextAroundStream(advisedRequest);
+		Supplier<Flux<ChatClientResponse>> advisedResponseSupplier = () -> chain.nextStream(request);
 
 		return advisedResponse(System.currentTimeMillis(), advisedResponseFunction, advisedResponseSupplier);
 	}
@@ -148,10 +153,7 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 
 			AssistantMessage assistantMessage = new AssistantMessage(message());
 			Generation generation = new Generation(assistantMessage);
-
-			ChatResponse chatResponse = ChatResponse.builder()
-				.generations(List.of(generation))
-				.build();
+			ChatResponse chatResponse = buildChatResponse(generation);
 
 			return advisedResponseFunction.apply(chatResponse);
 		}
@@ -159,11 +161,18 @@ public class RateLimitAdvisor implements CallAroundAdvisor, StreamAroundAdvisor 
 		return advisedResponseSupplier.get();
 	}
 
-	protected AdvisedResponse buildAdvisedResponse(AdvisedRequest request, ChatResponse response) {
+	protected ChatResponse buildChatResponse(Generation... generations) {
 
-		return AdvisedResponse.builder()
-			.response(response)
-			.adviseContext(request.adviseContext())
+		return ChatResponse.builder()
+			.generations(List.of(generations))
+			.build();
+	}
+
+	protected ChatClientResponse buildChatClientResponse(ChatClientRequest request, ChatResponse response) {
+
+		return ChatClientResponse.builder()
+			.context(request.context())
+			.chatResponse(response)
 			.build();
 	}
 
