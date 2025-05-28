@@ -22,7 +22,7 @@ $ mvnw --projects example-one spring-boot:run
 The program will output content similar to the following:
 
 ```txt
- $ mvnw --projects example-one spring-boot:run
+$ mvnw -projects example-one spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ------------------< com.packt.spring.ai:example-one >-------------------
@@ -30,26 +30,25 @@ The program will output content similar to the following:
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]
-[INFO] >>> spring-boot:3.4.5:run (default-cli) > test-compile @ example-one >>>
+[INFO] >>> spring-boot:3.5.0:run (default-cli) > test-compile @ example-one >>>
 [INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ example-one ---
 [INFO] Copying 2 resources from src/main/resources to target/classes
 [INFO] Copying 0 resource from src/main/resources to target/classes
 [INFO]
-[INFO] --- compiler:3.13.0:compile (default-compile) @ example-one ---
-[INFO] Recompiling the module because of changed source code.
-[INFO] Compiling 1 source file with javac [debug parameters release 17] to target/classes
+[INFO] --- compiler:3.14.0:compile (default-compile) @ example-one ---
+[INFO] Nothing to compile - all classes are up to date.
 [INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ example-one ---
 [INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/src/test/resources
 [INFO]
-[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ example-one ---
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ example-one ---
 [INFO] No sources to compile
 [INFO]
-[INFO] <<< spring-boot:3.4.5:run (default-cli) < test-compile @ example-one <<<
+[INFO] <<< spring-boot:3.5.0:run (default-cli) < test-compile @ example-one <<<
 [INFO]
 [INFO]
-[INFO] --- spring-boot:3.4.5:run (default-cli) @ example-one ---
+[INFO] --- spring-boot:3.5.0:run (default-cli) @ example-one ---
 [INFO] Attaching agents: []
 
   .   ____          _            __ _ _
@@ -59,11 +58,11 @@ The program will output content similar to the following:
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
 
- :: Spring Boot ::                (v3.4.5)
+ :: Spring Boot ::                (v3.5.0)
 
-2025-05-10T15:06:17.507-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.14 with PID 74560 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
-2025-05-10T15:06:17.508-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
-2025-05-10T15:06:18.033-07:00  INFO 74560 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.661 seconds (process running for 0.787)
+2025-05-28T10:49:07.728-07:00  INFO 36303 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Starting DeepThoughtApplication using Java 17.0.14 with PID 36303 (~~/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one/target/classes started by jxblum in ~/Building Intelligent Applications with Spring AI/spring-ai-examples/example-one)
+2025-05-28T10:49:07.730-07:00  INFO 36303 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : The following 1 profile is active: "user"
+2025-05-28T10:49:08.383-07:00  INFO 36303 --- [Deep Thought] [           main] c.p.s.a.e.one.DeepThoughtApplication     : Started DeepThoughtApplication in 0.874 seconds (process running for 1.077)
 User> In a single word, 'what is the answer to life, the universe, and everything?'
 
 AI> 42
@@ -71,8 +70,8 @@ AI> 42
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.548 s
-[INFO] Finished at: 2025-05-10T15:06:19-07:00
+[INFO] Total time:  4.216 s
+[INFO] Finished at: 2025-05-28T10:49:09-07:00
 [INFO] ------------------------------------------------------------------------
 ```
 
