@@ -37,7 +37,7 @@
 		<module>streaming-example</module>
 		<module>structured-output-converter-example</module>
 		<module>tokenizer-example</module>
-		<module>opposites-application</module>
+		<module>opposites-app</module>
 		<module>spring-ai-tools</module>
 		<module>connect-four-app</module>
 	</modules>
