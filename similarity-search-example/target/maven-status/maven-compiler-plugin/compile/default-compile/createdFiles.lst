@@ -1,6 +1,0 @@
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication.class
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication$SongVerseTextSplitter.class
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication$Song$SongBuilder.class
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication$Song.class
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication$SongRefrainTextSplitter.class
-com/packt/spring/ai/examples/similaritysearch/SongSimilaritySearchApplication$SongLyricsTextSplitter.class

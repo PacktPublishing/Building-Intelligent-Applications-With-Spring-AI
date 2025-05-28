@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.codeprimate.extensions.spring.ai.converter.Rfc1123DateTimeStructuredOutputConverterUnitTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.098 s -- in io.codeprimate.extensions.spring.ai.converter.Rfc1123DateTimeStructuredOutputConverterUnitTests

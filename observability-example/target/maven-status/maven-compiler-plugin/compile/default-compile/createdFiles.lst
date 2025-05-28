@@ -1,6 +1,0 @@
-com/packt/spring/ai/examples/observability/TimedChatModelCallObservationApplication$TimeMeasurement.class
-com/packt/spring/ai/examples/observability/TimedChatModelCallObservationApplication$TimeMeasurement$TimeMeasurementBuilder.class
-com/packt/spring/ai/examples/observability/GaugedChatModelCallObservationApplication.class
-com/packt/spring/ai/examples/observability/TokenCountObservationApplication.class
-com/packt/spring/ai/examples/observability/GaugedChatModelCallObservationApplication$ObservationMonitor.class
-com/packt/spring/ai/examples/observability/TimedChatModelCallObservationApplication.class

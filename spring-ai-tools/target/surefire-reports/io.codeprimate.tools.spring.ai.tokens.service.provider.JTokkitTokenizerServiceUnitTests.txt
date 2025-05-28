@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.codeprimate.tools.spring.ai.tokens.service.provider.JTokkitTokenizerServiceUnitTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.503 s -- in io.codeprimate.tools.spring.ai.tokens.service.provider.JTokkitTokenizerServiceUnitTests
