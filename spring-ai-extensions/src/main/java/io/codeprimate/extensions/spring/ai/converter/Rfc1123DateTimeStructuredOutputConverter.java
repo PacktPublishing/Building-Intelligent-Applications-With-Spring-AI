@@ -39,7 +39,7 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 
 	@Override
 	public String getFormat() {
-		return "Use format RFC 1123. Only respond with date, time and timezone offset.";
+		return "Generate response with only date, time and timezone offset in RFC 1123 format.";
 	}
 
 	@Override
