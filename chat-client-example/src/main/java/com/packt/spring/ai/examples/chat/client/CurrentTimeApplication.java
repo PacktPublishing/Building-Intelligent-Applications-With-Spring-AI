@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SpringBootApplication} using Spring AI with OpenAI and ChatGPT ({@literal gpt-4o} model) demonstrating
+ * {@link SpringBootApplication} using Spring AI with OpenAI ChatGPT ({@literal gpt-4o} model) to demonstrate
  * the {@link ChatClient} API by returning the current time for any location in the world.
  * <p>
  *     If the prompt is simply, "What time is it in London?", the AI will respond with:
@@ -161,6 +161,6 @@ public class CurrentTimeApplication {
 	}
 
 	private boolean isNotExit(String input) {
-		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input);
+		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input.trim());
 	}
 }

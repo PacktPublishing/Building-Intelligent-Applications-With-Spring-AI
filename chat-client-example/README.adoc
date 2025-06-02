@@ -1,0 +1,86 @@
+[[chat-client-example]]
+= ChatClient Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/chatclient.html[ChatClient API] to prompt an AI model and get the current time for any location around the world.
+
+By default, this example runs Spring AI with https://ollama.com[Ollama]. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+
+> NOTE: Using Ollama allows you to run AI models locally on our computer. Goto https://ollama.com/download[download] to install Ollama on your computer.
+
+Alternatively, you can run this example using either Google Vertex AI Gemini or OpenAI. See the Spring Boot [application.properties] file containing the configuration properties you need to set in order to run with either Google Vertex AI Gemini or OpenAI.
+
+To run this program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw -projects chat-client-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< com.packt.spring.ai:chat-client-example >---------------
+[INFO] Building ChatClientExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.0:run (default-cli) > test-compile @ chat-client-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ chat-client-example ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ chat-client-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ chat-client-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/chat-client-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ chat-client-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.0:run (default-cli) < test-compile @ chat-client-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.0:run (default-cli) @ chat-client-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.0)
+
+2025-06-01T16:09:50.276-07:00  INFO 48619 --- [Current Time App] [           main] c.p.s.a.e.c.c.CurrentTimeApplication     : Starting CurrentTimeApplication using Java 17.0.14 with PID 48619 (~/spring-ai-examples/chat-client-example/target/classes started by jxblum in ~/spring-ai-examples/chat-client-example)
+2025-06-01T16:09:50.279-07:00  INFO 48619 --- [Current Time App] [           main] c.p.s.a.e.c.c.CurrentTimeApplication     : The following 1 profile is active: "user"
+2025-06-01T16:09:51.061-07:00  INFO 48619 --- [Current Time App] [           main] c.p.s.a.e.c.c.CurrentTimeApplication     : Started CurrentTimeApplication in 1.054 seconds (process running for 1.258)
+Enter Location:
+
+```
+
+When prompted to enter a location, enter any city in the world.
+
+For example:
+
+```bash
+Enter Location: Paris
+Sun, 1 Jun 2025 23:11:37 +0200
+
+Enter Location: Hong Kong
+Mon, 2 Jun 2025 09:12:30 +0800
+
+Enter Location: exit
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:52 min
+[INFO] Finished at: 2025-06-01T16:12:41-07:00
+[INFO] ------------------------------------------------------------------------
+```
+
+When finished, simply type "exit".
+
+To run a specific AI provider model, specify the `ai` JVM  System property as follows:
+
+```bash
+$ mvnw -projects chat-client-example -Dai=gemini spring-boot:run
+```
