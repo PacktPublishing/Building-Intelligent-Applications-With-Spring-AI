@@ -21,6 +21,8 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.codeprimate.extensions.util.Utils;
+
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
@@ -45,6 +47,8 @@ import org.springframework.util.StringUtils;
 public class EmbeddedDocument extends Document {
 
 	private static final int EMBEDDING_INDEX = 0;
+
+	private static final float[] EMPTY_EMBEDDING = new float[0];
 
 	public static EmbeddedDocument from(@NonNull Document document) {
 
@@ -71,7 +75,7 @@ public class EmbeddedDocument extends Document {
 		return new EmbeddedDocument(content);
 	}
 
-	private volatile float[] embedding;
+	private volatile float[] embedding = EMPTY_EMBEDDING;
 
 	public static boolean isEmbeddingPresent(Document document) {
 		return document instanceof EmbeddedDocument embeddedDocument && embeddedDocument.isEmbeddingPresent();
@@ -116,7 +120,7 @@ public class EmbeddedDocument extends Document {
 	}
 
 	public EmbeddedDocument withEmbedding(float[] embedding) {
-		this.embedding = embedding;
+		this.embedding = Utils.defaultIfNull(embedding, EMPTY_EMBEDDING);
 		return this;
 	}
 }
