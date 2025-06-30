@@ -116,7 +116,7 @@ public interface AiProvider extends Iterable<NamedModel>, Nameable<String> {
 
 		public Builder withNamedModels(Iterable<NamedModel> namedModels) {
 
-			Utils.stream(Utils.nullSafeIterable(namedModels))
+			Utils.stream(namedModels)
 				.filter(Objects::nonNull)
 				.forEach(this.namedModels::add);
 
