@@ -54,7 +54,7 @@ public class ChatModelConfiguration {
 	}
 
 	@Bean
-	public BeanPostProcessor loggingChatModelBeanPostProcessor(ChatModelProperties chatModelProperties) {
+	public static BeanPostProcessor loggingChatModelBeanPostProcessor(ChatModelProperties chatModelProperties) {
 
 		return new BeanPostProcessor() {
 
@@ -75,15 +75,15 @@ public class ChatModelConfiguration {
 		};
 	}
 
-	private boolean isCompositeChatModel(Object target) {
+	private static boolean isCompositeChatModel(Object target) {
 		return target instanceof CompositeChatModel;
 	}
 
-	private boolean isNotCompositeChatModel(Object target) {
+	private static boolean isNotCompositeChatModel(Object target) {
 		return !isCompositeChatModel(target);
 	}
 
-	private boolean isLoggingEnabled(ChatModel chatModel, Level level) {
+	private static boolean isLoggingEnabled(ChatModel chatModel, Level level) {
 
 		Class<? extends ChatModel> loggerType = resolveLoggerType(chatModel);
 		Logger chatModelLogger = LoggerFactory.getLogger(loggerType);
@@ -91,7 +91,7 @@ public class ChatModelConfiguration {
 		return chatModelLogger.isEnabledForLevel(level);
 	}
 
-	private Class<? extends ChatModel> resolveLoggerType(ChatModel chatModel) {
+	private static Class<? extends ChatModel> resolveLoggerType(ChatModel chatModel) {
 		return chatModel != null ? chatModel.getClass() : LoggingChatModel.class;
 	}
 }
