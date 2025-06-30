@@ -20,7 +20,9 @@ import java.util.Set;
 import org.cp.elements.lang.Assert;
 import org.slf4j.event.Level;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Role;
 
 /**
  * Property configuration for Spring AI {@link ChatModel} extensions.
@@ -31,6 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 0.1.0
  */
 @ConfigurationProperties("ext.spring.ai.chat.model")
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @SuppressWarnings("unused")
 public record ChatModelProperties(Logging logging) {
 
