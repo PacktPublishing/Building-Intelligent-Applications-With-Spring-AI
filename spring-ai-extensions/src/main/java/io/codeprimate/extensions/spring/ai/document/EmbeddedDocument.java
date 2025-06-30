@@ -15,6 +15,7 @@
  */
 package io.codeprimate.extensions.spring.ai.document;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -77,6 +78,10 @@ public class EmbeddedDocument extends Document {
 
 	public EmbeddedDocument(String id, String content, Map<String, Object> metadata) {
 		super(id, content, metadata);
+	}
+
+	public EmbeddedDocument(Media media) {
+		super(media, Collections.emptyMap());
 	}
 
 	public EmbeddedDocument(Media media, Map<String, Object> metadata) {
