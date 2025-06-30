@@ -73,17 +73,17 @@ public class AdvisorsApplication extends AbstractSpringBootApplication {
 	@Bean
 	ApplicationRunner programRunner(ChatClient chatClient, ListOutputConverter converter) {
 
-		String promptTemplate = "What are the main characters in {input}?";
+		String promptTemplate = "Who are the main characters in {input}?";
 
 		return repl((applicationArguments, input) -> {
 
 				Map<String, Object> promptArguments = Map.of("input", input);
 
-				Consumer<ChatClient.PromptUserSpec> promptUserSpecConsumer = promptUserSpec ->
+				Consumer<ChatClient.PromptUserSpec> userPrompt = promptUserSpec ->
 					promptUserSpec.text(promptTemplate).params(promptArguments);
 
 				List<String> response = chatClient.prompt()
-					.user(promptUserSpecConsumer)
+					.user(userPrompt)
 					.call()
 					.entity(converter);
 
@@ -98,6 +98,6 @@ public class AdvisorsApplication extends AbstractSpringBootApplication {
 
 	@Override
 	protected void userPrompt() {
-		print("%n%nWhat are the main characters in: ");
+		print("%n%nWho are the main characters in: ");
 	}
 }
