@@ -16,7 +16,7 @@
 package io.codeprimate.extensions;
 
 /**
- * Java program outputting the version of the Codeprimate Extensions library.
+ * Java program used to output the version of the Codeprimate Extensions for Spring AI library.
  *
  * @author John Blum
  * @since 0.1.0
@@ -28,6 +28,6 @@ public class CodeprimateExtensionsApplication {
 	protected static final String VERSION = "0.1.0";
 
 	public static void main(String[] args) {
-		System.out.printf("Codeprimate Extensions version %s%n".formatted(VERSION));
+		System.out.printf("Codeprimate Extensions version %s%n", VERSION);
 	}
 }
