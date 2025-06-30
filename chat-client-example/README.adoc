@@ -7,12 +7,12 @@ By default, this example runs Spring AI with https://ollama.com[Ollama]. See Spr
 
 > NOTE: Using Ollama allows you to run AI models locally on our computer. Goto https://ollama.com/download[download] to install Ollama on your computer.
 
-Alternatively, you can run this example using either Google Vertex AI Gemini or OpenAI. See the Spring Boot [application.properties] file containing the configuration properties you need to set in order to run with either Google Vertex AI Gemini or OpenAI.
+Alternatively, you can run this example using either Google Vertex AI Gemini or OpenAI. See the Spring Boot https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/chat-client-example/src/main/resources/application.properties[application.properties] file containing the configuration properties you need to set in order to run with either Google Vertex AI Gemini or OpenAI.
 
 To run this program, enter the following Maven command at the command-line:
 
 ```bash
-$ mvnw -projects chat-client-example spring-boot:run
+$ mvnw --projects chat-client-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------< com.packt.spring.ai:chat-client-example >---------------
@@ -79,8 +79,12 @@ Enter Location: exit
 
 When finished, simply type "exit".
 
-To run a specific AI provider model, specify the `ai` JVM  System property as follows:
+To run a specific AI provider model, specify the `ai` JVM System property as follows:
 
 ```bash
-$ mvnw -projects chat-client-example -Dai=gemini spring-boot:run
+$ mvnw --projects chat-client-example -Dai=openai spring-boot:run
 ```
+
+You can choose from the following AI models: [ openai, gemini, ollama ].
+
+> WARNING: Sometimes the AI models (e.g. Ollama) are inconsistent when returning the generated response (Date & Time in RFC 1123 format) thereby cause the StructuredOutputConverter for RFC 1123 to fail in parsing.

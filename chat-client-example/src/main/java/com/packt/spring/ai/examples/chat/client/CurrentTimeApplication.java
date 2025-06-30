@@ -101,7 +101,7 @@ public class CurrentTimeApplication {
 
 				Map<String, Object> promptArguments = Map.of(
 					"zone", now.getZone().getId(),
-					"dateTime", now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+					"dateTime", now.format(DateTimeFormatter.RFC_1123_DATE_TIME),
 					"format", format,
 					"location", location
 				);
