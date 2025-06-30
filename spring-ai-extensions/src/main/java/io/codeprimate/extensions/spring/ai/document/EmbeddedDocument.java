@@ -61,6 +61,11 @@ public class EmbeddedDocument extends Document {
 			: new EmbeddedDocument(id, document.getMedia(), metadata);
 	}
 
+	public static EmbeddedDocument from(Media media) {
+		Assert.notNull(media, "Media is required");
+		return new EmbeddedDocument(media);
+	}
+
 	private volatile float[] embedding;
 
 	public static boolean isEmbeddingPresent(Document document) {
