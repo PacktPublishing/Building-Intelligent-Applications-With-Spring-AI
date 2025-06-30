@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import io.codeprimate.extensions.spring.ai.provider.model.NamedModel;
 import io.codeprimate.extensions.spring.ai.provider.model.NamedModels;
@@ -88,6 +89,17 @@ public interface AiProvider extends Iterable<NamedModel>, Nameable<String> {
 	 */
 	default Iterable<NamedModel> namedModels() {
 		return NamedModels.empty();
+	}
+
+	/**
+	 * Return an {@link Stream} of {@link NamedModel named models} provided by this {@link AiProvider AI provider}.
+	 *
+	 * @return an {@link Stream} of {@link NamedModel named models} provided by this {@link AiProvider AI provider}.
+	 * @see io.codeprimate.extensions.spring.ai.provider.model.NamedModel
+	 * @see java.util.stream.Stream
+	 */
+	default Stream<NamedModel> stream() {
+		return Utils.stream(this);
 	}
 
 	/**
