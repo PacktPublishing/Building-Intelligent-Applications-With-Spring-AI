@@ -98,7 +98,7 @@ public class RateLimitAdvisor implements CallAdvisor, Nameable<String>, StreamAd
 	@Builder
 	public RateLimitAdvisor(int count, Duration duration) {
 
-		Assert.isTrue(count > 0 , "Count [%d] must be greater than 0".formatted(count));
+		Assert.isTrue(count > 0 , () -> "Count [%d] must be greater than 0".formatted(count));
 		Assert.notNull(duration, "Duration is required");
 
 		this.count = count;
