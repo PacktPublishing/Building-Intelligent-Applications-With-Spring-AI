@@ -66,6 +66,11 @@ public class EmbeddedDocument extends Document {
 		return new EmbeddedDocument(media);
 	}
 
+	public static EmbeddedDocument from(String content) {
+		Assert.hasText(content, "Content is required");
+		return new EmbeddedDocument(content);
+	}
+
 	private volatile float[] embedding;
 
 	public static boolean isEmbeddingPresent(Document document) {
