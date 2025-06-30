@@ -80,8 +80,12 @@ public enum SpringAiProvider implements AiProvider {
 		this.predicate = ObjectUtils.requireObject(predicate, "Predicate used to match an enum is required");
 	}
 
+	public static Stream<SpringAiProvider> asStream() {
+		return Arrays.stream(values());
+	}
+
 	public static Optional<? extends AiProvider> findBy(Predicate<AiProvider> predicate) {
-		return stream().filter(predicate).findFirst();
+		return asStream().filter(predicate).findFirst();
 	}
 
 	public static Optional<? extends AiProvider> findByModel(Model<?, ?> model) {
@@ -105,9 +109,5 @@ public enum SpringAiProvider implements AiProvider {
 		return aiProvider instanceof SpringAiProviderModel aiProviderModel
 			? aiProviderModel.aiProvider()
 			: aiProvider;
-	}
-
-	public static Stream<SpringAiProvider> stream() {
-		return Arrays.stream(values());
 	}
 }
