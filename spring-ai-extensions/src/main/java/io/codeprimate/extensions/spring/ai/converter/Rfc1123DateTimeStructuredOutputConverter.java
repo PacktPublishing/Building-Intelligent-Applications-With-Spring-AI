@@ -18,8 +18,11 @@ package io.codeprimate.extensions.spring.ai.converter;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 
 /**
  * Spring AI {@link StructuredOutputConverter} used to parse a {@literal RFC 1123} formatted {@link String}
@@ -37,13 +40,24 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 	public static final Rfc1123DateTimeStructuredOutputConverter INSTANCE
 		= new Rfc1123DateTimeStructuredOutputConverter();
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Override
 	public String getFormat() {
-		return "Generate response with only date, time and timezone offset in RFC 1123 format.";
+		return "Respond only with the date and time in RFC 1123 format.";
+	}
+
+	protected Logger getLogger() {
+		return this.logger;
 	}
 
 	@Override
 	public @NonNull ZonedDateTime convert(@NonNull String source) {
+
+		Assert.hasText(source, "Source [%s] to convert as an RFC 1123 Date & Time is required".formatted(source));
+
+		getLogger().info("Converting source [{}] to RFC 1123 Date & Time", source);
+
 		return ZonedDateTime.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(source));
 		//return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
 	}
