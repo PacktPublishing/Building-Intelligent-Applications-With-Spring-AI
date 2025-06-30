@@ -75,7 +75,7 @@ AI> 42
 [INFO] ------------------------------------------------------------------------
 ```
 
-This example currently supports 3 different AI models: [ OpenAI, Google VertexAI Gemini, Ollama ].
+This example currently supports 3 different AI models: [ OpenAI, Google Vertex AI Gemini, Ollama ].
 
 Use the following Maven Profile IDs:
 
@@ -88,3 +88,5 @@ To activate another AI provider model, such as Ollama (running locally), simply 
 ```sh
 $ mvnw --projects example-one -P ollama spring-boot:run
 ```
+
+> NOTE: You must have installed Ollama locally (see https://ollama.com/download[download]) to run Ollama https://ollama.com/search[models], such as https://ollama.com/library/llama3.2[llama3.2]. You must run (automatically install) different AI models locally (e.g. `$ ollama run llama3.2`) before running Spring AI applications that use the model.
