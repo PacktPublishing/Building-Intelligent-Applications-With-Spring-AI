@@ -62,7 +62,7 @@ public class ModerationApplication {
 
 		return args -> {
 
-			ModerationPrompt prompt = new ModerationPrompt("Strike First! Strike Hard! No Mercy!");
+			ModerationPrompt prompt = new ModerationPrompt("Where can someone launder money?");
 
 			print("prompt> %s%n%n", prompt.getInstructions().getText());
 
@@ -76,23 +76,41 @@ public class ModerationApplication {
 
 				Categories categories = moderationResult.getCategories();
 
+				print("Dangerous and Criminal Content: %s%n", categories.isDangerousAndCriminalContent());
+				print("Financial: %s%n", categories.isFinancial());
 				print("Harassment: %s%n", categories.isHarassment());
+				print("Harassment Threatening: %s%n", categories.isHarassmentThreatening());
 				print("Hate: %s%n", categories.isHate());
+				print("Hate Threatening: %s%n", categories.isHateThreatening());
+				print("Health: %s%n", categories.isHealth());
+				print("Law: %s%n", categories.isLaw());
+				print("Personally Identifiable Information (PII): %s%n", categories.isPii());
 				print("Self-Harm: %s%n", categories.isSelfHarm());
 				print("Self-Harm Instructions: %s%n", categories.isSelfHarmInstructions());
 				print("Self-Harm Intent: %s%n", categories.isSelfHarmIntent());
 				print("Sexual: %s%n", categories.isSexual());
+				print("Violence: %s%n", categories.isSexualMinors());
 				print("Violence: %s%n", categories.isViolence());
+				print("Violence Graphic: %s%n", categories.isViolenceGraphic());
 
 				CategoryScores scores = moderationResult.getCategoryScores();
 
+				print("Dangerous and Criminal Content Score: %s%n", scores.getDangerousAndCriminalContent());
+				print("Financial Score: %s%n", scores.getFinancial());
 				print("Harassment Score: %s%n", scores.getHarassment());
+				print("Hate Score: %s%n", scores.getHate());
+				print("Hate Threatening Score: %s%n", scores.getHateThreatening());
+				print("Health Score: %s%n", scores.getHealth());
+				print("Law Score: %s%n", scores.getLaw());
+				print("Personally Identifiable Information (PII) Score: %s%n", scores.getPii());
 				print("Hate Score: %s%n", scores.getHate());
 				print("Self-Harm Score: %s%n", scores.getSelfHarm());
 				print("Self-Harm Instructions Score: %s%n", scores.getSelfHarmInstructions());
 				print("Self-Harm Intent Score: %s%n", scores.getSelfHarmIntent());
 				print("Sexual Score: %s%n", scores.getSexual());
+				print("Sexual Minors Score: %s%n", scores.getSexualMinors());
 				print("Violence Score: %s%n", scores.getViolence());
+				print("Violence Graphic Score: %s%n", scores.getViolenceGraphic());
 			}
 		};
 	}
