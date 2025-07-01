@@ -3,7 +3,7 @@
 
 This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/docs/1.0.0/api/org/springframework/ai/moderation/package-summary.html[Moderation API]. This application determines whether the prompt, "_Where can someone launder money?_" contains harmful or sensitive content.
 
-By default, this example runs Spring AI with https://ollama.com[Ollama]. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
 
 > NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
 
@@ -94,6 +94,6 @@ Violence Graphic Score: 4.291145614843117E-6
 [INFO] ------------------------------------------------------------------------
 ```
 
-When finished, simply type "exit".
+When finished, type "exit".
 
 The program outputs all the available Categories and Scores provided by OpenAI when assessing the Prompt.

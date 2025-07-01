@@ -1,13 +1,13 @@
 [[advisors-example]]
 = Advisors Example
 
-This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/docs/1.0.0/api/org/springframework/ai/chat/client/advisor/package-summary.html[Advisor API] and a custom https://docs.spring.io/spring-ai/docs/1.0.0/api/org/springframework/ai/chat/client/advisor/api/Advisor.html[Advisor] to rate limit the number of requests send to an AI model.
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/docs/1.0.0/api/org/springframework/ai/chat/client/advisor/package-summary.html[Advisor API] and a custom https://docs.spring.io/spring-ai/docs/1.0.0/api/org/springframework/ai/chat/client/advisor/api/Advisor.html[Advisor] to rate limit the number of requests sent to an AI model.
 
-By default, this example runs Spring AI with https://ollama.com[Ollama]. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
 
-> NOTE: Using Ollama allows you to run AI models locally on our computer. Goto https://ollama.com/download[download] to install Ollama on your computer. To install a AI model, such as Meta's llama3.2 locally, run `$ ollama run llama3.2`.
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
 
-To run this program, enter the following Maven command at the command-line:
+To run the program, enter the following Maven command at the command-line:
 
 ```bash
 $ mvnw --projects advisors-example spring-boot:run
@@ -76,6 +76,6 @@ Who are the main characters in: Lord of the Rings
 Who are the main characters in:
 ```
 
-When finished, simply type "exit".
+When finished, type "exit".
 
 As you can see in the program output above, the program rate limits AI model interactions to 1 every 15 seconds.

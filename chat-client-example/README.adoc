@@ -3,13 +3,13 @@
 
 This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/chatclient.html[ChatClient API] to prompt an AI model and get the current time for any location around the world.
 
-By default, this example runs Spring AI with https://ollama.com[Ollama]. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2`. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
 
-> NOTE: Using Ollama allows you to run AI models locally on our computer. Goto https://ollama.com/download[download] to install Ollama on your computer.
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
 
 Alternatively, you can run this example using either Google Vertex AI Gemini or OpenAI. See the Spring Boot https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/chat-client-example/src/main/resources/application.properties[application.properties] file containing the configuration properties you need to set in order to run with either Google Vertex AI Gemini or OpenAI.
 
-To run this program, enter the following Maven command at the command-line:
+To run the program, enter the following Maven command at the command-line:
 
 ```bash
 $ mvnw --projects chat-client-example spring-boot:run
