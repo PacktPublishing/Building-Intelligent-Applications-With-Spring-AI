@@ -30,6 +30,13 @@ import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
+
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.transformer.splitter.TextSplitter;
@@ -44,13 +51,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
-import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.NewlineTextSplitter;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.ParagraphTextSplitter;
-import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -67,7 +67,6 @@ import lombok.NoArgsConstructor;
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.transformer.splitter.TextSplitter
- * @see org.springframework.ai.vectorstore.SearchRequest
  * @see org.springframework.ai.vectorstore.SimpleVectorStore
  * @see org.springframework.ai.vectorstore.VectorStore
  * @see org.springframework.boot.ApplicationRunner
