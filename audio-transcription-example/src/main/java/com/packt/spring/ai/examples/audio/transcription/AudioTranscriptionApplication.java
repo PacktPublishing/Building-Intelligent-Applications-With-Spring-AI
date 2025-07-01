@@ -25,7 +25,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
- * {@link SpringBootApplication} using Spring AI with OpenAI and the Whisper model to demonstrate Audio Transcription.
+ * {@link SpringBootApplication} using Spring AI with OpenAI and the {@literal Whisper} model
+ * to demonstrate Audio Transcription.
  *
  * @author John Blum
  * @see org.springframework.ai.openai.OpenAiAudioTranscriptionModel
@@ -53,11 +54,8 @@ public class AudioTranscriptionApplication {
 	ApplicationRunner programRunner(OpenAiAudioTranscriptionModel transcriptionModel) {
 
 		return args -> {
-
 			Resource audio = new ClassPathResource("audio.mp3");
-
 			String text = transcriptionModel.call(audio);
-
 			System.out.printf("\"%s\"%n", text.trim());
 		};
 	}
