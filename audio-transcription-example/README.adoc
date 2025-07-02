@@ -1,0 +1,64 @@
+[[audio-transcription-example]]
+= Audio Transcription Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/audio/transcriptions.html[Audi Transcription API] to transcribe an MP3 audio file to text.
+
+By default, this example runs Spring AI with https://openai.com[OpenAI] using the https://platform.openai.com/docs/models/whisper-1[Whisper-1 model] to transcribe audio to text.
+
+This example already includes a https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/audio-transcription-example/src/main/resources/audio.mp3[MP3 file] for running the program out-of-the-box.
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects audio-transcription-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ----------< com.packt.spring.ai:audio-transcription-example >-----------
+[INFO] Building AudioTranscriptionExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ audio-transcription-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ audio-transcription-example ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ audio-transcription-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ audio-transcription-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/audio-transcription-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ audio-transcription-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ audio-transcription-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ audio-transcription-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-01T17:01:07.578-07:00  INFO 38914 --- [Audio Transcription App] [           main] .s.a.e.a.t.AudioTranscriptionApplication : Starting AudioTranscriptionApplication using Java 17.0.14 with PID 38914 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/audio-transcription-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/audio-transcription-example)
+2025-07-01T17:01:07.579-07:00  INFO 38914 --- [Audio Transcription App] [           main] .s.a.e.a.t.AudioTranscriptionApplication : The following 1 profile is active: "user"
+2025-07-01T17:01:07.979-07:00  INFO 38914 --- [Audio Transcription App] [           main] .s.a.e.a.t.AudioTranscriptionApplication : Started AudioTranscriptionApplication in 0.533 seconds (process running for 0.637)
+"May the Force be with you."
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.504 s
+[INFO] Finished at: 2025-07-01T17:01:11-07:00
+[INFO] ------------------------------------------------------------------------
+
+```
+
+As you can see the in the program output above, the example Spring AI application transcribed the MP3 audio file, which said "_May the force be with you_".
