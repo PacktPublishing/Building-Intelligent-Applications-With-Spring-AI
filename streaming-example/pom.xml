@@ -15,7 +15,7 @@
 
 	<name>StreamingExample</name>
 	<description>
-		Spring Boot application using Spring AI with Ollama to demonstrate the Streaming API support.
+		Spring Boot application using Spring AI with Ollama to demonstrate the Streaming API.
 	</description>
 	<url/>
 

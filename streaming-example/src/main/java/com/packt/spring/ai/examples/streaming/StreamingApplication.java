@@ -80,7 +80,7 @@ public class StreamingApplication {
 
 		return args -> {
 
-			AtomicBoolean actionPerformed = new AtomicBoolean(false);
+			AtomicBoolean acted = new AtomicBoolean(false);
 			Scanner scanner = new Scanner(System.in);
 			String input;
 
@@ -97,15 +97,15 @@ public class StreamingApplication {
 						.map(Generation::getOutput)
 						.map(AssistantMessage::getText)
 						.map(String::toCharArray)
-						.flatMapIterable(this::toListOfCharacters)
+						.flatMapIterable(this::toCharacterList)
 						.delayElements(Duration.ofMillis(5))
 						.doOnNext(character -> {
-							if (actionPerformed.compareAndSet(false, true)) {
+							if (acted.compareAndSet(false, true)) {
 								System.out.printf("%nai> ");
 							}
 						})
 						.doOnComplete(() -> {
-							actionPerformed.set(false);
+							acted.set(false);
 							System.out.printf("%n%nuser> ");
 						})
 						.subscribe(System.out::print);
@@ -132,7 +132,7 @@ public class StreamingApplication {
 			.subscribe(System.out::print);
 	}
 
-	private List<Character> toListOfCharacters(char[] array) {
+	private List<Character> toCharacterList(char[] array) {
 
 		List<Character> characters = new ArrayList<>(array.length);
 
