@@ -1,0 +1,61 @@
+[[image-generation-example]]
+= Image Generation Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/imageclient.html[Image Model API] to generate an image given a text description.
+
+By default, this example runs Spring AI with https://openai.com[OpenAI] using the https://platform.openai.com/docs/models/dall-e-2[DALL-E 2 model] to generate images.
+
+The program uses the prompt, "_Generate an image of an upside down cat suspended in midair, parallel to the ground, with a slice of buttered bread directly on the cat's back_" as a basis for the generated image. The DALL-E 2 is quite creative.
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+ $ mvnw --projects image-generation-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------< com.packt.spring.ai:image-generation-example >------------
+[INFO] Building ImageGenerationExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ image-generation-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ image-generation-example ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ image-generation-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ image-generation-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-generation-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ image-generation-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ image-generation-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ image-generation-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-01T17:30:35.017-07:00  INFO 39623 --- [Image Generation App] [           main] c.p.s.a.e.i.g.ImageGenerationApplication : Starting ImageGenerationApplication using Java 17.0.14 with PID 39623 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-generation-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-generation-example)
+2025-07-01T17:30:35.019-07:00  INFO 39623 --- [Image Generation App] [           main] c.p.s.a.e.i.g.ImageGenerationApplication : The following 1 profile is active: "user"
+2025-07-01T17:30:35.468-07:00  INFO 39623 --- [Image Generation App] [           main] c.p.s.a.e.i.g.ImageGenerationApplication : Started ImageGenerationApplication in 0.586 seconds (process running for 0.698)
+URL [https://oaidalleapiprodscus.blob.core.windows.net/private/org-CWFXVZuzw89tkXiTOoV2cTLE/user-fLYKZWWL1wBoWvcaOE8yaHvG/img-fybqVD0MDklxir6w4HeGNp4e.png?st=2025-07-01T23%3A30%3A47Z&se=2025-07-02T01%3A30%3A47Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=8b33a531-2df9-46a3-bc02-d4b1430a422c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-07-02T00%3A30%3A47Z&ske=2025-07-03T00%3A30%3A47Z&sks=b&skv=2024-08-04&sig=YFbm3qGJI7hx3Dh49Dd0tAimrFd1lu0Gs7qSU4cZKlA%3D]
+Image Base64 JSON [null]
+
+```
+
+Follow the URL in brackets `[...]` to see the generated image.
+
+Notice the JSON in Base64 encoded format for the Image is not present. If it were, you could decode the Base64 formatted String to bytes, save the data to file and open the image in your image viewer, such as a Web browser.
