@@ -1,0 +1,72 @@
+[[advisors-example]]
+= Prompt Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/chatmodel.html[Chat Model API] to play a Knock Knock Joke on the AI model.
+
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects prompt-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -----------------< com.packt.spring.ai:prompt-example >-----------------
+[INFO] Building PromptExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ prompt-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ prompt-example ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ prompt-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ prompt-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/prompt-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ prompt-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ prompt-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ prompt-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-03T13:35:59.991-07:00  INFO 65045 --- [Prompt App] [           main] c.p.s.a.e.prompts.PromptApplication      : Starting PromptApplication using Java 17.0.14 with PID 65045 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/prompt-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/prompt-example)
+2025-07-03T13:35:59.993-07:00  INFO 65045 --- [Prompt App] [           main] c.p.s.a.e.prompts.PromptApplication      : The following 1 profile is active: "user"
+2025-07-03T13:36:00.419-07:00  INFO 65045 --- [Prompt App] [           main] c.p.s.a.e.prompts.PromptApplication      : Started PromptApplication in 0.574 seconds (process running for 0.693)
+user> Knock Knock
+
+ai> Who's there?
+
+user> Orange
+
+ai> Orange you glad we're chatting?
+
+user> Orange you glad you met me?
+
+ai> You're a citrus-y conversation starter! I'm glad to have met you too, even if it's just in a virtual sense. How can I assist or chat with you today?
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.125 s
+[INFO] Finished at: 2025-07-03T13:36:05-07:00
+[INFO] ------------------------------------------------------------------------```
+```
