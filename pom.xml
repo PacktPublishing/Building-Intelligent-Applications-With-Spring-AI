@@ -28,6 +28,7 @@
 		<module>embeddings-example</module>
 		<module>function-example</module>
 		<module>image-generation-example</module>
+		<module>image-vision-example</module>
 		<module>metadata-example</module>
 		<module>moderation-example</module>
 		<module>observability-example</module>
