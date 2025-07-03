@@ -17,6 +17,7 @@ package io.codeprimate.extensions.spring.ai.converter;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +55,13 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 	@Override
 	public @NonNull ZonedDateTime convert(@NonNull String source) {
 
-		Assert.hasText(source, "Source [%s] to convert as an RFC 1123 Date & Time is required".formatted(source));
+		Assert.hasText(source, () -> "Source [%s] to convert as an RFC 1123 Date & Time is required".formatted(source));
 
 		getLogger().info("Converting source [{}] to RFC 1123 Date & Time", source);
 
-		return ZonedDateTime.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(source));
+		TemporalAccessor dateTime = DateTimeFormatter.RFC_1123_DATE_TIME.parse(source);
+
+		return ZonedDateTime.from(dateTime);
 		//return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
 	}
 }
