@@ -1,0 +1,89 @@
+[[structured-output-converter-example]]
+= StructuredOutputConverter Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/chatclient.html[Chat Client API] and a https://docs.spring.io/spring-ai/reference/api/structured-output-converter.html[Structured Output Converter] (in particular, the https://docs.spring.io/spring-ai/reference/api/structured-output-converter.html#_bean_output_converter[BeanOutputConverter]) to parse the AI model generated (JSON) content and convert the data to a POJO.
+
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
+
+The program prompts the AI model to "_List the top 5 golfers by name and major wins_".
+
+Using the `BeanOutputConverter`, the program then instructs the AI model to return the generated response as JSON in RFC8259 format.
+
+The JSON data is then mapped to the `Golfer` type:
+
+```java
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode(of = "name")
+static class Golfer {
+
+    private String name;
+    private Integer majorWins;
+
+    @Override
+    public String toString() {
+        return "%s, %d major wins".formatted(getName(), getMajorWins());
+    }
+}
+```
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects structured-output-converter-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------< com.packt.spring.ai:structured-output-converter-example >-------
+[INFO] Building StructuredOutputConverterExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ structured-output-converter-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ structured-output-converter-example ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ structured-output-converter-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ structured-output-converter-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/structured-output-converter-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ structured-output-converter-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ structured-output-converter-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ structured-output-converter-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-03T15:58:57.019-07:00  INFO 67021 --- [Structured Output Converter App] [           main] e.c.StructuredOutputConverterApplication : Starting StructuredOutputConverterApplication using Java 17.0.14 with PID 67021 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/structured-output-converter-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/structured-output-converter-example)
+2025-07-03T15:58:57.022-07:00  INFO 67021 --- [Structured Output Converter App] [           main] e.c.StructuredOutputConverterApplication : The following 1 profile is active: "user"
+2025-07-03T15:58:57.447-07:00  INFO 67021 --- [Structured Output Converter App] [           main] e.c.StructuredOutputConverterApplication : Started StructuredOutputConverterApplication in 0.57 seconds (process running for 0.693)
+Jack Nicklaus, 18 major wins
+Tiger Woods, 15 major wins
+Gary Player, 9 major wins
+Ben Hogan, 9 major wins
+Arnold Palmer, 7 major wins
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.940 s
+[INFO] Finished at: 2025-07-03T15:59:02-07:00
+[INFO] ------------------------------------------------------------------------
+```
+
+As you can see in the program output above, it lists the 5 top golfers `[ Jack Nicklaus, Tiger Woods, Gary Pleyer, Ben Hogan, Arnold Palmer ]` along with their major wins. Except the data is not entirely correct.
