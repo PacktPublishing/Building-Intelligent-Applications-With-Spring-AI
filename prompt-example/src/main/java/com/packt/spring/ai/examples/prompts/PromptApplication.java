@@ -21,6 +21,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.ApplicationRunner;
@@ -67,20 +68,22 @@ public class PromptApplication {
 
 			Prompt prompt = print(new Prompt("Knock Knock"));
 
-			Generation response = print(chatModel.call(prompt).getResult());
+			ChatResponse chatResponse = chatModel.call(prompt);
 
-			AssistantMessage assistantMessage = response.getOutput();
+			Generation generation = print(chatResponse.getResult());
+
+			AssistantMessage assistantMessage = generation.getOutput();
 
 			List<Message> messages = List.of(assistantMessage, new UserMessage("Orange"));
 
 			prompt = print(new Prompt(messages));
-			response = print(chatModel.call(prompt).getResult());
-
-			// Close the deal!
-			assistantMessage = response.getOutput();
+			chatResponse = chatModel.call(prompt);
+			generation = print(chatResponse.getResult());
+			assistantMessage = generation.getOutput();
 			messages = List.of(assistantMessage, new UserMessage("Orange you glad you met me?"));
 			prompt = print(new Prompt(messages));
-			print(chatModel.call(prompt).getResult());
+			chatResponse = chatModel.call(prompt);
+			print(chatResponse.getResult());
 		};
 	}
 
