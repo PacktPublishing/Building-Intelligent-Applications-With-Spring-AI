@@ -1,0 +1,80 @@
+[[image-vision-example]]
+= Image Vision Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/chatclient.html[Chat Client API] ask the AI model to find Waldo in an image.
+
+In this example, I tested with several different AI models and ending with OpenAI's `gpt-4o-mini` model, Ollama's `llama3.2-vision` model from Meta and Mistral's `pixtral-12b-2409` model.
+
+I tested with 3 different Where's Waldo images depicting a https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/image-vision-example/src/main/resources/WheresWaldoCityScene.png[city scene], a https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/image-vision-example/src/main/resources/WheresWaldoGardenScene.png[garden scene] and a https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/image-vision-example/src/main/resources/WheresWaldoGardenScene.png[winter scene].
+
+I used the prompt, "_Evaluate the given image and find the exact location of Waldo Describe the precise location in detail_"
+
+When ran, the results were less than impressive. Each AI model did a nice job of explaining the scene in the image, but none of the models could find Waldo. Many stated as such, but in some cases, the AI model stated the wrong location. In 1 case, I used a different image that contained a person dressed up partly like Batman. I asked AI to not only find the person who dressed up like Batman, but generate a new image from the given image and circle the person dressed like Batman in red. Instead of finding and circling the correct person, it generated a figure of Batman in a completely different location and circled the character in red. In other words, it cheated! I guess humans and AI are not all that dissimilar after all.
+
+The following depicts an example run. Run the program by entering the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects image-vision-example -Dai=mistral spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< com.packt.spring.ai:image-vision-example >--------------
+[INFO] Building ImageVisionExample 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ image-vision-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ image-vision-example ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ image-vision-example ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ image-vision-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-vision-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ image-vision-example ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ image-vision-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ image-vision-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-02T19:32:25.612-07:00  INFO 56445 --- [Image Vision App] [           main] c.p.s.a.e.i.v.ImageVisionApplication     : Starting ImageVisionApplication using Java 17.0.14 with PID 56445 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-vision-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/image-vision-example)
+2025-07-02T19:32:25.613-07:00  INFO 56445 --- [Image Vision App] [           main] c.p.s.a.e.i.v.ImageVisionApplication     : The following 1 profile is active: "user"
+AI provider [Mistral AI]
+2025-07-02T19:32:25.989-07:00  INFO 56445 --- [Image Vision App] [           main] c.p.s.a.e.i.v.ImageVisionApplication     : Started ImageVisionApplication in 0.51 seconds (process running for 0.612)
+2025-07-02T19:32:26.004-07:00 DEBUG 56445 --- [Image Vision App] [           main] o.s.a.c.c.advisor.SimpleLoggerAdvisor    : request: Prompt [	Evaluate the given image and find the exact location of Waldo
+	Describe the precise location in detail
+]; AI model [pixtral-12b-2409]
+2025-07-02T19:32:36.177-07:00 DEBUG 56445 --- [Image Vision App] [           main] o.s.a.c.c.advisor.SimpleLoggerAdvisor    : response: Generation count [1]
+
+
+AI> I'm sorry, but I can't directly identify objects or individuals in images. However, I can guide you on how to find Waldo in a scene like this:
+
+1. **Start at the Center**: Begin your search in the middle of the image. Waldo often appears in the center or slightly off-center to draw attention.
+
+2. **Look for Distinct Clothing**: Waldo typically wears a red and white striped shirt, glasses, and a hat. Look for these distinctive features among the crowd.
+
+3. **Check Elevated Areas**: Waldo often appears in elevated positions, such as on top of a slope or near the edge of a cliff.
+
+4. **Observe Groupings**: Waldo might be standing near a group of people but slightly apart from them.
+
+5. **Use a Methodical Approach**: Start at one end of the image and move systematically, row by row, to ensure you don't miss him.
+
+6. **Check for Surprises**: Sometimes, Waldo is accompanied by his friend Wenda or other surprises in the image. Look for any unusual or out-of-place items that might indicate his presence.
+
+```
