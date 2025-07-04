@@ -40,8 +40,9 @@ import org.springframework.core.io.Resource;
  *
  * @author John Blum
  * @see org.springframework.ai.chat.model.ChatModel
- * @see org.springframework.ai.model.transformer.KeywordMetadataEnricher
  * @see org.springframework.ai.document.Document
+ * @see org.springframework.ai.model.transformer.KeywordMetadataEnricher
+ * @see org.springframework.ai.reader.pdf.PagePdfDocumentReader
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
@@ -75,7 +76,7 @@ public class DocumentEtlApplication {
 
 		return args -> {
 
-			System.out.printf("Extracting/Ingesting Pages from Document [%s]%n", DOCUMENT_NAME);
+			print("Extracting (Ingesting) Document [%s]%n", DOCUMENT_NAME);
 
 			PdfDocumentReaderConfig documentReaderConfiguration =
 				PdfDocumentReaderConfig.builder()
@@ -96,11 +97,8 @@ public class DocumentEtlApplication {
 	ApplicationRunner keywordTransformRunner(ChatModel chatModel) {
 
 		return args -> this.documentsReference.updateAndGet(documents -> {
-
-			System.out.printf("Transforming Documents (%d)%n", documents.size());
-
+			print("Transforming Documents (%d)%n", documents.size());
 			KeywordMetadataEnricher keywordMetadataEnricher = new KeywordMetadataEnricher(chatModel, 25);
-
 			return keywordMetadataEnricher.transform(documents);
 		});
 	}
@@ -111,6 +109,11 @@ public class DocumentEtlApplication {
 		return args -> StandardOutKeywordDocumentWriter.INSTANCE.accept(this.documentsReference.get());
 	}
 
+	private static void print(String message, Object... arguments) {
+		System.out.printf(message, arguments);
+		System.out.flush();
+	}
+
 	static class StandardOutKeywordDocumentWriter implements DocumentWriter {
 
 		static final StandardOutKeywordDocumentWriter INSTANCE = new StandardOutKeywordDocumentWriter();
@@ -118,12 +121,12 @@ public class DocumentEtlApplication {
 		@Override
 		public void accept(List<Document> documentPages) {
 
-			System.out.printf("Keywords in Document [%s] by page:%n", DOCUMENT_NAME);
+			print("Keywords in Document [%s] by page:%n", DOCUMENT_NAME);
 
 			IntStream.range(0, documentPages.size()).forEach(pageIndex -> {
 				int pageNumber = pageIndex + 1;
 				Document page = documentPages.get(pageIndex);
-				System.out.printf("%d - %s%n".formatted(pageNumber, page.getMetadata().get(EXCERPT_KEYWORDS)));
+				print("%d - %s%n".formatted(pageNumber, page.getMetadata().get(EXCERPT_KEYWORDS)));
 			});
 		}
 	}
