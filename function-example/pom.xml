@@ -15,8 +15,8 @@
 
 	<name>StockQuotesFunctionApplication</name>
 	<description>
-		Spring Boot application using Spring AI with Google Gemini to demonstrate Spring AI Function Calling
-		when prompting for Stock Quotes.
+		Spring Boot application using Spring AI with Ollama and Meta's llama3.2 model to demonstrate Spring AI Function
+		Tool Calling when prompting for Stock Quotes.
 	</description>
 	<url/>
 

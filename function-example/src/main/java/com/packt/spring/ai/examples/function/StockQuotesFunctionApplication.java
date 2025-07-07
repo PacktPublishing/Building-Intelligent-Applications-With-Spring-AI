@@ -50,10 +50,10 @@ import org.springframework.web.client.RestClient;
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Function Calling
- * in order to return a {@link StockQuote} given a stock (exchange) symbol, for examples: {@literal AAPL}.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Function
+ * Tool Calling in order to return a {@link StockQuote} given a stock (exchange) symbol, for examples: {@literal AAPL}.
  * <p/>
- * Uses Polygon.io's REST API to fetch realtime sock market data, such as stock quotes.
+ * Uses Polygon.io's REST API to fetch realtime stock market data, such as stock quotes.
  *
  * @author John Blum
  * @see java.util.function.Function
@@ -115,7 +115,7 @@ public class StockQuotesFunctionApplication {
 
 			String exchangeSymbol = request.exchangeSymbol();
 
-			System.out.printf("Fetching quote for stock [%s]...%n", exchangeSymbol);
+			print("Fetching quote for stock [%s]...%n", exchangeSymbol);
 
 			Map<String, ?> uriVariables = Map.of("exchangeSymbol", exchangeSymbol);
 
@@ -142,7 +142,7 @@ public class StockQuotesFunctionApplication {
 			Scanner scanner = new Scanner(System.in);
 			String stockSymbol;
 
-			System.out.print("Enter Stock Symbol: ");
+			print("Enter Stock Symbol: ");
 
 			while (isNotExit(stockSymbol = scanner.nextLine())) {
 				if (StringUtils.hasText(stockSymbol)) {
@@ -160,16 +160,21 @@ public class StockQuotesFunctionApplication {
 
 					String stockPrice = chatClient.prompt(prompt).call().content();
 
-					System.out.printf("AI> %s%n%n", stockPrice);
+					print("AI> %s%n%n", stockPrice);
 				}
 
-				System.out.print("Enter Stock Symbol: ");
+				print("Enter Stock Symbol: ");
 			}
 		};
 	}
 
 	private boolean isNotExit(String input) {
 		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input);
+	}
+
+	private void print(String message, Object... arguments) {
+		System.out.printf(message, arguments);
+		System.out.flush();
 	}
 
 	@Getter
