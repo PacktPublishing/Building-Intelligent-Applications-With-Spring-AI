@@ -1,0 +1,227 @@
+[[document-etl-example]]
+= Document ETL Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/etl-pipeline.html#_etl_interfaces[Document API] to process documents.
+
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
+
+The program uses AI to analyze a document searching for and extracting Keywords on each page.
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects document-etl-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< com.packt.spring.ai:document-etl-example >--------------
+[INFO] Building DocumentEtlApplication 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ document-etl-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ document-etl-example ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ document-etl-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ document-etl-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/document-etl-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ document-etl-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ document-etl-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ document-etl-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-04T15:07:41.127-07:00  INFO 81258 --- [Document ETL App] [           main] c.p.s.a.e.e.d.DocumentEtlApplication     : Starting DocumentEtlApplication using Java 17.0.14 with PID 81258 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/document-etl-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/document-etl-example)
+2025-07-04T15:07:41.128-07:00  INFO 81258 --- [Document ETL App] [           main] c.p.s.a.e.e.d.DocumentEtlApplication     : The following 1 profile is active: "user"
+2025-07-04T15:07:41.495-07:00  INFO 81258 --- [Document ETL App] [           main] c.p.s.a.e.e.d.DocumentEtlApplication     : Started DocumentEtlApplication in 0.501 seconds (process running for 0.605)
+Extracting (Ingesting) Document [WhatIsArtificialIntelligenceByIBM.pdf]
+2025-07-04T15:07:41.543-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 1
+2025-07-04T15:07:41.590-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 3
+2025-07-04T15:07:41.600-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 5
+2025-07-04T15:07:41.613-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 7
+2025-07-04T15:07:41.624-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 9
+2025-07-04T15:07:41.631-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 11
+2025-07-04T15:07:41.639-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 13
+2025-07-04T15:07:41.651-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 15
+2025-07-04T15:07:41.657-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 17
+2025-07-04T15:07:41.666-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing PDF page: 19
+2025-07-04T15:07:41.694-07:00  INFO 81258 --- [Document ETL App] [           main] o.s.ai.reader.pdf.PagePdfDocumentReader  : Processing 25 pages
+Transforming Documents (25)
+
+Keywords in Document [WhatIsArtificialIntelligenceByIBM.pdf] by page:
+1 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Artificial intelligence, Machine learning, Deep learning, Generative AI, IBM TechXchange, Conference, Las Vegas, October, Register now, Explore sessions, Labs, Technologists, Products, Solutions, Artificial intelligence updates, Privacy choices, Home topics, Artificial intelligence news
+
+Alternatively, here are 25 unique keywords in a different format:
+
+Keywords:
+1. AI
+2. Artificial Intelligence
+3. Machine Learning
+4. Deep Learning
+5. Generative AI
+6. IBM TechXchange
+7. Conference
+8. Las Vegas
+9. October
+10. Register Now
+11. Explore Sessions
+12. Labs
+13. Technologists
+14. Products
+15. Solutions
+16. AI Updates
+17. Privacy Choices
+18. Home Topics
+19. AI News
+20. TechXchange 2024
+21. IBM Technologies
+22. Artificial Intelligence Conference
+23. Las Vegas Event
+24. Machine Learning Training
+25. Deep Learning Applications
+2 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Generative AI, Artificial Intelligence, Machine Learning, Deep Learning, Weak AI, Strong AI, AI Ethics, AI Governance, AI Use Cases, AI Challenges, AI Risks, AI Applications, AI Devices, Natural Language Processing, Computer Vision, Object Recognition, Recommendation Systems, Autonomous Systems, Self-Driving Cars, Data Preparation, AI Breakthroughs, Generative AI Tools, Text Generation, Image Generation, Video Generation, Content Creation.
+
+Let me know if you'd like me to help with anything else!
+3 - Here are 25 unique keywords in a comma-separated format:
+
+Machine learning, AI, artificial intelligence, algorithm, predictive modeling, decision making, data analysis, machine learning techniques, algorithms, linear regression, logistic regression, decision trees, random forest, support vector machines, SVMs, k-nearest neighbors, supervised learning, unsupervised learning, deep learning, neural networks, natural language processing, computer vision, predictive analytics, pattern recognition, inductive reasoning.
+
+Let me know if you'd like me to help with anything else!
+4 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Machine learning, Artificial neural network, Neural network, Supervised learning, Unsupervised learning, Clustering, KNN, neighbor, Pattern recognition, Relationship analysis, Data processing, Complex data, Labeled datasets, Output labels, Predictive modeling, Classification, Regression, Training examples, Human labeling, Algorithmic decision-making, Privacy choices, AI vs Machine Learning, Deep learning, Neural networks.
+
+Let me know if you'd like me to help with anything else!
+5 - Here are 25 unique keywords from the document, formatted as comma-separated:
+
+Deep learning, machine learning, multilayered neural networks, deep neural networks, neural networks, decision-making, human brain, input layer, hidden layers, output layer, classic machine learning, unsupervised learning, feature extraction, large data sets, unstructured data, natural language processing, computer vision, pattern identification, artificial intelligence, AI applications, scale, relationships, privacy choices, data analysis.
+
+Let me know if you'd like me to help with anything else!
+6 - Here are 25 unique keywords in a comma-separated format:
+
+Semi-supervised learning, self-supervised learning, reinforcement learning, transfer learning, supervised learning, unsupervised learning, classification tasks, regression tasks, labeled data, unlabeled data, AI models, implicit labels, unstructured data, supervisory signals, reward functions, trial-and-error, hidden patterns, knowledge transfer, model performance, related tasks, different data sets, deep learning.
+
+Let me know if you'd like me to rephrase or expand on these keywords!
+7 - Here are 25 unique keywords for the document in a comma-separated format:
+
+Generative AI, Deep learning models, Artificial intelligence, Content creation, Variational autoencoders, Diffusion models, Transformers, Natural language processing, Image generation, Video generation, Audio generation, ChatGPT, GPT-4, Copilot, BERT, Bard, Midjourney, Machine learning, Computer vision, Reinforcement learning, Neural networks, Data analysis, Statistics, Numerical data, Complex data types.
+
+Let me know if you'd like me to help with anything else!
+8 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Generative AI, Artificial Intelligence, Deep Learning, Foundation Model, Training, Tuning, Generation, Evaluation, Accuracy, Large Language Models, LLMs, Text Generation, Image Generation, Video Generation, Sound Generation, Music Generation, Multimodal Models, Content Generation, Unstructured Data, Neural Networks, Billions of Parameters, Entities, Patterns, Relationships, Autonomy, Response to Prompts.
+
+Let me know if you'd like me to help with anything else!
+9 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+compute-intensive, time-consuming, expensive, GPUs, processing units, clustered graphics, model training, gen AI, open source foundation models, Llama-2, content generation, fine-tuning, labeled data, application-specific, questions, prompts, answers, wanted format, reinforcement learning with human feedback, RLHF, human evaluation, chatbot, virtual assistant, corrections, accuracy, relevance, improvement.
+
+Let me know if you need any further assistance!
+10 - Here are 25 unique keywords in a comma-separated format:
+
+Generative AI, artificial intelligence, foundation model, retrieval augmented generation, RAG, tuning, evaluation, assessment, developers, users, accuracy, relevance, data science, automation, business applications, industry insights, machine learning, models, parameters, update frequency, maintenance, updates, privacy choices, benefits of AI.
+
+Let me know if you'd like me to help with anything else!
+11 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Automation, Decision-Making, Artificial Intelligence, Error Reduction, 24/7 Availability, Physical Risks, Repetitive Tasks, Data Collection, Digital Automation, Warehouse Management, Manufacturing Processes, Enhanced Productivity, Faster Predictions, Reliable Decisions, Real-Time Monitoring, Human Intervention, Healthcare, Surgical Robotics, Precision, Consistency, Industry Applications, Innovation, Efficiency, Quality Control.
+
+Let me know if you need any further assistance!
+12 - Here are 25 unique keywords from the document, formatted as comma-separated:
+
+Machine learning, accuracy, errors, data, experience, round-the-clock availability, consistency, AI chatbots, virtual assistants, customer service, staff, production lines, materials processing, repetitive tasks, automation, physical risk, injury, self-driving cars, vehicle safety, outer space, deep ocean water, high altitudes, explosives handling, animal control.
+
+Let me know if you'd like me to help with anything else!
+13 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Customer experience, AI, Chatbots, Virtual assistants, Natural language processing (NLP), Generative AI, Customer service, Support, Machine learning, Deep learning, Fraud detection, Transaction patterns, Anomalies, Unusual spending, Login locations, Potential fraud, Organizations, Customers, Peace of mind, Service consistency, Order status, Product details, Return policies, FAQs, Higher-level tasks.
+
+Let me know if you'd like me to help with anything else!
+14 - Here are 25 unique keywords in a comma-separated format:
+
+Personalized marketing, AI-powered customer experience, deep learning algorithms, product recommendations, customer behavior analysis, real-time personalized offers, human resources, recruitment platforms, resume screening, video interview analysis, administrative paperwork reduction, time-to-hire optimization, candidate experience improvement, generative AI code generation, automation tools, application development, modernization, legacy application migration, scalability, artificial intelligence, machine learning, data analytics, customer insights, sales enhancement, churn prevention, marketing campaigns.
+
+Let me know if you'd like me to format them differently or extract specific types of keywords (e.g. only technical terms).
+15 - Here are 25 unique keywords for the document in a comma-separated format:
+
+Predictive maintenance, machine learning models, IoT devices, operational technology (OT), AI-powered preventive maintenance, downtime, supply chain management, bottom line, data analysis, sensor data, equipment failures, predictive analytics, maintenance optimization, AI adoption, workflows, challenges, risks, artificial intelligence, automation, process efficiency, code consistency, error reduction, tools, organizational benefits.
+
+Note: I've included a mix of technical and business-related keywords to cover the main themes of the document.
+16 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Data integrity, Data poisoning, Cyberattacks, AI systems, Data breaches, Security measures, Availability, Data tampering, Model integrity, Reverse engineering, Threat actors, Model manipulation, Operational risks, Model drift, Bias detection, Governance structure, System failures, Cybersecurity vulnerabilities, Attackers, Data governance, Model training, Deployment risks, Postdeployment security.
+
+Let me know if you'd like me to break them down into categories or help with anything else!
+17 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+AI risks, Ethics, Legal risks, Privacy violations, Biased outcomes, Training data, Hiring decisions, Stereotypes, Demographic groups, AI governance, Oversight mechanisms, Stakeholders, Developers, Users, Policymakers, Ethicists, Society's values, Responsible AI, Bias detection, Fairness, Transparency, Accountability, Regulatory compliance, Data protection, Human rights
+
+Let me know if you'd like me to help with anything else!
+18 - Here are 25 unique keywords in a comma-separated format:
+
+Explainability, Interpretability, AI, Algorithm, Results, Output, Fairness, Inclusion, Discrimination, Statistical Bias, Unprivileged Groups, Harms, Data Collection, Model Design, Diverse Teams, Robustness, Security, Exceptional Conditions, Abnormalities, Malicious Attacks, Unintentional Harm, Protection, Vulnerabilities.
+
+Note: I've included a mix of technical and conceptual keywords to cover the main topics discussed in the document.
+19 - Here are 25 unique keywords in a comma-separated format:
+
+Accountability, transparency, governance, responsibilities, AI systems, development, deployment, outcomes, users, functionality, evaluation, comprehension, strengths, limitations, privacy, compliance, regulatory frameworks, GDPR, personal information, protection, control, data, adaptability, regulation, ethics
+
+Let me know if you'd like me to help with anything else!
+20 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+Weak AI, Narrow AI, Artificial Intelligence, AGI, General Intelligence, Human Intelligence, Machine Learning, Self-Awareness, Autonomous Vehicles, Voice Assistants, Social Media Chatbots, Tesla, Alexa, Siri, Computing Machinery and Intelligence, Alan Turing, Enigma Code, WWII, Computer Science, Cybernetics, Natural Language Processing, Cognitive Computing, AI Development, Advances in AI.
+
+Note: I've excluded the "History of AI" section as it's not a specific keyword, but rather a category of information. Let me know if you'd like me to include it or modify the list in any way!
+21 - Here are 25 unique keywords from the document, formatted as comma-separated:
+
+Artificial intelligence, AI conference, Dartmouth College, Lisp language, Logic Theorist, computer program, neural network, Perceptron, Marvin Minsky, Seymour Papert, Perceptrons book, backpropagation algorithm, Stuart Russell, Peter Norvig, Articial Intelligence: A Modern Approach, rationality, thinking versus acting, AI goals, philosophy of language, linguistics, cognitive science, machine learning, computer science.
+
+Let me know if you'd like me to help with anything else!
+22 - Here are 25 unique keywords in comma-separated format:
+
+Artificial Intelligence, IBM Deep Blue, Chess, Garry Kasparov, John McCarthy, Big Data, Cloud Computing, AI Models, Jeopardy!, Ken Jennings, Brad Rutter, Data Science, Baidu Minwa, Convolutional Neural Network, AlphaGo, DeepMind, Go, Lee Sedol, World Champion, Supercomputer, Machine Learning, Natural Language Processing, Image Recognition, Human Intelligence, Chess Championship
+
+Let me know if you'd like me to help with anything else!
+23 - Here are 25 unique keywords from the document, formatted as comma-separated:
+
+AI trends, Multimodal models, Generative AI, Deep-learning models, Large language models, ChatGPT, Enterprise value, Performance improvement, Data pretraining, Computer vision, Image recognition, NLP speech recognition, Smaller models, Massively parallel models, Parameter counts, IBM Watson X.ai, AI studio, Generative capabilities, Foundation models, Traditional machine learning, Machine learning, AI lifecycle, AI platform, Private data, Data privacy
+24 - Here are 25 unique keywords for the document, formatted as comma-separated:
+
+AI solutions, IBM, industry-leading expertise, business transformation, customer service, conversational AI, instant care, accurate support, exceptional care, customer experience, real-time decision-making, business value, AI services, workflow reinvention, operations augmentation, cybersecurity, risk analysis, response times, under-resourced security, security operations, AI-powered solutions, predictive maintenance, personalized experiences, data analytics, business intelligence, process optimization, innovation strategies
+
+Let me know if you'd like me to help with anything else!
+25 - Here are 25 unique keywords in comma-separated format:
+
+AI Act, Artificial Intelligence, Business, Education, Europe, EU, Gartner, IBM, Import, Innovation, Learning, Market, Microsoft, Predictive Analytics, Research, Save, Skills Development, Training, Trends, Voice of the Future, AI Adoption, Digital Transformation, E-Learning, Economic Growth, European Union, Artificial Intelligence Act, Business Leaders
+
+Note: I've excluded common keywords like "market" and "training" as they are too general, and focused on more specific and unique terms that can help with search engine optimization (SEO) and content creation.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:55 min
+[INFO] Finished at: 2025-07-04T15:09:35-07:00
+[INFO] ------------------------------------------------------------------------
+```
