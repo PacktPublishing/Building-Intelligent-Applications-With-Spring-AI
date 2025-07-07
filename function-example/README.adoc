@@ -1,0 +1,75 @@
+[[function-tool-calling-example]]
+= Function Tool Calling Example
+
+This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/tools.html[Tool Calling API] and https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html#_function_calling[Ollama's Function Calling] to configure a Function defined by our application, called by an AI model.
+
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
+
+In addition, the https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L109-L135[Stock Quote Function] defined by the application and called by the AI model uses https://polygon.io/[Polygon] and their https://polygon.io/docs/rest/quickstart[REST API] to access stock market data. A https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L93-L107[Spring `RestClient` bean] has be configured to access the Polgon REST API.
+
+In order to run the problem you must sign up for a free account at Polygon and create an API key. Once you have an API key set the `examples.app.stock-quotes.polygon.api.key` property in `application.properties`, https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/resources/application.properties#L9[here].
+
+To run the program, enter the following Maven command at the command-line:
+
+```bash
+$ mvnw --projects function-example spring-boot:run
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ----------------< com.packt.spring.ai:function-example >----------------
+[INFO] Building StockQuotesFunctionApplication 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ function-example >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ function-example ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ function-example ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ function-example ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/function-example/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ function-example ---
+[INFO] No sources to compile
+[INFO]
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ function-example <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ function-example ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-06T21:55:34.184-07:00  INFO 11100 --- [Stock Quotes App] [           main] p.s.a.e.f.StockQuotesFunctionApplication : Starting StockQuotesFunctionApplication using Java 17.0.14 with PID 11100 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/function-example/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/function-example)
+2025-07-06T21:55:34.185-07:00  INFO 11100 --- [Stock Quotes App] [           main] p.s.a.e.f.StockQuotesFunctionApplication : The following 1 profile is active: "user"
+2025-07-06T21:55:34.549-07:00  INFO 11100 --- [Stock Quotes App] [           main] p.s.a.e.f.StockQuotesFunctionApplication : Started StockQuotesFunctionApplication in 0.494 seconds (process running for 0.601)
+Enter Stock Symbol: AAPL
+Fetching quote for stock [AAPL]...
+AI> The current price of AAPL is $213.55.
+
+Enter Stock Symbol: MSFT
+Fetching quote for stock [MSFT]...
+AI> The current price of Microsoft (MSFT) is $498.84 per share.
+
+Enter Stock Symbol: exit
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11:26 min
+[INFO] Finished at: 2025-07-06T22:06:59-07:00
+[INFO] ------------------------------------------------------------------------
+```
+
+Type "exit" to quit.
