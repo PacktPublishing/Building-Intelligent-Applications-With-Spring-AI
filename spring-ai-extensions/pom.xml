@@ -20,7 +20,7 @@
 	<url>https://github.com/jxblum/building-intelligent-applications-with-spring-ai/tree/main/spring-ai-extensions</url>
 
 	<properties>
-		<codeprimate-elements.version>2.0.0-M5</codeprimate-elements.version>
+		<codeprimate-elements.version>2.0.0</codeprimate-elements.version>
 		<extensions.main-class>io.codeprimate.extensions.CodeprimateExtensionsApplication</extensions.main-class>
 	</properties>
 
