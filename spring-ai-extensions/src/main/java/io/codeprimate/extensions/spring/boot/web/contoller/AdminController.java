@@ -15,7 +15,12 @@
  */
 package io.codeprimate.extensions.spring.boot.web.contoller;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.cp.elements.lang.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,10 +37,35 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("unused")
 public class AdminController {
 
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	private static final String DEFAULT_NAME = "World";
+	private static final String HELLO = "Hello %s";
 	private static final String PONG = "PONG";
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
+	@GetMapping("/hello/{name}")
+	public String hello(@PathVariable(required = false) String name) {
+		return HELLO.formatted(resolveName(name));
+	}
+
+	String resolveName(String name) {
+		String resolvedName = StringUtils.defaultIfBlank(name, username());
+		resolvedName = StringUtils.defaultIfBlank(resolvedName, DEFAULT_NAME);
+		return resolvedName;
+	}
+
+	String username() {
+		return System.getProperty("user.name");
+	}
 
 	@GetMapping("/ping")
 	public String ping() {
 		return PONG;
+	}
+
+	@GetMapping("/time")
+	public String time() {
+		return ZonedDateTime.now().format(DATE_TIME_FORMATTER);
 	}
 }
