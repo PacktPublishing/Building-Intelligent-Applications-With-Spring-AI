@@ -20,7 +20,6 @@ import io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplicatio
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -43,7 +42,7 @@ public class ChatApplication extends AbstractDesktopSpringBootApplication {
 	protected static final String CHAT_PROFILE = "chat";
 
 	public static void main(String[] args) {
-		newSpringApplicationBuilder(ChatApplication.class, WebApplicationType.SERVLET, CHAT_PROFILE).build().run(args);
+		runSpringServletWebApplication(ChatApplication.class, asStringArray(CHAT_PROFILE), args);
 	}
 
 	@SpringBootConfiguration
