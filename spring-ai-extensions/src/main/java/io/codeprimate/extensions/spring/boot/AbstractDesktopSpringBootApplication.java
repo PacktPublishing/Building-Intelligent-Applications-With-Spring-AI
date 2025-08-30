@@ -87,15 +87,15 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 
 			getLogger().info("Welcome to %s".formatted(applicationName));
 
-			URI webappUri = URI.create(WEBAPP_URL.formatted(serverPort, serverServletContextPath));
+			URI webAppliactionUri = URI.create(getWebApplicationUrl().formatted(serverPort, serverServletContextPath));
 
 			if (isWebApplicationLaunchEnabled()) {
-				Desktop.getDesktop().browse(webappUri);
+				Desktop.getDesktop().browse(webAppliactionUri);
 			}
 			else {
 				getLogger().warn("Unable to launch {} Web application", applicationName);
 				getLogger().warn("Is Desktop enabled?");
-				getLogger().warn("Open web browser to {}", webappUri);
+				getLogger().warn("Open web browser to {}", webAppliactionUri);
 			}
 		};
 	}
@@ -114,5 +114,9 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 
 	private boolean isWebApplicationLaunchEnabled() {
 		return isDesktopEnabled() && isNotHeadless();
+	}
+
+	protected String getWebApplicationUrl() {
+		return WEBAPP_URL;
 	}
 }
