@@ -44,7 +44,7 @@ public class AdminController {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	@GetMapping("/hello/{name}")
+	@GetMapping(value = { "/hello", "/hello/{name}" })
 	public String hello(@PathVariable(required = false) String name) {
 		return HELLO.formatted(resolveName(name));
 	}
