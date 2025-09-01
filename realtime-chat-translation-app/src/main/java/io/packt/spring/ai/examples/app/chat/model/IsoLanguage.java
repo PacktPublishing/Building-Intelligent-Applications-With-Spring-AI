@@ -34,12 +34,16 @@ public record IsoLanguage(String code, String name) implements Comparable<IsoLan
 
 	public IsoLanguage {
 		Assert.hasText(code, () -> "ISO language code [%s] is required".formatted(code));
-		Assert.hasText(name, () -> "ISO lanague name [%s] is required".formatted(name));
+		Assert.hasText(name, () -> "ISO language name [%s] is required".formatted(name));
 	}
 
 	public static IsoLanguage from(Locale locale) {
 		Assert.notNull(locale, "Locale is required");
-		return new IsoLanguage(locale.getLanguage(), locale.getDisplayLanguage());
+		return from(locale.getLanguage(), locale.getDisplayLanguage());
+	}
+
+	public static IsoLanguage from(String languageCode, String languageName) {
+		return new IsoLanguage(languageCode, languageName);
 	}
 
 	public static IsoLanguage fromDefault() {
