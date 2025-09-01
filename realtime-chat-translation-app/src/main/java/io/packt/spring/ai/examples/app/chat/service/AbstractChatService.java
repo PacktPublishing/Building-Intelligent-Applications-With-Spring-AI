@@ -73,10 +73,10 @@ public abstract class AbstractChatService implements ChatService {
 	}
 
 	@Override
-	public String resolveChatSessionId(URL chatSessionUrl) {
-		assertChatSessionUrl(chatSessionUrl);
-		String chatSessionId = extractChatSessionIdFromUri(chatSessionUrl);
-		assertChatSessionIdFromUri(chatSessionId, chatSessionUrl);
+	public String resolveChatSessionId(URL sessionUrl) {
+		assertChatSessionUrl(sessionUrl);
+		String chatSessionId = extractChatSessionIdFromUri(sessionUrl);
+		assertChatSessionIdFromUri(chatSessionId, sessionUrl);
 		return chatSessionId;
 	}
 
@@ -89,9 +89,9 @@ public abstract class AbstractChatService implements ChatService {
 	}
 
 	@Override
-	public URL resolveChatSessionUrl(String chatSessionId) {
-		assertChatSessionId(chatSessionId);
-		URI chatSessionUri = resolveChatSessionUri(chatSessionId);
+	public URL resolveChatSessionUrl(String sessionId) {
+		assertChatSessionId(sessionId);
+		URI chatSessionUri = resolveChatSessionUri(sessionId);
 		return NetworkUtils.toUrl(chatSessionUri);
 	}
 

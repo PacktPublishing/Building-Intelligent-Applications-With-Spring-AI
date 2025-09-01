@@ -60,14 +60,14 @@ public class SmartChatService extends AbstractChatService {
 	private final TextToSpeechSynthesizer speechSynthesizer;
 
 	@Override
-	public ChatSession findBy(UUID chatSessionId) {
-		return getChatSessions().findBy(chatSessionId);
+	public ChatSession findBy(UUID sessionId) {
+		return getChatSessions().findBy(sessionId);
 	}
 
 	@Override
-	public ChatSession joinChatSession(UUID chatSessionId, ChatUser user) {
+	public ChatSession joinChatSession(UUID sessionId, ChatUser user) {
 
-		ChatSession chatSession = findBy(chatSessionId);
+		ChatSession chatSession = findBy(sessionId);
 
 		if (!chatSession.add(user)) {
 			throw InvalidChatSessionException.from(chatSession, user);
@@ -84,11 +84,11 @@ public class SmartChatService extends AbstractChatService {
 	}
 
 	@Override
-	public AudioMessage textToSpeech(ChatMessage chatMessage) {
+	public AudioMessage textToSpeech(ChatMessage message) {
 
-		Assert.notNull(chatMessage, "ChatMessage is required");
+		Assert.notNull(message, "ChatMessage is required");
 
-		String text = chatMessage.message();
+		String text = message.message();
 		byte[] audioData = getSpeechSynthesizer().speak(text);
 
 		return AudioMessage.from(audioData);

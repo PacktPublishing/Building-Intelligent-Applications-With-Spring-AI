@@ -32,17 +32,17 @@ import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
  */
 public interface ChatService {
 
-	ChatSession findBy(UUID chatSessionId);
+	ChatSession findBy(UUID sessionId);
 
-	ChatSession joinChatSession(UUID chatSessionId, ChatUser user);
+	ChatSession joinChatSession(UUID sessionId, ChatUser user);
 
 	ChatSession newChatSession(ChatUser user);
 
-	String resolveChatSessionId(URL chatSessionUrl);
+	String resolveChatSessionId(URL sessionUrl);
 
-	URL resolveChatSessionUrl(String chatSessionId);
+	URL resolveChatSessionUrl(String sessionId);
 
-	AudioMessage textToSpeech(ChatMessage chatMessage);
+	AudioMessage textToSpeech(ChatMessage message);
 
 	ChatMessage translateChatMessage(ChatMessage message, IsoLanguage language);
 
