@@ -42,6 +42,6 @@ public class ChatApplication extends AbstractDesktopSpringBootApplication {
 
 	@Override
 	protected String getWebApplicationUrl() {
-		return super.getWebApplicationUrl().concat("/view/join");
+		return super.getWebApplicationUrl().concat("/view/chat/join");
 	}
 }
