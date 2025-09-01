@@ -1,0 +1,3 @@
+Generate a simple Web page containing an HTML form centered on the page in a nice dialog box using Apple styling with the title bar having the phrase "Let's Chat". Prompt the user for their name and a URL. In the footer of the dialog box, add a submit button.
+
+Generate CSS style for a disabled HTML button, grayed out with dark gray boarder and dark gray text with disabled hover action
