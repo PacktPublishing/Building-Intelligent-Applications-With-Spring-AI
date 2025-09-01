@@ -15,10 +15,12 @@
  */
 package io.packt.spring.ai.examples.app.chat.model;
 
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.UUID;
 
 import io.packt.spring.ai.examples.app.chat.util.ChatUserNotFoundException;
+import io.packt.spring.ai.examples.app.chat.util.InvalidChatSessionException;
 
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -38,7 +40,7 @@ import lombok.ToString;
 @ToString(of = "id")
 @Getter(AccessLevel.PUBLIC)
 @SuppressWarnings("unused")
-public class ChatSession implements Iterable<ChatUser> {
+public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> {
 
 	public static ChatSession withUser(ChatUser user) {
 		ChatSession session = new ChatSession(UUID.randomUUID());
@@ -47,6 +49,8 @@ public class ChatSession implements Iterable<ChatUser> {
 	}
 
 	private final UUID id;
+
+	private final Instant timestamp;
 
 	private final ChatMessages chatMessages;
 
@@ -57,6 +61,7 @@ public class ChatSession implements Iterable<ChatUser> {
 		Assert.notNull(id, "Chat Session ID is required");
 
 		this.id = id;
+		this.timestamp = Instant.now();
 		this.chatMessages = ChatMessages.empty().mutable();
 		this.chatUsers = ChatUsers.empty().mutable();
 	}
@@ -84,13 +89,17 @@ public class ChatSession implements Iterable<ChatUser> {
 			getChatUsers().findBy(user.id());
 		}
 		catch (ChatUserNotFoundException cause) {
-
+			throw InvalidChatSessionException.from(this, user, cause);
 		}
-
 	}
 
 	public boolean remove(ChatUser user) {
 		return getChatUsers().remove(user);
+	}
+
+	@Override
+	public int compareTo(ChatSession that) {
+		return this.getTimestamp().compareTo(that.getTimestamp());
 	}
 
 	@Override
