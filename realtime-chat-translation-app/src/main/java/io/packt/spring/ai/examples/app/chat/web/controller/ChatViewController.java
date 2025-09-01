@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.chat.web.controller;
 
 import java.util.Map;
 
+import io.packt.spring.ai.examples.app.chat.model.IsoLanguages;
 import io.packt.spring.ai.examples.app.chat.service.ChatService;
 
 import org.springframework.stereotype.Controller;
@@ -46,12 +47,14 @@ public class ChatViewController {
 	private final ChatService chatService;
 
 	@GetMapping(value = { "/join", "/join/{chatSessionId}" })
-	public ModelAndView viewJoinChat(@PathVariable(name = "chatSessionId") String chatSessionId) {
+	public ModelAndView viewJoinChat(@PathVariable(name = "chatSessionId", required = false) String chatSessionId) {
 
 		ModelAndView modelView = new ModelAndView("JoinChat.html");
+		Map<String, Object> model = modelView.getModel();
+
+		model.put("languages", IsoLanguages.all());
 
 		if (StringUtils.hasText(chatSessionId)) {
-			Map<String, Object> model = modelView.getModel();
 			model.put("chatSessionId", chatSessionId);
 			model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(chatSessionId));
 		}
