@@ -16,25 +16,38 @@
 package io.packt.spring.ai.examples.app.chat.model;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Iterable} of {@link IsoLanguage} objects.
  *
  * @author John Blum
- * @see java.lang.Iterable
  * @see IsoLanguage
+ * @see Iterable
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public interface IsoLanguages extends Iterable<IsoLanguage> {
 
 	static IsoLanguages all() {
+
+		Set<String> uniqueByLanguageName = new HashSet<>();
+
+		Predicate<Locale> localeLanguageNamePredicate = locale -> {
+			String languageName = locale.getDisplayLanguage();
+			return StringUtils.hasText(languageName) && uniqueByLanguageName.add(languageName);
+		};
+
 		return of(Arrays.stream(Locale.getAvailableLocales())
+			.filter(localeLanguageNamePredicate)
 			.map(IsoLanguage::from)
 			.sorted()
 			.toList());
