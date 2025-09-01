@@ -43,7 +43,7 @@ public abstract class AbstractChatService implements ChatService {
 	@Value("${server.servlet.contextPath}")
 	private String applicationContextPath;
 
-	@Value("${server.port}")
+	@Value("${server.port:"+NetworkUtils.DEFAULT_SERVER_PORT+"}")
 	private int serverPort;
 
 	protected String assertChatSessionId(String chatSessionId) {
