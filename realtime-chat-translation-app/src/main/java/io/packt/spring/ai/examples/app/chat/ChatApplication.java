@@ -15,22 +15,17 @@
  */
 package io.packt.spring.ai.examples.app.chat;
 
-import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplication;
-import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
 
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama to demonstrate realtime chat translation
- * in a chat application between 2 users.
+ * {@link SpringBootApplication} using Spring AI with Ollama and Meta's Llama3.2 AI model
+ * to demonstrate real-time chat translation in a chat application between multiple users.
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplication
- * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @since 0.1.0
  */
@@ -45,13 +40,8 @@ public class ChatApplication extends AbstractDesktopSpringBootApplication {
 		runSpringServletWebApplication(ChatApplication.class, asStringArray(CHAT_PROFILE), args);
 	}
 
-	@SpringBootConfiguration
-	@EnableChatClient
-	static class ChatConfiguration {
-
-		@Bean
-		AdminController adminController() {
-			return new AdminController();
-		}
+	@Override
+	protected String getWebApplicationUrl() {
+		return super.getWebApplicationUrl().concat("/view/join");
 	}
 }
