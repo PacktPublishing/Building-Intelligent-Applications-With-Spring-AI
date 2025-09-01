@@ -35,8 +35,12 @@ public class InvalidChatSessionException extends RuntimeException {
 	}
 
 	public static InvalidChatSessionException from(ChatSession session, ChatUser user) {
+		return from(session, user, null);
+	}
+
+	public static InvalidChatSessionException from(ChatSession session, ChatUser user, Throwable cause) {
 		String message = "User [%s] is not a member of ChatSession [%s]".formatted(user.name(), session.getId());
-		return new InvalidChatSessionException(message);
+		return new InvalidChatSessionException(message, cause);
 	}
 
 	public InvalidChatSessionException() {
