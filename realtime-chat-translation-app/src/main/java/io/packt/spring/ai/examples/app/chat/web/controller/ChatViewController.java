@@ -1,0 +1,61 @@
+/*
+ * Copyright 2024 Author or Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.packt.spring.ai.examples.app.chat.web.controller;
+
+import java.util.Map;
+
+import io.packt.spring.ai.examples.app.chat.service.ChatService;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Spring Web MVC {@link Controller} used to return Chat UI views.
+ *
+ * @author John Blum
+ * @since 0.1.0
+ */
+@Controller
+@RequestMapping("/view")
+@RequiredArgsConstructor
+@Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
+public class ChatViewController {
+
+	private final ChatService chatService;
+
+	@GetMapping(value = { "/join", "/join/{chatSessionId}" })
+	public ModelAndView viewJoinChat(@PathVariable(name = "chatSessionId") String chatSessionId) {
+
+		ModelAndView modelView = new ModelAndView("JoinChat.html");
+
+		if (StringUtils.hasText(chatSessionId)) {
+			Map<String, Object> model = modelView.getModel();
+			model.put("chatSessionId", chatSessionId);
+			model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(chatSessionId));
+		}
+
+		return modelView;
+	}
+}
