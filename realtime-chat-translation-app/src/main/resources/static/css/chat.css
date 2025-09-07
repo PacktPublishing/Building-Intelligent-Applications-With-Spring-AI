@@ -160,8 +160,15 @@ body {
   background: linear-gradient(0deg, #0b1020bb, #0b102099);
   border-top: 1px solid var(--panel-border);
   gap: .6rem;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   padding: .8rem;
+}
+
+.emailContainer {
+  border 1px solid #60a5fa66;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
 }
 
 button { cursor: pointer; }
@@ -175,8 +182,12 @@ select { min-width: 10ch; }
 
 select, input, button {
   backdrop-filter: blur(8px);
-  border: 1px solid var(--panel-border); background: #0b102033; color: var(--text);
-  padding: .7rem .8rem; border-radius: 12px; font: inherit;
+  background: #0b102033;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  color: var(--text);
+  font: inherit;
+  padding: .7rem .8rem;
 }
 
 /* Typing Indicator */

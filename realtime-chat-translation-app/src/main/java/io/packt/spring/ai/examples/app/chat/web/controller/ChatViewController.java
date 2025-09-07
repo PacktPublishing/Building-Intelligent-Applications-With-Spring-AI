@@ -83,6 +83,7 @@ public class ChatViewController {
 		Map<String, Object> model = modelView.getModel();
 
 		model.put("chatSessionId", session.getId());
+		model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(resolveChatSessionId(session)));
 		model.put("chatUserId", user.id());
 
 		return modelView;
@@ -105,6 +106,10 @@ public class ChatViewController {
 		else {
 			return getChatService().newChatSession(user);
 		}
+	}
+
+	protected String resolveChatSessionId(ChatSession session) {
+		return session.getId().toString();
 	}
 
 	@Data
