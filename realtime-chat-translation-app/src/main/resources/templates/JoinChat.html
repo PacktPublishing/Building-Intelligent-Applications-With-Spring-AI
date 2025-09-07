@@ -10,7 +10,7 @@
 	<body>
 		<div class="dialog">
 			<div class="dialog-header">Enter Chat</div>
-			<form class="dialog-body" method="POST" th:attr="action=@{/session/enter}" action="#">
+			<form class="dialog-body" method="POST" th:attr="action=@{/view/chat}" action="#">
 				<input type="hidden" id="chatSessionId" name="chatSessionId" th:value="${chatSessionId}">
 				<input type="hidden" id="chatSessionUrl" name="chatSessionUrl" th:value="${chatSessionUrl}">
 				<label for="name">Your Name</label>
