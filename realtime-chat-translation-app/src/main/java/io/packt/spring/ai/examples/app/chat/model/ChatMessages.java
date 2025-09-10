@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.packt.spring.ai.examples.app.chat.util.ChatMessageNotFoundException;
+import io.packt.spring.ai.examples.app.chat.util.CollectionUtils;
 
 import org.cp.elements.lang.Assert;
 import org.springframework.lang.NonNull;
@@ -92,6 +93,10 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 
 	default Optional<ChatMessage> findBy(IsoLanguage language) {
 		return findBy(chatMessage -> chatMessage.language().equals(language));
+	}
+
+	default Optional<ChatMessage> findLast() {
+		return CollectionUtils.last(toList());
 	}
 
 	default ChatMessages mutable() {
