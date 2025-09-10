@@ -39,8 +39,6 @@ import org.cp.elements.lang.Assert;
 public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReference<Instant> presentTimestamp,
 		AtomicReference<Instant> lastReceivedTimestamp) implements Comparable<ChatUser> {
 
-	public static final Duration PRESENCE_TIMEOUT = Duration.ofMinutes(10);
-
 	public ChatUser {
 		Assert.notNull(id, "ChatUser ID is required");
 		Assert.hasText(name, "ChatUser name [%s] is required".formatted(name));
@@ -63,13 +61,10 @@ public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReferen
 		return new AtomicReference<>(Instant.now());
 	}
 
-	public boolean isPresent() {
+	public boolean isPresent(Duration timeout) {
+		Assert.notNull(timeout, "Timeout is required to determine user presence");
 		long presentMilliseconds = System.currentTimeMillis() - getPresentTimestamp().toEpochMilli();
-		return Duration.ofMillis(presentMilliseconds).compareTo(PRESENCE_TIMEOUT) > 0;
-	}
-
-	public String getFormattedId() {
-		return id().toString();
+		return Duration.ofMillis(presentMilliseconds).compareTo(timeout) > 0;
 	}
 
 	public Instant getLastReceivedTimestamp() {
