@@ -70,7 +70,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 		Assert.notNull(translation, "Translated ChatMessage is required");
 
-		Assert.state(!this.equals(translation),
+		Assert.state(this.notEquals(translation),
 			() -> "ChatMessage for language [%s] already exists".formatted(this.language()));
 
 		Assert.state(translatedMessages().findBy(translation.language()).isEmpty(),
@@ -114,6 +114,10 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 		return language().equals(that.language())
 			&& message().equalsIgnoreCase(that.message());
+	}
+
+	public boolean notEquals(Object obj) {
+		return !equals(obj);
 	}
 
 	@Override
