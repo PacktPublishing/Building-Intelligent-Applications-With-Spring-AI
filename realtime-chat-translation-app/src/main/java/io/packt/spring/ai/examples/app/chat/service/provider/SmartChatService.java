@@ -104,7 +104,8 @@ public class SmartChatService extends AbstractChatService {
 			return message.findBy(language).orElseGet(() -> {
 				String originalMessage = message.message();
 				String translatedMessage = getLanguageTranslator().translate(originalMessage, language);
-				ChatMessage translatedChatMessage = ChatMessage.from(message.user(), language, translatedMessage);
+				ChatUser user = message.user();
+				ChatMessage translatedChatMessage = ChatMessage.from(translatedMessage).by(user).in(language).build();
 				message.add(translatedChatMessage);
 				return translatedChatMessage;
 			});

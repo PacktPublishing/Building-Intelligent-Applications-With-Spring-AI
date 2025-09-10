@@ -62,10 +62,6 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		return ChatMessageBuilder.from(message).by(user).inUserLanguage().build();
 	}
 
-	public static ChatMessage from(ChatUser user, IsoLanguage language, String message) {
-		return ChatMessageBuilder.from(message).by(user).in(language).build();
-	}
-
 	public boolean add(ChatMessage translation) {
 
 		Assert.notNull(translation, "Translated message is required");
