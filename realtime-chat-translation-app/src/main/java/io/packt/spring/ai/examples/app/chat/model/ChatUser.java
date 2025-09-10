@@ -50,7 +50,11 @@ public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReferen
 	}
 
 	public static ChatUser from(String name, IsoLanguage language) {
-		return new ChatUser(UUID.randomUUID(), name, language, nowTimestampReference(), epochTimestampReference());
+		return new ChatUser(generateId(), name, language, nowTimestampReference(), epochTimestampReference());
+	}
+
+	private static UUID generateId() {
+		return UUID.randomUUID();
 	}
 
 	private static AtomicReference<Instant> epochTimestampReference() {
