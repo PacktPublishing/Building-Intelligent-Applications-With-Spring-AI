@@ -112,7 +112,8 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 			return false;
 		}
 
-		return this.id().equals(that.id());
+		return language().equals(that.language())
+			&& message().equalsIgnoreCase(that.message());
 	}
 
 	@Override
