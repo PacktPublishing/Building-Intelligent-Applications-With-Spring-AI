@@ -111,6 +111,10 @@ public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReferen
 		return this.id().equals(that.id());
 	}
 
+	public boolean notEquals(Object obj) {
+		return !equals(obj);
+	}
+
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(id());
