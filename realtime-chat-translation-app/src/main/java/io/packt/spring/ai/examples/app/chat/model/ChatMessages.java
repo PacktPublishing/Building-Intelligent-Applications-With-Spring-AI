@@ -68,15 +68,17 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 	}
 
 	// Finds chat messages after a given timestamp that the given user has not received.
-	default List<ChatMessage> findAfter(Instant timestamp, ChatUser user) {
+	default ChatMessages findAfter(Instant timestamp, ChatUser user) {
 
 		Predicate<ChatMessage> chatMessagesAfterTimestampNotSentByUser = chatMessage ->
 			chatMessage.timestamp().isAfter(timestamp) && !chatMessage.user().equals(user);
 
-		return stream()
+		List<ChatMessage> chatMessageList = stream()
 			.filter(chatMessagesAfterTimestampNotSentByUser)
 			.sorted()
 			.toList();
+
+		return ChatMessages.of(chatMessageList);
 	}
 
 	default Optional<ChatMessage> findBy(Predicate<ChatMessage> predicate) {
