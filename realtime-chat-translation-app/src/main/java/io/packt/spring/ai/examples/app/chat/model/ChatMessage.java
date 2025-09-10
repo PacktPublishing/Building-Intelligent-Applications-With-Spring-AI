@@ -46,6 +46,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	public ChatMessage {
 		Assert.notNull(id, "ID is required");
 		Assert.notNull(user, "User is required");
+		Assert.notNull(language, "Language is required");
 		Assert.notNull(timestamp, "Timestamp is required");
 		Assert.hasText(message, () -> "Message [%s] is required".formatted(message));
 	}
