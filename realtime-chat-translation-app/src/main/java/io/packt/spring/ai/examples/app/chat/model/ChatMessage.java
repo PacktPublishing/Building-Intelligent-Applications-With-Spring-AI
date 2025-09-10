@@ -23,6 +23,9 @@ import java.util.UUID;
 
 import org.springframework.util.Assert;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * Abstract Data Type (ADT) modeling a {@link String message} sent by a {@link ChatUser user}
  * in {@link ChatSession chat}.
@@ -38,43 +41,40 @@ import org.springframework.util.Assert;
 public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage language, String message,
 		ChatMessages translatedMessages) implements Comparable<ChatMessage> {
 
-	private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	private static final String TO_STRING = "[%s] %s: \"%s\"";
+	private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN);
 
 	public ChatMessage {
 		Assert.notNull(id, "ID is required");
+		Assert.notNull(timestamp, "Timestamp is required");
 		Assert.notNull(user, "User is required");
 		Assert.notNull(language, "Language is required");
-		Assert.notNull(timestamp, "Timestamp is required");
 		Assert.hasText(message, () -> "Message [%s] is required".formatted(message));
 	}
 
+	public static UserBuilder from(String message) {
+		return ChatMessageBuilder.from(message);
+	}
+
 	public static ChatMessage from(ChatUser user, String message) {
-		return from(user, null,  message);
+		return ChatMessageBuilder.from(message).by(user).inUserLanguage().build();
 	}
 
 	public static ChatMessage from(ChatUser user, IsoLanguage language, String message) {
-		Assert.notNull(user, "User is required");
-		IsoLanguage resolvedLanguage = resolveLanguage(language, user);
-		return new ChatMessage(UUID.randomUUID(), Instant.now(), user, resolvedLanguage, message,
-			ChatMessages.empty().mutable());
-	}
-
-	private static IsoLanguage resolveLanguage(IsoLanguage language, ChatUser user) {
-		return language != null ? language : user.language();
+		return ChatMessageBuilder.from(message).by(user).in(language).build();
 	}
 
 	public boolean add(ChatMessage translation) {
 
-		Assert.notNull(translation, "Translated ChatMessage is required");
+		Assert.notNull(translation, "Translated message is required");
 
 		Assert.state(this.notEquals(translation),
-			() -> "ChatMessage for language [%s] already exists".formatted(this.language()));
+			() -> "Message for language [%s] already exists".formatted(this.language()));
 
 		Assert.state(translatedMessages().findBy(translation.language()).isEmpty(),
-			() -> "ChatMessage with translation [%s] already exists".formatted(translation.language()));
+			() -> "Message with translation [%s] already exists".formatted(translation.language()));
 
 		return translatedMessages().add(translation);
 	}
@@ -128,5 +128,65 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	@Override
 	public String toString() {
 		return TO_STRING.formatted(getFormattedTimestamp(), getUsername(), message());
+	}
+
+	@Getter(AccessLevel.PROTECTED)
+	static class ChatMessageBuilder implements LanguageBuilder, MessageBuilder, UserBuilder {
+
+		static ChatMessageBuilder from(String message) {
+			return new ChatMessageBuilder(message);
+		}
+
+		private ChatUser user;
+
+		private final Instant timestamp = Instant.now();
+
+		private IsoLanguage language;
+
+		private final String message;
+
+		private final UUID id = UUID.randomUUID();
+
+		private ChatMessageBuilder(String message) {
+			Assert.hasText(message, () -> "Message [%s] is required".formatted(message));
+			this.message = message;
+		}
+
+		@Override
+		public LanguageBuilder by(ChatUser user) {
+			Assert.notNull(user, "User is required");
+			return null;
+		}
+
+		@Override
+		public MessageBuilder in(IsoLanguage language) {
+			Assert.notNull(language, "Language is required");
+			this.language = language;
+			return this;
+		}
+
+		@Override
+		public MessageBuilder inUserLanguage() {
+			this.language = getUser().language();
+			return this;
+		}
+
+		public ChatMessage build() {
+			return new ChatMessage(getId(), getTimestamp(), getUser(), getLanguage(), getMessage(),
+				ChatMessages.empty().mutable());
+		}
+	}
+
+	public interface LanguageBuilder {
+		MessageBuilder in(IsoLanguage language);
+		MessageBuilder inUserLanguage();
+	}
+
+	public interface MessageBuilder {
+		ChatMessage build();
+	}
+
+	public interface UserBuilder {
+		LanguageBuilder by(ChatUser user);
 	}
 }
