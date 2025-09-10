@@ -80,7 +80,8 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	}
 
 	public Optional<ChatMessage> findBy(IsoLanguage language) {
-		return translatedMessages().findBy(language);
+		return this.language().equals(language) ? Optional.of(this)
+			: translatedMessages().findBy(language);
 	}
 
 	public String getFormattedId() {
