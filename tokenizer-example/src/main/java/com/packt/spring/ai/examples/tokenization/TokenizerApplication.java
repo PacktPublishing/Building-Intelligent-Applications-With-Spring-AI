@@ -57,9 +57,14 @@ public class TokenizerApplication {
 	}
 
 	@Bean
-	TokenCountEstimator tokenCountEstimator(@Value("${examples.app.tokenizer.encoding-type}") String encodingType) {
-		return new JTokkitTokenCountEstimator(EncodingType.fromName(encodingType)
-			.orElseThrow(() -> new IllegalArgumentException("EncodingType [%s] not found".formatted(encodingType))));
+	TokenCountEstimator tokenCountEstimator(@Value("${examples.tokenizer.encoding-type}") String encodingTypeName) {
+
+		EncodingType encodingType = EncodingType.fromName(encodingTypeName).orElseThrow(() -> {
+			String message = "EncodingType [%s] not found".formatted(encodingTypeName);
+			return new IllegalArgumentException(message);
+		});
+
+		return new JTokkitTokenCountEstimator(encodingType);
 	}
 
 	@Bean
