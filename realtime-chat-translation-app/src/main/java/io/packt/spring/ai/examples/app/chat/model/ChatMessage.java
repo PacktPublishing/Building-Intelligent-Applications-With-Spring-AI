@@ -62,7 +62,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		return ChatMessageBuilder.from(message).by(user).inUserLanguage().build();
 	}
 
-	public boolean add(ChatMessage translation) {
+	public ChatMessage add(ChatMessage translation) {
 
 		Assert.notNull(translation, "Translated message is required");
 
@@ -72,7 +72,9 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		Assert.state(translatedMessages().findBy(translation.language()).isEmpty(),
 			() -> "Message with translation [%s] already exists".formatted(translation.language()));
 
-		return translatedMessages().add(translation);
+		translatedMessages().add(translation);
+
+		return this;
 	}
 
 	public Optional<ChatMessage> findBy(IsoLanguage language) {
