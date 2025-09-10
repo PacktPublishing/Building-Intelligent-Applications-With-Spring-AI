@@ -58,6 +58,10 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		return ChatMessageBuilder.from(message);
 	}
 
+	public static MessageBuilder from(ChatMessage message) {
+		return ChatMessageBuilder.from(message);
+	}
+
 	public static ChatMessage from(ChatUser user, String message) {
 		return ChatMessageBuilder.from(message).by(user).inUserLanguage().build();
 	}
@@ -125,25 +129,41 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	}
 
 	@Getter(AccessLevel.PROTECTED)
-	static class ChatMessageBuilder implements LanguageBuilder, MessageBuilder, UserBuilder {
+	static class ChatMessageBuilder implements Builder<ChatMessage>, LanguageBuilder, UserBuilder {
 
 		static ChatMessageBuilder from(String message) {
 			return new ChatMessageBuilder(message);
 		}
 
+		static MessageBuilder from(ChatMessage chatMessage) {
+			Assert.notNull(chatMessage, "ChatMessage to copy is required");
+			return message -> new ChatMessageBuilder(chatMessage.timestamp(), message).by(chatMessage.user());
+		}
+
 		private ChatUser user;
 
-		private final Instant timestamp = Instant.now();
+		private final Instant timestamp;
 
 		private IsoLanguage language;
 
 		private final String message;
 
-		private final UUID id = UUID.randomUUID();
+		private final UUID id;
 
 		private ChatMessageBuilder(String message) {
+			this(Instant.now(), message);
+		}
+
+		private ChatMessageBuilder(Instant timestamp, String message) {
+			Assert.notNull(timestamp, "Timestamp is required");
 			Assert.hasText(message, () -> "Message [%s] is required".formatted(message));
+			this.timestamp = timestamp;
 			this.message = message;
+			this.id = generateId();
+		}
+
+		private UUID generateId() {
+			return UUID.randomUUID();
 		}
 
 		@Override
@@ -153,14 +173,14 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		}
 
 		@Override
-		public MessageBuilder in(IsoLanguage language) {
+		public Builder<ChatMessage> in(IsoLanguage language) {
 			Assert.notNull(language, "Language is required");
 			this.language = language;
 			return this;
 		}
 
 		@Override
-		public MessageBuilder inUserLanguage() {
+		public Builder<ChatMessage> inUserLanguage() {
 			this.language = getUser().language();
 			return this;
 		}
@@ -171,15 +191,22 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		}
 	}
 
+	@FunctionalInterface
+	public interface Builder<T> {
+		T build();
+	}
+
 	public interface LanguageBuilder {
-		MessageBuilder in(IsoLanguage language);
-		MessageBuilder inUserLanguage();
+		Builder<ChatMessage> in(IsoLanguage language);
+		Builder<ChatMessage> inUserLanguage();
 	}
 
+	@FunctionalInterface
 	public interface MessageBuilder {
-		ChatMessage build();
+		LanguageBuilder with(String message);
 	}
 
+	@FunctionalInterface
 	public interface UserBuilder {
 		LanguageBuilder by(ChatUser user);
 	}
