@@ -82,10 +82,6 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 			: translatedMessages().findBy(language);
 	}
 
-	public String getFormattedId() {
-		return id().toString();
-	}
-
 	public String getFormattedTimestamp() {
 		return LocalDateTime.from(timestamp()).format(TIMESTAMP_FORMATTER);
 	}
