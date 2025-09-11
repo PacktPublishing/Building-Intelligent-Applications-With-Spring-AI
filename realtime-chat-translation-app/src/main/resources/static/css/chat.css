@@ -136,7 +136,7 @@ body {
 }
 
 .msg-row.me {
-  grid-template-columns: 1fr 36px;
+  grid-template-columns: 1fr;
 }
 
 .meta {

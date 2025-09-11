@@ -2,32 +2,40 @@
 //const $ = (selection, node = document) => node.querySelector(selection);
 //const $$ = (selection, node = document) => [...node.querySelectorAll(selection)];
 
-// Chat App Data Structures
 const applicationState = {
   users: {},
-  me: 'You',
   messages: []
 };
 
-// Chat UI HTML Elements
-const email = $("#emailContainer")
-const messages = $("#messages");
-const messageInput = $("#messageInput");
-const sendButton = $("#sendButton")
+const messageInputElement = $("#messageInput");
 
-// Chat App Functions
-const addUser = (name, hue = randomHue()) => {
-  if (!name || applicationState.users[name]) return;
-  applicationState.users[name] = { name, hue };
+const addUser = (userId, username, hue = randomHue()) => {
+
+  if (!userId || applicationState.users[userId]) return;
+
+  const user = {
+    id: userId,
+    name: username,
+    hue: hue
+  };
+
+  applicationState.users[userId] = user;
   showUsers();
 };
 
-const randomHue = () => Math.floor(Math.random() * 360);
+const initApp = () => {
+  initUsers();
+  setInterval(requestMessages, 1000);
+  messageInputElement.focus();
+}
 
-const seedUsers = () => {
-  addUser('Admin', 330);
-  addUser('You', 210);
+const initUsers = () => {
+  const userId = $("#chatUserId").val();
+  const username = $("#chatUserName").val();
+  addUser(userId, username, 210);
 };
+
+const randomHue = () => Math.floor(Math.random() * 360);
 
 function timeNow() {
   const date = new Date();
@@ -35,6 +43,21 @@ function timeNow() {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+function resolveUser(message) {
+
+  var applicationUser = applicationState.users[message.user.id];
+
+  if (!applicationUser) {
+    applicationUser = {
+      id: message.user.id,
+      name: message.user.name,
+      hue: randomHue
+    }
+  }
+
+  return applicationUser;
 }
 
 function showUsers() {
@@ -49,60 +72,147 @@ function showUsers() {
   });
 }
 
-function saveMessage(user, text) {
-  const message = { user, text, time: timeNow() };
+function postMessage(message) {
+
+  if (!message.text) {
+    console.log(`Message [${message.id}] from user [${message.user.name}] has no text`);
+    return;
+  }
+
+  saveMessage(message);
+  showMessage(message);
+  messageInputElement.val("");
+  messageInputElement.focus();
+}
+
+function postUserMessage(event) {
+
+  const messageText = messageInputElement.val().trim();
+
+  if (!messageText) return;
+
+  const userId = $("#chatUserId").val();
+  const username = $("#chatUserName").val();
+  const sessionId = $("#chatSessionId").val();
+
+  const message = {
+    id: null,
+    user: { id: userId, name: username },
+    text: messageText,
+    time: timeNow()
+  }
+
+  const messageId = sendMessage(sessionId, message);
+
+  message.id = messageId;
+
+  postMessage(message);
+}
+
+function saveMessage(message) {
   applicationState.messages.push(message);
-  const row = showMessage(message);
-  messages.append(row);
-  messages.animate({
-    scrollTop: messages.prop("scrollHeight"),
-  }, 500);
+  return message;
 }
 
-function sendMessage(event) {
+function sendMessage(sessionId, message) {
 
-  const me = applicationState.me;
-  const myMessage = messageInput.val().trim();
+  const postChatMessageRequest = {
+      userId: message.user.id,
+      message: message.text
+  }
 
-  if (!myMessage) return;
+  var messageId;
 
-  saveMessage(me, myMessage);
-  messageInput.val("");
+  $.ajax({
+    method: 'POST',
+    url: `/chat-app/api/${sessionId}/messages`,
+    data: JSON.stringify(postChatMessageRequest),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function(response) {
+      // console.log(response);
+      messageId = response.id;
+    },
+    error: function(xhr, status, errorMessage) {
+      const messageJson = JSON.stringify(postChatMessageRequest);
+      console.log(`Failed to post chat message [${messageJson}]: ${status} - ${errorMessage}`);
+    }
+  });
+
+  return messageId;
 }
 
-function showMessage({ user, text, time }) {
+function showMessage(message) {
 
-  const row = document.createElement('div');
-  const isMe = user === applicationState.me;
+  const user = resolveUser(message);
+  const userId = $("#chatUserId").val();
+  const isMe = user != null && user.id === userId;
+  const row = document.createElement("div");
 
-  row.className = 'msg-row' + (isMe ? ' me' : '');
+  row.className = "msg-row" + (isMe ? " me" : "");
 
-  // User Avatar Element
-  const userAvatar = document.createElement('div');
-  userAvatar.className = 'avatar';
-  userAvatar.style.background = `linear-gradient(180deg, hsla(${applicationState.users[user].hue}, 80%, 65%, .35), hsla(${applicationState.users[user].hue}, 70%, 50%, .25))`;
-  userAvatar.style.borderColor = 'rgba(255,255,255,.2)';
-  userAvatar.textContent = user.slice(0,2).toUpperCase();
-
-  // User Text Message Element
-  const userTextMessage = document.createElement('div');
-  userTextMessage.className = 'bubble';
-  userTextMessage.style.setProperty('--h', applicationState.users[user].hue);
-  userTextMessage.innerHTML = `
-    <div class="meta"><span class="name">${user}</span><span class="time">${time}</span></div>
-    <div class="text">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+  // User Message Element
+  const messageElement = document.createElement("div");
+  messageElement.id = message.id;
+  messageElement.className = 'bubble';
+  messageElement.style.setProperty('--h', user.hue);
+  messageElement.innerHTML = `
+    <div class="meta"><span class="name">${user.name}</span><span class="time">${message.time}</span></div>
+    <div class="text">${escapeHtml(message.text).replace(/\n/g, '<br>')}</div>
   `;
 
   if (isMe) {
-    row.appendChild(userTextMessage);
-    row.appendChild(userAvatar);
+    row.appendChild(messageElement);
   }
   else {
-    row.appendChild(userAvatar);
-    row.appendChild(userTextMessage);
+    // User Avatar Element
+    const userAvatarElement = document.createElement('div');
+    userAvatarElement.className = 'avatar';
+    userAvatarElement.style.background = `linear-gradient(180deg, hsla(${user.hue}, 80%, 65%, .35), hsla(${user.hue}, 70%, 50%, .25))`;
+    userAvatarElement.style.borderColor = 'rgba(255,255,255,.2)';
+    userAvatarElement.textContent = user.name.slice(0,2).toUpperCase();
+
+    row.appendChild(userAvatarElement);
+    row.appendChild(messageElement);
   }
 
-  return row;
+  const messagesElement = $("#messages");
+
+  messagesElement.append(row);
+  messagesElement.animate({
+    scrollTop: messagesElement.prop("scrollHeight"),
+  }, 500);
+}
+
+function requestMessages() {
+
+  const userId = $("#chatUserId").val();
+  const sessionId = $("#chatSessionId").val();
+
+  $.ajax({
+    method: 'GET',
+    url: `/chat-app/api/${sessionId}/users/${userId}/messages`,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function(response) {
+      // console.log(response);
+
+      Object.values(response).forEach(chatMessage => {
+
+        const message = {
+          id: chatMessage.id,
+          user: { id: chatMessage.user.id, name: chatMessage.user.name },
+          text: chatMessage.message,
+          time: timeNow()
+        };
+
+        postMessage(message);
+      });
+    },
+    error: function(xhr, status, errorMessage) {
+      console.log(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+    }
+  });
 }
 
 function escapeHtml(str) {
@@ -115,31 +225,24 @@ function sendEmail(event) {
   const subject = "Join My Chat";
   const encodedSubject = encodeURIComponent(subject);
   const emailBody = $("#chatSessionUrl").val();
-  console.log("EMAIL BODY ["+emailBody+"]");
   const encodedEmailBody = encodeURIComponent(emailBody);
   const mailToLink = `mailto:${recipient}?subject=${encodedSubject}&body=${encodedEmailBody}`;
 
   window.open(mailToLink);
-  messageInput.focus();
+  messageInputElement.focus();
 }
 
-email.click(event => sendEmail(event));
+const emailButton = $("#emailButton")
+emailButton.click(event => sendEmail(event));
 
-// Chat App Event Handling
-messageInput.keypress(event => {
+messageInputElement.keypress(event => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
-    sendMessage();
+    postUserMessage(event);
   }
 });
 
-sendButton.click(event => {
-  sendMessage(event);
-  messageInput.focus();
-});
+const sendButton = $("#sendButton")
+sendButton.click(event => postUserMessage(event));
 
-// Initialize Chat App
-seedUsers();
-showUsers();
-messageInput.focus();
-saveMessage('Admin', 'Welcome to Glass Chat! 💬');
+initApp();
