@@ -177,7 +177,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		@Override
 		public LanguageBuilder by(ChatUser user) {
 			Assert.notNull(user, "User is required");
-			return null;
+			return this;
 		}
 
 		@Override
