@@ -22,8 +22,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -136,5 +138,9 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 
 	default List<ChatMessage> toList() {
 		return stream().sorted().toList();
+	}
+
+	default Set<ChatMessage> toSet() {
+		return stream().collect(Collectors.toSet());
 	}
 }
