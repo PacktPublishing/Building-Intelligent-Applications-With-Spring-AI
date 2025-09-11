@@ -19,6 +19,7 @@ import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -41,21 +42,24 @@ import lombok.RequiredArgsConstructor;
 @Getter(AccessLevel.PROTECTED)
 public class AiLanguageTranslator implements LanguageTranslator {
 
-	protected static final String MESSAGE_TRANSLATION_PROMPT =
-		"Translate the message contained in single quotes '%s' to %s. Return only the translated message";
+	protected static final String MESSAGE_TRANSLATION_PROMPT_TEMPLATE =
+		"Translate the written text \"{text}\" to {language}. Return only the translation. Do not provide any explanation or pronunciation.";
 
 	private final ChatClient chatClient;
 
-	// TODO: Add synchronization so the chat message is only translated once
+	// TODO: Use synchronization so a given chat message is only translated once
 	@Override
 	@SuppressWarnings("all")
 	public String translate(String message, IsoLanguage language) {
 
-		String prompt = MESSAGE_TRANSLATION_PROMPT.formatted(message, language.name());
+		PromptTemplate promptTemplate = new PromptTemplate(MESSAGE_TRANSLATION_PROMPT_TEMPLATE);
+
+		promptTemplate.add("text", message);
+		promptTemplate.add("language", language);
 
 		// Translate ChatMessage using AI
 		String translatedMessage = getChatClient().prompt()
-			.user(prompt)
+			.messages(promptTemplate.createMessage())
 			.call()
 			.content();
 
