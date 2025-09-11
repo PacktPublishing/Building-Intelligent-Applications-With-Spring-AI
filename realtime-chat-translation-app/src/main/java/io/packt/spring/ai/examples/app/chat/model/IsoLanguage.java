@@ -32,6 +32,23 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unused")
 public record IsoLanguage(String code, String name) implements Comparable<IsoLanguage> {
 
+	public static final IsoLanguage CHINESE =
+		IsoLanguage.from(Locale.CHINESE.getLanguage(), Locale.CHINESE.getDisplayLanguage());
+
+	public static final IsoLanguage ENGLISH =
+		IsoLanguage.from(Locale.ENGLISH.getLanguage(), Locale.ENGLISH.getDisplayLanguage());
+
+	public static final IsoLanguage FRENCH =
+		IsoLanguage.from(Locale.FRENCH.getLanguage(), Locale.FRENCH.getDisplayLanguage());
+
+	public static final IsoLanguage GERMAN =
+		IsoLanguage.from(Locale.GERMAN.getLanguage(), Locale.GERMAN.getDisplayLanguage());
+
+	public static final IsoLanguage JAPANESE =
+		IsoLanguage.from(Locale.JAPANESE.getLanguage(), Locale.JAPANESE.getDisplayLanguage());
+
+	public static final IsoLanguage SPANISH = IsoLanguage.from("es", "Spanish");
+
 	public IsoLanguage {
 		Assert.hasText(code, () -> "ISO language code [%s] is required".formatted(code));
 		Assert.hasText(name, () -> "ISO language name [%s] is required".formatted(name));
