@@ -16,12 +16,13 @@
 package io.packt.spring.ai.examples.app.chat.model;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.util.Assert;
 
@@ -93,13 +94,16 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	}
 
 	public String getFormattedHourMinute() {
-		return LocalDateTime.from(timestamp()).format(HOUR_MINUTE_FORMATTER);
+		return getZonedDatetime().format(HOUR_MINUTE_FORMATTER);
 	}
 
 	public String getFormattedTimestamp() {
-		return ZonedDateTime.ofInstant(timestamp(), ZoneId.systemDefault())
-			.toLocalDateTime()
-			.format(TIMESTAMP_FORMATTER);
+		return getZonedDatetime().format(TIMESTAMP_FORMATTER);
+	}
+
+	@JsonIgnore
+	public ZonedDateTime getZonedDatetime() {
+		return ZonedDateTime.ofInstant(timestamp(), ZoneId.systemDefault());
 	}
 
 	public String getUsername() {
