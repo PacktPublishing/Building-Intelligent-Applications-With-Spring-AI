@@ -30,8 +30,8 @@
 		<script>
 			$(document).ready(function() {
 
-				const chatSessionUrlField = $("chatSessionUrl");
-				const languageField = $("language");
+				const chatSessionUrlField = $("#chatSessionUrl");
+				const languageField = $("#language");
 				const nameField = $("#name");
 				const urlField = $("#url");
 				const joinButton = $("#join");
@@ -50,12 +50,12 @@
 				urlField.keyup(userInputListener);
 				const chatSessionUrl = chatSessionUrlField.val();
 				if (isNotEmpty(chatSessionUrl)) {
-					urlField.val = chatSessionUrl;
+					urlField.val(chatSessionUrl);
 					urlField.prop("disabled", true);
 				}
 
 				function isNotEmpty(string) {
-					return string !== undefined && string.trim().length > 0;
+					return string && string.trim().length > 0;
 				}
 
 				function userInputListener(event) {
