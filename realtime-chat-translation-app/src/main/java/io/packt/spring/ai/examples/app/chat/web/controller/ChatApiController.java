@@ -98,7 +98,7 @@ public class ChatApiController {
 
 		messages.findLast().ifPresent(user::received);
 
-		return messages;
+		return translatedMessages;
 	}
 
 	@PostMapping("/{sessionId}/messages")

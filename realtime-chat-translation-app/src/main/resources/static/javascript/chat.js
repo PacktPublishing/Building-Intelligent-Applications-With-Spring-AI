@@ -25,7 +25,7 @@ const addUser = (userId, username, hue = randomHue()) => {
 
 const initApp = () => {
   initUsers();
-  setInterval(requestMessages, 1000);
+  requestMessages();
   messageInputElement.focus();
 }
 
@@ -43,6 +43,10 @@ function timeNow() {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
 }
 
 function resolveUser(message) {
@@ -194,10 +198,10 @@ function requestMessages() {
     url: `/chat-app/api/${sessionId}/users/${userId}/messages`,
     contentType: "application/json; charset=utf-8",
     dataType: "json",
-    success: function(response) {
-      // console.log(response);
+    success: function(messages) {
+      //console.log(JSON.stringify(messages));
 
-      Object.values(response).forEach(chatMessage => {
+      messages.forEach(chatMessage => {
 
         const message = {
           id: chatMessage.id,
@@ -211,12 +215,22 @@ function requestMessages() {
     },
     error: function(xhr, status, errorMessage) {
       console.log(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+    },
+    complete: function() {
+      setTimeout(requestMessages(), 1000);
     }
   });
 }
 
-function escapeHtml(str) {
-  return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+function copyChatSessionUrlToClipboard(event, element, tooltip) {
+  try {
+    const chatSessionUrl = $("#chatSessionUrl").val();
+    navigator.clipboard.writeText(chatSessionUrl);
+    showTooltipOnClick(element, tooltip, "Copied!");
+    messageInputElement.focus();
+  }
+  catch (ignore) {
+  }
 }
 
 function sendEmail(event) {
@@ -232,8 +246,51 @@ function sendEmail(event) {
   messageInputElement.focus();
 }
 
+function hideTooltip(tooltip) {
+  tooltip.removeClass("show");
+}
+
+function showTooltip(element, tooltip) {
+
+  const elementWidth = element.outerWidth();
+  const elementOffset = element.offset();
+  const tooltipHeight = tooltip.outerHeight();
+  const tooltipWidth = tooltip.outerWidth();
+
+  tooltip.css({
+    top: elementOffset.top - tooltipHeight - 32, // 30px gap
+    left: elementOffset.left + elementWidth / 2 - tooltipWidth / 2
+  });
+
+  tooltip.addClass('show');
+  setTimeout(() => { hideTooltip(tooltip); }, 3000);
+}
+
+function showTooltipOnClick(element, tooltip, text) {
+  hideTooltip(tooltip);
+  const originalText = tooltip.html();
+  tooltip.html(text);
+  showTooltip(element, tooltip);
+  setTimeout(() => { tooltip.html(originalText); }, 3000);
+}
+
+const copyUrlButton = $("#copyUrlButton");
+const copyUrlTooltip = $('<div id="copyUrlTooltip" class="tooltip">Copy Chat URL to Clipboard</div>').appendTo("body");
+const copyUrlTooltipText = copyUrlTooltip.html();
+
+copyUrlButton.click(event => copyChatSessionUrlToClipboard(event, copyUrlButton, copyUrlTooltip));
+copyUrlButton.mouseenter(event => showTooltip(copyUrlButton, copyUrlTooltip));
+copyUrlButton.mouseleave(event => {
+  hideTooltip(copyUrlTooltip);
+  copyUrlTooltip.html(copyUrlTooltipText);
+});
+
 const emailButton = $("#emailButton")
+const emailTooltip = $('<div id="emailTooltip" class="tooltip">Send Chat URL in Email</div>').appendTo("body");
+
 emailButton.click(event => sendEmail(event));
+emailButton.mouseenter(event => showTooltip(emailButton, emailTooltip));
+emailButton.mouseleave(event => hideTooltip(emailTooltip));
 
 messageInputElement.keypress(event => {
   if (event.key === 'Enter' && !event.shiftKey) {

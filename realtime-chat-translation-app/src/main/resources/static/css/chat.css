@@ -49,6 +49,26 @@ body {
   flex: 1;
 }
 
+.tooltip {
+  position: absolute;
+  bottom: 125%; /* Position above the div */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.85rem;
+  opacity: 0;
+  padding: 6px 10px;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.tooltip.show {
+  opacity: 1;
+}
+
 /* Chat UI Header */
 .chip {
   background: #ffffff0f; backdrop-filter: blur(6px);
@@ -154,21 +174,21 @@ body {
 }
 
 /* Chat UI Footer */
+.buttonContainer {
+  border 1px solid #60a5fa66;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
 .composer {
   display: grid;
   align-items: center;
   background: linear-gradient(0deg, #0b1020bb, #0b102099);
   border-top: 1px solid var(--panel-border);
   gap: .6rem;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto auto auto;
   padding: .8rem;
-}
-
-.emailContainer {
-  border 1px solid #60a5fa66;
-  border-radius: 12px;
-  color: var(--text);
-  cursor: pointer;
 }
 
 button { cursor: pointer; }
