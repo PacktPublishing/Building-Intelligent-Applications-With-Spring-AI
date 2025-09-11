@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -99,6 +100,10 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 	public String getFormattedTimestamp() {
 		return getZonedDatetime().format(TIMESTAMP_FORMATTER);
+	}
+
+	public Set<ChatMessage> getTranslatedMessages() {
+		return translatedMessages().toSet();
 	}
 
 	@JsonIgnore
