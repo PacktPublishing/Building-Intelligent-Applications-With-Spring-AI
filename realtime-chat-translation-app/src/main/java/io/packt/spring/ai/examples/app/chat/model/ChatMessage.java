@@ -17,6 +17,8 @@ package io.packt.spring.ai.examples.app.chat.model;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
@@ -95,7 +97,9 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	}
 
 	public String getFormattedTimestamp() {
-		return LocalDateTime.from(timestamp()).format(TIMESTAMP_FORMATTER);
+		return ZonedDateTime.ofInstant(timestamp(), ZoneId.systemDefault())
+			.toLocalDateTime()
+			.format(TIMESTAMP_FORMATTER);
 	}
 
 	public String getUsername() {
