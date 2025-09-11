@@ -15,9 +15,15 @@
  */
 package io.packt.spring.ai.examples.app.chat.model;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import io.packt.spring.ai.examples.app.chat.util.ChatUserNotFoundException;
 import io.packt.spring.ai.examples.app.chat.util.InvalidChatSessionException;
@@ -33,6 +39,7 @@ import lombok.ToString;
  * Abstract Data Type (ADT) modeling a chat session with users communicating in chat.
  *
  * @author John Blum
+ * @see java.lang.Comparable
  * @see java.lang.Iterable
  * @see ChatUser
  * @since 0.1.0
@@ -41,6 +48,8 @@ import lombok.ToString;
 @Getter(AccessLevel.PUBLIC)
 @SuppressWarnings("unused")
 public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> {
+
+	public static final Duration PRESENCE_TIMEOUT = Duration.ofMinutes(10);
 
 	public static ChatSession withUser(ChatUser user) {
 		ChatSession session = new ChatSession(UUID.randomUUID());
@@ -52,9 +61,9 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 	private final Instant timestamp;
 
-	private final ChatMessages chatMessages;
+	private final ChatMessages messages;
 
-	private final ChatUsers chatUsers;
+	private final ChatUsers users;
 
 	public ChatSession(UUID id) {
 
@@ -62,39 +71,65 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 		this.id = id;
 		this.timestamp = Instant.now();
-		this.chatMessages = ChatMessages.empty().mutable();
-		this.chatUsers = ChatUsers.empty().mutable();
+		this.messages = ChatMessages.empty().mutable();
+		this.users = ChatUsers.empty().mutable();
 	}
 
-	public boolean isActive() {
-		return getChatUsers().isNotEmpty();
-	}
+	private void assertChatMessage(ChatMessage message) {
 
-	public boolean add(ChatUser user) {
-		return getChatUsers().add(user);
-	}
+		Assert.notNull(message, "ChatMessage is required");
 
-	public boolean post(ChatMessage chatMessage) {
-		assertChatMessage(chatMessage);
-		return getChatMessages().add(chatMessage);
-	}
-
-	private void assertChatMessage(ChatMessage chatMessage) {
-
-		Assert.notNull(chatMessage, "ChatMessage is required");
-
-		ChatUser user = chatMessage.user();
+		ChatUser user = message.user();
 
 		try {
-			getChatUsers().findBy(user.id());
+			getUsers().findBy(user.id());
 		}
 		catch (ChatUserNotFoundException cause) {
 			throw InvalidChatSessionException.from(this, user, cause);
 		}
 	}
 
+	public boolean isActive() {
+		return getUsers().isNotEmpty();
+	}
+
+	public boolean add(ChatUser user) {
+		return user != null && getUsers().add(user);
+	}
+
+	public ChatUsers allUsers() {
+		return ChatUsers.of(this.users);
+	}
+
+	public List<ChatUser> allUsersExcluding(ChatUser user) {
+		return findAll(existingUser -> existingUser.notEquals(user));
+	}
+
+	public List<ChatUser> findAll(Predicate<ChatUser> predicate) {
+		return stream().filter(predicate).toList();
+	}
+
+	public Optional<ChatUser> findBy(Predicate<ChatUser> predicate) {
+		return stream().filter(predicate).findFirst();
+	}
+
+	public ChatUser requireBy(UUID id) {
+		return findBy(user -> user.id().equals(id))
+			.orElseThrow(() -> ChatUserNotFoundException.from(id));
+	}
+
+	public ChatMessage post(ChatUser user, String message) {
+		return post(ChatMessage.from(user, message));
+	}
+
+	public ChatMessage post(ChatMessage message) {
+		assertChatMessage(message);
+		getMessages().add(message);
+		return message;
+	}
+
 	public boolean remove(ChatUser user) {
-		return getChatUsers().remove(user);
+		return user != null && getUsers().remove(user);
 	}
 
 	@Override
@@ -123,6 +158,10 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 	@Override
 	public @NonNull Iterator<ChatUser> iterator() {
-		return ChatUsers.of(this.chatUsers).iterator();
+		return allUsers().iterator();
+	}
+
+	public Stream<ChatUser> stream() {
+		return StreamSupport.stream(spliterator(), false);
 	}
 }
