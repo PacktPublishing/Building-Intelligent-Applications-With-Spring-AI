@@ -19,6 +19,9 @@ import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.packt.spring.ai.examples.app.chat.model.ChatSession;
 import io.packt.spring.ai.examples.app.chat.model.ChatUser;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
@@ -46,6 +49,10 @@ import lombok.ToString;
  * Spring Web MVC {@link Controller} used to return Chat UI views.
  *
  * @author John Blum
+ * @see Controller
+ * @see ChatService
+ * @see ChatSession
+ * @see ChatUser
  * @since 0.1.0
  */
 @Controller
@@ -56,6 +63,8 @@ import lombok.ToString;
 public class ChatViewController {
 
 	private final ChatService chatService;
+
+	private final ObjectMapper objectMapper;
 
 	@GetMapping(value = { "/chat/join", "/chat/join/{chatSessionId}" })
 	public ModelAndView viewJoinChat(@PathVariable(name = "chatSessionId", required = false) String chatSessionId) {
@@ -85,6 +94,8 @@ public class ChatViewController {
 		model.put("chatSessionId", session.getId());
 		model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(resolveChatSessionId(session)));
 		model.put("chatUserId", user.id());
+		model.put("chatUserName", user.name());
+		model.put("chatUsers", toJson(session.allUsersExcluding(user)));
 
 		return modelView;
 	}
@@ -112,6 +123,15 @@ public class ChatViewController {
 		return session.getId().toString();
 	}
 
+	private String toJson(Object value) {
+		try {
+			return getObjectMapper().writeValueAsString(value);
+		}
+		catch (JsonProcessingException cause) {
+			throw new RuntimeException(cause);
+		}
+	}
+
 	@Data
 	@ToString
 	public static class JoinChatForm {
@@ -137,7 +157,6 @@ public class ChatViewController {
 			return chatUserName;
 		}
 
-
 		IsoLanguage resolveChatUserLanguage() {
 			String languageCode = getLanguage();
 			Assert.hasText(languageCode, "Language [%s] spoken by user is required".formatted(languageCode));
@@ -145,4 +164,3 @@ public class ChatViewController {
 		}
 	}
 }
-
