@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.chat.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -101,7 +102,7 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 
 	default ChatMessages mutable() {
 
-		List<ChatMessage> chatMessages = Collections.synchronizedList(toList());
+		List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>(toList()));
 
 		return new ChatMessages() {
 
