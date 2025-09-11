@@ -38,7 +38,7 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public abstract class AbstractChatService implements ChatService {
 
-	protected static final String BASE_CHAT_SESSION_URI = "http://%s:%d%s/sessions/%s";
+	protected static final String BASE_CHAT_SESSION_URI = "http://%s:%d%s/view/chat/join/%s";
 
 	@Value("${server.servlet.contextPath}")
 	private String applicationContextPath;
