@@ -53,9 +53,9 @@ public abstract class AbstractChatService implements ChatService {
 	}
 
 
-	protected String assertChatSessionIdFromUri(String chatSessionId, URL chatSessionUri) {
-		Assert.hasText(chatSessionId, () -> "Chat Session ID [%s] could not be resolved from URI [%s]"
-			.formatted(chatSessionId, chatSessionUri));
+	protected String assertChatSessionIdFromUrl(String chatSessionId, URL chatSessionUrl) {
+		Assert.hasText(chatSessionId, () -> "Chat Session ID [%s] could not be resolved from URL [%s]"
+			.formatted(chatSessionId, chatSessionUrl));
 		return assertChatSessionId(chatSessionId);
 	}
 
@@ -75,13 +75,13 @@ public abstract class AbstractChatService implements ChatService {
 	@Override
 	public String resolveChatSessionId(URL sessionUrl) {
 		assertChatSessionUrl(sessionUrl);
-		String chatSessionId = extractChatSessionIdFromUri(sessionUrl);
-		assertChatSessionIdFromUri(chatSessionId, sessionUrl);
+		String chatSessionId = extractChatSessionIdFromUrl(sessionUrl);
+		assertChatSessionIdFromUrl(chatSessionId, sessionUrl);
 		return chatSessionId;
 	}
 
 	@SuppressWarnings("all")
-	private String extractChatSessionIdFromUri(URL chatSessionUri) {
+	private String extractChatSessionIdFromUrl(URL chatSessionUri) {
 		String chatSessionUriAsciiString = chatSessionUri.toExternalForm();
 		int index = chatSessionUriAsciiString.lastIndexOf(NetworkUtils.WEB_PATH_SEPARATOR);
 		String chatSessionId = chatSessionUriAsciiString.substring(index + 1);
