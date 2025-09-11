@@ -126,8 +126,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 			return false;
 		}
 
-		return language().equals(that.language())
-			&& message().equalsIgnoreCase(that.message());
+		return this.id().equals(that.id());
 	}
 
 	public boolean notEquals(Object obj) {
