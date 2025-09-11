@@ -15,12 +15,15 @@
  */
 package io.packt.spring.ai.examples.app.chat.service.provider;
 
+import java.util.Objects;
+
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -43,26 +46,44 @@ import lombok.RequiredArgsConstructor;
 public class AiLanguageTranslator implements LanguageTranslator {
 
 	protected static final String MESSAGE_TRANSLATION_PROMPT_TEMPLATE =
-		"Translate the written text \"{text}\" to {language}. Return only the translation. Do not provide any explanation or pronunciation.";
+		"Translate the written text \"{text}\" in {inLanguage} to {toLanguage}."
+			+ " Return only the translated text. "
+			+ " Do not provide an explanation or pronunciation."
+			+ " If the text does not need to be translated then simply return the text.";
 
 	private final ChatClient chatClient;
 
 	// TODO: Use synchronization so a given chat message is only translated once
 	@Override
 	@SuppressWarnings("all")
-	public String translate(String message, IsoLanguage language) {
+	public String translate(String text, IsoLanguage inLanguage, IsoLanguage toLanguage) {
 
-		PromptTemplate promptTemplate = new PromptTemplate(MESSAGE_TRANSLATION_PROMPT_TEMPLATE);
+		if (isTranslatable(text, inLanguage, toLanguage)) {
+			if (inLanguage.isNotEqualTo(toLanguage)) {
 
-		promptTemplate.add("text", message);
-		promptTemplate.add("language", language);
+				PromptTemplate promptTemplate = new PromptTemplate(MESSAGE_TRANSLATION_PROMPT_TEMPLATE);
 
-		// Translate ChatMessage using AI
-		String translatedMessage = getChatClient().prompt()
-			.messages(promptTemplate.createMessage())
-			.call()
-			.content();
+				promptTemplate.add("text", text);
+				promptTemplate.add("inLanguage", inLanguage);
+				promptTemplate.add("toLanguage", toLanguage);
 
-		return translatedMessage;
+				// Translate ChatMessage using AI
+				String translatedMessage = getChatClient().prompt()
+					.messages(promptTemplate.createMessage())
+					.call()
+					.content();
+
+				return translatedMessage;
+			}
+		}
+
+		return text;
+	}
+
+	private boolean isTranslatable(String text, IsoLanguage fromLanguage, IsoLanguage toLanguage) {
+
+		return StringUtils.hasText(text)
+			&& Objects.nonNull(fromLanguage)
+			&& Objects.nonNull(toLanguage);
 	}
 }

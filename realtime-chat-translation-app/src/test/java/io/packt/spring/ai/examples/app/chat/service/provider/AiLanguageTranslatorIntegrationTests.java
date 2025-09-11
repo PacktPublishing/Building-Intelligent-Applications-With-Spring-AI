@@ -70,6 +70,12 @@ public class AiLanguageTranslatorIntegrationTests {
 			.matches("mon nom est (john|jean)\\.?"); // Je m'appelle Jean
 	}
 
+	@Test
+	void translationUnnecessary() {
+		assertThat(getLanguageTranslator().translate("Where is my pen?", IsoLanguage.ENGLISH))
+			.isEqualToIgnoringCase("Where is my pen?");
+	}
+
 	@SpringBootConfiguration
 	@EnableAutoConfiguration
 	@Import(ChatConfiguration.class)

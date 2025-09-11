@@ -29,6 +29,10 @@ import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 @FunctionalInterface
 public interface LanguageTranslator {
 
-	String translate(String message, IsoLanguage language);
+	default String translate(String text, IsoLanguage language) {
+		return translate(text, IsoLanguage.fromDefault(), language);
+	}
+
+	String translate(String text, IsoLanguage inLanguage, IsoLanguage toLanguage);
 
 }
