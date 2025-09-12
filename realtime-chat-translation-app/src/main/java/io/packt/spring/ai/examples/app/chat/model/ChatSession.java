@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.chat.model;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,7 @@ import lombok.ToString;
  * @since 0.1.0
  */
 @ToString(of = "id")
-@Getter(AccessLevel.PUBLIC)
+@Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> {
 
@@ -58,8 +59,10 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		return session;
 	}
 
+	@Getter(AccessLevel.PUBLIC)
 	private final UUID id;
 
+	@Getter(AccessLevel.PUBLIC)
 	private final Instant timestamp;
 
 	private final ChatMessages messages;
@@ -114,6 +117,10 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		return findBy(userId).orElseThrow(() -> ChatUserNotFoundException.from(userId));
 	}
 
+	public ChatMessages messages() {
+		return ChatMessages.of(getMessages());
+	}
+
 	public ChatMessage post(ChatUser user, String message) {
 		return post(ChatMessage.from(user, message));
 	}
@@ -128,12 +135,36 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		return user != null && getUsers().remove(user);
 	}
 
-	public ChatUsers users() {
-		return ChatUsers.of(this.users);
+	public UserStatus statusOf(ChatUser user) {
+
+		return lastPresentAfterTimeout(user) ? UserStatus.LEFT
+			: lastMessageSentAfterTimeout(user) ? UserStatus.INACTIVE
+			: UserStatus.ACTIVE;
 	}
 
-	public List<ChatUser> usersExcluding(ChatUser user) {
-		return findAll(existingUser -> existingUser.notEquals(user));
+	private boolean lastMessageSentAfterTimeout(ChatUser user) {
+
+		Predicate<ChatMessage> messageFromUser = message -> message.user().equals(user);
+
+		Instant lastMessageSent = messages().stream()
+			.filter(messageFromUser)
+			.map(ChatMessage::timestamp)
+			.toList().stream()
+			.max(Comparator.comparing(Instant::toEpochMilli))
+			.orElse(Instant.EPOCH);
+
+		Duration durationSinceLastMessage = Duration.between(lastMessageSent, Instant.now());
+
+		return durationSinceLastMessage.compareTo(INACTIVE_TIMEOUT) > 0;
+	}
+
+	private boolean lastPresentAfterTimeout(ChatUser user) {
+		Duration durationSinceLastPresent = Duration.between(user.getPresentTimestamp(), Instant.now());
+		return durationSinceLastPresent.compareTo(PRESENCE_TIMEOUT) > 0;
+	}
+
+	public ChatUsers users() {
+		return ChatUsers.of(getUsers());
 	}
 
 	@Override
