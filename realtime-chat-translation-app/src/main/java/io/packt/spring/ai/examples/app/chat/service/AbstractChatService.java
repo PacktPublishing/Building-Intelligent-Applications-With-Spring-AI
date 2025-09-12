@@ -23,6 +23,9 @@ import java.util.function.Consumer;
 import io.packt.spring.ai.examples.app.chat.util.NetworkUtils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
@@ -37,7 +40,7 @@ import lombok.Getter;
  */
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public abstract class AbstractChatService implements ChatService {
+public abstract class AbstractChatService implements ChatService, EnvironmentAware {
 
 	protected static final String BASE_CHAT_SESSION_URI = "http://%s:%d%s/view/chat/join/%s";
 
@@ -46,6 +49,8 @@ public abstract class AbstractChatService implements ChatService {
 
 	@Value("${server.port:"+NetworkUtils.DEFAULT_SERVER_PORT+"}")
 	private int serverPort;
+
+	private Environment environment;
 
 	protected UUID assertChatSessionId(UUID id) {
 		Assert.notNull(id, "Chat Session ID is required");
@@ -73,8 +78,19 @@ public abstract class AbstractChatService implements ChatService {
 		return chatSessoinUrl -> { };
 	}
 
+	protected Environment getEnvironment() {
+		Environment environment = this.environment;
+		Assert.state(environment != null, "Environment was not configured");
+		return environment;
+	}
+
+	@Override
+	public void setEnvironment(@NonNull Environment environment) {
+		this.environment = environment;
+	}
+
 	protected String getServerHostAddress() {
-		return NetworkUtils.resolveLocalhostIpAddress();
+		return NetworkUtils.resolveLocalhostIpAddress(getEnvironment());
 	}
 
 	@Override
