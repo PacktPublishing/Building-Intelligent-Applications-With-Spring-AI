@@ -96,7 +96,6 @@ public class ChatViewController {
 		model.put("chatUserId", user.id());
 		model.put("chatUserLanguage", user.language().code());
 		model.put("chatUserName", user.name());
-		model.put("chatUsers", toJson(session.allUsersExcluding(user)));
 
 		return modelView;
 	}
