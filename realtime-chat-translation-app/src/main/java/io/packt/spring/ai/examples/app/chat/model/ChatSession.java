@@ -146,12 +146,13 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 		Predicate<ChatMessage> messageFromUser = message -> message.user().equals(user);
 
-		Instant lastMessageSent = messages().stream()
-			.filter(messageFromUser)
-			.map(ChatMessage::timestamp)
-			.toList().stream()
-			.max(Comparator.comparing(Instant::toEpochMilli))
-			.orElse(Instant.EPOCH);
+		ChatMessages messagesSentByUser = messages().findAll(messageFromUser);
+
+		Instant lastMessageSent = messagesSentByUser.isEmpty() ? user.joinedTimestamp()
+			: messagesSentByUser.stream()
+				.map(ChatMessage::timestamp)
+				.max(Comparator.comparing(Instant::toEpochMilli))
+				.orElse(Instant.EPOCH);
 
 		Duration durationSinceLastMessage = Duration.between(lastMessageSent, Instant.now());
 
