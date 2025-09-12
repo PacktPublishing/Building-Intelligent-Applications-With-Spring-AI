@@ -50,7 +50,7 @@ import lombok.ToString;
 @SuppressWarnings("unused")
 public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> {
 
-	public static final Duration INACTIVE_TIMEOUT = Duration.ofMinutes(5);
+	public static final Duration INACTIVE_TIMEOUT = Duration.ofMinutes(3);
 	public static final Duration PRESENCE_TIMEOUT = Duration.ofSeconds(10);
 
 	public static ChatSession withUser(ChatUser user) {
