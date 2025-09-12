@@ -38,9 +38,9 @@ public interface ChatService {
 
 	ChatSession newChatSession(ChatUser user);
 
-	String resolveChatSessionId(URL sessionUrl);
+	UUID resolveChatSessionId(URL sessionUrl);
 
-	URL resolveChatSessionUrl(String sessionId);
+	URL resolveChatSessionUrl(UUID sessionId);
 
 	AudioMessage textToSpeech(ChatMessage message);
 

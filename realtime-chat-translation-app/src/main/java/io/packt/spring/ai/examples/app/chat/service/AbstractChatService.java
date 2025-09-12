@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.chat.service;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import io.packt.spring.ai.examples.app.chat.util.NetworkUtils;
@@ -46,26 +47,30 @@ public abstract class AbstractChatService implements ChatService {
 	@Value("${server.port:"+NetworkUtils.DEFAULT_SERVER_PORT+"}")
 	private int serverPort;
 
-	protected String assertChatSessionId(String chatSessionId) {
-		Assert.hasText(chatSessionId, () -> "Chat Session ID [%s] is required".formatted(chatSessionId));
-		chatSessionIdValidator().accept(chatSessionId);
-		return chatSessionId;
+	protected UUID assertChatSessionId(UUID id) {
+		Assert.notNull(id, "Chat Session ID is required");
+		chatSessionIdValidator().accept(id);
+		return id;
 	}
-
 
 	protected String assertChatSessionIdFromUrl(String chatSessionId, URL chatSessionUrl) {
 		Assert.hasText(chatSessionId, () -> "Chat Session ID [%s] could not be resolved from URL [%s]"
 			.formatted(chatSessionId, chatSessionUrl));
-		return assertChatSessionId(chatSessionId);
+		return chatSessionId;
 	}
 
-	protected Consumer<String> chatSessionIdValidator() {
+	protected URL assertChatSessionUrl(URL url) {
+		Assert.notNull(url, "Chat Session URL is required");
+		chatSessionUrlValidator().accept(url);
+		return url;
+	}
+
+	protected Consumer<UUID> chatSessionIdValidator() {
 		return chatSessionId -> { };
 	}
 
-	protected URL assertChatSessionUrl(URL chatSessionUri) {
-		Assert.notNull(chatSessionUri, "Chat Session URL is required");
-		return chatSessionUri;
+	protected Consumer<URL> chatSessionUrlValidator() {
+		return chatSessoinUrl -> { };
 	}
 
 	protected String getServerHostAddress() {
@@ -73,29 +78,29 @@ public abstract class AbstractChatService implements ChatService {
 	}
 
 	@Override
-	public String resolveChatSessionId(URL sessionUrl) {
+	public UUID resolveChatSessionId(URL sessionUrl) {
 		assertChatSessionUrl(sessionUrl);
-		String chatSessionId = extractChatSessionIdFromUrl(sessionUrl);
+		String chatSessionId = resolveChatSessionIdFromUrl(sessionUrl);
 		assertChatSessionIdFromUrl(chatSessionId, sessionUrl);
-		return chatSessionId;
+		return UUID.fromString(chatSessionId);
 	}
 
 	@SuppressWarnings("all")
-	private String extractChatSessionIdFromUrl(URL chatSessionUri) {
-		String chatSessionUriAsciiString = chatSessionUri.toExternalForm();
-		int index = chatSessionUriAsciiString.lastIndexOf(NetworkUtils.WEB_PATH_SEPARATOR);
-		String chatSessionId = chatSessionUriAsciiString.substring(index + 1);
+	private String resolveChatSessionIdFromUrl(URL url) {
+		String urlExternalForm = url.toExternalForm();
+		int index = urlExternalForm.lastIndexOf(NetworkUtils.WEB_PATH_SEPARATOR);
+		String chatSessionId = urlExternalForm.substring(index + 1);
 		return chatSessionId;
 	}
 
 	@Override
-	public URL resolveChatSessionUrl(String sessionId) {
+	public URL resolveChatSessionUrl(UUID sessionId) {
 		assertChatSessionId(sessionId);
 		URI chatSessionUri = resolveChatSessionUri(sessionId);
 		return NetworkUtils.toUrl(chatSessionUri);
 	}
 
-	private URI resolveChatSessionUri(String chatSessionId) {
+	private URI resolveChatSessionUri(UUID chatSessionId) {
 		return NetworkUtils.resolveUri(BASE_CHAT_SESSION_URI, getServerHostAddress(), getServerPort(),
 			getApplicationContextPath(), chatSessionId);
 	}
