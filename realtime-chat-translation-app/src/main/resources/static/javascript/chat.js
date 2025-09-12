@@ -2,12 +2,12 @@
 //const $ = (selection, node = document) => node.querySelector(selection);
 //const $$ = (selection, node = document) => [...node.querySelectorAll(selection)];
 
+const messageInputElement = $("#messageInput");
+
 const applicationState = {
   users: {},
   messages: []
 };
-
-const messageInputElement = $("#messageInput");
 
 const addUser = (userId, username, hue = randomHue()) => {
 
