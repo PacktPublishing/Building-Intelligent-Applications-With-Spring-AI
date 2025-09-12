@@ -49,7 +49,8 @@ import lombok.ToString;
 @SuppressWarnings("unused")
 public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> {
 
-	public static final Duration PRESENCE_TIMEOUT = Duration.ofMinutes(10);
+	public static final Duration INACTIVE_TIMEOUT = Duration.ofMinutes(5);
+	public static final Duration PRESENCE_TIMEOUT = Duration.ofMinutes(2);
 
 	public static ChatSession withUser(ChatUser user) {
 		ChatSession session = new ChatSession(UUID.randomUUID());
@@ -97,14 +98,6 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		return user != null && getUsers().add(user);
 	}
 
-	public ChatUsers allUsers() {
-		return ChatUsers.of(this.users);
-	}
-
-	public List<ChatUser> allUsersExcluding(ChatUser user) {
-		return findAll(existingUser -> existingUser.notEquals(user));
-	}
-
 	public List<ChatUser> findAll(Predicate<ChatUser> predicate) {
 		return stream().filter(predicate).toList();
 	}
@@ -130,6 +123,14 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 	public boolean remove(ChatUser user) {
 		return user != null && getUsers().remove(user);
+	}
+
+	public ChatUsers users() {
+		return ChatUsers.of(this.users);
+	}
+
+	public List<ChatUser> usersExcluding(ChatUser user) {
+		return findAll(existingUser -> existingUser.notEquals(user));
 	}
 
 	@Override
@@ -158,7 +159,7 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 
 	@Override
 	public @NonNull Iterator<ChatUser> iterator() {
-		return allUsers().iterator();
+		return users().iterator();
 	}
 
 	public Stream<ChatUser> stream() {
