@@ -76,7 +76,7 @@ public class ChatViewController {
 
 		if (StringUtils.hasText(chatSessionId)) {
 			model.put("chatSessionId", chatSessionId);
-			model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(chatSessionId));
+			model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(UUID.fromString(chatSessionId)));
 		}
 
 		return modelView;
@@ -91,8 +91,10 @@ public class ChatViewController {
 		ModelAndView modelView = new ModelAndView("Chat.html");
 		Map<String, Object> model = modelView.getModel();
 
-		model.put("chatSessionId", session.getId());
-		model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(resolveChatSessionId(session)));
+		UUID sessionId = session.getId();
+
+		model.put("chatSessionId", sessionId);
+		model.put("chatSessionUrl", getChatService().resolveChatSessionUrl(sessionId));
 		model.put("chatUserId", user.id());
 		model.put("chatUserLanguage", user.language().code());
 		model.put("chatUserName", user.name());
@@ -117,10 +119,6 @@ public class ChatViewController {
 		else {
 			return getChatService().newChatSession(user);
 		}
-	}
-
-	protected String resolveChatSessionId(ChatSession session) {
-		return session.getId().toString();
 	}
 
 	private String toJson(Object value) {
