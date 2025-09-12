@@ -42,6 +42,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +76,8 @@ public abstract class AbstractSpringBootApplication {
 	protected static final String EMPTY_STRING = "";
 	protected static final String EXIT = "exit";
 	protected static final String NEWLINE = System.lineSeparator();
+	protected static final String SPRING_APPLICATION_NAME_PROPERTY = "spring.application.name";
+	protected static final String UNKNOWN = "unknown";
 	protected static final String USER_PROFILE = "user";
 	protected static final String USER_PROMPT = "user> %s";
 
@@ -88,6 +91,10 @@ public abstract class AbstractSpringBootApplication {
 
 	protected static ConfigurableApplicationContext getApplicationContext() {
 		return applicationContext;
+	}
+
+	protected static String getSpringApplicationName(Environment environment) {
+		return environment.getProperty(SPRING_APPLICATION_NAME_PROPERTY, UNKNOWN);
 	}
 
 	protected static SpringApplication runSpringApplication(Class<?> mainApplicationClass, String... args) {
