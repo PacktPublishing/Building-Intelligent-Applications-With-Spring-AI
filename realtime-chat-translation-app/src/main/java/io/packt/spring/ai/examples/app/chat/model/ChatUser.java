@@ -37,7 +37,7 @@ import org.cp.elements.lang.Assert;
  */
 @SuppressWarnings("unused")
 public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReference<Instant> presentTimestamp,
-		AtomicReference<Instant> lastReceivedTimestamp, Instant joinedTimestamp) implements Comparable<ChatUser> {
+		AtomicReference<Instant> lastMessageReceivedTimestamp, Instant joinedTimestamp) implements Comparable<ChatUser> {
 
 	public ChatUser {
 		Assert.notNull(id, "ChatUser ID is required");
@@ -77,7 +77,7 @@ public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReferen
 	}
 
 	public Instant getLastReceivedTimestamp() {
-		return lastReceivedTimestamp().get();
+		return lastMessageReceivedTimestamp().get();
 	}
 
 	public Instant getPresentTimestamp() {
@@ -93,7 +93,7 @@ public record ChatUser(UUID id, String name, IsoLanguage language, AtomicReferen
 		Instant chatMessageTimestamp = chatMessage.timestamp();
 
 		if (chatMessageTimestamp.isAfter(getLastReceivedTimestamp())) {
-			lastReceivedTimestamp().set(chatMessageTimestamp);
+			lastMessageReceivedTimestamp().set(chatMessageTimestamp);
 		}
 	}
 
