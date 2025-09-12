@@ -85,6 +85,10 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 		return ChatMessages.of(chatMessageList);
 	}
 
+	default ChatMessages findAll(Predicate<ChatMessage> predicate) {
+		return ChatMessages.of(stream().filter(predicate).toList());
+	}
+
 	default Optional<ChatMessage> findBy(Predicate<ChatMessage> predicate) {
 		return stream().filter(predicate).findFirst();
 	}
