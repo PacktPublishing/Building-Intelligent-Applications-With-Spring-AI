@@ -106,9 +106,12 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		return stream().filter(predicate).findFirst();
 	}
 
-	public ChatUser requireBy(UUID id) {
-		return findBy(user -> user.id().equals(id))
-			.orElseThrow(() -> ChatUserNotFoundException.from(id));
+	public Optional<ChatUser> findBy(UUID userId) {
+		return findBy(user -> user.id().equals(userId));
+	}
+
+	public ChatUser requireBy(UUID userId) {
+		return findBy(userId).orElseThrow(() -> ChatUserNotFoundException.from(userId));
 	}
 
 	public ChatMessage post(ChatUser user, String message) {
