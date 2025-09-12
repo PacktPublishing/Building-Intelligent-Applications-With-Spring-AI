@@ -1,4 +1,5 @@
 /* OpenAI ChatGPT (5.0) Generated CSS */
+
 :root {
   --bg:
     radial-gradient(1200px 700px at 10% 10%, #7dd3fc55, transparent 60%),
@@ -70,25 +71,52 @@ body {
 }
 
 /* Chat UI Header */
-.chip {
-  background: #ffffff0f; backdrop-filter: blur(6px);
-  border-radius: 999px;
-  color: #e2e8f0;
-  font-size: .8rem;
-  padding: .3rem .6rem; border: 1px solid var(--panel-border);
-  white-space: nowrap;
-}
-
-.chipbar {
-  display: flex;
+.userbar {
   align-items: center;
+  display: flex;
   flex-wrap: wrap;
   gap: .5rem;
 }
 
-.status-dot {
-  width: 10px; height: 10px; border-radius: 999px; background: #22c55e;
+.userchip {
+  align-items: center;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  margin: 5px;
+}
+
+.chip {
+  color: #e2e8f0;
+  font-size: .8rem;
+  padding: .3rem .6rem;
+  white-space: nowrap;
+}
+
+.gray-status-dot {
+  width: 10px;
+  height: 10px;
+  background: #a5a4a2;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px #a5a4a233;
+}
+
+.green-status-dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 999px;
   box-shadow: 0 0 0 3px #22c55e33;
+}
+
+.orange-status-dot {
+  width: 10px;
+  height: 10px;
+  background: #feba2a;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px #feba2a33;
 }
 
 .title {
@@ -229,5 +257,5 @@ select, input, button {
   }
   .composer select, .composer { grid-column: 1 / span 2; }
   .bubble { max-width: 88vw; }
-  .chipbar { display: none; }
+  .userbar { display: none; }
 }

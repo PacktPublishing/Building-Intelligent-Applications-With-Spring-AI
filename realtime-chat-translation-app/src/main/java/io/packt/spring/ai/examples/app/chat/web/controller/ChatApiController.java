@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.chat.web.controller;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import io.packt.spring.ai.examples.app.chat.model.ChatMessage;
@@ -23,13 +24,16 @@ import io.packt.spring.ai.examples.app.chat.model.ChatMessages;
 import io.packt.spring.ai.examples.app.chat.model.ChatSession;
 import io.packt.spring.ai.examples.app.chat.model.ChatUser;
 import io.packt.spring.ai.examples.app.chat.model.ChatUsers;
+import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.UserStatus;
 import io.packt.spring.ai.examples.app.chat.service.ChatService;
 
-import org.cp.elements.lang.Assert;
 import org.slf4j.Logger;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +74,7 @@ public class ChatApiController {
 	public Iterable<ChatMessage> getChatMessages(@PathVariable("sessionId") UUID sessionId) {
 
 		ChatSession session = getChatService().findBy(sessionId);
-		ChatMessages messages = session.getMessages();
+		ChatMessages messages = session.messages();
 
 		return messages.toList();
 	}
@@ -90,7 +94,7 @@ public class ChatApiController {
 
 		Instant timestamp = user.getLastReceivedTimestamp();
 
-		ChatMessages messages = session.getMessages().findAfter(timestamp, user);
+		ChatMessages messages = session.messages().findAfter(timestamp, user);
 
 		ChatMessages translatedMessages = ChatMessages.of(messages.stream()
 			.map(message -> getChatService().translateChatMessage(message, user.language()))
@@ -118,19 +122,73 @@ public class ChatApiController {
 		return PostChatMessageResponse.from(chatMessage);
 	}
 
-	@GetMapping("/{sessionId}/users")
-	public ChatUsers getChatUsers(@PathVariable("sessionId") UUID sessionId) {
+	@SuppressWarnings("all")
+	@PutMapping("/{sessionId}/users")
+	public Iterable<ChatUserView> getChatUsers(@PathVariable("sessionId") UUID sessionId,
+			@RequestBody GetChatUsersRequest request) {
+
 		ChatSession session = getChatService().findBy(sessionId);
-		return session.allUsers();
+		ChatUsers users = session.users();
+		UUID requestingUserId = request.getUserId();
+
+		session.findBy(requestingUserId).ifPresent(ChatUser::present);
+
+		List<ChatUserView> chatUsers = session.stream()
+			.map(user -> ChatUserView.from(user, session.statusOf(user)))
+			.toList();
+
+		return chatUsers;
+	}
+
+	public interface ChatUserView {
+
+		static ChatUserView from(ChatUser user, UserStatus status) {
+
+			return new ChatUserView() {
+
+				@Override
+				public UUID getId() {
+					return user.id();
+				}
+
+				@Override
+				public String getName() {
+					return user.name();
+				}
+
+				@Override
+				public IsoLanguage getLanguage() {
+					return user.language();
+				}
+
+				@Override
+				public UserStatus getStatus() {
+					return status;
+				}
+			};
+		}
+
+		UUID getId();
+
+		String getName();
+
+		IsoLanguage getLanguage();
+
+		UserStatus getStatus();
+
+	}
+
+	@Data
+	@ToString
+	public static class GetChatUsersRequest {
+		private UUID userId;
 	}
 
 	@Data
 	@ToString
 	public static class PostChatMessageRequest {
-
 		private String message;
 		private UUID userId;
-
 	}
 
 	@Getter

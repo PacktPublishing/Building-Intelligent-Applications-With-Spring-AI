@@ -4,38 +4,36 @@
 
 const messageInputElement = $("#messageInput");
 
-const applicationState = {
-  users: {},
+const applicationContext = {
+  users: new Map(),
   messages: []
 };
 
-const addUser = (userId, username, hue = randomHue()) => {
-
-  if (!userId || applicationState.users[userId]) return;
-
-  const user = {
-    id: userId,
-    name: username,
-    hue: hue
-  };
-
-  applicationState.users[userId] = user;
-  showUsers();
-};
-
 const initApp = () => {
-  initUsers();
   requestMessages();
+  requestUsers();
   messageInputElement.focus();
 }
 
-const initUsers = () => {
-  const userId = $("#chatUserId").val();
-  const username = $("#chatUserName").val();
-  addUser(userId, username, 210);
-};
+const generateHue = () => Math.floor(Math.random() * 360);
 
-const randomHue = () => Math.floor(Math.random() * 360);
+function agentLanguage() {
+  const agentLanguage = navigator.language;
+  const agentLanguageCode = agentLanguage.split("-")[0].trim();
+  return agentLanguageCode;
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+function log(obj) {
+  console.log(toJson(obj));
+}
+
+function resolveLanguage(language) {
+  return language ? language.code : agentLanguage;
+}
 
 function timeNow() {
   const date = new Date();
@@ -45,35 +43,121 @@ function timeNow() {
   });
 }
 
-function escapeHtml(str) {
-  return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+function toJson(obj) {
+  return JSON.stringify(obj);
+}
+
+function addUser(user) {
+  if (user) {
+    const applicationUser = applicationContext.users.get(user.id);
+    if (applicationUser) {
+      applicationUser.status = user.status;
+      showUserStatus(applicationUser);
+    }
+    else {
+      applicationContext.users.set(user.id, user);
+      showUsers();
+    }
+  }
+}
+
+function newUser(template) {
+
+  const user = {
+    id: template.id,
+    name: template.name,
+    language: resolveLanguage(template.language),
+    hue: generateHue,
+    status: template.status
+  }
+
+  return user;
+}
+
+function requestUsers() {
+
+  const userId = $("#chatUserId").val();
+  const sessionId = $("#chatSessionId").val();
+
+  const GetChatUsersRequest = {
+    userId: userId
+  }
+
+  $.ajax({
+    method: 'PUT',
+    url: `/chat-app/api/${sessionId}/users`,
+    contentType: "application/json; charset=utf-8",
+    data: toJson(GetChatUsersRequest),
+    dataType: "json",
+    success: function(users) {
+      //log(users);
+      users.forEach(chatUser => addUser(newUser(chatUser)));
+    },
+    error: function(xhr, status, errorMessage) {
+      console.log(`Failed to get chat users from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+    },
+    complete: function() {
+      setTimeout(requestUsers, 2000);
+    }
+  });
 }
 
 function resolveUser(message) {
 
-  var applicationUser = applicationState.users[message.user.id];
+  var applicationUser = applicationContext.users.get(message.user.id);
 
   if (!applicationUser) {
-    applicationUser = {
-      id: message.user.id,
-      name: message.user.name,
-      hue: randomHue
-    }
+    applicationUser = newUser(message.user);
   }
 
   return applicationUser;
 }
 
 function showUsers() {
-  const chipbar = $("#chipbar");
-  chipbar.innerHTML = '';
-  Object.values(applicationState.users).forEach(user => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.style.setProperty('--h', user.hue);
-    chip.textContent = user.name;
-    chipbar.append(chip);
+
+  const userBar = $("#userbar");
+
+  userBar.empty();
+
+  // iterating (value, key) entries
+  applicationContext.users.forEach((user, userId) => {
+    const userChip = document.createElement("div");
+    userChip.className = "userchip";
+
+    const userStatusElement = document.createElement("div");
+    userStatusElement.setAttribute("id", userId);
+    userStatusElement.className = "green-status-dot"
+    userChip.append(userStatusElement);
+
+    const userNameElement = document.createElement("div");
+    userNameElement.className = "chip";
+    userNameElement.style.setProperty("--h", user.hue);
+    userNameElement.textContent = user.name;
+    userChip.append(userNameElement);
+
+    userBar.append(userChip);
   });
+}
+
+function showUserStatus(user) {
+
+  const userStatus = user.status;
+  const userStatusElement = $(`#${user.id}`);
+
+  //console.log(`USER [${user.name}] has Status [${userStatus}] and Class [${userStatusElement.attr("class")}]`);
+
+  switch (userStatus) {
+    case "ACTIVE":
+      userStatusElement.attr("class", "green-status-dot");
+      break;
+    case "INACTIVE":
+      userStatusElement.attr("class", "orange-status-dot");
+      break;
+    case "LEFT":
+      userStatusElement.attr("class", "gray-status-dot");
+      break;
+    default:
+  }
 }
 
 function postMessage(message) {
@@ -114,7 +198,7 @@ function postUserMessage(event) {
 }
 
 function saveMessage(message) {
-  applicationState.messages.push(message);
+  applicationContext.messages.push(message);
   return message;
 }
 
@@ -217,7 +301,7 @@ function requestMessages() {
       console.log(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
     },
     complete: function() {
-      setTimeout(requestMessages(), 1000);
+      setTimeout(requestMessages, 1000);
     }
   });
 }
