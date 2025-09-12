@@ -10,7 +10,7 @@
 	<body>
 		<div class="dialog">
 			<div class="dialog-header">Enter Chat</div>
-			<form class="dialog-body" method="POST" th:attr="action=@{/view/chat}" action="#">
+			<form id="joinChatForm" class="dialog-body" method="POST" th:attr="action=@{/view/chat}" action="#">
 				<input type="hidden" id="chatSessionId" name="chatSessionId" th:value="${chatSessionId}">
 				<input type="hidden" id="chatSessionUrl" name="chatSessionUrl" th:value="${chatSessionUrl}">
 				<label for="name">Your Name</label>
@@ -45,9 +45,14 @@
 				// Configure Name Field
 				nameField.focus();
 				nameField.keyup(userInputListener);
+				nameField.keypress(submitFormListener);
+
+				// Configure Language Field
+				languageField.keypress(submitFormListener);
 
 				// Configure URL Field
 				urlField.keyup(userInputListener);
+				urlField.keypress(submitFormListener);
 				const chatSessionUrl = chatSessionUrlField.val();
 				if (isNotEmpty(chatSessionUrl)) {
 					urlField.val(chatSessionUrl);
@@ -56,6 +61,12 @@
 
 				function isNotEmpty(string) {
 					return string && string.trim().length > 0;
+				}
+
+				function submitFormListener(event) {
+					if (event.key === "Enter" && !event.shiftKey) {
+						$("#joinChatForm").trigger("submit");
+					}
 				}
 
 				function userInputListener(event) {
