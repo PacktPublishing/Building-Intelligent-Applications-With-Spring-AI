@@ -16,9 +16,13 @@
 package io.packt.spring.ai.examples.app.chat;
 
 import io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplication;
+import io.packt.spring.ai.examples.app.chat.util.NetworkUtils;
 
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama and Meta's Llama3.2 AI model
@@ -38,6 +42,20 @@ public class ChatApplication extends AbstractDesktopSpringBootApplication {
 
 	public static void main(String[] args) {
 		runSpringServletWebApplication(ChatApplication.class, asStringArray(CHAT_PROFILE), args);
+	}
+
+	@Bean
+	ApplicationRunner programRunner(Environment environment) {
+
+		return applicationArguments -> {
+
+			String springApplicationName = getSpringApplicationName(environment);
+
+			getLogger().info("{} running on network host [{}] with IP address [{}]", springApplicationName,
+				NetworkUtils.resolveLocalhostName(), NetworkUtils.resolveLocalhostIpAddress(environment));
+
+			getLogger().info("GOTO URL [{}]", getWebApplicationUrl());
+		};
 	}
 
 	@Override
