@@ -31,7 +31,6 @@ import java.util.stream.StreamSupport;
 import io.packt.spring.ai.examples.app.chat.util.ChatUserNotFoundException;
 
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -75,13 +74,12 @@ public interface ChatUsers extends Iterable<ChatUser> {
 		return stream().filter(predicate).findFirst();
 	}
 
-	default @Nullable ChatUser findBy(UUID id) {
-		return findBy(user -> user.id().equals(id)).orElse(null);
+	default Optional<ChatUser> findBy(UUID userId) {
+		return findBy(user -> user.id().equals(userId));
 	}
 
-	default ChatUser findBy(String username) {
-		return findBy(user -> user.name().equals(username))
-			.orElseThrow(() -> ChatUserNotFoundException.from(username));
+	default Optional<ChatUser> findBy(String username) {
+		return findBy(user -> user.name().equals(username));
 	}
 
 	default ChatUsers mutable() {
@@ -119,6 +117,10 @@ public interface ChatUsers extends Iterable<ChatUser> {
 	default boolean remove(ChatUser user) {
 		String message = "Cannot remove users from an immutable ChatUsers object; call mutable()";
 		throw new UnsupportedOperationException(message);
+	}
+
+	default ChatUser requireBy(UUID userId) {
+		return findBy(userId).orElseThrow(() -> ChatUserNotFoundException.from(userId));
 	}
 
 	default int size() {

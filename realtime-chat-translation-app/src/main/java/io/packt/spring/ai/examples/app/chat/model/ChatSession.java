@@ -83,7 +83,7 @@ public class ChatSession implements Comparable<ChatSession>, Iterable<ChatUser> 
 		ChatUser user = message.user();
 
 		try {
-			getUsers().findBy(user.id());
+			getUsers().requireBy(user.id());
 		}
 		catch (ChatUserNotFoundException cause) {
 			throw InvalidChatSessionException.from(this, user, cause);
