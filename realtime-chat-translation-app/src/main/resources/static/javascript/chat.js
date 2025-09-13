@@ -2,7 +2,7 @@
 //const $ = (selection, node = document) => node.querySelector(selection);
 //const $$ = (selection, node = document) => [...node.querySelectorAll(selection)];
 
-const messageInputElement = $("#messageInput");
+const messageInput = $("#messageInput");
 
 const applicationContext = {
   users: new Map(),
@@ -12,7 +12,7 @@ const applicationContext = {
 const initApp = () => {
   requestMessages();
   requestUsers();
-  messageInputElement.focus();
+  messageInput.focus();
 }
 
 const generateHue = () => Math.floor(Math.random() * 360);
@@ -27,8 +27,8 @@ function escapeHtml(str) {
   return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
 }
 
-function log(obj) {
-  console.log(toJson(obj));
+function logInfo(text) {
+  console.log(text);
 }
 
 function resolveLanguage(language) {
@@ -90,11 +90,11 @@ function requestUsers() {
     data: toJson(GetChatUsersRequest),
     dataType: "json",
     success: function(users) {
-      //log(users);
+      //logInfo(toJson(users));
       users.forEach(chatUser => addUser(newUser(chatUser)));
     },
     error: function(xhr, status, errorMessage) {
-      console.log(`Failed to get chat users from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+      logInfo(`Failed to get chat users from chat session [${sessionId}]: ${status} - ${errorMessage}`);
     },
     complete: function() {
       setTimeout(requestUsers, 2000);
@@ -121,21 +121,21 @@ function showUsers() {
 
   // iterating (value, key) entries
   applicationContext.users.forEach((user, userId) => {
-    const userChip = document.createElement("div");
-    userChip.className = "userchip";
+    const userTile = document.createElement("div");
+    userTile.className = "usertile";
 
     const userStatusElement = document.createElement("div");
     userStatusElement.setAttribute("id", userId);
     userStatusElement.className = "green-status-dot"
-    userChip.append(userStatusElement);
+    userTile.append(userStatusElement);
 
     const userNameElement = document.createElement("div");
-    userNameElement.className = "chip";
+    userNameElement.className = "tile";
     userNameElement.style.setProperty("--h", user.hue);
     userNameElement.textContent = user.name;
-    userChip.append(userNameElement);
+    userTile.append(userNameElement);
 
-    userBar.append(userChip);
+    userBar.append(userTile);
   });
 }
 
@@ -144,7 +144,7 @@ function showUserStatus(user) {
   const userStatus = user.status;
   const userStatusElement = $(`#${user.id}`);
 
-  //console.log(`USER [${user.name}] has Status [${userStatus}] and Class [${userStatusElement.attr("class")}]`);
+  //logInfo(`USER [${user.name}] has Status [${userStatus}] and Class [${userStatusElement.attr("class")}]`);
 
   switch (userStatus) {
     case "ACTIVE":
@@ -163,19 +163,19 @@ function showUserStatus(user) {
 function postMessage(message) {
 
   if (!message.text) {
-    console.log(`Message [${message.id}] from user [${message.user.name}] has no text`);
+    logInfo(`Message [${message.id}] from user [${message.user.name}] has no text`);
     return;
   }
 
   saveMessage(message);
   showMessage(message);
-  messageInputElement.val("");
-  messageInputElement.focus();
+  messageInput.val("");
+  messageInput.focus();
 }
 
 function postUserMessage(event) {
 
-  const messageText = messageInputElement.val().trim();
+  const messageText = messageInput.val().trim();
 
   if (!messageText) return;
 
@@ -218,12 +218,12 @@ function sendMessage(sessionId, message) {
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function(response) {
-      // console.log(response);
+      // logInfo(toJson(response));
       messageId = response.id;
     },
     error: function(xhr, status, errorMessage) {
       const messageJson = JSON.stringify(postChatMessageRequest);
-      console.log(`Failed to post chat message [${messageJson}]: ${status} - ${errorMessage}`);
+      logInfo(`Failed to post chat message [${messageJson}]: ${status} - ${errorMessage}`);
     }
   });
 
@@ -283,7 +283,7 @@ function requestMessages() {
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function(messages) {
-      //console.log(JSON.stringify(messages));
+      //logInfo(toJson(messages));
 
       messages.forEach(chatMessage => {
 
@@ -298,7 +298,7 @@ function requestMessages() {
       });
     },
     error: function(xhr, status, errorMessage) {
-      console.log(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+      logInfo(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
     },
     complete: function() {
       setTimeout(requestMessages, 1000);
@@ -311,7 +311,7 @@ function copyChatSessionUrlToClipboard(event, element, tooltip) {
     const chatSessionUrl = $("#chatSessionUrl").val();
     navigator.clipboard.writeText(chatSessionUrl);
     showTooltipOnClick(element, tooltip, "Copied!");
-    messageInputElement.focus();
+    messageInput.focus();
   }
   catch (ignore) {
   }
@@ -327,7 +327,7 @@ function sendEmail(event) {
   const mailToLink = `mailto:${recipient}?subject=${encodedSubject}&body=${encodedEmailBody}`;
 
   window.open(mailToLink);
-  messageInputElement.focus();
+  messageInput.focus();
 }
 
 function hideTooltip(tooltip) {
@@ -336,14 +336,18 @@ function hideTooltip(tooltip) {
 
 function showTooltip(element, tooltip) {
 
-  const elementWidth = element.outerWidth();
   const elementOffset = element.offset();
-  const tooltipHeight = tooltip.outerHeight();
+  const elementWidth = element.outerWidth();
+  const elementTop = elementOffset.top;
+  const elementLeft = elementOffset.left;
   const tooltipWidth = tooltip.outerWidth();
+  const tooltipHeight = tooltip.outerHeight();
+  const tooltipTop = elementTop - tooltipHeight - 32; // pixels
+  const tooltipLeft = (elementLeft + (elementWidth / 2)) - (tooltipWidth / 2); // pixels
 
   tooltip.css({
-    top: elementOffset.top - tooltipHeight - 32, // 30px gap
-    left: elementOffset.left + elementWidth / 2 - tooltipWidth / 2
+    top: `${tooltipTop}px`,
+    left: `${tooltipLeft}px`
   });
 
   tooltip.addClass('show');
@@ -376,7 +380,7 @@ emailButton.click(event => sendEmail(event));
 emailButton.mouseenter(event => showTooltip(emailButton, emailTooltip));
 emailButton.mouseleave(event => hideTooltip(emailTooltip));
 
-messageInputElement.keypress(event => {
+messageInput.keypress(event => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
     postUserMessage(event);
@@ -385,5 +389,13 @@ messageInputElement.keypress(event => {
 
 const sendButton = $("#sendButton")
 sendButton.click(event => postUserMessage(event));
+
+$(document).click(function(event) {
+  logInfo(`X: ${event.clientX}, Y: ${event.clientY}`);
+});
+
+$(window).focus(function() {
+  messageInput.focus();
+});
 
 initApp();
