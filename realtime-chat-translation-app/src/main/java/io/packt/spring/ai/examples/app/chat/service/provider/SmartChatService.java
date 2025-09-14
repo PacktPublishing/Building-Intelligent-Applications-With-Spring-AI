@@ -90,12 +90,9 @@ public class SmartChatService extends AbstractChatService {
 	@Override
 	public AudioMessage textToSpeech(TextMessage message) {
 
-		Assert.notNull(message, "ChatMessage is required");
+		Assert.notNull(message, "TextMessage is required");
 
-		String text = message.getText();
-		byte[] audioData = getSpeechSynthesizer().speak(text);
-
-		return AudioMessage.from(audioData);
+		return getSpeechSynthesizer().speak(message);
 	}
 
 	@Override

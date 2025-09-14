@@ -15,6 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.chat.service;
 
+import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
+
 /**
  * {@link FunctionalInterface} defining a contract to synthesis speech from {@link String text}.
  *
@@ -25,6 +28,6 @@ package io.packt.spring.ai.examples.app.chat.service;
 @FunctionalInterface
 public interface TextToSpeechSynthesizer {
 
-	byte[] speak(String text);
+	AudioMessage speak(TextMessage message);
 
 }

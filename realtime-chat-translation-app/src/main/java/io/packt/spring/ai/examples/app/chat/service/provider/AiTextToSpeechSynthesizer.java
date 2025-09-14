@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.chat.service.provider;
 
+import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -41,7 +43,7 @@ public class AiTextToSpeechSynthesizer implements TextToSpeechSynthesizer {
 	private final ChatClient chatClient;
 
 	@Override
-	public byte[] speak(String text) {
+	public AudioMessage speak(TextMessage message) {
 		throw new UnsupportedOperationException("Text-To-Speech not implemented");
 	}
 }
