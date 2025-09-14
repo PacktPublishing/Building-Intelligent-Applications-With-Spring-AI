@@ -15,34 +15,39 @@
  */
 package io.packt.spring.ai.examples.app.chat.model;
 
+import io.packt.spring.ai.examples.app.chat.util.ResourceConverter;
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Abstract Data Type (ADT) modeling audio (sound) data.
+ * Abstract Data Type (ADT) modeling audio data.
  *
  * @author John Blum
- * @param data {@link byte[]} containing the data of the audio (sound);
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
-public record AudioMessage(byte[] data) {
+public interface AudioMessage {
 
-	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
-	public static AudioMessage from(byte[] data) {
-		Assert.notNull(data, "Audio bytes is required");
-		return new AudioMessage(data);
+	static AudioMessage from(byte[] data) {
+		Assert.notNull(data, "Audio data is required");
+		Assert.isTrue(data.length > 0, "Audio bytes are required");
+		return () -> data;
 	}
 
-	public boolean isEmpty() {
-		return size() == 0;
+	static AudioMessage from(Resource resource) {
+		return from(ResourceConverter.INSTANCE.convert(resource));
 	}
 
-	public boolean isNotEmpty() {
-		return !isEmpty();
+	byte[] getData();
+
+	default Resource getResource() {
+		return new ByteArrayResource(getData());
 	}
 
-	public int size() {
-		return data().length;
+	default int size() {
+		return getData().length;
 	}
 }
