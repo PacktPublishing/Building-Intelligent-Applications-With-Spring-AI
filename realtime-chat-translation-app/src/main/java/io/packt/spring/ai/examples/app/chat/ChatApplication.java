@@ -39,9 +39,10 @@ import org.springframework.core.env.Environment;
 public class ChatApplication extends AbstractDesktopSpringBootApplication {
 
 	protected static final String CHAT_PROFILE = "chat";
+	protected static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
-		runSpringServletWebApplication(ChatApplication.class, asStringArray(CHAT_PROFILE), args);
+		runSpringServletWebApplication(ChatApplication.class, asStringArray(CHAT_PROFILE, USER_PROFILE), args);
 	}
 
 	@Bean
