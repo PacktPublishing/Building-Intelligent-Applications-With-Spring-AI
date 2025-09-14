@@ -23,6 +23,7 @@ import io.packt.spring.ai.examples.app.chat.model.ChatMessage;
 import io.packt.spring.ai.examples.app.chat.model.ChatSession;
 import io.packt.spring.ai.examples.app.chat.model.ChatUser;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 
 /**
  * Service interface defining chat operations.
@@ -42,7 +43,7 @@ public interface ChatService {
 
 	URL resolveChatSessionUrl(UUID sessionId);
 
-	AudioMessage textToSpeech(ChatMessage message);
+	AudioMessage textToSpeech(TextMessage message);
 
 	ChatMessage translateChatMessage(ChatMessage message, IsoLanguage language);
 

@@ -24,6 +24,7 @@ import io.packt.spring.ai.examples.app.chat.model.ChatSessions;
 import io.packt.spring.ai.examples.app.chat.model.ChatUser;
 import io.packt.spring.ai.examples.app.chat.model.ChatUsers;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.AbstractChatService;
 import io.packt.spring.ai.examples.app.chat.service.ChatService;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
@@ -84,11 +85,11 @@ public class SmartChatService extends AbstractChatService {
 	}
 
 	@Override
-	public AudioMessage textToSpeech(ChatMessage message) {
+	public AudioMessage textToSpeech(TextMessage message) {
 
 		Assert.notNull(message, "ChatMessage is required");
 
-		String text = message.message();
+		String text = message.getText();
 		byte[] audioData = getSpeechSynthesizer().speak(text);
 
 		return AudioMessage.from(audioData);
