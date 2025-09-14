@@ -26,6 +26,7 @@ import io.packt.spring.ai.examples.app.chat.model.ChatUsers;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.AbstractChatService;
+import io.packt.spring.ai.examples.app.chat.service.AudioTranscriber;
 import io.packt.spring.ai.examples.app.chat.service.ChatService;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
 import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
@@ -53,6 +54,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public class SmartChatService extends AbstractChatService {
+
+	private final AudioTranscriber audioTranscriber;
 
 	private final ChatSessions chatSessions = ChatSessions.empty().mutable();
 
@@ -93,6 +96,14 @@ public class SmartChatService extends AbstractChatService {
 		byte[] audioData = getSpeechSynthesizer().speak(text);
 
 		return AudioMessage.from(audioData);
+	}
+
+	@Override
+	public TextMessage transcribeAudio(AudioMessage message) {
+
+		Assert.notNull(message, "AudioMessage is required");
+
+		return getAudioTranscriber().transcribe(message);
 	}
 
 	@Override

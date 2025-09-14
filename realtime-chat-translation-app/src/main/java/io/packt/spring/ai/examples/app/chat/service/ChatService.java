@@ -45,6 +45,8 @@ public interface ChatService {
 
 	AudioMessage textToSpeech(TextMessage message);
 
+	TextMessage transcribeAudio(AudioMessage message);
+
 	ChatMessage translateChatMessage(ChatMessage message, IsoLanguage language);
 
 }
