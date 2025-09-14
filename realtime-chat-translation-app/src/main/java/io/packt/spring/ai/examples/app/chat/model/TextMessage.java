@@ -29,6 +29,10 @@ public interface TextMessage {
 		return () -> text;
 	}
 
+	static TextMessage from(ChatMessage message) {
+		return message::message;
+	}
+
 	String getText();
 
 }
