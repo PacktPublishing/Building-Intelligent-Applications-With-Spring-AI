@@ -23,20 +23,23 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.cp.elements.function.ThrowableSupplier;
 import org.springframework.core.env.Environment;
 
 /**
- * Abstract utility class for processing {@link URL} objects.
+ * Abstract utility class for processing network resources.
  *
  * @author John Blum
+ * @see Extensions
+ * @see java.net.InetAddress
+ * @see java.net.NetworkInterface
+ * @see java.net.URI
+ * @see java.net.URL
  * @since 0.1.0
  */
-public abstract class NetworkUtils {
+public abstract class NetworkUtils extends Extensions {
 
 	public static final int DEFAULT_SERVER_PORT = 8080;
 
@@ -88,7 +91,7 @@ public abstract class NetworkUtils {
 	}
 
 	private static String nullSafeHostAddress(InetAddress address) {
-		return String.valueOf(address.getHostAddress());
+		return address != null ? String.valueOf(address.getHostAddress()) : EMPTY_STRING;
 	}
 
 	private static Stream<NetworkInterface> streamNetworkInterfaces() {
@@ -115,19 +118,6 @@ public abstract class NetworkUtils {
 		catch (MalformedURLException cause) {
 			String message = "Failed to construct URL from URI [%s]".formatted(uri);
 			throw new IllegalArgumentException(message, cause);
-		}
-	}
-
-	private static boolean isNot(boolean condition) {
-		return !condition;
-	}
-
-	private static <T> T getSafely(ThrowableSupplier<T> supplier, Function<Exception, T> exceptionHandler) {
-		try {
-			return supplier.get();
-		}
-		catch (Exception cause) {
-			return exceptionHandler.apply(cause);
 		}
 	}
 }

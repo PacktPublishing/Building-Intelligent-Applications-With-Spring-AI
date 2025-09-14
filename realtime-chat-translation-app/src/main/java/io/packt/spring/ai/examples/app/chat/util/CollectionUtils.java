@@ -27,14 +27,10 @@ import java.util.function.Predicate;
  * @see Collection
  * @since 0.1.0
  */
-public abstract class CollectionUtils {
+public abstract class CollectionUtils extends Extensions {
 
-	private static boolean isNot(boolean value) {
-		return !value;
-	}
-
-	public static <T> Optional<T> last(List<T> list) {
-		int index = toIndex(size(list));
+	public static <T> Optional<T> lastElement(List<T> list) {
+		int index = toIndex(nullSafeSize(list));
 		return index > -1 ? Optional.ofNullable(list.get(index)) : Optional.empty();
 	}
 
@@ -42,7 +38,7 @@ public abstract class CollectionUtils {
 		return collection -> collection != null && isNot(collection.isEmpty());
 	}
 
-	public static int size(Collection<?> collection) {
+	public static int nullSafeSize(Collection<?> collection) {
 		return notEmpty().test(collection) ? collection.size() : 0;
 	}
 

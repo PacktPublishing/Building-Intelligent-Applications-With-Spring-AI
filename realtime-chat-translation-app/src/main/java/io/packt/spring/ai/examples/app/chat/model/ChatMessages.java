@@ -103,7 +103,7 @@ public interface ChatMessages extends Iterable<ChatMessage> {
 	}
 
 	default Optional<ChatMessage> findLast() {
-		return CollectionUtils.last(toList());
+		return CollectionUtils.lastElement(toList());
 	}
 
 	default ChatMessages mutable() {
