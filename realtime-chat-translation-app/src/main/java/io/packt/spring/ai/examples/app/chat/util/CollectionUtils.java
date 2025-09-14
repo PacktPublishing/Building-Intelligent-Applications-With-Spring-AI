@@ -33,13 +33,13 @@ public abstract class CollectionUtils {
 		return !value;
 	}
 
-	public static Predicate<Collection<?>> notEmpty() {
-		return collection -> collection != null && isNot(collection.isEmpty());
-	}
-
 	public static <T> Optional<T> last(List<T> list) {
 		int index = toIndex(size(list));
 		return index > -1 ? Optional.ofNullable(list.get(index)) : Optional.empty();
+	}
+
+	public static Predicate<Collection<?>> notEmpty() {
+		return collection -> collection != null && isNot(collection.isEmpty());
 	}
 
 	public static int size(Collection<?> collection) {
