@@ -266,7 +266,7 @@ function recordMessage(event) {
               logInfo(`Failed to transcribe audio: ${error}`);
             },
             complete: function() {
-              setTimeout(() => playAudio(audioBlob), 3000);
+              //setTimeout(() => playAudio(audioBlob), 3000);
             }
           });
         };
