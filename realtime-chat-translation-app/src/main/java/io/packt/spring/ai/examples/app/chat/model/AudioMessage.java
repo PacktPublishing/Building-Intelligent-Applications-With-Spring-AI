@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.chat.model;
 
+import java.io.IOException;
+
 import io.packt.spring.ai.examples.app.chat.util.ResourceConverter;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -34,20 +36,34 @@ public interface AudioMessage {
 	static AudioMessage from(byte[] data) {
 		Assert.notNull(data, "Audio data is required");
 		Assert.isTrue(data.length > 0, "Audio bytes are required");
-		return () -> data;
+		return from(new ByteArrayResource(data));
 	}
 
 	static AudioMessage from(Resource resource) {
-		return from(ResourceConverter.INSTANCE.convert(resource));
+		Assert.notNull(resource, "Resource is required");
+		return () -> resource;
 	}
 
-	byte[] getData();
-
-	default Resource getResource() {
-		return new ByteArrayResource(getData());
+	default boolean isEmpty() {
+		return size() == 0;
 	}
 
-	default int size() {
-		return getData().length;
+	default boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	default byte[] getData() {
+		return ResourceConverter.INSTANCE.convert(getResource());
+	}
+
+	Resource getResource();
+
+	default long size() {
+		try {
+			return getResource().contentLength();
+		}
+		catch (IOException ignore) {
+			return 0L;
+		}
 	}
 }
