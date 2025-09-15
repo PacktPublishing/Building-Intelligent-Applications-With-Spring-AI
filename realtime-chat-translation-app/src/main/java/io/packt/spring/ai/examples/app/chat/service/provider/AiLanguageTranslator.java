@@ -18,7 +18,9 @@ package io.packt.spring.ai.examples.app.chat.service.provider;
 import java.util.Objects;
 
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
+import io.packt.spring.ai.examples.app.chat.service.MonologueRemover;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -47,11 +49,13 @@ public class AiLanguageTranslator implements LanguageTranslator {
 
 	protected static final String MESSAGE_TRANSLATION_PROMPT_TEMPLATE =
 		"Translate the written text \"{text}\" in {inLanguage} to {toLanguage}."
-			+ " Return only the translated text. "
+			+ " Return only the translated text enclosed in square brackets: [ ... ]."
 			+ " Do not provide an explanation or pronunciation."
 			+ " If the text does not need to be translated then simply return the text.";
 
 	private final ChatClient chatClient;
+
+	private final MonologueRemover monologueRemover;
 
 	// TODO: Use synchronization so a given chat message is only translated once
 	@Override
@@ -73,7 +77,10 @@ public class AiLanguageTranslator implements LanguageTranslator {
 					.call()
 					.content();
 
-				return translatedMessage;
+				TextMessage noMonologueTranlatedMessage =
+					getMonologueRemover().removeMonologue(TextMessage.from(translatedMessage));
+
+				return noMonologueTranlatedMessage.getText();
 			}
 		}
 
