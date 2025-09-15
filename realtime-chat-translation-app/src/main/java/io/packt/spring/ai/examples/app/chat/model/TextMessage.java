@@ -25,6 +25,12 @@ package io.packt.spring.ai.examples.app.chat.model;
 @FunctionalInterface
 public interface TextMessage {
 
+	String NO_TEXT = "";
+
+	static TextMessage empty() {
+		return () -> NO_TEXT;
+	}
+
 	static TextMessage from(String text) {
 		return () -> text;
 	}
