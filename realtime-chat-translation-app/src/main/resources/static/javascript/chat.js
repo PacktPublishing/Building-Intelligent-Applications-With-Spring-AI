@@ -4,6 +4,11 @@
 
 const messageInput = $("#messageInput");
 
+let mediaRecorder;
+
+var audioData = [];
+var recordingAudio = false;
+
 const applicationContext = {
   users: new Map(),
   messages: []
@@ -67,7 +72,7 @@ function newUser(template) {
     id: template.id,
     name: template.name,
     language: resolveLanguage(template.language),
-    hue: generateHue,
+    hue: generateHue(),
     status: template.status
   }
 
@@ -169,11 +174,31 @@ function postMessage(message) {
 
   saveMessage(message);
   showMessage(message);
-  messageInput.val("");
+}
+
+function postAudioMessage(audioMessage, audioBlob) {
+
+  const userId = $("#chatUserId").val();
+  const username = $("#chatUserName").val();
+  const sessionId = $("#chatSessionId").val();
+
+  const message = {
+    id: null,
+    user: { id: userId, name: username },
+    audio: audioBlob,
+    text: audioMessage.text,
+    time: timeNow()
+  }
+
+  const messageId = sendMessage(sessionId, message);
+
+  message.id = messageId;
+
+  postMessage(message);
   messageInput.focus();
 }
 
-function postUserMessage(event) {
+function postTextMessage(event) {
 
   const messageText = messageInput.val().trim();
 
@@ -186,6 +211,7 @@ function postUserMessage(event) {
   const message = {
     id: null,
     user: { id: userId, name: username },
+    audio: null,
     text: messageText,
     time: timeNow()
   }
@@ -195,6 +221,105 @@ function postUserMessage(event) {
   message.id = messageId;
 
   postMessage(message);
+  messageInput.val("");
+  messageInput.focus();
+}
+
+function recordMessage(event) {
+
+  recordingAudio = !recordingAudio;
+
+  if (recordingAudio) {
+    try {
+      const mediaStreamPromise = navigator.mediaDevices.getUserMedia({ audio: true });
+
+      mediaStreamPromise.then(mediaStream => {
+        mediaRecorder = new MediaRecorder(mediaStream);
+
+        mediaRecorder.ondataavailable = event => {
+          const eventData = event.data;
+          if (eventData.size > 0) {
+            audioData.push(eventData);
+          }
+        };
+
+        mediaRecorder.onstop = event => {
+          const audioBlob = new Blob(audioData, { type: "audio/webm" }); // audio/webm; codecs=opus
+          const formData = new FormData();
+
+          logInfo(`Audio Data size [${audioBlob.size}] and type [${audioBlob.type}}]`);
+
+          formData.append("audioMessage", audioBlob, "audioMessage.webm");
+          formData.append("fileName", "audioMessage.webm");
+
+          $.ajax({
+            method: "POST",
+            url: "/chat-app/api/audio/transcription",
+            data: formData,
+            processData: false,
+            contentType: false,
+            enctype: "multipart/form-data",
+            success: function(audioMessage) {
+              postAudioMessage(audioMessage, audioBlob);
+            },
+            error: function(xhr, status, error) {
+              logInfo(`Failed to transcribe audio: ${error}`);
+            },
+            complete: function() {
+              setTimeout(() => playAudio(audioBlob), 3000);
+            }
+          });
+        };
+
+        audioData = [];
+        toggleMic();
+        mediaRecorder.start();
+      });
+    }
+    catch (error) {
+      toggleMic();
+      logInfo(`Microphone access denied: ${error}`);
+    }
+  }
+  else {
+    mediaRecorder.stop();
+    toggleMic();
+  }
+}
+
+function requestMessages() {
+
+  const userId = $("#chatUserId").val();
+  const sessionId = $("#chatSessionId").val();
+
+  $.ajax({
+    method: 'GET',
+    url: `/chat-app/api/${sessionId}/users/${userId}/messages`,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function(messages) {
+      //logInfo(toJson(messages));
+
+      messages.forEach(chatMessage => {
+
+        const message = {
+          id: chatMessage.id,
+          user: { id: chatMessage.user.id, name: chatMessage.user.name },
+          audio: null,
+          text: chatMessage.message,
+          time: timeNow()
+        };
+
+        postMessage(message);
+      });
+    },
+    error: function(xhr, status, errorMessage) {
+      logInfo(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
+    },
+    complete: function() {
+      setTimeout(requestMessages, 1000);
+    }
+  });
 }
 
 function saveMessage(message) {
@@ -204,7 +329,7 @@ function saveMessage(message) {
 
 function sendMessage(sessionId, message) {
 
-  const postChatMessageRequest = {
+  const PostChatMessageRequest = {
       userId: message.user.id,
       message: message.text
   }
@@ -214,7 +339,7 @@ function sendMessage(sessionId, message) {
   $.ajax({
     method: 'POST',
     url: `/chat-app/api/${sessionId}/messages`,
-    data: JSON.stringify(postChatMessageRequest),
+    data: JSON.stringify(PostChatMessageRequest),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function(response) {
@@ -222,7 +347,7 @@ function sendMessage(sessionId, message) {
       messageId = response.id;
     },
     error: function(xhr, status, errorMessage) {
-      const messageJson = JSON.stringify(postChatMessageRequest);
+      const messageJson = toJson(PostChatMessageRequest);
       logInfo(`Failed to post chat message [${messageJson}]: ${status} - ${errorMessage}`);
     }
   });
@@ -272,40 +397,6 @@ function showMessage(message) {
   }, 500);
 }
 
-function requestMessages() {
-
-  const userId = $("#chatUserId").val();
-  const sessionId = $("#chatSessionId").val();
-
-  $.ajax({
-    method: 'GET',
-    url: `/chat-app/api/${sessionId}/users/${userId}/messages`,
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function(messages) {
-      //logInfo(toJson(messages));
-
-      messages.forEach(chatMessage => {
-
-        const message = {
-          id: chatMessage.id,
-          user: { id: chatMessage.user.id, name: chatMessage.user.name },
-          text: chatMessage.message,
-          time: timeNow()
-        };
-
-        postMessage(message);
-      });
-    },
-    error: function(xhr, status, errorMessage) {
-      logInfo(`Failed to request chat messages from chat session [${sessionId}]: ${status} - ${errorMessage}`);
-    },
-    complete: function() {
-      setTimeout(requestMessages, 1000);
-    }
-  });
-}
-
 function copyChatSessionUrlToClipboard(event, element, tooltip) {
   try {
     const chatSessionUrl = $("#chatSessionUrl").val();
@@ -315,6 +406,12 @@ function copyChatSessionUrlToClipboard(event, element, tooltip) {
   }
   catch (ignore) {
   }
+}
+
+function playAudio(audioBlob) {
+  const audio = new Audio();
+  audio.src = URL.createObjectURL(audioBlob);
+  audio.play();
 }
 
 function sendEmail(event) {
@@ -362,6 +459,18 @@ function showTooltipOnClick(element, tooltip, text) {
   setTimeout(() => { tooltip.html(originalText); }, 3000);
 }
 
+function showMicTooltipOnClick(element, tooltip) {
+  hideTooltip(tooltip);
+  const text = recordingAudio ? "Recording" : "Record Audio Message";
+  tooltip.html(text);
+  showTooltip(element, tooltip);
+}
+
+function toggleMic() {
+  $("#micIconOff").toggle();
+  $("#micIconOn").toggle();
+}
+
 const copyUrlButton = $("#copyUrlButton");
 const copyUrlTooltip = $('<div id="copyUrlTooltip" class="tooltip">Copy Chat URL to Clipboard</div>').appendTo("body");
 const copyUrlTooltipText = copyUrlTooltip.html();
@@ -383,12 +492,17 @@ emailButton.mouseleave(event => hideTooltip(emailTooltip));
 messageInput.keypress(event => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
-    postUserMessage(event);
+    postTextMessage(event);
   }
 });
 
-const sendButton = $("#sendButton")
-sendButton.click(event => postUserMessage(event));
+const micButton = $("#micButton");
+const micTooltip = $('<div id="micTooltip" class="tooltip">Record Audio Message</div>').appendTo("body");
+micButton.click(event => recordMessage(event));
+micButton.mouseenter(event => showTooltip(micButton, micTooltip));
+
+const sendButton = $("#sendButton");
+sendButton.click(event => postTextMessage(event));
 
 $(document).click(function(event) {
   logInfo(`X: ${event.clientX}, Y: ${event.clientY}`);

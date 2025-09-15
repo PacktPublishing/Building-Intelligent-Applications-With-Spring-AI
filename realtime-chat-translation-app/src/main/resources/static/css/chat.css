@@ -147,35 +147,37 @@ button.primary { background: #3b82f633; border-color: #60a5fa66; }
 
 .bubble {
   --h: 210; --s: 80%; --l: 60%;
-  backdrop-filter: blur(10px) saturate(140%);
+  position: relative;
   background: linear-gradient(180deg, hsla(var(--h), var(--s), var(--l), .25), hsla(var(--h), calc(var(--s) - 15%), calc(var(--l) - 15%), .22));
+  backdrop-filter: blur(10px) saturate(140%);
   border: 1px solid hsla(var(--h), 70%, 80%, .25);
   border-radius: 16px 16px 16px 6px;
   box-shadow: 0 8px 30px rgba(0,0,0,.25);
   color: #eef2ff;
   max-width: min(70ch, 75%);
   padding: .75rem .9rem;
-  position: relative;
+}
+
+.me .bubble {
+  border-radius: 16px 16px 6px 16px;
+  justify-self: end;
 }
 
 .messages {
   background:
     radial-gradient(900px 400px at 50% 0%, #60a5fa44, transparent 50%),
     radial-gradient(900px 400px at 50% 100%, #60a5fa44, transparent 50%);
-  padding: 1rem;
   position: relative;
+  padding: 1rem;
   overflow: auto;
 }
 
 .messages[aria-busy="true"]::after {
-  content: "";
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
   background: repeating-linear-gradient( -45deg, #ffffff07 0 12px, transparent 12px 24px );
-}
-
-.me .bubble {
-  border-radius: 16px 16px 6px 16px;
-  justify-self: end;
+  content: "";
+  inset: 0;
+  pointer-events: none;
 }
 
 .msg-row {
@@ -189,6 +191,15 @@ button.primary { background: #3b82f633; border-color: #60a5fa66; }
   grid-template-columns: 1fr;
 }
 
+.meta {
+  display: flex;
+  align-items: baseline;
+  color: var(--muted);
+  font-size: .72rem;
+  gap: .5rem;
+  margin-bottom: .25rem;
+}
+
 .name {
   color: #e2e8f0;
   font-weight: 600;
@@ -198,7 +209,7 @@ button.primary { background: #3b82f633; border-color: #60a5fa66; }
   font-variant-numeric: tabular-nums;
 }
 
-/* Chat UI Footer */
+/* Chat UI Message Composer (Footer) */
 .composer {
   display: grid;
   align-items: center;
@@ -207,6 +218,10 @@ button.primary { background: #3b82f633; border-color: #60a5fa66; }
   gap: .6rem;
   grid-template-columns: auto 1fr auto auto;
   padding: .8rem;
+}
+
+.mic-on {
+  display: none;
 }
 
 input[type="text"] { width: 100%; }

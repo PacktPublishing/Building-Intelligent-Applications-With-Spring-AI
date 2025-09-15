@@ -19,16 +19,19 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
 import io.packt.spring.ai.examples.app.chat.model.ChatMessage;
 import io.packt.spring.ai.examples.app.chat.model.ChatMessages;
 import io.packt.spring.ai.examples.app.chat.model.ChatSession;
 import io.packt.spring.ai.examples.app.chat.model.ChatUser;
 import io.packt.spring.ai.examples.app.chat.model.ChatUsers;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.model.UserStatus;
 import io.packt.spring.ai.examples.app.chat.service.ChatService;
 
 import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -138,6 +143,20 @@ public class ChatApiController {
 			.toList();
 
 		return chatUsers;
+	}
+
+	@SuppressWarnings("all")
+	@PostMapping("/audio/transcription")
+	public TextMessage transcribeAudio(@RequestParam("audioMessage") MultipartFile audioFile) {
+
+		Assert.notNull(audioFile, "Audio to transcribe is required");
+
+		Resource audioResource = audioFile.getResource();
+		AudioMessage audioMessage = AudioMessage.from(audioResource);
+		getLogger().info("Transcribing audio [{}] of size [{}]", audioFile.getName(), audioMessage.size());
+		TextMessage textMessage = getChatService().transcribeAudio(audioMessage);
+
+		return textMessage;
 	}
 
 	public interface ChatUserView {
