@@ -45,8 +45,13 @@ public class AiAudioTranscriber implements AudioTranscriber {
 
 	@Override
 	public TextMessage transcribe(AudioMessage audioMessage) {
-		Resource audio = audioMessage.getResource();
-		String text = getModel().call(audio);
-		return TextMessage.from(text);
+
+		if (audioMessage.isNotEmpty()) {
+			Resource audio = audioMessage.getResource();
+			String text = getModel().call(audio);
+			return TextMessage.from(text);
+		}
+
+		return TextMessage.empty();
 	}
 }
