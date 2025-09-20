@@ -35,8 +35,28 @@ public interface TextMessage {
 		return () -> text;
 	}
 
+	static TextMessage from(String text, IsoLanguage language) {
+
+		return new TextMessage() {
+
+			@Override
+			public String getText() {
+				return text;
+			}
+
+			@Override
+			public IsoLanguage getLanguage() {
+				return language;
+			}
+		};
+	}
+
 	static TextMessage from(ChatMessage message) {
-		return message::message;
+		return from(message.message(), message.language());
+	}
+
+	default IsoLanguage getLanguage() {
+		return IsoLanguage.fromDefault();
 	}
 
 	String getText();
