@@ -77,10 +77,10 @@ public class AiLanguageTranslator implements LanguageTranslator {
 					.call()
 					.content();
 
-				TextMessage noMonologueTranlatedMessage =
+				TextMessage noMonologueTranslatedMessage =
 					getMonologueRemover().removeMonologue(TextMessage.from(translatedMessage));
 
-				return noMonologueTranlatedMessage.getText();
+				return noMonologueTranslatedMessage.getText();
 			}
 		}
 
