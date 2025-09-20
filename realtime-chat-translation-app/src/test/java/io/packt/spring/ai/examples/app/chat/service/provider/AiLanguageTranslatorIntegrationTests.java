@@ -43,7 +43,7 @@ import lombok.Getter;
  * @see AiLanguageTranslator
  * @since 0.1.0
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.ai.openai.api-key=UNDEFINED")
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class AiLanguageTranslatorIntegrationTests {
@@ -62,13 +62,13 @@ public class AiLanguageTranslatorIntegrationTests {
 	void translateSentence() {
 
 		assertThat(getLanguageTranslator().translate("My name is John", IsoLanguage.SPANISH).toLowerCase().trim())
-			.matches("mi nombre es (john|juan)\\.?");
+			.matches("\\[\\s*mi nombre es (john|juan)\\.?\\s*]");
 
 		assertThat(getLanguageTranslator().translate("My name is John", IsoLanguage.GERMAN).toLowerCase().trim())
-			.matches("mein name ist john\\.?");
+			.matches("\\[\\s*mein name ist john\\.?\\s*]");
 
 		assertThat(getLanguageTranslator().translate("My name is John", IsoLanguage.FRENCH).toLowerCase().trim())
-			.matches("mon nom est (john|jean)\\.?"); // Je m'appelle Jean
+			.matches("\\[\\s*mon nom est (john|jean)\\.?\\s*]"); // Je m'appelle Jean
 	}
 
 	@Test
