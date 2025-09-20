@@ -42,6 +42,12 @@ public class ChatModelWrapper implements ChatModel, BeanNameAware {
 		return new ChatModelWrapper(chatModel);
 	}
 
+	public static ChatModel resolve(ChatModel model) {
+		return model instanceof ChatModelWrapper wrapper
+			? wrapper.getChatModel()
+			: model;
+	}
+
 	private final ChatModel chatModel;
 
 	private volatile String beanName;
