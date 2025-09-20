@@ -31,13 +31,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Abstract Data Type (ADT) modeling a {@link String message} sent by a {@link ChatUser user}
- * in {@link ChatSession chat}.
+ * Abstract Data Type (ADT) and Java Record modeling a {@link String message} sent by a {@link ChatUser user}
+ * in a {@link ChatSession chat}.
  *
  * @author John Blum
  * @see java.lang.Comparable
  * @see java.time.Instant
  * @see java.util.UUID
+ * @see TextMessage
  * @see ChatUser
  * @since 0.1.0
  */
@@ -100,6 +101,10 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 	public String getFormattedTimestamp() {
 		return getZonedDatetime().format(TIMESTAMP_FORMATTER);
+	}
+
+	public TextMessage getText() {
+		return TextMessage.from(this);
 	}
 
 	public Set<ChatMessage> getTranslatedMessages() {
