@@ -27,6 +27,10 @@ import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 @FunctionalInterface
 public interface MonologueRemover {
 
+	static MonologueRemover noop() {
+		return message -> message;
+	}
+
 	TextMessage removeMonologue(TextMessage message);
 
 }

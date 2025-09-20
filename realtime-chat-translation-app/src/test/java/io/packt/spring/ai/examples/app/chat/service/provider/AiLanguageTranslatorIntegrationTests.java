@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.packt.spring.ai.examples.app.chat.config.ChatConfiguration;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
+import io.packt.spring.ai.examples.app.chat.service.MonologueRemover;
 
 import org.junit.jupiter.api.Test;
 
@@ -83,7 +84,7 @@ public class AiLanguageTranslatorIntegrationTests {
 
 		@Bean
 		LanguageTranslator languageTranslator(ChatClient chatClient) {
-			return new AiLanguageTranslator(chatClient);
+			return new AiLanguageTranslator(chatClient, MonologueRemover.noop());
 		}
 	}
 }
