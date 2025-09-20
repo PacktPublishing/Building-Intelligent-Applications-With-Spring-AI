@@ -42,7 +42,10 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public abstract class AbstractChatService implements ChatService, EnvironmentAware {
 
-	protected static final String BASE_CHAT_SESSION_URI = "http://%s:%d%s/view/chat/join/%s";
+	protected static final String BASE_CHAT_SESSION_URL = "http://%s:%d%s/view/chat/join/%s";
+	protected static final String BASE__SECURE_CHAT_SESSION_URL = "https://%s:%d%s/view/chat/join/%s";
+
+	private static final String UNDEFINED = "Undefined";
 
 	@Value("${server.servlet.contextPath}")
 	private String applicationContextPath;
@@ -93,6 +96,12 @@ public abstract class AbstractChatService implements ChatService, EnvironmentAwa
 		return NetworkUtils.resolveLocalhostIpAddress(getEnvironment());
 	}
 
+	protected boolean isSecureServer() {
+		Environment environment = getEnvironment();
+		boolean isUndefined = UNDEFINED.equals(environment.getProperty("server.ssl.bundle", String.class, UNDEFINED));
+		return !isUndefined;
+	}
+
 	@Override
 	public UUID resolveChatSessionId(URL sessionUrl) {
 		assertChatSessionUrl(sessionUrl);
@@ -117,7 +126,10 @@ public abstract class AbstractChatService implements ChatService, EnvironmentAwa
 	}
 
 	private URI resolveChatSessionUri(UUID chatSessionId) {
-		return NetworkUtils.resolveUri(BASE_CHAT_SESSION_URI, getServerHostAddress(), getServerPort(),
+
+		String baseChatSessionUrl = isSecureServer() ? BASE__SECURE_CHAT_SESSION_URL : BASE_CHAT_SESSION_URL;
+
+		return NetworkUtils.resolveUri(baseChatSessionUrl, getServerHostAddress(), getServerPort(),
 			getApplicationContextPath(), chatSessionId);
 	}
 }

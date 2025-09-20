@@ -55,12 +55,12 @@ public class ChatApplication extends AbstractDesktopSpringBootApplication {
 			getLogger().info("{} running on network host [{}] with IP address [{}]", springApplicationName,
 				NetworkUtils.resolveLocalhostName(), NetworkUtils.resolveLocalhostIpAddress(environment));
 
-			getLogger().info("GOTO URL [{}]", getWebApplicationUrl());
+			getLogger().info("GOTO URL [{}]", getWebApplicationUrl(environment));
 		};
 	}
 
 	@Override
-	protected String getWebApplicationUrl() {
-		return super.getWebApplicationUrl().concat("/view/chat/join");
+	protected String getWebApplicationUrl(Environment environment) {
+		return super.getWebApplicationUrl(environment).concat("/view/chat/join");
 	}
 }
