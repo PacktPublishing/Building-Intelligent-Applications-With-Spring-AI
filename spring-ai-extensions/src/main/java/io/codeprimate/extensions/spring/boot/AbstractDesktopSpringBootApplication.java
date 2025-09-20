@@ -25,6 +25,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 /**
  * Abstract base class for desktop-based, Spring Boot Web applications.
@@ -44,11 +45,18 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 	protected static final boolean HEADLESS = true;
 	protected static final boolean NOT_HEADLESS = false;
 
+	protected static final int PORT = 80;
+	protected static final int SECURE_PORT = 443;
+
 	private static final Function<SpringApplicationBuilder, SpringApplicationBuilder> DESKTOP_APPLICATION_FUNCTION =
 		springApplicationBuilder -> springApplicationBuilder.headless(NOT_HEADLESS);
 
 	private static final String JAVA_AWT_HEADLESS_SYSTEM_PROPERTY = "java.awt.headless";
+	private static final String SERVER_PORT_PROPERTY = "server.port";
+	private static final String SERVER_SSL_PORT_PROPERTY = "server.ssl.port";
 	private static final String WEBAPP_URL = "http://localhost:%d%s";
+	private static final String SECURE_WEBAPP_URL = "https://localhost:%d%s";
+	private static final String UNDEFINED = "UNDEFINED";
 
 	protected static SpringApplication runSpringReactiveWebApplication(Class<?> mainApplicationClass, String[] profiles,
 			String... args) {
@@ -78,8 +86,8 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 
 	@Bean
 	@ConditionalOnWebApplication
-	ApplicationRunner launchWebApplication(
-			@Value("${spring.application.name:UNSET}") String applicationName,
+	ApplicationRunner launchWebApplication(Environment environment,
+			@Value("${spring.application.name:UNDEFINED}") String applicationName,
 			@Value("${server.servlet.contextPath:/}") String serverServletContextPath,
 			@Value("${server.port:8080}") int serverPort) {
 
@@ -87,7 +95,10 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 
 			getLogger().info("Welcome to %s".formatted(applicationName));
 
-			URI webAppliactionUri = URI.create(getWebApplicationUrl().formatted(serverPort, serverServletContextPath));
+			String webApplicationUrl =
+				getWebApplicationUrl(environment).formatted(serverPort, serverServletContextPath);
+
+			URI webAppliactionUri = URI.create(webApplicationUrl);
 
 			if (isWebApplicationLaunchEnabled()) {
 				Desktop.getDesktop().browse(webAppliactionUri);
@@ -112,11 +123,20 @@ public abstract class AbstractDesktopSpringBootApplication extends AbstractSprin
 		return !isHeadless();
 	}
 
+	private boolean isSecureWebApplication(Environment environment) {
+
+		String securePort = String.valueOf(SECURE_PORT);
+		String serverPort = environment.getProperty(SERVER_PORT_PROPERTY, UNDEFINED);
+		String serverSslPort = environment.getProperty(SERVER_SSL_PORT_PROPERTY, UNDEFINED);
+
+		return serverPort.contains(securePort) || serverSslPort.contains(securePort);
+	}
+
 	private boolean isWebApplicationLaunchEnabled() {
 		return isDesktopEnabled() && isNotHeadless();
 	}
 
-	protected String getWebApplicationUrl() {
-		return WEBAPP_URL;
+	protected String getWebApplicationUrl(Environment environment) {
+		return isSecureWebApplication(environment) ? SECURE_WEBAPP_URL : WEBAPP_URL;
 	}
 }
