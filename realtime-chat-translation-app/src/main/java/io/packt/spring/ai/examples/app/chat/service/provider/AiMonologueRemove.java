@@ -46,6 +46,7 @@ public class AiMonologueRemove implements MonologueRemover {
 			if (leftBracketIndex > -1) {
 				int rightRightIndex = text.lastIndexOf("]");
 				rightRightIndex = rightRightIndex > -1 ? rightRightIndex : text.length();
+				leftBracketIndex++;
 				String resolvedText = text.substring(leftBracketIndex, rightRightIndex);
 				return TextMessage.from(resolvedText);
 			}
