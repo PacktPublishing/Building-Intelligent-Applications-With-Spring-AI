@@ -100,8 +100,8 @@ public enum SpringAiProvider implements AiProvider {
 	}
 
 	private static Predicate<Object> match(String qualifier) {
-		String resolveQualifier = String.valueOf(qualifier).toLowerCase();
-		return target -> Utils.nullSafeTypeName(target).toLowerCase().contains(resolveQualifier);
+		String resolvedQualifier = String.valueOf(qualifier).toLowerCase();
+		return target -> Utils.nullSafeTypeName(target).toLowerCase().contains(resolvedQualifier);
 	}
 
 	private static AiProvider resolveAiProvider(AiProvider aiProvider) {
