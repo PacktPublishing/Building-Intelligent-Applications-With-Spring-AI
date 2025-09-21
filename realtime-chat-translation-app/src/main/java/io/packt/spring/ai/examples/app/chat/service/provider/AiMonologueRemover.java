@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  */
 @Service
 @SuppressWarnings("unused")
-public class AiMonologueRemove implements MonologueRemover {
+public class AiMonologueRemover implements MonologueRemover {
 
 	@Override
 	public TextMessage removeMonologue(TextMessage message) {
