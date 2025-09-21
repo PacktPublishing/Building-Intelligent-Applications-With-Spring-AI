@@ -48,11 +48,9 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 	private static final String CHAT_MESSAGE_TO_STRING = "[%s] %s: \"%s\"";
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
-	private static final String HOUR_MINUTE_PATTERN = "HH:mm";
 	private static final String TIME_PATTERN = "HH:mm:ss";
 	private static final String TIMESTAMP_PATTERN = DATE_PATTERN.concat(" ").concat(TIME_PATTERN);
 
-	private static final DateTimeFormatter HOUR_MINUTE_FORMATTER = DateTimeFormatter.ofPattern(HOUR_MINUTE_PATTERN);
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN);
 
 	public ChatMessage {
@@ -93,10 +91,6 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 	public Optional<ChatMessage> findBy(IsoLanguage language) {
 		return this.language().equals(language) ? Optional.of(this)
 			: translatedMessages().findBy(language);
-	}
-
-	public String getFormattedHourMinute() {
-		return getZonedDatetime().format(HOUR_MINUTE_FORMATTER);
 	}
 
 	public String getFormattedTimestamp() {
