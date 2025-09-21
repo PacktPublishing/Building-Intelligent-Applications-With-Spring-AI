@@ -15,7 +15,10 @@
  */
 package io.packt.spring.ai.examples.app.chat.service.provider;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
 import io.packt.spring.ai.examples.app.chat.model.TextMessage;
@@ -25,6 +28,7 @@ import io.packt.spring.ai.examples.app.chat.service.MonologueRemover;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
@@ -37,6 +41,8 @@ import lombok.RequiredArgsConstructor;
  *
  * @author John Blum
  * @see LanguageTranslator
+ * @see TextMessage
+ * @see MonologueRemover
  * @see IsoLanguage
  * @see ChatClient
  * @see Service
@@ -55,9 +61,10 @@ public class AiLanguageTranslator implements LanguageTranslator {
 
 	private final ChatClient chatClient;
 
+	private final Map<TranslationKey, String> translationsMap = Collections.synchronizedMap(new WeakHashMap<>());
+
 	private final MonologueRemover monologueRemover;
 
-	// TODO: Use synchronization so a given chat message is only translated once
 	@Override
 	@SuppressWarnings("all")
 	public String translate(String text, IsoLanguage inLanguage, IsoLanguage toLanguage) {
@@ -65,22 +72,27 @@ public class AiLanguageTranslator implements LanguageTranslator {
 		if (isTranslatable(text, inLanguage, toLanguage)) {
 			if (inLanguage.isNotEqualTo(toLanguage)) {
 
-				PromptTemplate promptTemplate = new PromptTemplate(MESSAGE_TRANSLATION_PROMPT_TEMPLATE);
+				TranslationKey translationKey = TranslationKey.from(text, inLanguage);
 
-				promptTemplate.add("text", text);
-				promptTemplate.add("inLanguage", inLanguage);
-				promptTemplate.add("toLanguage", toLanguage);
+				return getTranslationsMap().computeIfAbsent(translationKey, key -> {
 
-				// Translate ChatMessage using AI
-				String translatedMessage = getChatClient().prompt()
-					.messages(promptTemplate.createMessage())
-					.call()
-					.content();
+					PromptTemplate promptTemplate = new PromptTemplate(MESSAGE_TRANSLATION_PROMPT_TEMPLATE);
 
-				TextMessage noMonologueTranslatedMessage =
-					getMonologueRemover().removeMonologue(TextMessage.from(translatedMessage));
+					promptTemplate.add("text", text);
+					promptTemplate.add("inLanguage", inLanguage);
+					promptTemplate.add("toLanguage", toLanguage);
 
-				return noMonologueTranslatedMessage.getText();
+					// Translate ChatMessage using AI
+					String translatedMessage = getChatClient().prompt()
+						.messages(promptTemplate.createMessage())
+						.call()
+						.content();
+
+					TextMessage noMonologueTranslatedMessage =
+						getMonologueRemover().removeMonologue(TextMessage.from(translatedMessage));
+
+					return noMonologueTranslatedMessage.getText();
+				});
 			}
 		}
 
@@ -92,5 +104,15 @@ public class AiLanguageTranslator implements LanguageTranslator {
 		return StringUtils.hasText(text)
 			&& Objects.nonNull(fromLanguage)
 			&& Objects.nonNull(toLanguage);
+	}
+
+	record TranslationKey(int hash, IsoLanguage language) {
+
+		static TranslationKey from(String text, IsoLanguage language) {
+			Assert.hasText(text, "Text is required");
+			Assert.notNull(language, "Language is required");
+			int textHash = Objects.hash(text);
+			return new TranslationKey(textHash, language);
+		}
 	}
 }
