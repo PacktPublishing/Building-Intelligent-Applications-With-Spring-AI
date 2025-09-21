@@ -23,6 +23,7 @@ import io.packt.spring.ai.examples.app.chat.service.LanguageTranslator;
 import io.packt.spring.ai.examples.app.chat.service.MonologueRemover;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SpringBootTest(properties = "spring.ai.openai.api-key=UNDEFINED")
+@EnabledIfSystemProperty(named = "integration-tests", matches = "true")
 @ActiveProfiles("language-translation-test")
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
