@@ -15,7 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.chat.service;
 
+import io.packt.spring.ai.examples.app.chat.model.ChatMessage;
 import io.packt.spring.ai.examples.app.chat.model.IsoLanguage;
+import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 
 /**
  * {@link FunctionalInterface} defining a contract to translate a {@link String message}
@@ -31,6 +33,21 @@ public interface LanguageTranslator {
 
 	default String translate(String text, IsoLanguage language) {
 		return translate(text, IsoLanguage.fromDefault(), language);
+	}
+
+	default ChatMessage translate(ChatMessage message, IsoLanguage language) {
+
+		String translatedText = translate(message.message(), message.language(), language);
+
+		return ChatMessage.from(message)
+			.with(translatedText)
+			.in(language)
+			.build();
+	}
+
+	default TextMessage translate(TextMessage message, IsoLanguage language) {
+		String translatedText = translate(message.getText(), message.getLanguage(), language);
+		return TextMessage.from(translatedText, language);
 	}
 
 	String translate(String text, IsoLanguage inLanguage, IsoLanguage toLanguage);

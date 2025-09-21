@@ -109,16 +109,11 @@ public class SmartChatService extends AbstractChatService {
 		Assert.notNull(message, "ChatMessage is required");
 		Assert.notNull(language, "Language is required");
 
-		IsoLanguage messageLanguage = message.language();
-
-		if (messageLanguage.isNotEqualTo(language)) {
+		if (message.isNotInLanguage(language)) {
 			return message.findBy(language).orElseGet(() -> {
-				String originalMessage = message.message();
-				String translatedMessage = getLanguageTranslator().translate(originalMessage, messageLanguage, language);
-				ChatMessage translatedChatMessage =
-					ChatMessage.from(message).with(translatedMessage).in(language).build();
-				message.add(translatedChatMessage);
-				return translatedChatMessage;
+				ChatMessage translatedMessage = getLanguageTranslator().translate(message, language);
+				message.add(translatedMessage);
+				return translatedMessage;
 			});
 		}
 
