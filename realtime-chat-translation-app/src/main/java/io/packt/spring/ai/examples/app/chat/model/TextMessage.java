@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * Abstract Data Type (ADT) modeling a {@link String text message}.
  *
@@ -31,6 +33,7 @@ public interface TextMessage {
 		return () -> NO_TEXT;
 	}
 
+	@JsonCreator
 	static TextMessage from(String text) {
 		return () -> text;
 	}
