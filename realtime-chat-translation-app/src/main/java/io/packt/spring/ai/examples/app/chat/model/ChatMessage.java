@@ -46,7 +46,7 @@ import lombok.Getter;
 public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage language, String message,
 		ChatMessages translatedMessages) implements Comparable<ChatMessage> {
 
-	private static final String TO_STRING = "[%s] %s: \"%s\"";
+	private static final String CHAT_MESSAGE_TO_STRING = "[%s] %s: \"%s\"";
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
 	private static final String HOUR_MINUTE_PATTERN = "HH:mm";
 	private static final String TIME_PATTERN = "HH:mm:ss";
@@ -120,6 +120,14 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 		return user().name();
 	}
 
+	public boolean isInLanguage(IsoLanguage language) {
+		return language().equals(language);
+	}
+
+	public boolean isNotInLanguage(IsoLanguage language) {
+		return !isInLanguage(language);
+	}
+
 	@Override
 	public int compareTo(ChatMessage that) {
 		return this.timestamp().compareTo(that.timestamp());
@@ -150,7 +158,7 @@ public record ChatMessage(UUID id, Instant timestamp, ChatUser user, IsoLanguage
 
 	@Override
 	public String toString() {
-		return TO_STRING.formatted(getFormattedTimestamp(), getUsername(), message());
+		return CHAT_MESSAGE_TO_STRING.formatted(getFormattedTimestamp(), getUsername(), message());
 	}
 
 	@Getter(AccessLevel.PROTECTED)
