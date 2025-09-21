@@ -27,6 +27,7 @@ import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import org.springframework.ai.openai.audio.speech.SpeechModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * Integration Tests for {@link AiTextToSpeechSynthesizer}.
  *
@@ -48,7 +52,9 @@ import org.springframework.test.context.ActiveProfiles;
  * @since 0.1.0
  */
 @SpringBootTest
+@Getter(AccessLevel.PROTECTED)
 @ActiveProfiles({ "user", "text-to-speech-test" })
+@EnabledIfSystemProperty(named = "integration-tests", matches = "true")
 @SuppressWarnings("unused")
 public class AiTextToSpeechSynthesizerIntegrationTests {
 
@@ -59,7 +65,7 @@ public class AiTextToSpeechSynthesizerIntegrationTests {
 	void textToSpeech() throws IOException {
 
 		TextMessage textMessage = TextMessage.from("This is a test!");
-		AudioMessage audioMessage = this.speechSynthesizer.speak(textMessage);
+		AudioMessage audioMessage = getSpeechSynthesizer().speak(textMessage);
 
 		assertThat(audioMessage).isNotNull();
 
