@@ -46,6 +46,9 @@ import lombok.RequiredArgsConstructor;
  * @author John Blum
  * @see org.springframework.ai.chat.client.ChatClient
  * @see AbstractChatService
+ * @see LanguageTranslator
+ * @see TextToSpeechSynthesizer
+ * @see ChatSessions
  * @see ChatUsers
  * @see Service
  * @since 0.1.0

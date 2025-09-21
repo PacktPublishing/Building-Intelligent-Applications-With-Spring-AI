@@ -19,7 +19,12 @@ import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
 import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
 
-import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
+import org.springframework.ai.openai.api.OpenAiAudioApi;
+import org.springframework.ai.openai.audio.speech.SpeechMessage;
+import org.springframework.ai.openai.audio.speech.SpeechModel;
+import org.springframework.ai.openai.audio.speech.SpeechPrompt;
+import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -40,10 +45,36 @@ import lombok.RequiredArgsConstructor;
 @Getter(AccessLevel.PROTECTED)
 public class AiTextToSpeechSynthesizer implements TextToSpeechSynthesizer {
 
-	private final ChatClient chatClient;
+	private static final String OPENAI_TTS_MODEL = "gpt-4o-mini-tts";
+
+	private final SpeechModel speechModel;
 
 	@Override
-	public AudioMessage speak(TextMessage message) {
-		throw new UnsupportedOperationException("Text-To-Speech not implemented");
+	public AudioMessage speak(TextMessage textMessage) {
+
+		SpeechMessage speechMessage = newSpeechMessage(textMessage);
+		SpeechPrompt prompt = newSpeechPrompt(speechMessage);
+		SpeechResponse response = getSpeechModel().call(prompt);
+
+		byte[] audioData = response.getResult().getOutput();
+
+		return AudioMessage.from(audioData);
+	}
+
+	private SpeechMessage newSpeechMessage(TextMessage textMessage) {
+		return new SpeechMessage(textMessage.getText());
+	}
+
+	private SpeechPrompt newSpeechPrompt(SpeechMessage speechMessage) {
+		return new SpeechPrompt(speechMessage, newSpeechOptions());
+	}
+
+	private OpenAiAudioSpeechOptions newSpeechOptions() {
+
+		return OpenAiAudioSpeechOptions.builder()
+			.voice(OpenAiAudioApi.SpeechRequest.Voice.ALLOY)
+			.responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+			.model(OPENAI_TTS_MODEL)
+			.build();
 	}
 }

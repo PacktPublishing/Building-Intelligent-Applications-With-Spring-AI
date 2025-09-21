@@ -31,6 +31,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,6 +46,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SpringBootTest(properties = "spring.ai.openai.api-key=UNDEFINED")
+@ActiveProfiles("language-translation-test")
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class AiLanguageTranslatorIntegrationTests {
@@ -80,6 +83,7 @@ public class AiLanguageTranslatorIntegrationTests {
 	@SpringBootConfiguration
 	@EnableAutoConfiguration
 	@Import(ChatConfiguration.class)
+	@Profile("language-translation-test")
 	static class TestConfiguration {
 
 		@Bean

@@ -146,6 +146,17 @@ public class ChatApiController {
 	}
 
 	@SuppressWarnings("all")
+	@PostMapping("/audio/generation")
+	public AudioMessage textToSpeech(TextMessage message) {
+
+		Assert.notNull(message, "TextMessage to use in Text-to-Speech, audio conversion is required");
+
+		AudioMessage audioMessage = getChatService().textToSpeech(message);
+
+		return audioMessage;
+	}
+
+	@SuppressWarnings("all")
 	@PostMapping("/audio/transcription")
 	public TextMessage transcribeAudio(@RequestParam("audioMessage") MultipartFile audioFile) {
 
