@@ -339,7 +339,7 @@ function sendMessage(sessionId, message) {
   $.ajax({
     method: 'POST',
     url: `/chat-app/api/${sessionId}/messages`,
-    data: JSON.stringify(PostChatMessageRequest),
+    data: toJson(PostChatMessageRequest),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function(response) {
@@ -360,41 +360,85 @@ function showMessage(message) {
   const user = resolveUser(message);
   const userId = $("#chatUserId").val();
   const isMe = user != null && user.id === userId;
-  const row = document.createElement("div");
 
-  row.className = "msg-row" + (isMe ? " me" : "");
+  // User ChatMessage Element
+  const chatMessage = document.createElement("div");
+  chatMessage.className = "msg-row" + (isMe ? " me" : "");
 
-  // User Message Element
-  const messageElement = document.createElement("div");
-  messageElement.id = message.id;
-  messageElement.className = 'bubble';
-  messageElement.style.setProperty('--h', user.hue);
-  messageElement.innerHTML = `
-    <div class="meta"><span class="name">${user.name}</span><span class="time">${message.time}</span></div>
+  // User TextMessage Element
+  const textMessage = document.createElement("div");
+  textMessage.id = isMe ? crypto.randomUUID() : message.id;
+  textMessage.className = 'bubble';
+  textMessage.style.setProperty('--h', user.hue);
+  textMessage.innerHTML = `
+    <div class="meta">
+      <span class="name">${user.name}</span>
+      <span class="time">${message.time}</span>
+    </div>
     <div class="text">${escapeHtml(message.text).replace(/\n/g, '<br>')}</div>
   `;
 
   if (isMe) {
-    row.appendChild(messageElement);
+    chatMessage.appendChild(textMessage);
   }
   else {
     // User Avatar Element
-    const userAvatarElement = document.createElement('div');
-    userAvatarElement.className = 'avatar';
-    userAvatarElement.style.background = `linear-gradient(180deg, hsla(${user.hue}, 80%, 65%, .35), hsla(${user.hue}, 70%, 50%, .25))`;
-    userAvatarElement.style.borderColor = 'rgba(255,255,255,.2)';
-    userAvatarElement.textContent = user.name.slice(0,2).toUpperCase();
+    const userAvatar = document.createElement("div");
+    userAvatar.className = 'avatar';
+    userAvatar.style.background = `linear-gradient(180deg, hsla(${user.hue}, 80%, 65%, .35), hsla(${user.hue}, 70%, 50%, .25))`;
+    userAvatar.style.borderColor = 'rgba(255,255,255,.2)';
+    userAvatar.textContent = user.name.slice(0,2).toUpperCase();
 
-    row.appendChild(userAvatarElement);
-    row.appendChild(messageElement);
+    // User AudioMessage Element
+    const audioMessage = document.createElement("div");
+    audioMessage.className = "meta";
+
+    const audioButton = document.createElement("button");
+    audioButton.style.width="24px";
+    audioButton.style.height="24px";
+    audioButton.style.borderRadius="4px";
+    audioButton.style.padding="1px";
+    audioButton.innerHTML = '<img src="../img/audio-icon.png" width="16" height="16">';
+    $(audioButton).click(event => speakMessage(event, message, audioMessage));
+
+    audioMessage.appendChild(audioButton);
+    textMessage.appendChild(audioMessage);
+    chatMessage.appendChild(userAvatar);
+    chatMessage.appendChild(textMessage);
   }
 
   const messagesElement = $("#messages");
 
-  messagesElement.append(row);
+  messagesElement.append(chatMessage);
   messagesElement.animate({
     scrollTop: messagesElement.prop("scrollHeight"),
   }, 500);
+}
+
+function speakMessage(event, message, audioMessage) {
+
+  const textToSpeechRequest = {
+    text: message.text
+  };
+
+  $.ajax({
+    method: 'POST',
+    url: `/chat-app/api/audio/generation`,
+    contentType: "application/json; charset=utf-8",
+    data: toJson(textToSpeechRequest),
+    dataType: "json",
+    success: function(response) {
+      //const responseJson = toJson(response);
+      //logInfo(`TTS RESPONSE [${responseJson}}]`);
+      const audio = new Audio(`data:audio/mp3;base64,${response.audioData}`);
+      audio.controls = true;
+      $(audioMessage).empty().append(audio);
+    },
+    error: function(xhr, status, errorMessage) {
+      const messageJson = toJson(textToSpeechRequest);
+      logInfo(`Failed to generate audio for [${message.text}]: ${status} - ${errorMessage}`);
+    }
+  });
 }
 
 function copyChatSessionUrlToClipboard(event, element, tooltip) {
@@ -498,10 +542,12 @@ messageInput.keypress(event => {
 
 const micButton = $("#micButton");
 const micTooltip = $('<div id="micTooltip" class="tooltip">Record Audio Message</div>').appendTo("body");
+
 micButton.click(event => recordMessage(event));
 micButton.mouseenter(event => showTooltip(micButton, micTooltip));
 
 const sendButton = $("#sendButton");
+
 sendButton.click(event => postTextMessage(event));
 
 $(document).click(function(event) {

@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.chat.web.controller;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -147,13 +148,15 @@ public class ChatApiController {
 
 	@SuppressWarnings("all")
 	@PostMapping("/audio/generation")
-	public AudioMessage textToSpeech(TextMessage message) {
+	public TextToSpeechResponse textToSpeech(@RequestBody TextToSpeechRequest request) {
 
-		Assert.notNull(message, "TextMessage to use in Text-to-Speech, audio conversion is required");
+		TextMessage textMessage = request.toTextMessage();
 
-		AudioMessage audioMessage = getChatService().textToSpeech(message);
+		Assert.notNull(textMessage, "TextMessage to use in Text-to-Speech, audio conversion is required");
 
-		return audioMessage;
+		AudioMessage audioMessage = getChatService().textToSpeech(textMessage);
+
+		return TextToSpeechResponse.from(audioMessage);
 	}
 
 	@SuppressWarnings("all")
@@ -209,13 +212,11 @@ public class ChatApiController {
 	}
 
 	@Data
-	@ToString
 	public static class GetChatUsersRequest {
 		private UUID userId;
 	}
 
 	@Data
-	@ToString
 	public static class PostChatMessageRequest {
 		private String message;
 		private UUID userId;
@@ -233,6 +234,35 @@ public class ChatApiController {
 		}
 
 		private final String id;
+
+	}
+
+	@Data
+	public static class TextToSpeechRequest {
+
+		private String text;
+
+		TextMessage toTextMessage() {
+			return TextMessage.from(getText());
+		}
+	}
+
+	@Getter
+	@ToString
+	@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class TextToSpeechResponse {
+
+		static TextToSpeechResponse from(AudioMessage audioMessage) {
+
+			Assert.notNull(audioMessage, "AudioMessage is required");
+
+			byte[] audioData = audioMessage.getData();
+			String base64AudioData = Base64.getEncoder().encodeToString(audioData);
+
+			return new TextToSpeechResponse(base64AudioData);
+		}
+
+		private final String audioData;
 
 	}
 }
