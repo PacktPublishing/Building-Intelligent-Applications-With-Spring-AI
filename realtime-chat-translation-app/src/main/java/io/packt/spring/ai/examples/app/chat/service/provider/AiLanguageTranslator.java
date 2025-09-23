@@ -72,7 +72,7 @@ public class AiLanguageTranslator implements LanguageTranslator {
 		if (isTranslatable(text, inLanguage, toLanguage)) {
 			if (inLanguage.isNotEqualTo(toLanguage)) {
 
-				TranslationKey translationKey = TranslationKey.from(text, inLanguage);
+				TranslationKey translationKey = TranslationKey.from(text, toLanguage);
 
 				return getTranslationsMap().computeIfAbsent(translationKey, key -> {
 
