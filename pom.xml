@@ -42,6 +42,7 @@
 		<module>spring-ai-tools</module>
 		<module>connect-four-app</module>
 		<module>realtime-message-translation-app</module>
+		<module>shazam-app</module>
 	</modules>
 
 	<licenses>
