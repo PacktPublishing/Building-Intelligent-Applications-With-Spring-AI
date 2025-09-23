@@ -29,6 +29,12 @@ import org.junit.jupiter.api.Test;
  */
 public class IsoLanguagesUnitTests {
 
+	private void assertLanguage(IsoLanguage language, String code, String name) {
+		assertThat(language).isNotNull();
+		assertThat(language.code()).isEqualTo(code);
+		assertThat(language.name()).isEqualTo(name);
+	}
+
 	@Test
 	void allIsoLanguages() {
 
@@ -43,5 +49,16 @@ public class IsoLanguagesUnitTests {
 		assertThat(languages.findBy("ja")).isEqualTo(IsoLanguage.from("ja", "Japanese"));
 		assertThat(languages.findBy("ko")).isEqualTo(IsoLanguage.from("ko", "Korean"));
 		assertThat(languages.findBy("es")).isEqualTo(IsoLanguage.from("es", "Spanish"));
+	}
+
+	@Test
+	void defaultLanguages() {
+
+		assertLanguage(IsoLanguage.CHINESE, "zh", "Chinese");
+		assertLanguage(IsoLanguage.ENGLISH, "en", "English");
+		assertLanguage(IsoLanguage.FRENCH, "fr", "French");
+		assertLanguage(IsoLanguage.GERMAN, "de", "German");
+		assertLanguage(IsoLanguage.JAPANESE, "ja", "Japanese");
+		assertLanguage(IsoLanguage.SPANISH, "es", "Spanish");
 	}
 }
