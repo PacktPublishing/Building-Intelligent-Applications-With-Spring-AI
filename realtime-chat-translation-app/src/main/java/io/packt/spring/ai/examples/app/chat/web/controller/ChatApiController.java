@@ -128,6 +128,17 @@ public class ChatApiController {
 		return PostChatMessageResponse.from(chatMessage);
 	}
 
+	@GetMapping("/{sessionId}/users")
+	public Iterable<ChatUserView> getChatUsers(@PathVariable("sessionId") UUID sessionId) {
+
+		ChatSession session = getChatService().findBy(sessionId);
+		ChatUsers users = session.users();
+
+		return session.stream()
+			.map(user -> ChatUserView.from(user, session.statusOf(user)))
+			.toList();
+	}
+
 	@SuppressWarnings("all")
 	@PutMapping("/{sessionId}/users")
 	public Iterable<ChatUserView> getChatUsers(@PathVariable("sessionId") UUID sessionId,
