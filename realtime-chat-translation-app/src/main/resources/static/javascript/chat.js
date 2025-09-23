@@ -375,7 +375,7 @@ function showMessage(message) {
       <span class="name">${user.name}</span>
       <span class="time">${message.time}</span>
     </div>
-    <div class="text">${escapeHtml(message.text).replace(/\n/g, '<br>')}</div>
+    <div class="msg-txt">${escapeHtml(message.text).replace(/\n/g, '<br>')}</div>
   `;
 
   if (isMe) {
@@ -399,7 +399,7 @@ function showMessage(message) {
     audioButton.style.borderRadius="4px";
     audioButton.style.padding="1px";
     audioButton.innerHTML = '<img src="../img/audio-icon.png" width="16" height="16">';
-    $(audioButton).click(event => speakMessage(event, message, audioMessage));
+    $(audioButton).click(event => speakMessage(event, message, audioButton, audioMessage));
 
     audioMessage.appendChild(audioButton);
     textMessage.appendChild(audioMessage);
@@ -415,7 +415,9 @@ function showMessage(message) {
   }, 500);
 }
 
-function speakMessage(event, message, audioMessage) {
+function speakMessage(event, message, audioButton, audioMessage) {
+
+  audioButton.innerHTML = '<img src="../img/in-progress-circles.gif" width="16" height="16">';
 
   const textToSpeechRequest = {
     text: message.text
