@@ -121,13 +121,16 @@ function resolveUser(message) {
 function showUsers() {
 
   const userBar = $("#userbar");
+  const chatUserId = $("#chatUserId").val();
 
   userBar.empty();
 
   // iterating (value, key) entries
   applicationContext.users.forEach((user, userId) => {
+    const isMe = userId === chatUserId;
+
     const userTile = document.createElement("div");
-    userTile.className = "usertile";
+    userTile.className = "usertile" + (isMe ? " me" : "");
 
     const userStatusElement = document.createElement("div");
     userStatusElement.setAttribute("id", userId);
