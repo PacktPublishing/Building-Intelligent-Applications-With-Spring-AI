@@ -45,6 +45,7 @@ public interface LanguageTranslator {
 			.build();
 	}
 
+	@SuppressWarnings("unused")
 	default TextMessage translate(TextMessage message, IsoLanguage language) {
 		String translatedText = translate(message.getText(), message.getLanguage(), language);
 		return TextMessage.from(translatedText, language);
