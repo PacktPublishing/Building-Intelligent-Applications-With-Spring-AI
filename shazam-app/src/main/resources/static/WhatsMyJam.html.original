@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>What's My Jam?</title>
+	<style>
+		body {
+			margin: 0;
+			height: 100vh;
+			background: #f4f4f4;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			font-family: 'Comic Sans MS', 'Chalkboard', cursive;
+			overflow-x: hidden;
+		}
+
+		/* Hamburger */
+		.hamburger {
+			position: absolute;
+			top: 15px;
+			left: 15px;
+			font-size: 28px;
+			cursor: pointer;
+			z-index: 20;
+		}
+
+		/* Hidden form sidebar */
+		.sidebar {
+			position: fixed;
+			top: 0;
+			left: -320px;
+			width: 300px;
+			height: 100%;
+			background: white;
+			box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+			padding: 20px;
+			transition: left 0.3s ease;
+			z-index: 15;
+		}
+
+		.sidebar.active {
+			left: 0;
+		}
+
+		.sidebar h2 {
+			margin-top: 0;
+		}
+
+		.sidebar label {
+			display: block;
+			margin-top: 10px;
+			font-weight: bold;
+		}
+
+		.sidebar input {
+			width: 100%;
+			padding: 5px;
+			margin-top: 5px;
+		}
+
+		/* Center circular button */
+		.circle-btn {
+			width: 60vmin;
+			height: 60vmin;
+			border-radius: 50%;
+			background: radial-gradient(circle at center, #87cefa, #1e90ff);
+			border: 5px solid #000;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			cursor: pointer;
+			transition: transform 0.2s ease;
+		}
+
+		.circle-btn:active {
+			animation: pulse 0.4s ease;
+		}
+
+		@keyframes pulse {
+			0% { transform: scale(1); }
+			50% { transform: scale(1.1); }
+			100% { transform: scale(1); }
+		}
+
+		/* SVG overlay for arc text */
+		svg {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			pointer-events: none;
+			width: 80%;
+			height: 80%;
+			overflow: visible;
+		}
+
+		text {
+			font-size: 36px;
+			font-weight: bold;
+			fill: black;
+			text-transform: uppercase;
+		}
+	</style>
+</head>
+<body>
+<!-- Hamburger menu -->
+<div class="hamburger" onclick="toggleSidebar()">☰</div>
+
+<!-- Sidebar form -->
+<div class="sidebar" id="sidebar">
+	<h2>Song Info</h2>
+	<label for="album">Album</label>
+	<input type="text" id="album" name="album">
+
+	<label for="artist">Artist</label>
+	<input type="text" id="artist" name="artist">
+
+	<label for="title">Song Title</label>
+	<input type="text" id="title" name="title">
+
+	<label for="file">Choose File</label>
+	<input type="file" id="file" name="file">
+</div>
+
+<!-- Center button with arc text -->
+<div class="circle-btn" onclick="animateBtn(this)">
+	<svg viewBox="0 0 500 500">
+		<defs>
+			<!-- Path just outside the circle -->
+			<path id="curve"
+				  d="M 120,250
+             A 180,180 0 0,1 380,250"
+			/>
+		</defs>
+		<text>
+			<textPath href="#curve" startOffset="10%">
+				WHAT'S MY JAM?
+			</textPath>
+		</text>
+	</svg>
+</div>
+
+<script>
+	function toggleSidebar() {
+		document.getElementById("sidebar").classList.toggle("active");
+	}
+
+	function animateBtn(btn) {
+		btn.classList.remove("pulse");
+		void btn.offsetWidth; // restart animation
+		btn.classList.add("pulse");
+	}
+</script>
+</body>
+</html>

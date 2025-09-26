@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+	<head>
+		<title>Intune with What's My Jam?</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" th:href="@{/css/jam.css}" href="../static/css/jam.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<!-- Upload Song Menu -->
+		<div class="hamburger-menu" onclick="toggleUploadSongMenu()">☰</div>
+
+		<!-- Upload Song Form -->
+		<div id="uploadSongFormContainer" class="uploadSongFormContainer">
+			<form id="uploadSongForm" class="uploadSongForm" method="POST" action="#">
+				<h2>Upload Song</h2>
+				<label for="artist">Artist</label>
+				<input id="artist" name="artist" type="text">
+
+				<label for="album">Album</label>
+				<input id="album" name="album" type="text">
+
+				<label for="title">Song Title</label>
+				<input id="title" name="title" type="text">
+
+				<label for="file">Choose Song</label>
+				<input id="file" name="file" type="file">
+			</form>
+			<div class="uploadSongMenuBar"></div>
+		</div>
+
+		<!-- What's My Jam Button -->
+		<button id="jamButton" class="jam-button" onclick="animateJamButton(this)">
+<!--
+			<svg style="border: 1px solid red;" viewBox="0 0 500 500">
+				<defs>
+					<path id="curve" d="M 220,450 A 180,180 0 0,1 380,250" stroke="black" stroke-width="2" fill="lightblue"/>
+				</defs>
+				<text>
+					<textPath href="#curve" startOffset="10%">
+						WHAT'S MY JAM?
+					</textPath>
+				</text>
+			</svg>
+-->
+			<img id="musicNotesIcon" src="../static/img/MusicNotesIcon.jpg">
+			<img id="inProgressCircles" src="../static/img/InProgressCircles.gif" style="display: none;">
+		</button>
+		<script th:attr="src=@{/js/jam.js}" src="../static/js/jam.js"></script>
+	</body>
+</html>
