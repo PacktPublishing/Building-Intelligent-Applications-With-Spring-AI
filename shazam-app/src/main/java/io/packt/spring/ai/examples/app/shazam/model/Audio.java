@@ -19,9 +19,12 @@ import java.util.Set;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 
+import org.springframework.ai.content.Media;
+import org.springframework.ai.document.Document;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.util.MimeType;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
@@ -31,6 +34,7 @@ import lombok.ToString;
  * Abstract Data Type (ADT) modeling audio data.
  *
  * @author John Blum
+ * @see org.springframework.ai.document.Document
  * @see org.springframework.core.io.Resource
  * @since 0.1.0
  */
@@ -39,6 +43,8 @@ import lombok.ToString;
 public class Audio {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+	protected static final MimeType AUDIO_MP3 = MimeType.valueOf("audio/mp3");
 
 	public static Audio empty() {
 		return from(EMPTY_BYTE_ARRAY);
@@ -81,6 +87,21 @@ public class Audio {
 
 	public int size() {
 		return getData().length;
+	}
+
+	private Media toMedia() {
+
+		return Media.builder()
+			.mimeType(AUDIO_MP3)
+			.data(getResource())
+			.build();
+	}
+
+	public Document toDocument() {
+
+		return Document.builder()
+			.media(toMedia())
+			.build();
 	}
 
 	public enum Category {
