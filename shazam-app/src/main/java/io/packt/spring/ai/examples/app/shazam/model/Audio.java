@@ -15,6 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.util.Base64;
 import java.util.Set;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
@@ -46,6 +47,11 @@ public class Audio {
 
 	protected static final MimeType AUDIO_MP3 = MimeType.valueOf("audio/mpeg");
 
+	public static Audio decode(String data) {
+		Assert.hasText(data, "Data is required");
+		return from(Base64.getDecoder().decode(data));
+	}
+
 	public static Audio empty() {
 		return from(EMPTY_BYTE_ARRAY);
 	}
@@ -74,6 +80,11 @@ public class Audio {
 
 	public Audio(byte[] data) {
 		this.data = data != null ? data : EMPTY_BYTE_ARRAY;
+	}
+
+	public String encode() {
+		byte[] data = getData();
+		return Base64.getEncoder().encodeToString(data);
 	}
 
 	public Audio in(Format format) {
