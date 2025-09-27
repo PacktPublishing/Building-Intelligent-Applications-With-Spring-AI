@@ -21,8 +21,8 @@
 				<label for="album">Album</label>
 				<input id="album" name="album" type="text">
 
-				<label for="title">Song Title</label>
-				<input id="title" name="title" type="text">
+				<label for="songTitle">Song Title</label>
+				<input id="songTitle" name="songTitle" type="text">
 
 				<label for="file">Choose Song</label>
 				<input id="file" name="file" type="file">
@@ -44,8 +44,8 @@
 				</text>
 			</svg>
 -->
-			<img id="musicNotesIcon" src="../static/img/MusicNotesIcon.jpg">
-			<img id="inProgressCircles" src="../static/img/InProgressCircles.gif" style="display: none;">
+			<img id="musicNotesIcon" th:attr="src=@{/img/MusicNotesIcon.jpg}" src="../static/img/MusicNotesIcon.jpg">
+			<img id="inProgressCircles" th:attr="src=@{/img/InProgressCircles.gif}" src="../static/img/InProgressCircles.gif" style="display: none;">
 		</button>
 		<script th:attr="src=@{/js/jam.js}" src="../static/js/jam.js"></script>
 	</body>
