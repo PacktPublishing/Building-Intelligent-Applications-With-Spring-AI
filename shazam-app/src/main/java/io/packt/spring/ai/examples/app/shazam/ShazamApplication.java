@@ -34,6 +34,8 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ShazamApplication extends AbstractDesktopSpringBootApplication {
 
+	private static final String WEBAPP_URI = "/view/recorder";
+
 	public static void main(String[] args) {
 		runSpringServletWebApplication(ShazamApplication.class, asStringArray(), args);
 	}
@@ -41,5 +43,10 @@ public class ShazamApplication extends AbstractDesktopSpringBootApplication {
 	@Bean
 	ApplicationRunner programRunner(Environment environment) {
 		return applicationArguments -> getLogger().info("GOTO URL [{}]", getWebApplicationUrl(environment));
+	}
+
+	@Override
+	protected String getWebApplicationUrl(Environment environment) {
+		return super.getWebApplicationUrl(environment).concat(WEBAPP_URI);
 	}
 }
