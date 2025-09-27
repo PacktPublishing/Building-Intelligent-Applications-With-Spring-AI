@@ -76,10 +76,6 @@ public class Audio {
 		this.data = data != null ? data : EMPTY_BYTE_ARRAY;
 	}
 
-	public Resource getResource() {
-		return new ByteArrayResource(getData());
-	}
-
 	public Audio in(Format format) {
 		this.format = format;
 		return this;
@@ -89,19 +85,23 @@ public class Audio {
 		return getData().length;
 	}
 
-	private Media toMedia() {
-
-		return Media.builder()
-			.mimeType(AUDIO_MP3)
-			.data(getResource())
-			.build();
-	}
-
 	public Document toDocument() {
 
 		return Document.builder()
 			.media(toMedia())
 			.build();
+	}
+
+	public Media toMedia() {
+
+		return Media.builder()
+			.mimeType(AUDIO_MP3)
+			.data(toResource())
+			.build();
+	}
+
+	public Resource toResource() {
+		return new ByteArrayResource(getData());
 	}
 
 	public enum Category {
