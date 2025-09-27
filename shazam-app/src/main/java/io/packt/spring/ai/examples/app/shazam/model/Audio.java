@@ -44,7 +44,7 @@ public class Audio {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
-	protected static final MimeType AUDIO_MP3 = MimeType.valueOf("audio/mp3");
+	protected static final MimeType AUDIO_MP3 = MimeType.valueOf("audio/mpeg");
 
 	public static Audio empty() {
 		return from(EMPTY_BYTE_ARRAY);
