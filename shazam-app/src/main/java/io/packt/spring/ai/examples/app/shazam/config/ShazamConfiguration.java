@@ -19,6 +19,7 @@ import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -26,11 +27,14 @@ import org.springframework.context.annotation.Bean;
  *
  * @author John Blum
  * @see SpringBootConfiguration
+ * @see EnableConfigurationProperties
  * @see EnableChatClient
+ * @see AudioProperties
  * @since 0.1.0
  */
 @SpringBootConfiguration
 @EnableChatClient
+@EnableConfigurationProperties({ AudioProperties.class })
 @SuppressWarnings("unused")
 public class ShazamConfiguration {
 
