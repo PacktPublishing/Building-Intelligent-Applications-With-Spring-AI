@@ -31,13 +31,14 @@ import lombok.ToString;
  *
  * @author John Blum
  * @see Audio
+ * @see AudioSource
  * @since 0.1.0
  */
 @Getter
 @SuppressWarnings("unused")
 @ToString(of = { "artist", "album", "title" })
 @EqualsAndHashCode(of = { "artist", "album", "title" })
-public class Song {
+public class Song implements AudioSource {
 
 	private static final String NO_ALBUM = null;
 
