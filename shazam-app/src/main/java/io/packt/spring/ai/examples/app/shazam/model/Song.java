@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.util.UUID;
+
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,11 +45,13 @@ public class Song {
 		return new Song.Builder();
 	}
 
+	private Audio audio;
+
 	private final String artist;
 	private final String album;
 	private final String title;
 
-	private Audio audio;
+	private final UUID id;
 
 	private Song(String artist, String title) {
 		this(artist, NO_ALBUM, title);
@@ -58,6 +62,7 @@ public class Song {
 		Assert.hasText(artist, "Artist of song is required");
 		Assert.hasText(title, "Song title is required");
 
+		this.id = UUID.randomUUID();
 		this.artist = artist;
 		this.album = album;
 		this.title = title;
