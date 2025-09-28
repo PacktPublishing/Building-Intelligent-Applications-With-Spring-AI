@@ -20,8 +20,6 @@ import java.util.Set;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 
-import org.springframework.ai.content.Media;
-import org.springframework.ai.document.Document;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -94,21 +92,6 @@ public class Audio {
 
 	public int size() {
 		return getData().length;
-	}
-
-	public Document toDocument() {
-
-		return Document.builder()
-			.media(toMedia())
-			.build();
-	}
-
-	public Media toMedia() {
-
-		return Media.builder()
-			.mimeType(AUDIO_MP3)
-			.data(toResource())
-			.build();
 	}
 
 	public Resource toResource() {
