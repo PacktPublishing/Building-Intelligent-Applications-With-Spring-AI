@@ -119,6 +119,7 @@ public class Audio {
 		AAC("Advanced Audio Coding", Category.LOSSY_COMPRESSED),
 		AIFF("Audio Interchange File Format", Category.UNCOMPRESSED),
 		ALAC("Apple Lossless Audio Codec", Category.LOSSLESS_COMPRESSED),
+		AU("Sun Microsystems UNIX Audio File Format", Category.UNCOMPRESSED),
 		FLAC("Free Lossless Audio Codec", Category.LOSSLESS_COMPRESSED),
 		MP3("MPEG-1 Audio Layer III", Category.LOSSLESS_COMPRESSED),
 		WAV("Waveform Audio File Format", Category.UNCOMPRESSED);
