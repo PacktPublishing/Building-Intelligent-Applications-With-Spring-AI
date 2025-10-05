@@ -37,6 +37,7 @@ import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.springframework.ai.document.Document;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -58,6 +59,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Service
+@Profile("AudioTime")
 @Getter(AccessLevel.PROTECTED)
 public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
