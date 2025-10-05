@@ -61,6 +61,11 @@ public abstract class AbstractAudioSplitter implements AudioSplitter {
 			.build();
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getName();
+	}
+
 	/**
 	 * Abstract Data Type (ADT) and Java Record modeling a clip of {@link Audio} data.
 	 *
