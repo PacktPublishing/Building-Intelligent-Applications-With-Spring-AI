@@ -22,13 +22,29 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
  * Interface defining a service for processing music.
  *
  * @author John Blum
+ * @see Audio
+ * @see Song
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public interface MusicService {
 
+	/**
+	 * Searches for a {@link Song} matching the given {@link Audio}.
+	 *
+	 * @param audio {@link Audio} data used to search for and find a matching {@link Song}.
+	 * @return a {@link Song} matching the given {@link Audio}.
+	 * @see Audio
+	 * @see Song
+	 */
 	Song search(Audio audio);
 
+	/**
+	 * Stores the given {@link Song} and its {@link Audio} data in the database.
+	 *
+	 * @param song {@link Song} to store.
+	 * @see Song
+	 */
 	void store(Song song);
 
 }
