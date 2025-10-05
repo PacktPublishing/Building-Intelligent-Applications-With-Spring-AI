@@ -20,6 +20,7 @@
 	<url/>
 
 	<properties>
+		<tritonus.version>0.3.7.4</tritonus.version>
 	</properties>
 
 	<dependencies>
@@ -30,6 +31,32 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+<!--
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>tritonus-all</artifactId>
+			<version>${tritonus.version}</version>
+		</dependency>
+-->
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>tritonus-share</artifactId>
+			<version>${tritonus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tritonus</groupId>
+			<artifactId>javalayer</artifactId>
+			<version>0.1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/javalayer-0.1.0.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.tritonus</groupId>
+			<artifactId>tritonus_mp3</artifactId>
+			<version>0.3.6</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/tritonus_mp3-0.3.6.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
