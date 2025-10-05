@@ -262,8 +262,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		@Getter(AccessLevel.PROTECTED)
 		static class Builder {
 
-			private static final Duration FIVE_SECONDS = Duration.ofSeconds(5);
-
 			private static final String MPEG = "mpeg";
 
 			private final Audio audio;
@@ -286,9 +284,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			}
 
 			private AudioProperties defaultAudioProperties() {
-				AudioProperties audioProperties = new AudioProperties();
-				audioProperties.setClipLength(FIVE_SECONDS);
-				return audioProperties;
+				return new AudioProperties();
 			}
 
 			private AudioProperties resolveAudioProperties(AudioProperties audioProperties) {
@@ -395,13 +391,15 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		@Override
 		protected int getBitRate() {
 			int bitRate = super.getBitRate();
-			return isSpecified(bitRate) ? bitRate : MP3_BIT_RATE;
+			int configuredBitRate = getAudioProperties().getMp3BitRate(MP3_BIT_RATE);
+			return isSpecified(bitRate) ? bitRate : configuredBitRate;
 		}
 
 		@Override
 		protected int getSampleRate() {
 			int sampleRate = super.getSampleRate();
-			return isSpecified(sampleRate) ? sampleRate : MP3_SAMPLE_RATE;
+			int configuredSampleRate = getAudioProperties().getMp3SampleRate(MP3_SAMPLE_RATE);
+			return isSpecified(sampleRate) ? sampleRate : configuredSampleRate;
 		}
 
 		@Override
