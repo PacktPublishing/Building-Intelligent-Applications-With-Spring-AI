@@ -33,6 +33,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioReadException;
+import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.springframework.ai.document.Document;
@@ -139,7 +140,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	@SuppressWarnings("unused")
 	interface AudioClipCalculator {
 
-		int BITS_PER_BYTE = 8;
+		int BITS_PER_BYTE = NumberUtils.BITS_PER_BYTE;
 		int DEFAULT_COMPRESSION_RATIO = 1; // measured as ?:1, for example 10:1 (10 to 1); 1:1 is no compression
 		int HUMAN_HEARING_FREQUENCY = 20_000; // 20,000 Hz (20 kHz)
 		int NYQUIST_FREQUENCY = 22_050; // 22.05 kHz

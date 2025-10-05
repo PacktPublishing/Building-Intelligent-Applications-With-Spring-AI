@@ -23,6 +23,8 @@ package io.packt.spring.ai.examples.app.shazam.support;
  */
 public abstract class NumberUtils {
 
+	public static final int BITS_PER_BYTE = 8;
+
 	public static float asFloat(int value) {
 		return Integer.valueOf(value).floatValue();
 	}
