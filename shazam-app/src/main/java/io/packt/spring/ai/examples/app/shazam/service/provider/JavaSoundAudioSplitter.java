@@ -103,7 +103,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 	private int calculateAudioBufferSize(Audio audio, AudioFormat audioFormat) {
 
-		return AbstractAudioClipper.from(audio)
+		return AbstractAudioClipCalculator.from(audio)
 			.using(getAudioProperties())
 			.in(audioFormat)
 			.build()
@@ -137,7 +137,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	 */
 	@FunctionalInterface
 	@SuppressWarnings("unused")
-	interface AudioClipper {
+	interface AudioClipCalculator {
 
 		int BITS_PER_BYTE = 8;
 		int DEFAULT_COMPRESSION_RATIO = 1; // measured as ?:1, for example 10:1 (10 to 1); 1:1 is no compression
@@ -150,9 +150,9 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 	@SuppressWarnings("unused")
 	@Getter(AccessLevel.PROTECTED)
-	static abstract class AbstractAudioClipper implements AudioClipper {
+	static abstract class AbstractAudioClipCalculator implements AudioClipCalculator {
 
-		static AbstractAudioClipper.Builder from(Audio audio) {
+		static AbstractAudioClipCalculator.Builder from(Audio audio) {
 			return new Builder(audio);
 		}
 
@@ -162,7 +162,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		private final AudioProperties audioProperties;
 
-		AbstractAudioClipper(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
+		AbstractAudioClipCalculator(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
 
 			Assert.notNull(audio, "Audio is required");
 			Assert.notNull(audioFormat, "AudioFormat is required");
@@ -305,10 +305,10 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				return this;
 			}
 
-			AbstractAudioClipper build() {
+			AbstractAudioClipCalculator build() {
 				return isMpegAudioFormat()
-					? new MpegLayer3AudioClipper(getAudio(), getAudioFormat(), getAudioProperties())
-					: new CompactDiscAudioClipper(getAudio(), getAudioFormat(), getAudioProperties());
+					? new MpegLayer3AudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties())
+					: new CompactDiscAudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties());
 			}
 		}
 	}
@@ -355,13 +355,13 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	// CD
-	static class CompactDiscAudioClipper extends AbstractAudioClipper implements CompactDiscMetadata {
+	static class CompactDiscAudioClipCalculator extends AbstractAudioClipCalculator implements CompactDiscMetadata {
 
 		// 44,100 samples per second * 16 bits per sample * 2 channels (stereo) uncompressed
 		// 1,411,200 bits per second, 1411.2 kbps
 		static final int CD_BIT_RATE = CD_SAMPLE_RATE * CD_SAMPLE_SIZE_IN_BITS * AudioChannels.STEREO.value();
 
-		CompactDiscAudioClipper(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
+		CompactDiscAudioClipCalculator(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
 			super(audio, audioFormat, audioProperties);
 		}
 
@@ -385,9 +385,9 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	// MP3
-	static class MpegLayer3AudioClipper extends AbstractAudioClipper implements MpegLayer3Metadata {
+	static class MpegLayer3AudioClipCalculator extends AbstractAudioClipCalculator implements MpegLayer3Metadata {
 
-		MpegLayer3AudioClipper(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
+		MpegLayer3AudioClipCalculator(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
 			super(audio, audioFormat, audioProperties);
 		}
 
