@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.time.Duration;
 import java.util.List;
@@ -139,9 +140,14 @@ class JavaSoundAudioSplitterIntegrationTests {
 	void readsAndSplitsMp3() {
 
 		Resource mp3 = new ClassPathResource("/Matchbox20-Unwell.mp3");
+
+		assumeThat(mp3.exists()).describedAs("MP3 [%s] is not present", mp3).isTrue();
+
 		Audio audio = Audio.from(mp3).havingDuration(Duration.ofMinutes(3).plusSeconds(49));
 
 		List<Document> documents = this.audioSplitter.split(audio);
+
+		System.out.printf("Documents Size [%d]%n", documents.size());
 
 		assertThat(documents).isNotNull();
 		assertThat(documents).hasSizeGreaterThan(22).hasSizeLessThan(35);
