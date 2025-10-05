@@ -17,6 +17,8 @@ package io.packt.spring.ai.examples.app.shazam.config;
 
 import java.time.Duration;
 
+import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
@@ -32,6 +34,79 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "shazam.audio")
 public class AudioProperties {
 
-	private Duration clipLength;
+	// 192 kbps / 8 bits per bytes * 5 seconds
+	public static final int DEFAULT_AUDIO_BUFFER_SIZE = 120_000;
+	public static final int DEFAULT_AUDIO_BUFFER_DIVISOR = 20;
+	public static final int DEFAULT_MP3_BIT_RATE = 128_000;
+	public static final int DEFAULT_MP3_SAMPLE_RATE = 22_050;
 
+	public static final Duration DEFAULT_AUDIO_CLIP_LENGTH = Duration.ofSeconds(5);
+
+	private AudioBuffer buffer = new AudioBuffer();
+
+	private AudioClip clip = new AudioClip();
+
+	private Mp3 mp3 = new Mp3();
+
+	public int getBufferDivisor() {
+		return getBufferDivisor(DEFAULT_AUDIO_BUFFER_DIVISOR);
+	}
+
+	public int getBufferDivisor(int defaultAudioBufferDivisor) {
+		Integer configuredAudioBufferDivisor = getBuffer().getDivisor();
+		return configuredAudioBufferDivisor != null ? configuredAudioBufferDivisor : defaultAudioBufferDivisor;
+	}
+
+	public int getBufferSize() {
+		return getBufferSize(DEFAULT_AUDIO_BUFFER_SIZE);
+	}
+
+	public int getBufferSize(int defaultAudioBufferSize) {
+		Integer configuredByteBufferSize = getBuffer().getSize();
+		return configuredByteBufferSize != null ? configuredByteBufferSize : defaultAudioBufferSize;
+	}
+
+	public Duration getClipLength() {
+		return getClipLength(DEFAULT_AUDIO_CLIP_LENGTH);
+	}
+
+	public Duration getClipLength(Duration defaultAudioClipLength) {
+		Duration configuredAudioClipLength = getClip().getLength();
+		return TimeUtils.isNotZero(configuredAudioClipLength) ? configuredAudioClipLength : defaultAudioClipLength;
+	}
+
+	public int getMp3BitRate() {
+		return getMp3BitRate(DEFAULT_MP3_BIT_RATE);
+	}
+
+	public int getMp3BitRate(int defaultMp3BitRate) {
+		Integer configuredMp3BitRate = getMp3().getBitRate();
+		return configuredMp3BitRate != null ? configuredMp3BitRate : defaultMp3BitRate;
+	}
+
+	public int getDefaultMp3SampleRate() {
+		return getMp3SampleRate(DEFAULT_MP3_SAMPLE_RATE);
+	}
+
+	public int getMp3SampleRate(int defaultMp3SampleRate) {
+		Integer configuredMp3SampleRate = getMp3().getSampleRate();
+		return configuredMp3SampleRate != null ? configuredMp3SampleRate : defaultMp3SampleRate;
+	}
+
+	@Data
+	public static class AudioBuffer {
+		private Integer divisor;
+		private Integer size;
+	}
+
+	@Data
+	public static class AudioClip {
+		private Duration length;
+	}
+
+	@Data
+	public static class Mp3 {
+		private Integer bitRate;
+		private Integer sampleRate;
+	}
 }
