@@ -15,6 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import lombok.ToString;
  * Abstract Data Type (ADT) modeling audio data.
  *
  * @author John Blum
+ * @see java.time.Duration
  * @see org.springframework.ai.document.Document
  * @see org.springframework.core.io.Resource
  * @since 0.1.0
@@ -47,7 +49,8 @@ public class Audio {
 
 	public static Audio decode(String data) {
 		Assert.hasText(data, "Data is required");
-		return from(Base64.getDecoder().decode(data));
+		byte[] audioData = Base64.getDecoder().decode(data);
+		return from(audioData);
 	}
 
 	public static Audio empty() {
@@ -74,6 +77,8 @@ public class Audio {
 
 	private final byte[] data;
 
+	private Duration duration;
+
 	private Format format;
 
 	public Audio(byte[] data) {
@@ -87,6 +92,11 @@ public class Audio {
 
 	public Audio in(Format format) {
 		this.format = format;
+		return this;
+	}
+
+	public Audio ofDuration(Duration duration) {
+		this.duration = duration;
 		return this;
 	}
 
