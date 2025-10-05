@@ -27,6 +27,10 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 @SuppressWarnings("unused")
 public class AudioReadException extends RuntimeException {
 
+	public static AudioReadException because(String message, Throwable cause) {
+		return new AudioReadException(message, cause);
+	}
+
 	public AudioReadException() {
 
 	}
