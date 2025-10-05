@@ -34,10 +34,11 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ShazamApplication extends AbstractDesktopSpringBootApplication {
 
+	private static final String SHAZAM_APP_PROFILE = "shazam-app";
 	private static final String WEBAPP_URI = "/view/recorder";
 
 	public static void main(String[] args) {
-		runSpringServletWebApplication(ShazamApplication.class, asStringArray(), args);
+		runSpringServletWebApplication(ShazamApplication.class, asStringArray(SHAZAM_APP_PROFILE), args);
 	}
 
 	@Bean
