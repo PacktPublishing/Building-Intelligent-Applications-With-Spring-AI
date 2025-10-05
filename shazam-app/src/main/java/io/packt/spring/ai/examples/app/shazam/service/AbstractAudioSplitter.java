@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service;
 
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
+
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.UuidIdGenerator;
@@ -114,5 +116,27 @@ public abstract class AbstractAudioSplitter implements AudioSplitter {
 		public int size() {
 			return audio().size();
 		}
+	}
+
+	// CD
+	protected interface CompactDiscMetadata {
+
+		int CD_SAMPLE_RATE = 44_100; // 44,100 Hz (44.1 kHz); 44,100 samples per second
+		int CD_SAMPLE_SIZE_IN_BITS = 16; // AKA Bit Depth | Bit Resolution
+
+	}
+
+	// MP3
+	@SuppressWarnings("unused")
+	protected interface MpegLayer3Metadata {
+
+		int MP3_BIT_RATE_STANDARD_QUALITY = 128_000; // 128 kbps (128,000 bits per second)
+		int MP3_BIT_RATE_HIGH_QUALITY = 320_000; // 320 kbps; low compression
+		int MP3_BIT_RATE_LOW_QUALITY = 64_000; // 64 kbps; high compression
+		int MP3_BIT_RATE_AVG_QUALITY = (MP3_BIT_RATE_STANDARD_QUALITY + MP3_BIT_RATE_LOW_QUALITY) / 2;
+		int MP3_BIT_RATE = MP3_BIT_RATE_STANDARD_QUALITY;
+		int MP3_SAMPLE_RATE = 22_050;
+		int MP3_SAMPLE_SIZE_IN_BITS = Math.round(asFloat(MP3_BIT_RATE) / asFloat(MP3_SAMPLE_RATE));
+
 	}
 }

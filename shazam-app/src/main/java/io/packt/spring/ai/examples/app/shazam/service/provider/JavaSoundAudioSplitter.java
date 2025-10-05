@@ -15,7 +15,6 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import java.io.IOException;
@@ -356,10 +355,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	// CD
-	static class CompactDiscAudioClipper extends AbstractAudioClipper {
-
-		static final int CD_SAMPLE_RATE = 44_100; // 44,100 Hz (44.1 kHz); 44,100 samples per second
-		static final int CD_SAMPLE_SIZE_IN_BITS = 16; // AKA Bit Depth | Bit Resolution
+	static class CompactDiscAudioClipper extends AbstractAudioClipper implements CompactDiscMetadata {
 
 		// 44,100 samples per second * 16 bits per sample * 2 channels (stereo) uncompressed
 		// 1,411,200 bits per second, 1411.2 kbps
@@ -389,16 +385,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	// MP3
-	@SuppressWarnings("unused")
-	static class MpegLayer3AudioClipper extends AbstractAudioClipper {
-
-		static final int MP3_BIT_RATE_STANDARD_QUALITY = 128_000; // 128 kbps (128,000 bits per second)
-		static final int MP3_BIT_RATE_HIGH_QUALITY = 320_000; // 320 kbps; low compression
-		static final int MP3_BIT_RATE_LOW_QUALITY = 64_000; // 64 kbps; high compression
-		static final int MP3_BIT_RATE_AVG_QUALITY = (MP3_BIT_RATE_STANDARD_QUALITY + MP3_BIT_RATE_LOW_QUALITY) / 2;
-		static final int MP3_BIT_RATE = MP3_BIT_RATE_STANDARD_QUALITY;
-		static final int MP3_SAMPLE_RATE = 22_050;
-		static final int MP3_SAMPLE_SIZE_IN_BITS = Math.round(asFloat(MP3_BIT_RATE) / asFloat(MP3_SAMPLE_RATE));
+	static class MpegLayer3AudioClipper extends AbstractAudioClipper implements MpegLayer3Metadata {
 
 		MpegLayer3AudioClipper(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
 			super(audio, audioFormat, audioProperties);
