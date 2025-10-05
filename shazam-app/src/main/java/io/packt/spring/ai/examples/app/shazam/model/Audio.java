@@ -90,13 +90,13 @@ public class Audio {
 		return Base64.getEncoder().encodeToString(data);
 	}
 
-	public Audio in(Format format) {
-		this.format = format;
+	public Audio havingDuration(Duration duration) {
+		this.duration = duration;
 		return this;
 	}
 
-	public Audio ofDuration(Duration duration) {
-		this.duration = duration;
+	public Audio in(Format format) {
+		this.format = format;
 		return this;
 	}
 
