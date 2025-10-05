@@ -1,0 +1,170 @@
+/*
+ * Copyright 2024 Author or Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.packt.spring.ai.examples.app.shazam.service.provider;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Duration;
+import java.util.List;
+
+import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
+import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter.AudioClip;
+
+import org.junit.jupiter.api.Test;
+
+import org.springframework.ai.document.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+/**
+ * Integration Tests for {@link JavaSoundAudioSplitter}.
+ *
+ * @author John Blum
+ * @see JavaSoundAudioSplitter
+ * @see org.junit.jupiter.api.Test
+ * @see org.springframework.boot.test.context.SpringBootTest
+ * @since 0.1.0
+ */
+@SpringBootTest
+@SuppressWarnings("unused")
+class JavaSoundAudioSplitterIntegrationTests {
+
+	@Autowired
+	private AudioSplitter audioSplitter;
+
+	private byte asByte(int integer) {
+		return (byte) integer;
+	}
+
+	@Test
+	void audioClipHalfEven() {
+
+		byte[] audioData = {
+			asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE), asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE)
+		};
+
+		AudioClip audioClip = AudioClip.from(audioData);
+
+		assertThat(audioClip).isNotNull();
+		assertThat(audioClip.size()).isEqualTo(audioData.length);
+
+		AudioClip firstHalf = audioClip.firstHalf();
+
+		assertThat(firstHalf).isNotNull();
+		assertThat(firstHalf.size()).isEqualTo(4);
+		assertThat(firstHalf.data()).contains(asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE));
+
+		AudioClip secondHalf = audioClip.secondHalf();
+
+		assertThat(secondHalf).isNotNull();
+		assertThat(secondHalf.size()).isEqualTo(4);
+		assertThat(secondHalf.data()).contains(asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE));
+
+		AudioClip bothHalves = firstHalf.merge(secondHalf);
+
+		assertThat(bothHalves).isNotNull();
+		assertThat(bothHalves.size()).isEqualTo(audioData.length);
+		assertThat(bothHalves.data()).contains(audioData);
+	}
+
+	@Test
+	void audioClipHalfOdd() {
+
+		byte[] audioData = {
+			asByte(0xD), asByte(0xE), asByte(0xC), asByte(0xA), asByte(0xF)
+		};
+
+		AudioClip audioClip = AudioClip.from(audioData);
+
+		assertThat(audioClip).isNotNull();
+		assertThat(audioClip.size()).isEqualTo(audioData.length);
+
+		AudioClip firstHalf = audioClip.firstHalf();
+
+		assertThat(firstHalf).isNotNull();
+		assertThat(firstHalf.size()).isEqualTo(2);
+		assertThat(firstHalf.data()).contains(asByte(0xD), asByte(0xE));
+
+		AudioClip secondHalf = audioClip.secondHalf();
+
+		assertThat(secondHalf).isNotNull();
+		assertThat(secondHalf.size()).isEqualTo(3);
+		assertThat(secondHalf.data()).contains(asByte(0xC), asByte(0xA), asByte(0xF));
+
+		AudioClip bothHalves = firstHalf.merge(secondHalf);
+
+		assertThat(bothHalves).isNotNull();
+		assertThat(bothHalves.size()).isEqualTo(audioData.length);
+		assertThat(bothHalves.data()).contains(audioData);
+	}
+
+	/*
+	 * Matchbox20-Unwell.mp3 METADATA
+	 *
+	 * 3:49 minutes & seconds of audio / 229 seconds of audio
+	 * ~2.3 MB of audio / 2,287,671 bytes of audio / 18,301,368 bits of audio
+	 * 22.05 kHz (22,050 Hz) == samples per second
+	 * 22.05 kHz * 229 seconds == 5,049,450 samples
+	 * How many bits per sample? (MP3 compression skews the calculation)
+	 *
+	 * 18,301,368 bits / 229 seconds == ~79,919 bits per second (bit rate)
+	 * ~79,919 bits per second / 22,050 samples per second ==  ~3.62 bits / sample
+	 *
+	 * 18,301,368 bits / 320,000 bps = ~57 seconds
+	 * 18,301,368 bits / 128,000 bps = ~143 seconds
+	 * 18,301,368 bits / 64,000 bps = ~286 seconds
+	 * 18,301,368 bits / (128k + 64k = 192k / 2 = 96 kbps) = ~191 seconds
+	 */
+	@Test
+	void readsAndSplitsMp3() {
+
+		Resource mp3 = new ClassPathResource("/Matchbox20-Unwell.mp3");
+		Audio audio = Audio.from(mp3).havingDuration(Duration.ofMinutes(3).plusSeconds(49));
+
+		List<Document> documents = this.audioSplitter.split(audio);
+
+		assertThat(documents).isNotNull();
+		assertThat(documents).hasSizeGreaterThan(22).hasSizeLessThan(35);
+
+		int documentsSize = 0;
+
+		for (Document document : documents) {
+			String data = document.getText();
+			Audio decodedAudio = Audio.decode(data);
+			documentsSize += decodedAudio.size();
+		}
+
+		// the size of the Documents in bytes should be greater than the Audio size in bytes given the overlap
+		assertThat(documentsSize).isGreaterThan(audio.size());
+	}
+
+	@SpringBootConfiguration
+	@EnableConfigurationProperties(AudioProperties.class)
+	static class TestConfiguration {
+
+		@Bean
+		AudioSplitter audioSplitter(AudioProperties audioProperties) {
+			return new JavaSoundAudioSplitter(audioProperties);
+		}
+	}
+}
