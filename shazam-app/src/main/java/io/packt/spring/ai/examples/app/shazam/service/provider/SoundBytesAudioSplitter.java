@@ -121,6 +121,8 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		}
 	}
 
+	@Service
+	@Profile("CD")
 	public static class CompactDiscSoundBytesCalculator extends AbstractSoundBytesCalculator implements CompactDiscMetadata {
 
 		protected static final int CD_CHANNELS = 2; // Stereo
@@ -142,6 +144,8 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		}
 	}
 
+	@Service
+	@Profile("MP3")
 	public static class MpegLayer3SoundBytesCalculator extends AbstractSoundBytesCalculator implements MpegLayer3Metadata {
 
 		public MpegLayer3SoundBytesCalculator(AudioProperties audioProperties) {
@@ -160,6 +164,8 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		}
 	}
 
+	@Service
+	@Profile({ "!CD", "!MP3" })
 	public static class SpaceSoundBytesCalculator extends AbstractSoundBytesCalculator {
 
 		public SpaceSoundBytesCalculator(AudioProperties audioProperties) {
