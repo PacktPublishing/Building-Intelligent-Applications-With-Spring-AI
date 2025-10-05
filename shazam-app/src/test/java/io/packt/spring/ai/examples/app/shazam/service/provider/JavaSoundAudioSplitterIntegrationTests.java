@@ -15,6 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
+import static io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter.AudioClip;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
@@ -24,7 +25,6 @@ import java.util.List;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter.AudioClip;
 
 import org.junit.jupiter.api.Test;
 

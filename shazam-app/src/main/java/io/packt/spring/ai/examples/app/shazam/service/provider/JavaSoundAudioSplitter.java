@@ -31,20 +31,17 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioReadException;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
-import io.packt.spring.ai.examples.app.shazam.support.UuidIdGenerator;
 
-import org.slf4j.Logger;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@link AudioSplitter} implementation using the Java Sound API.
@@ -60,16 +57,12 @@ import lombok.extern.slf4j.Slf4j;
  * @see <a href="https://www.oracle.com/java/technologies/java-sound-api.html">Java Sound API</a>
  * @since 0.1.0
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public class JavaSoundAudioSplitter implements AudioSplitter {
+public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
-	private final AudioProperties audioProperties;
-
-	protected Logger getLogger() {
-		return log;
+	public JavaSoundAudioSplitter(AudioProperties audioProperties) {
+		super(audioProperties);
 	}
 
 	@Override
@@ -109,14 +102,6 @@ public class JavaSoundAudioSplitter implements AudioSplitter {
 		}
 	}
 
-	private Document buildDocument(AudioClip audioClip) {
-
-		return Document.builder()
-			.idGenerator(UuidIdGenerator.INSTANCE)
-			.text(audioClip.encode())
-			.build();
-	}
-
 	private int calculateAudioBufferSize(Audio audio, AudioFormat audioFormat) {
 
 		return AbstractAudioClipper.from(audio)
@@ -146,62 +131,6 @@ public class JavaSoundAudioSplitter implements AudioSplitter {
 	private AudioInputStream toInputStream(Audio audio) throws IOException, UnsupportedAudioFileException {
 		InputStream in = audio.toResource().getInputStream();
 		return AudioSystem.getAudioInputStream(in);
-	}
-
-	/**
-	 * Abstract Data Type (ADT) and Java Record modeling a clip of {@link Audio} data.
-	 *
-	 * @param audio {@link Audio} clip
-	 * @see Audio
-	 */
-	record AudioClip(Audio audio) {
-
-		AudioClip {
-			Assert.notNull(audio, "Audio is required");
-		}
-
-		static AudioClip from(byte[] audioData) {
-			return new AudioClip(Audio.from(audioData));
-		}
-
-		byte[] data() {
-			return audio().getData();
-		}
-
-		byte[] dataCopy(int position, int length) {
-			byte[] dataCopy = new byte[length];
-			System.arraycopy(data(), position, dataCopy, 0, length);
-			return dataCopy;
-		}
-
-		String encode() {
-			return audio().encode();
-		}
-
-		AudioClip firstHalf() {
-			int length = size() / 2;
-			byte[] audioData = dataCopy(0, length);
-			return AudioClip.from(audioData);
-		}
-
-		AudioClip merge(AudioClip audioClip) {
-			byte[] audioData = new byte[size() + audioClip.size()];
-			System.arraycopy(data(), 0, audioData, 0, size());
-			System.arraycopy(audioClip.data(), 0, audioData, size(), audioClip.size());
-			return AudioClip.from(audioData);
-		}
-
-		AudioClip secondHalf() {
-			int size = size();
-			int halfSize = size / 2;
-			int length = size - halfSize;
-			byte[] audioData = dataCopy(halfSize, length);
-			return AudioClip.from(audioData);
-		}
-
-		int size() {
-			return audio().size();
-		}
 	}
 
 	/**
