@@ -27,10 +27,10 @@ import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 
-import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -56,7 +56,18 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 
 	public SoundBytesAudioSplitter(AudioProperties audioProperties, SoundBytesCalculator calculator) {
 		super(audioProperties);
-		this.calculator = calculator;
+		this.calculator = assertSoundBytesCalculator(calculator);
+	}
+
+	private SoundBytesCalculator assertSoundBytesCalculator(SoundBytesCalculator calculator) {
+		Assert.notNull(calculator, "SoundBytesCalculator is required");
+		return calculator;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		getLogger().info("Using [{}]", calculator);
 	}
 
 	@Override
