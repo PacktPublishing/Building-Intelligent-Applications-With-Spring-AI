@@ -45,7 +45,7 @@ import org.springframework.core.io.Resource;
  * @see org.springframework.boot.test.context.SpringBootTest
  * @since 0.1.0
  */
-@SpringBootTest
+@SpringBootTest(properties = "shazam.audio.clip.length=5s")
 @SuppressWarnings("unused")
 class JavaSoundAudioSplitterIntegrationTests {
 
