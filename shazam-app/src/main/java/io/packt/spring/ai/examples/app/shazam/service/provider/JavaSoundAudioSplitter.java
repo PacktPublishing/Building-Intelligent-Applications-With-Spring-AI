@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import java.io.IOException;
@@ -33,7 +35,6 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioReadException;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.springframework.ai.document.Document;
@@ -140,9 +141,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	 */
 	@FunctionalInterface
 	@SuppressWarnings("unused")
-	interface AudioClipCalculator {
+	public interface AudioClipCalculator {
 
-		int BITS_PER_BYTE = NumberUtils.BITS_PER_BYTE;
 		int DEFAULT_COMPRESSION_RATIO = 1; // measured as ?:1, for example 10:1 (10 to 1); 1:1 is no compression
 		int HUMAN_HEARING_FREQUENCY = 20_000; // 20,000 Hz (20 kHz)
 		int NYQUIST_FREQUENCY = 22_050; // 22.05 kHz
@@ -153,7 +153,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 	@SuppressWarnings("unused")
 	@Getter(AccessLevel.PROTECTED)
-	static abstract class AbstractAudioClipCalculator implements AudioClipCalculator {
+	protected static abstract class AbstractAudioClipCalculator implements AudioClipCalculator {
 
 		static AbstractAudioClipCalculator.Builder from(Audio audio) {
 			return new Builder(audio);
@@ -165,7 +165,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		private final AudioProperties audioProperties;
 
-		AbstractAudioClipCalculator(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
+		protected AbstractAudioClipCalculator(Audio audio, AudioFormat audioFormat, AudioProperties audioProperties) {
 
 			Assert.notNull(audio, "Audio is required");
 			Assert.notNull(audioFormat, "AudioFormat is required");
@@ -178,8 +178,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		protected int getAudioClipLengthInSeconds() {
 			Duration audioClipLength = getAudioProperties().getClipLength();
-			long seconds = audioClipLength.toSeconds();
-			return asInt(seconds);
+			long audioClipLengthInSeconds = audioClipLength.toSeconds();
+			return asInt(audioClipLengthInSeconds);
 		}
 
 		protected AudioChannels getAudioChannels() {
@@ -191,7 +191,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		}
 
 		protected int getAudioSizeInBytes() {
-			return getAudio().getData().length;
+			return getAudio().size();
 		}
 
 		protected int getAudioSizeInBits() {
@@ -200,26 +200,32 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		// Number of Bits per Second (measured in kilobits per second (kbps))
 		// For example, if 128 kbps, then returns 128,000
+		// AKA Bit Depth | Bit Resolution
 		protected int getBitRate() {
+
+			if (isSampleRatePresent() && isSampleSizePresent()) {
+				int sampleRate = getSampleRate();
+				int sampleSize = getTotalSampleSizeInBits();
+				return sampleRate * sampleSize;
+			}
 
 			Duration audioDuration = getAudioDuration();
 
 			if (TimeUtils.isNotZero(audioDuration)) {
-				int audioSizeInBits = getAudioSizeInBits();
-				int seconds = asInt(audioDuration.getSeconds());
-				return audioSizeInBits / seconds;
+				float audioSizeInBits = getAudioSizeInBits();
+				float seconds = asInt(audioDuration.getSeconds());
+				return Math.round(audioSizeInBits / seconds);
 			}
 
 			return AudioSystem.NOT_SPECIFIED;
 		}
 
-		// AKA Bit Depth
-		protected int getBitResolution() {
-			return getBitRate() / getSampleRate();
-		}
-
 		protected int getCompressionRatio() {
 			return DEFAULT_COMPRESSION_RATIO;
+		}
+
+		protected boolean isSampleRatePresent() {
+			return isSpecified(getSampleRate());
 		}
 
 		// Number of Samples / Second (measured in Hertz (Hz) or Kilohertz (kHz))
@@ -228,26 +234,35 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			return asInt(audioFormatSampleRate);
 		}
 
+		protected boolean isSampleSizePresent() {
+			return isSpecified(getSampleSizeInBits());
+		}
+
 		// Number of Bits / Sample
 		protected int getSampleSizeInBits() {
-			int audioFormatSampleSize = getAudioFormat().getSampleSizeInBits();
-			return isSpecified(audioFormatSampleSize) ? audioFormatSampleSize : getBitResolution();
+			return getAudioFormat().getSampleSizeInBits();
 		}
 
-		// Number of AudioChannels * Number of Bits / Sample
+		// Number of Bits / Sample * Number of Audio Channels
 		protected int getTotalSampleSizeInBits() {
-			return getAudioChannels().value() * getSampleSizeInBits();
+			return getSampleSizeInBits() * getAudioChannels().value();
 		}
 
-		// AKA Bit Rate
+		protected boolean isSpecified(int audioValue) {
+			return Math.max(audioValue, AudioSystem.NOT_SPECIFIED) > 0;
+		}
+
+		// @see getBitRate()
 		protected int bitsPerSecond() {
-			return getTotalSampleSizeInBits() * getSampleRate();
+			return getBitRate();
 		}
 
+		@SuppressWarnings("all")
 		protected int bytesPerSecond() {
 			int bitsPerSecond = bitsPerSecond();
-			int bytesPerSecond = bitsPerSecond / BITS_PER_BYTE;
-			return bytesPerSecond / getCompressionRatio();
+			int bytesPerSecond = Math.round(asFloat(bitsPerSecond) / BITS_PER_BYTE);
+			int compressedBytesPerSecond = bytesPerSecond / getCompressionRatio();
+			return compressedBytesPerSecond;
 		}
 
 		@Override
@@ -255,10 +270,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			int bytesPerSecond = bytesPerSecond();
 			int seconds = getAudioClipLengthInSeconds();
 			return bytesPerSecond * seconds;
-		}
-
-		protected boolean isSpecified(int audioValue) {
-			return Math.max(audioValue, AudioSystem.NOT_SPECIFIED) > 0;
 		}
 
 		@Getter(AccessLevel.PROTECTED)
@@ -305,6 +316,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			}
 
 			AbstractAudioClipCalculator build() {
+
 				return isMpegAudioFormat()
 					? new MpegLayer3AudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties())
 					: new CompactDiscAudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties());
@@ -313,7 +325,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	@SuppressWarnings("unused")
-	enum AudioChannels {
+	public enum AudioChannels {
 
 		MONO(1), STEREO(2);
 
@@ -330,6 +342,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		}
 
 		static AudioChannels from(AudioFormat audioFormat) {
+
 			try {
 				return from(audioFormat.getChannels());
 			}
@@ -402,12 +415,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			int sampleRate = super.getSampleRate();
 			int configuredSampleRate = getAudioProperties().getMp3SampleRate(MP3_SAMPLE_RATE);
 			return isSpecified(sampleRate) ? sampleRate : configuredSampleRate;
-		}
-
-		@Override
-		protected int getSampleSizeInBits() {
-			int sampleSize = super.getSampleSizeInBits();
-			return isSpecified(sampleSize) ? sampleSize : MP3_SAMPLE_SIZE_IN_BITS;
 		}
 	}
 }

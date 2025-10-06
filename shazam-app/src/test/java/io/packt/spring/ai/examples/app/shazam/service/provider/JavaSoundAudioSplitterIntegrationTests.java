@@ -83,7 +83,7 @@ class JavaSoundAudioSplitterIntegrationTests {
 		System.out.printf("Documents Size [%d]%n", documents.size());
 
 		assertThat(documents).isNotNull();
-		assertThat(documents).hasSizeGreaterThan(22).hasSizeLessThan(35);
+		assertThat(documents).hasSizeGreaterThanOrEqualTo(90).hasSizeLessThanOrEqualTo(92); // Size is 91
 
 		int documentsSize = 0;
 
