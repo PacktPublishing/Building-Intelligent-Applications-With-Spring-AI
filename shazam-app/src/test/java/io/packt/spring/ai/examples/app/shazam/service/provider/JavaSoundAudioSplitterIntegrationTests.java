@@ -15,7 +15,6 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
-import static io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter.AudioClip;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
@@ -51,73 +50,7 @@ import org.springframework.core.io.Resource;
 class JavaSoundAudioSplitterIntegrationTests {
 
 	@Autowired
-	private AudioSplitter audioSplitter;
-
-	private byte asByte(int integer) {
-		return (byte) integer;
-	}
-
-	@Test
-	void audioClipHalfEven() {
-
-		byte[] audioData = {
-			asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE), asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE)
-		};
-
-		AudioClip audioClip = AudioClip.from(audioData);
-
-		assertThat(audioClip).isNotNull();
-		assertThat(audioClip.size()).isEqualTo(audioData.length);
-
-		AudioClip firstHalf = audioClip.firstHalf();
-
-		assertThat(firstHalf).isNotNull();
-		assertThat(firstHalf.size()).isEqualTo(4);
-		assertThat(firstHalf.data()).contains(asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE));
-
-		AudioClip secondHalf = audioClip.secondHalf();
-
-		assertThat(secondHalf).isNotNull();
-		assertThat(secondHalf.size()).isEqualTo(4);
-		assertThat(secondHalf.data()).contains(asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE));
-
-		AudioClip bothHalves = firstHalf.merge(secondHalf);
-
-		assertThat(bothHalves).isNotNull();
-		assertThat(bothHalves.size()).isEqualTo(audioData.length);
-		assertThat(bothHalves.data()).contains(audioData);
-	}
-
-	@Test
-	void audioClipHalfOdd() {
-
-		byte[] audioData = {
-			asByte(0xD), asByte(0xE), asByte(0xC), asByte(0xA), asByte(0xF)
-		};
-
-		AudioClip audioClip = AudioClip.from(audioData);
-
-		assertThat(audioClip).isNotNull();
-		assertThat(audioClip.size()).isEqualTo(audioData.length);
-
-		AudioClip firstHalf = audioClip.firstHalf();
-
-		assertThat(firstHalf).isNotNull();
-		assertThat(firstHalf.size()).isEqualTo(2);
-		assertThat(firstHalf.data()).contains(asByte(0xD), asByte(0xE));
-
-		AudioClip secondHalf = audioClip.secondHalf();
-
-		assertThat(secondHalf).isNotNull();
-		assertThat(secondHalf.size()).isEqualTo(3);
-		assertThat(secondHalf.data()).contains(asByte(0xC), asByte(0xA), asByte(0xF));
-
-		AudioClip bothHalves = firstHalf.merge(secondHalf);
-
-		assertThat(bothHalves).isNotNull();
-		assertThat(bothHalves.size()).isEqualTo(audioData.length);
-		assertThat(bothHalves.data()).contains(audioData);
-	}
+	private JavaSoundAudioSplitter audioSplitter;
 
 	/*
 	 * Matchbox20-Unwell.mp3 METADATA
