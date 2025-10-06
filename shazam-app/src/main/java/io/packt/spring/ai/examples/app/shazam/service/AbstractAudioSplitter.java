@@ -23,6 +23,7 @@ import io.packt.spring.ai.examples.app.shazam.support.UuidIdGenerator;
 
 import org.slf4j.Logger;
 import org.springframework.ai.document.Document;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author John Blum
  * @see Audio
  * @see AudioSplitter
+ * @see AudioProperties
+ * @see org.springframework.ai.document.Document
+ * @see org.springframework.beans.factory.InitializingBean
  * @since 0.1.0
  */
 @Slf4j
-public abstract class AbstractAudioSplitter implements AudioSplitter {
+public abstract class AbstractAudioSplitter implements AudioSplitter, InitializingBean {
 
 	private final AudioProperties audioProperties;
 
@@ -51,6 +55,11 @@ public abstract class AbstractAudioSplitter implements AudioSplitter {
 
 	protected Logger getLogger() {
 		return log;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		getLogger().info("Using AudioSplitter [{}]", this);
 	}
 
 	protected Document buildDocument(AudioClip audioClip) {
