@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS songs (
+  id UUID PRIMARY KEY,
+  artist VARCHAR(256) NOT NULL,
+  album VARCHAR(256),
+  title VARCHAR(256) NOT NULL,
+  duration NUMERIC(10) DEFAULT 0
+);
