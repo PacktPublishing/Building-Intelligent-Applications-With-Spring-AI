@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres
+    container_name: shazam-database
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: shazam_db
+      POSTGRES_USER: shazam
+      POSTGRES_PASSWORD: s3cr3t
+    ports:
+      - "5432:5432"
+    volumes:
+      - shazam_db_data:/var/lib/postgresql/data
+
+volumes:
+  shazam_db_data:
