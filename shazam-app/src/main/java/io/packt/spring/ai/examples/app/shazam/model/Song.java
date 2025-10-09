@@ -46,7 +46,7 @@ public class Song implements AudioSource {
 		return new Song.Builder();
 	}
 
-	private Audio audio;
+	private transient Audio audio;
 
 	private final String artist;
 	private final String album;
