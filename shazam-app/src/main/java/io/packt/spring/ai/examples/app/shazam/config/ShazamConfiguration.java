@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootConfiguration
 @EnableChatClient
-@EnableConfigurationProperties({ AudioProperties.class })
+@EnableConfigurationProperties({ AudioProperties.class, SongSearchProperties.class })
 @SuppressWarnings("unused")
 public class ShazamConfiguration {
 
