@@ -80,7 +80,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-		<spring-ai.version>1.0.2</spring-ai.version>
+		<spring-ai.version>1.0.3</spring-ai.version>
 	</properties>
 
 	<repositories>
