@@ -114,7 +114,7 @@ public class ChatViewController {
 
 		if (form.isChatSessionIdPresent()) {
 			UUID sessionId = form.resolveChatSessionId();
-			return getChatService().joinChatSession(sessionId, user);
+			return getChatService().join(sessionId, user);
 		}
 		else {
 			return getChatService().newChatSession(user);

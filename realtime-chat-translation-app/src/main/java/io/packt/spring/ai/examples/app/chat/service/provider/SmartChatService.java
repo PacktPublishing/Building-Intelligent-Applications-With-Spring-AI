@@ -72,7 +72,7 @@ public class SmartChatService extends AbstractChatService {
 	}
 
 	@Override
-	public ChatSession joinChatSession(UUID sessionId, ChatUser user) {
+	public ChatSession join(UUID sessionId, ChatUser user) {
 
 		ChatSession chatSession = findBy(sessionId);
 

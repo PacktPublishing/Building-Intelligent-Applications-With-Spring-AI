@@ -35,7 +35,7 @@ public interface ChatService {
 
 	ChatSession findBy(UUID sessionId);
 
-	ChatSession joinChatSession(UUID sessionId, ChatUser user);
+	ChatSession join(UUID sessionId, ChatUser user);
 
 	ChatSession newChatSession(ChatUser user);
 
