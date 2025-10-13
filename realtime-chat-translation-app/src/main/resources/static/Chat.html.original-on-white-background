@@ -1,0 +1,361 @@
+<!-- Original OpenAI ChatGPT generated Chat UI HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Translucent Chat UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #f9fafb;
+      --panel-border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+    }
+
+    /* App container */
+    .app {
+      width: min(1100px, 96vw);
+      height: min(750px, 92vh);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1rem;
+      border-bottom: 1px solid var(--panel-border);
+      background: #f3f4f6;
+    }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 999px; background: #16a34a;
+      box-shadow: 0 0 0 3px #86efac55;
+    }
+    .title {
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .spacer { flex: 1; }
+    .chipbar {
+      display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+    }
+    .chip {
+      padding: .3rem .6rem; border: 1px solid var(--panel-border); border-radius: 999px;
+      background: #ffffff;
+      font-size: .8rem; color: var(--text); white-space: nowrap;
+    }
+
+    /* Messages */
+    .messages {
+      position: relative;
+      padding: 1rem; overflow: auto;
+      background: #ffffff;
+    }
+    .messages[aria-busy="true"]::after {
+      content: "";
+      position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(-45deg, #00000005 0 12px, transparent 12px 24px);
+    }
+
+    /* Message bubbles */
+    .msg-row { display: grid; grid-template-columns: 36px 1fr; gap: .6rem; margin: .4rem 0; }
+    .msg-row.me   { grid-template-columns: 1fr 36px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 12px; border: 1px solid var(--panel-border);
+      background: #e5e7eb; display: grid; place-items: center; font-weight: 700; font-size: .8rem;
+    }
+    .bubble {
+      --h: 210; --s: 80%; --l: 85%;
+      padding: .75rem .9rem; border-radius: 16px 16px 16px 6px; max-width: min(70ch, 75%);
+      background: hsla(var(--h), var(--s), var(--l), .6);
+      border: 1px solid hsla(var(--h), 50%, 65%, .5);
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      color: var(--text);
+    }
+    .me .bubble { border-radius: 16px 16px 6px 16px; justify-self: end; background: #dbeafe; }
+
+    .meta {
+      display: flex; align-items: baseline; gap: .5rem; margin-bottom: .25rem;
+      font-size: .72rem; color: var(--muted);
+    }
+    .name { font-weight: 600; color: var(--text); }
+    .time { font-variant-numeric: tabular-nums; }
+
+    /* Composer */
+    .composer {
+      display: grid; grid-template-columns: auto 1fr auto auto; gap: .6rem;
+      align-items: center; padding: .8rem; border-top: 1px solid var(--panel-border);
+      background: #f9fafb;
+    }
+    select, input, button {
+      border: 1px solid var(--panel-border);
+      background: #ffffff;
+      color: var(--text);
+      padding: .7rem .8rem; border-radius: 12px; font: inherit;
+    }
+    button.primary {
+      background: #3b82f610;
+      border-color: #60a5fa55;
+    }
+    button.ghost {
+      background: #f3f4f6;
+    }
+    button:active { transform: translateY(1px); }
+
+    /* Typing indicator */
+    .typing { display: inline-flex; gap: 4px; align-items: center; }
+    .dot { width: 6px; height: 6px; border-radius: 999px; background: #3b82f6; opacity: .6; animation: blink 1.2s infinite; }
+    .dot:nth-child(2){ animation-delay: .2s; }
+    .dot:nth-child(3){ animation-delay: .4s; }
+    @keyframes blink { 0%, 80%, 100%{ opacity: .2 } 40%{ opacity: 1 } }
+
+    /* Scrollbars */
+    .messages::-webkit-scrollbar { height: 10px; width: 10px; }
+    .messages::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 999px; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .composer { grid-template-columns: 1fr auto; grid-template-rows: auto auto; }
+      .composer select, .composer .add-user { grid-column: 1 / span 2; }
+      .bubble { max-width: 88vw; }
+      .chipbar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Chat application">
+    <!-- Header -->
+    <header class="topbar">
+      <div class="status-dot" aria-hidden="true"></div>
+      <div class="title">Glass Chat • <span id="roomName">General</span></div>
+      <div class="spacer"></div>
+      <div class="chipbar" id="chipbar" aria-label="Participants"></div>
+      <button id="themeBtn" class="ghost" title="Toggle theme" style="margin-left:.5rem">Theme</button>
+    </header>
+
+    <!-- Messages -->
+    <main id="messages" class="messages" aria-live="polite" aria-busy="false"></main>
+
+    <!-- Composer -->
+    <footer class="composer">
+      <select id="senderSelect" aria-label="Sender"></select>
+      <input id="messageInput" type="text" placeholder="Type a message…" aria-label="Message" />
+      <button id="sendBtn" class="primary" aria-label="Send">Send</button>
+      <button id="addUserBtn" class="ghost add-user" aria-label="Add user">+ Add user</button>
+    </footer>
+  </div>
+
+  <script>
+    const $ = (sel, node=document) => node.querySelector(sel);
+    const $$ = (sel, node=document) => [...node.querySelectorAll(sel)];
+
+    // --- Simple state management ---
+    const state = {
+      users: {},
+      me: 'You',
+      messages: []
+    };
+
+    const randomHue = () => Math.floor(Math.random() * 360);
+    const addUser = (name, hue = randomHue()) => {
+      if (!name || state.users[name]) return;
+      state.users[name] = { name, hue };
+      renderParticipants();
+      renderSenderSelect();
+    };
+
+    const seedUsers = () => {
+      addUser('You', 210);
+      addUser('Alex', 330);
+      addUser('Sam', 140);
+    };
+
+    // --- Rendering ---
+    const messagesEl = $('#messages');
+    const senderSelect = $('#senderSelect');
+    const inputEl = $('#messageInput');
+
+    function renderParticipants(){
+      const chipbar = $('#chipbar');
+      chipbar.innerHTML = '';
+      Object.values(state.users).forEach(u => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.style.setProperty('--h', u.hue);
+        chip.textContent = u.name;
+        chipbar.appendChild(chip);
+      });
+    }
+
+    function renderSenderSelect(){
+      senderSelect.innerHTML = '';
+      Object.keys(state.users).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        if (name === state.me) opt.selected = true;
+        senderSelect.appendChild(opt);
+      });
+    }
+
+    function timeNow(){
+      const d = new Date();
+      return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+
+    function messageRow({user, text, time}){
+      const row = document.createElement('div');
+      const isMe = user === state.me;
+      row.className = 'msg-row' + (isMe ? ' me' : '');
+
+      // Avatar
+      const av = document.createElement('div');
+      av.className = 'avatar';
+      av.style.background = `linear-gradient(180deg, hsla(${state.users[user].hue},80%,65%,.35), hsla(${state.users[user].hue},70%,50%,.25))`;
+      av.style.borderColor = 'rgba(255,255,255,.2)';
+      av.textContent = user.slice(0,2).toUpperCase();
+
+      // Bubble
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.style.setProperty('--h', state.users[user].hue);
+      bubble.innerHTML = `
+        <div class="meta"><span class="name">${user}</span><span class="time">${time}</span></div>
+        <div class="text">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+      `;
+
+      if (isMe) {
+        row.appendChild(bubble);
+        row.appendChild(av);
+      } else {
+        row.appendChild(av);
+        row.appendChild(bubble);
+      }
+      return row;
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+    }
+
+    function pushMessage(user, text){
+      const msg = { user, text, time: timeNow() };
+      state.messages.push(msg);
+      const row = messageRow(msg);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+    }
+
+    function fakeTyping(from='Alex', reply="Got it!"){
+      const hue = state.users[from]?.hue ?? 210;
+      const row = document.createElement('div');
+      row.className = 'msg-row';
+      const av = document.createElement('div');
+      av.className = 'avatar';
+      av.style.background = `linear-gradient(180deg, hsla(${hue},80%,65%,.35), hsla(${hue},70%,50%,.25))`;
+      av.textContent = from.slice(0,2).toUpperCase();
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.style.setProperty('--h', hue);
+      bubble.innerHTML = `
+        <div class="meta"><span class="name">${from}</span><span class="time">${timeNow()}</span></div>
+        <div class="typing" aria-label="${from} is typing">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>`;
+
+      row.appendChild(av); row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+
+      setTimeout(() => {
+        row.remove();
+        pushMessage(from, reply);
+      }, 1200 + Math.random()*800);
+    }
+
+    // --- Event wiring ---
+    $('#sendBtn').addEventListener('click', () => send());
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }});
+
+    function send(){
+      const text = inputEl.value.trim();
+      const user = senderSelect.value || state.me;
+      if (!text) return;
+      pushMessage(user, text);
+      inputEl.value = '';
+      if (user === state.me) {
+        // playful auto-reply from a random other user
+        const others = Object.keys(state.users).filter(n => n !== state.me);
+        if (others.length) {
+          const from = others[Math.floor(Math.random()*others.length)];
+          const canned = [
+            "Nice!", "Love the look.", "Can we support threads?", "Translucent vibes ✨",
+            "Works on mobile too.", "I like these soft bubbles.", "Ship it!"
+          ];
+          fakeTyping(from, canned[Math.floor(Math.random()*canned.length)]);
+        }
+      }
+    }
+
+    $('#addUserBtn').addEventListener('click', () => {
+      const name = prompt('New participant name:')?.trim();
+      if (name) addUser(name);
+    });
+
+    senderSelect.addEventListener('change', e => {
+      state.me = e.target.value;
+    });
+
+    // Simple theme toggle (adjust background contrast)
+    $('#themeBtn').addEventListener('click', () => {
+      const dark = document.body.dataset.theme !== 'light';
+      if (dark) {
+        document.body.dataset.theme = 'light';
+        document.documentElement.style.setProperty('--bg', '#f3f4f6');
+        document.documentElement.style.setProperty('--panel-border', '#00000018');
+        document.documentElement.style.setProperty('--text', '#0b1020');
+        document.documentElement.style.setProperty('--muted', '#475569');
+      } else {
+        document.body.dataset.theme = 'dark';
+        document.documentElement.style.removeProperty('--bg');
+        document.documentElement.style.removeProperty('--panel-border');
+        document.documentElement.style.removeProperty('--text');
+        document.documentElement.style.removeProperty('--muted');
+      }
+    });
+
+    // --- Init ---
+    seedUsers();
+    renderSenderSelect();
+    renderParticipants();
+
+    // Seeded conversation
+    pushMessage('Alex', 'Welcome to Glass Chat! 💬');
+    pushMessage('Sam', 'Soft, translucent, colorful bubbles — check.');
+    pushMessage('You', 'Looks great on mobile too.');
+  </script>
+</body>
+</html>

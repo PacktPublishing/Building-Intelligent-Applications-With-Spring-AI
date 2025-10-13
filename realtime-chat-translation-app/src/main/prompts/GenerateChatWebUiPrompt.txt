@@ -1,1 +1,3 @@
 Generate a nice looking web-based chat UI with soft, translucent, colorful message bubbles between 1 or more users in HTML and JavaScript
+
+Convert the styles in the CSS to use light colors on a white background
