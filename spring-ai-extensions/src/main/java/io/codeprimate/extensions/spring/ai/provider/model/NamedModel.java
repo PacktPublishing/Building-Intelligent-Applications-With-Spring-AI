@@ -37,6 +37,8 @@ import lombok.Getter;
  * @author John Blum
  * @see java.lang.FunctionalInterface
  * @see org.cp.elements.lang.Nameable
+ * @see ModelFunction
+ * @see Modality
  * @since 0.1.0
  */
 @FunctionalInterface
@@ -87,6 +89,10 @@ public interface NamedModel extends Nameable<String> {
 		return false;
 	}
 
+	default Set<ModelFunction> getFunctions() {
+		return Collections.emptySet();
+	}
+
 	default Set<Modality> getModalities() {
 		return Collections.emptySet();
 	}
@@ -110,26 +116,32 @@ public interface NamedModel extends Nameable<String> {
 
 		private final Set<Modality> modalities = new HashSet<>();
 
+		private final Set<ModelFunction> functions = new HashSet<>();
+
 		private final String name;
 
 		protected Builder(String name) {
 			this.name = StringUtils.requireText(name, "Name of AI Model is required");
 		}
 
+		public Builder asAgent() {
+			return withFunction(ModelFunction.AGENT);
+		}
+
 		public Builder asAudio() {
-			return asType(Modality.AUDIO);
+			return withModality(Modality.AUDIO);
 		}
 
 		public Builder asAudioTranscription() {
-			return asType(Modality.AUDIO_TRANSCRIPTION);
+			return withFunction(ModelFunction.AUDIO_TRANSCRIPTION);
 		}
 
 		public Builder asChat() {
-			return asType(Modality.CHAT);
+			return withFunction(ModelFunction.CHAT);
 		}
 
 		public Builder asEmbedding() {
-			return asType(Modality.EMBEDDING);
+			return withFunction(ModelFunction.EMBEDDING);
 		}
 
 		public Builder asFoundation() {
@@ -137,30 +149,28 @@ public interface NamedModel extends Nameable<String> {
 			return this;
 		}
 
+		public Builder asFunctionCalling() {
+			return withFunction(ModelFunction.FUNCTION_CALLING);
+		}
+
 		public Builder asImage() {
-			return asType(Modality.IMAGE);
+			return withModality(Modality.IMAGE);
 		}
 
 		public Builder asModeration() {
-			return asType(Modality.MODERATION);
+			return withFunction(ModelFunction.MODERATION);
 		}
 
 		public Builder asText() {
-			return asType(Modality.TEXT);
+			return withModality(Modality.TEXT);
 		}
 
 		public Builder asTextToSpeech() {
-			return asType(Modality.TEXT_TO_SPEECH);
+			return withFunction(ModelFunction.TEXT_TO_SPEECH);
 		}
 
 		public Builder asVideo() {
-			return asType(Modality.VIDEO);
-		}
-
-		public Builder asType(Modality modelType) {
-			Assert.notNull(modelType, "Modality is required");
-			this.modalities.add(modelType);
-			return this;
+			return withModality(Modality.VIDEO);
 		}
 
 		public Builder withContextWindow(int contextWindow) {
@@ -172,6 +182,18 @@ public interface NamedModel extends Nameable<String> {
 		public Builder withDimensions(int dimensions) {
 			Assert.isTrue(Integers.isGreaterThanZero(dimensions), "Dimensions [%d] for Embedding must be greater than 0");
 			this.dimensions = dimensions;
+			return this;
+		}
+
+		public Builder withFunction(ModelFunction function) {
+			Assert.notNull(function, "ModelFunction is required");
+			this.functions.add(function);
+			return this;
+		}
+
+		public Builder withModality(Modality modality) {
+			Assert.notNull(modality, "Modality is required");
+			this.modalities.add(modality);
 			return this;
 		}
 
@@ -195,6 +217,11 @@ public interface NamedModel extends Nameable<String> {
 				@Override
 				public boolean isFoundation() {
 					return Builder.this.isFoundation();
+				}
+
+				@Override
+				public Set<ModelFunction> getFunctions() {
+					return Builder.this.getFunctions();
 				}
 
 				@Override

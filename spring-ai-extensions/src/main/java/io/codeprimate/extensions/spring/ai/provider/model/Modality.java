@@ -30,16 +30,9 @@ import lombok.Getter;
 public enum Modality {
 
 	AUDIO,
-	AUDIO_TRANSCRIPTION,
-	CHAT,
-	EMBEDDING,
 	IMAGE,
-	MODERATION,
-	SPEECH_TO_TEXT,
 	TEXT,
-	TEXT_TO_SPEECH("TTS"),
-	VIDEO,
-	VISION;
+	VIDEO;
 
 	@Getter
 	private final String acronym;
@@ -56,40 +49,16 @@ public enum Modality {
 		return this.equals(AUDIO);
 	}
 
-	public boolean isAudioTranscription() {
-		return this.equals(AUDIO_TRANSCRIPTION);
-	}
-
-	public boolean isChat() {
-		return this.equals(CHAT);
-	}
-
-	public boolean isEmbedding() {
-		return this.equals(EMBEDDING);
-	}
-
 	public boolean isImage() {
 		return this.equals(IMAGE);
 	}
 
-	public boolean isModeration() {
-		return this.equals(MODERATION);
-	}
-
-	public boolean isSpeechToText() {
-		return this.equals(SPEECH_TO_TEXT);
-	}
-
-	public boolean isTextToSpeed() {
-		return this.equals(TEXT_TO_SPEECH);
+	public boolean isText() {
+		return this.equals(TEXT);
 	}
 
 	public boolean isVideo() {
 		return this.equals(VIDEO);
-	}
-
-	public boolean isVision() {
-		return this.equals(VISION);
 	}
 
 	public String getKeyword() {
