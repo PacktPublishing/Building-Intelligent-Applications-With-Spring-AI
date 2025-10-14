@@ -20,7 +20,7 @@ import org.springframework.ai.model.Model;
 import lombok.Getter;
 
 /**
- * {@link Enum Enumeration} of different types of AI provider {@link Model Models}.
+ * {@link Enum Enumeration} of input and output types of AI provider {@link Model Models}.
  *
  * @author John Blum
  * @see org.springframework.ai.model.Model
@@ -35,10 +35,11 @@ public enum Modality {
 	EMBEDDING,
 	IMAGE,
 	MODERATION,
-	SPEECH,
+	SPEECH_TO_TEXT,
 	TEXT,
 	TEXT_TO_SPEECH("TTS"),
-	VIDEO;
+	VIDEO,
+	VISION;
 
 	@Getter
 	private final String acronym;
@@ -75,8 +76,8 @@ public enum Modality {
 		return this.equals(MODERATION);
 	}
 
-	public boolean isSpeech() {
-		return this.equals(SPEECH);
+	public boolean isSpeechToText() {
+		return this.equals(SPEECH_TO_TEXT);
 	}
 
 	public boolean isTextToSpeed() {
@@ -85,6 +86,10 @@ public enum Modality {
 
 	public boolean isVideo() {
 		return this.equals(VIDEO);
+	}
+
+	public boolean isVision() {
+		return this.equals(VISION);
 	}
 
 	public String getKeyword() {
