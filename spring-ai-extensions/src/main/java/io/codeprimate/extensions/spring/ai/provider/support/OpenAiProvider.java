@@ -35,6 +35,9 @@ public class OpenAiProvider implements AiProvider {
 	private static final String NAME = "OpenAI";
 
 	private static final NamedModels NAMED_MODELS = NamedModels.of(
+		NamedModel.builder("gpt-5o").asChat().asImage().asText().withContextWindow(400_000).build(),
+		NamedModel.builder("gpt-5o-mini").asChat().asImage().asText().withContextWindow(400_000).build(),
+		NamedModel.builder("gpt-5o-nano").asChat().asImage().asText().withContextWindow(400_000).build(),
 		NamedModel.builder("gpt-4o").asChat().asImage().withContextWindow(128_000).build(),
 		NamedModel.builder("gpt-4o-mini").asChat().asImage().withContextWindow(128_000).build(),
 		NamedModel.builder("gpt-4o-audio-preview").asAudio().withContextWindow(128_000).build(),
