@@ -58,9 +58,10 @@ public class OpenAiProvider implements AiProvider {
 		NamedModel.builder("o3-deep-research").asImage().asText().withContextWindow(200_000).build(),
 		NamedModel.builder("o4-mini").asImage().asText().withContextWindow(200_000).build(),
 		NamedModel.builder("o4-mini-deep-research").asImage().asText().withContextWindow(200_000).build(),
+		NamedModel.builder("gpt-image-1").asImage().asText().build(),
+		NamedModel.builder("dall-e-2").asImage().asText().build(),
+		NamedModel.builder("dall-e-3").asImage().asText().build(),
 
-		NamedModel.builder("dall-e-2").asImage().build(),
-		NamedModel.builder("dall-e-3").asImage().build(),
 		NamedModel.builder("text-embedding-3-large").asEmbedding().withDimensions(3072).build(),
 		NamedModel.builder("text-embedding-3-small").asEmbedding().withDimensions(1536).build(),
 		NamedModel.builder("text-embedding-ada-002").asEmbedding().withDimensions(1536).build(),
