@@ -61,17 +61,16 @@ public class OpenAiProvider implements AiProvider {
 		NamedModel.builder("gpt-image-1").asImage().asText().build(),
 		NamedModel.builder("dall-e-2").asImage().asText().build(),
 		NamedModel.builder("dall-e-3").asImage().asText().build(),
-
-		NamedModel.builder("text-embedding-3-large").asEmbedding().withDimensions(3072).build(),
-		NamedModel.builder("text-embedding-3-small").asEmbedding().withDimensions(1536).build(),
-		NamedModel.builder("text-embedding-ada-002").asEmbedding().withDimensions(1536).build(),
+		NamedModel.builder("text-embedding-3-large").asEmbedding().asText().withDimensions(3072).build(),
+		NamedModel.builder("text-embedding-3-small").asEmbedding().asText().withDimensions(1536).build(),
+		NamedModel.builder("text-embedding-ada-002").asEmbedding().asText().withDimensions(1536).build(),
 		NamedModel.builder("omni-moderation-latest").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("text-moderation-latest").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("text-moderation-stable").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("text-moderation-007").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("tts-1").asTextToSpeech().build(),
 		NamedModel.builder("tts-1-hd").asTextToSpeech().build(),
-		NamedModel.builder("whisper-1").asTextToSpeech().build(),
+		NamedModel.builder("whisper-1").asTextToSpeech().build()
 	);
 
 	@Override
