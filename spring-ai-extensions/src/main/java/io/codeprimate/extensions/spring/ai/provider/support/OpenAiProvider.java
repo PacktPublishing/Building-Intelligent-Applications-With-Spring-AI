@@ -49,7 +49,6 @@ public class OpenAiProvider implements AiProvider {
 		NamedModel.builder("gpt-4o-mini-realtime-preview").asAudio().asText().withContextWindow(16_000).build(),
 		NamedModel.builder("gpt-4o-search-preview").asText().withContextWindow(128_000).build(),
 		NamedModel.builder("gpt-4o-mini-search-preview").asText().withContextWindow(128_000).build(),
-
 		NamedModel.builder("o1").asImage().asText().withContextWindow(200_000).build(),
 		NamedModel.builder("o1-mini").asText().withContextWindow(128_000).build(),
 		NamedModel.builder("o1-pro").asImage().asText().withContextWindow(200_000).build(),
@@ -60,16 +59,8 @@ public class OpenAiProvider implements AiProvider {
 		NamedModel.builder("o4-mini").asImage().asText().withContextWindow(200_000).build(),
 		NamedModel.builder("o4-mini-deep-research").asImage().asText().withContextWindow(200_000).build(),
 
-		NamedModel.builder("gpt-4").asChat().asImage().withContextWindow(128_000).build(),
-		NamedModel.builder("gpt-4-turbo").asChat().asImage().withContextWindow(128_000).build(),
-		NamedModel.builder("gpt-4-turbo-preview").asChat().asImage().withContextWindow(128_000).build(),
-		NamedModel.builder("gpt-3.5-turbo").asChat().withContextWindow(16_385).build(),
-		NamedModel.builder("gpt-3.5-turbo-instruct").asChat().withContextWindow(4096).build(),
 		NamedModel.builder("dall-e-2").asImage().build(),
 		NamedModel.builder("dall-e-3").asImage().build(),
-		NamedModel.builder("tts-1").asTextToSpeech().build(),
-		NamedModel.builder("tts-1-hd").asTextToSpeech().build(),
-		NamedModel.builder("whisper-1").asTextToSpeech().build(),
 		NamedModel.builder("text-embedding-3-large").asEmbedding().withDimensions(3072).build(),
 		NamedModel.builder("text-embedding-3-small").asEmbedding().withDimensions(1536).build(),
 		NamedModel.builder("text-embedding-ada-002").asEmbedding().withDimensions(1536).build(),
@@ -77,8 +68,9 @@ public class OpenAiProvider implements AiProvider {
 		NamedModel.builder("text-moderation-latest").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("text-moderation-stable").asModeration().withContextWindow(32_768).build(),
 		NamedModel.builder("text-moderation-007").asModeration().withContextWindow(32_768).build(),
-		NamedModel.builder("babbage-002").asFoundation().withContextWindow(16_384).build(),
-		NamedModel.builder("davinci-002").asFoundation().withContextWindow(16_384).build()
+		NamedModel.builder("tts-1").asTextToSpeech().build(),
+		NamedModel.builder("tts-1-hd").asTextToSpeech().build(),
+		NamedModel.builder("whisper-1").asTextToSpeech().build(),
 	);
 
 	@Override
