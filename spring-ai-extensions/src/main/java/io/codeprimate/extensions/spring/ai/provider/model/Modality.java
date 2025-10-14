@@ -17,8 +17,6 @@ package io.codeprimate.extensions.spring.ai.provider.model;
 
 import org.springframework.ai.model.Model;
 
-import lombok.Getter;
-
 /**
  * {@link Enum Enumeration} of input and output types of AI provider {@link Model Models}.
  *
@@ -33,17 +31,6 @@ public enum Modality {
 	IMAGE,
 	TEXT,
 	VIDEO;
-
-	@Getter
-	private final String acronym;
-
-	Modality() {
-		this(null);
-	}
-
-	Modality(String acronym) {
-		this.acronym = acronym;
-	}
 
 	public boolean isAudio() {
 		return this.equals(AUDIO);
