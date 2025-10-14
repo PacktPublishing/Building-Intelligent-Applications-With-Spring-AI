@@ -17,6 +17,8 @@ package io.codeprimate.extensions.spring.ai.provider.model;
 
 import org.springframework.ai.model.Model;
 
+import lombok.Getter;
+
 /**
  * {@link Enum Enumeration} of functions performed by an AI {@link Model}.
  *
@@ -37,6 +39,7 @@ public enum ModelFunction {
 	TEXT_TO_SPEECH("TTS"),
 	VISION;
 
+	@Getter
 	private final String acronym;
 
 	ModelFunction() {
@@ -45,10 +48,6 @@ public enum ModelFunction {
 
 	ModelFunction(String acronym) {
 		this.acronym = acronym;
-	}
-
-	public String getAcronym() {
-		return this.acronym;
 	}
 
 	public boolean isAgent() {
