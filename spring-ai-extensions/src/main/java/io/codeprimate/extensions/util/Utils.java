@@ -71,26 +71,21 @@ public abstract class Utils {
 	}
 
 	public static String generatedContent(ChatResponse chatResponse) {
-
-		return Optional.ofNullable(chatResponse)
-			.map(ChatResponse::getResult)
-			.map(Utils::generatedContent)
-			.orElse(EMPTY_STRING);
+		return chatResponse != null
+			? generatedContent(chatResponse.getResult())
+			: EMPTY_STRING;
 	}
 
 	public static String generatedContent(Generation generation) {
-
-		return Optional.ofNullable(generation)
-			.map(Generation::getOutput)
-			.map(Utils::generatedContent)
-			.orElse(EMPTY_STRING);
+		return generation != null
+			? generatedContent(generation.getOutput())
+			: EMPTY_STRING;
 	}
 
 	public static String generatedContent(Message message) {
-
-		return Optional.ofNullable(message)
-			.map(Message::getText)
-			.orElse(EMPTY_STRING);
+		return message != null
+			? message.getText()
+			: EMPTY_STRING;
 	}
 
 	public static boolean isNotEmpty(float[] array) {
