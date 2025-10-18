@@ -15,8 +15,6 @@
  */
 package com.packt.spring.ai.examples.connect4.model;
 
-import com.packt.spring.ai.examples.connect4.AbstractConnectFourApplication;
-
 import org.cp.elements.lang.StringUtils;
 
 import lombok.Getter;
@@ -48,5 +46,10 @@ public enum Disc {
 
 	public static String resolveSymbol(Disc disc, String defaultSymbol) {
 		return disc != null ? disc.getSymbol() : defaultSymbol;
+	}
+
+	@Override
+	public String toString() {
+		return name();
 	}
 }
