@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.packt.spring.ai.examples.connect4.model.Play;
+
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.Utils;
 
@@ -254,6 +256,11 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 		ConnectFourBoardGame play(Disc disc, int columnNumber) {
 			getColumns().findByColumnNumber(columnNumber).play(disc);
 			return this;
+		}
+
+		ConnectFourBoardGame play(Disc disc, Play play) {
+			RowColumn rowColumn = RowColumn.fromColumnLetter(play.move());
+			return play(disc, rowColumn);
 		}
 
 		ConnectFourBoardGame play(Disc disc, RowColumn rowColumn) {
