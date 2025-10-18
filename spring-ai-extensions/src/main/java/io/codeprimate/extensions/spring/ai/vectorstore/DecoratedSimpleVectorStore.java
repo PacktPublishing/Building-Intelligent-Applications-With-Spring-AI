@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.codeprimate.extensions.spring.ai.document.DocumentNotFoundException;
+import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
+import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
+import io.codeprimate.extensions.util.Utils;
+
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -26,11 +31,6 @@ import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.SimpleVectorStoreContent;
 import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
 import org.springframework.lang.NonNull;
-
-import io.codeprimate.extensions.spring.ai.document.DocumentNotFoundException;
-import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
-import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
-import io.codeprimate.extensions.util.Utils;
 
 /**
  * Decorated {@link SimpleVectorStore} that stores {@link Document embedded documents}
