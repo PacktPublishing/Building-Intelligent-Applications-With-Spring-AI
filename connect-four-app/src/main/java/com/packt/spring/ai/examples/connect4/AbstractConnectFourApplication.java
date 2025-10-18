@@ -35,7 +35,9 @@ import org.springframework.core.env.Environment;
  * Abstract base class encapsulating common components and functionality used to implements the Connect 4 application.
  *
  * @author John Blum
- * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
+ * @see AbstractSpringBootApplication
+ * @see Environment
+ * @see ChatClient
  * @since 0.1.0
  */
 public abstract class AbstractConnectFourApplication extends AbstractSpringBootApplication {
