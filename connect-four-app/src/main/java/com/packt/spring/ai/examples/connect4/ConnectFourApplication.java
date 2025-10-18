@@ -30,6 +30,7 @@ import com.packt.spring.ai.examples.connect4.model.Players;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
+import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -153,18 +154,23 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		print("%nSelect player one: ");
 
-		int providerIndex = input.nextInt() - 1;
-		Player playerOne = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.GOLD);
+		Player playerOne = selectPlayer(input, Disc.GOLD);
 
 		print("Select player two: ");
 
-		providerIndex = input.nextInt() - 1;
-		Player playerTwo = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.RED);
+		Player playerTwo = selectPlayer(input, Disc.RED);
 
 		print("Player 1 [%s] is playing [%s]%n", playerOne.getName(), playerOne.disc());
 		print("Player 2 [%s] is playing [%s]%n%n", playerTwo.getName(), playerTwo.disc());
 
 		return Players.of(playerOne, playerTwo);
+	}
+
+	private Player selectPlayer(Scanner input, Disc disc) {
+		int selection = input.nextInt();
+		int providerIndex = selection - 1;
+		AiProvider provider = AI_PROVIDERS.get(providerIndex);
+		return Player.from(provider).playing(disc);
 	}
 
 	private void endGame(ConnectFourBoardGame boardGame, Players players) {
