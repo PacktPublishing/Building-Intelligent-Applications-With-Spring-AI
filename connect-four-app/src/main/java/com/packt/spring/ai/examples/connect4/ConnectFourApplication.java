@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
+import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
 import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
 
@@ -61,6 +62,8 @@ import org.springframework.core.env.Environment;
 public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	private static final boolean MOCK_AI_ENABLED = false;
+
+	static final String CONNECT_FOUR_PROFILE = "connect4";
 
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
 		You are a player in the 2 player board game Connect4. The game board is a 2 dimensional grid with 6 rows

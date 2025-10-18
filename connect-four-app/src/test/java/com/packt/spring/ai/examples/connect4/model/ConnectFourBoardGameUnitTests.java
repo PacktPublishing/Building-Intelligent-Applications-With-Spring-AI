@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.connect4;
+package com.packt.spring.ai.examples.connect4.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import com.packt.spring.ai.examples.connect4.model.Disc;
 
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit Tests for {@link ConnectFourApplication.ConnectFourBoardGame Connect 4}.
+ * Unit Tests for {@link ConnectFourBoardGame Connect 4}.
  *
  * @author John Blum
  * @see org.junit.jupiter.api.Test
@@ -33,7 +31,7 @@ public class ConnectFourBoardGameUnitTests {
 	@Test
 	void gameBoardOne() {
 
-		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
+		ConnectFourBoardGame boardGame = new ConnectFourBoardGame()
 			.play(Disc.RED, 1)
 			.play(Disc.GOLD, 1)
 			.play(Disc.RED, 2)
@@ -50,7 +48,7 @@ public class ConnectFourBoardGameUnitTests {
 	@Test
 	void gameBoardTwo() {
 
-		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
+		ConnectFourBoardGame boardGame = new ConnectFourBoardGame()
 			.play(Disc.RED, 1)
 			.play(Disc.GOLD, 1)
 			.play(Disc.RED, 2)
@@ -66,7 +64,7 @@ public class ConnectFourBoardGameUnitTests {
 	@Test
 	void gameBoardThree() {
 
-		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
+		ConnectFourBoardGame boardGame = new ConnectFourBoardGame()
 			.play(Disc.RED, 1)
 			.play(Disc.GOLD, 1)
 			.play(Disc.RED, 2)
@@ -88,7 +86,7 @@ public class ConnectFourBoardGameUnitTests {
 	@Test
 	void gameBoardFour() {
 
-		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
+		ConnectFourBoardGame boardGame = new ConnectFourBoardGame()
 			.play(Disc.RED, 1)
 			.play(Disc.GOLD, 1)
 			.play(Disc.RED, 2)
