@@ -15,26 +15,23 @@
  */
 package com.packt.spring.ai.examples.connect4;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
 import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
+import com.packt.spring.ai.examples.connect4.model.Player;
+import com.packt.spring.ai.examples.connect4.model.Players;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
-import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
-import io.codeprimate.extensions.util.Utils;
 
-import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,15 +75,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		Select 1 of the available columns represented as a letter in {availableColumns}. What is your move? Explain.
 	""";
 
-	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
-	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
-
-	private static final SecureRandom SECURE_RANDOM =
-		new SecureRandom(UUID.randomUUID().toString().getBytes());
-
-	private static final Map<AiProvider, Disc> PLAYER_TO_DISC = Map.of(
-		PLAYER_ONE, Disc.RED,
-		PLAYER_TWO, Disc.GOLD
+	private static final List<SpringAiProvider> AI_PROVIDERS = List.of(
+		SpringAiProvider.OPEN_AI,
+		SpringAiProvider.VERTEX_AI_GEMINI,
+		SpringAiProvider.MISTRAL_AI
 	);
 
 	public static void main(String[] args) {
@@ -110,18 +102,17 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		return args -> {
 
 			print("%n%nWelcome to Connect4!%n%n");
-			print("Player 1 is [%s] playing [%s]%n%n", PLAYER_ONE.getName(), PLAYER_TO_DISC.get(PLAYER_ONE).getSymbol());
-			print("Player 2 is [%s] playing [%s]%n%n", PLAYER_TWO.getName(), PLAYER_TO_DISC.get(PLAYER_TWO).getSymbol());
-
-			SpringAiProvider currentPlayer = randomPlayer();
 
 			Scanner input = new Scanner(System.in);
+
+			Players players = selectPlayers(input);
+			Player currentPlayer = players.getCurrentPlayer();
 
 			while (boardGame.isPlayable()) {
 
 				print("Current player is [%s]%n%n", currentPlayer.getName());
 
-				Disc currentPlayerDisc = PLAYER_TO_DISC.get(currentPlayer);
+				Disc currentPlayerDisc = currentPlayer.disc();
 
 				Map<String, Object> promptTemplateArguments = Map.of(
 					"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
@@ -133,90 +124,75 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				String model = resolveModel(environment, currentPlayer);
 
-				Play play = promptAiModel(chatClient, promptTemplateArguments, model);
+				Play play = promptModel(chatClient, promptTemplateArguments, model);
 
 				logInfo("AI model response [{}]", play.move());
 
 				boardGame.play(currentPlayerDisc, play);
 				boardGame.printGameBoard();
 
-				currentPlayer = switchPlayer(currentPlayer, chatModel);
+				currentPlayer = players.switchPlayer(chatModel);
 				print("%Press <enter> to continue to next play ");
 				waitForUserInput(input);
 			}
 
-			endGame(boardGame, PLAYER_TO_DISC);
+			endGame(boardGame, players);
 		};
 	}
 
-	private Play promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
-		return MOCK_AI_ENABLED ? promptMockAiModel(chatClient, promptTemplateArguments, model)
-			: promptRealAiModel(chatClient, promptTemplateArguments, model);
+	private Players selectPlayers(Scanner input) {
+
+		AtomicInteger count = new AtomicInteger(1);
+
+		AI_PROVIDERS.stream()
+			.map(provider -> "%d. %s%n".formatted(count.getAndIncrement(), provider.getName()))
+			.forEach(ConnectFourApplication::print);
+
+		print("Select player one: ");
+
+		int providerIndex = input.nextInt() - 1;
+		Player playerOne = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.GOLD);
+
+		print("Select player two: ");
+
+		providerIndex = input.nextInt() - 1;
+		Player playerTwo = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.RED);
+
+		print("Player 1 [%s] is playing [%s]%n%n", playerOne.getName(), playerOne.disc());
+		print("Player 2 [%s] is playing [%s]%n%n", playerTwo.getName(), playerTwo.disc());
+
+		return Players.of(playerOne, playerTwo);
 	}
 
-	@SuppressWarnings("all")
-	private Play promptMockAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	private void endGame(ConnectFourBoardGame boardGame, Players players) {
 
-		String availableColumns = String.valueOf(promptTemplateArguments.get("availableColumns"));
-		String letters = StringUtils.getLetters(availableColumns);
+		Disc winningDisc = boardGame.getWinner();
 
-		int index = SECURE_RANDOM.nextInt(letters.length());
-
-		String letter = String.valueOf(letters.charAt(index));
-
-		return Play.from(letter, "Because");
-	}
-
-	private Play promptRealAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
-
-		BeanOutputConverter<Play> playConverter = new BeanOutputConverter<>(Play.class);
-
-		return chatClient.prompt()
-			.system(SYSTEM_PROMPT_TEMPLATE)
-			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
-			.options(Utils.buildChatOptions(model))
-			.call()
-			.entity(playConverter);
-	}
-
-	private String resolveModel(Environment environment, SpringAiProvider aiProvider) {
-
-		String propertyName = SpringAiProvider.SPRING_AI_CHAT_OPTIONS_MODEL_PROPERTY_TEMPLATE
-			.formatted(aiProvider.getPropertyName());
-
-		return environment.getProperty(propertyName);
-	}
-
-	private SpringAiProvider randomPlayer() {
-		return SECURE_RANDOM.nextInt(2) == 1 ? PLAYER_ONE : PLAYER_TWO;
-	}
-
-	private SpringAiProvider switchPlayer(AiProvider currentPlayer, CompositeChatModel chatModel) {
-		SpringAiProvider nextPlayer = PLAYER_ONE.equals(currentPlayer) ? PLAYER_TWO : PLAYER_ONE;
-		ChatModel currentChatModel = chatModel.use(nextPlayer).getCurrentChatModel();
-		getLogger().info("Using AI provider model [{}]", currentChatModel);
-		return nextPlayer;
-	}
-
-	private void waitForUserInput(Scanner input) {
-		input.nextLine();
-	}
-
-	private void endGame(ConnectFourBoardGame boardGame, Map<AiProvider, Disc> playerDisc) {
-
-		Disc winner = boardGame.getWinner();
-
-		if (winner != null) {
-			AiProvider winningAiProvider = playerDisc.entrySet().stream()
-				.filter(entry -> entry.getValue().equals(winner))
-				.map(Map.Entry::getKey).findFirst()
-				.orElseThrow(() -> new IllegalStateException("No AI provider mapped to Disc [%s]"
-					.formatted(winner)));
-
-			print("[%s] as [%s] wins!", winningAiProvider.getName(), winner.name());
+		if (winningDisc != null) {
+			Player winningPlayer = players.findByDisc(winningDisc);
+			print("[%s] playing [%s] wins!", winningPlayer.getName(), winningDisc);
 		}
 		else {
 			print("No Winner!");
 		}
+	}
+
+	private Play promptModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+		return MOCK_AI_ENABLED ? promptMockModel(chatClient, promptTemplateArguments, model)
+			: promptRealModel(chatClient, promptTemplateArguments, model);
+	}
+
+	@Override
+	String systemPromptTemplate() {
+		return SYSTEM_PROMPT_TEMPLATE;
+	}
+
+	@Override
+	String userPromptTemplate() {
+		return USER_PROMPT_TEMPLATE;
+	}
+
+	private void waitForUserInput(Scanner input) {
+		input.nextLine();
 	}
 }
