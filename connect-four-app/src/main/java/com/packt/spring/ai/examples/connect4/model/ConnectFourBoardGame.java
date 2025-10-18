@@ -38,10 +38,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * The ConnectFourBoardGame class...
+ * Abstract base class encapsulating functionality common to the {@literal Connect4} board game application.
  *
  * @author John Blum
- * @since 1.0.0
+ * @see Disc
+ * @see PlayerAction
+ * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
@@ -61,6 +63,9 @@ public class ConnectFourBoardGame {
 
 	private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
 
+	/**
+	 * Constructs a new {@link ConnectFourBoardGame} to begin a new game.
+	 */
 	public ConnectFourBoardGame() {
 
 		for (int rowIndex = 0; rowIndex < ROWS; rowIndex++) {
@@ -249,11 +254,6 @@ public class ConnectFourBoardGame {
 		return this;
 	}
 
-	public ConnectFourBoardGame play(Disc disc, Play play) {
-		RowColumn rowColumn = RowColumn.fromColumnLetter(play.move());
-		return play(disc, rowColumn);
-	}
-
 	ConnectFourBoardGame play(Disc disc, RowColumn rowColumn) {
 		return play(disc, rowColumn.columnNumber());
 	}
@@ -261,6 +261,11 @@ public class ConnectFourBoardGame {
 	ConnectFourBoardGame play(Disc disc, int rowIndex, int columnIndex) {
 		this.gameBoard[rowIndex][columnIndex] = disc;
 		return this;
+	}
+
+	public ConnectFourBoardGame play(PlayerAction playerAction) {
+		RowColumn rowColumn = RowColumn.fromColumnLetter(playerAction.play().move());
+		return play(playerAction.player().disc(), rowColumn);
 	}
 
 	public ConnectFourBoardGame printGameBoard() {

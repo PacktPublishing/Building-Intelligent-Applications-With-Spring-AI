@@ -43,7 +43,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 	static final SecureRandom SECURE_RANDOM = new SecureRandom(UUID.randomUUID().toString().getBytes());
 
 	@SuppressWarnings("unused")
-	Play promptMockModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	Play promptMockModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
 
 		String availableColumns = String.valueOf(promptTemplateArguments.get("availableColumns"));
 		String letters = StringUtils.getLetters(availableColumns);
@@ -55,7 +55,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 		return Play.from(letter, "Because");
 	}
 
-	Play promptRealModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	Play promptRealModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
 
 		BeanOutputConverter<Play> playConverter = new BeanOutputConverter<>(Play.class);
 

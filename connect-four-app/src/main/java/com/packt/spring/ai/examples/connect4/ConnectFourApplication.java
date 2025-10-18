@@ -25,6 +25,7 @@ import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
 import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
 import com.packt.spring.ai.examples.connect4.model.Player;
+import com.packt.spring.ai.examples.connect4.model.PlayerAction;
 import com.packt.spring.ai.examples.connect4.model.Players;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
@@ -120,19 +121,21 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
 				);
 
-				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
-
 				String model = resolveModel(environment, currentPlayer);
 
-				Play play = promptModel(chatClient, promptTemplateArguments, model);
+				logDebug("Prompt Arguments [{}]; Model [{}]", promptTemplateArguments, model);
 
-				logInfo("AI model response [{}]", play.move());
+				Play play = promptModel(model, promptTemplateArguments, chatClient);
+				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);
 
-				boardGame.play(currentPlayerDisc, play);
+				logDebug("AI model response [{}]", playerAction.move());
+				logDebug("AI model explanation [{}]", playerAction.reason());
+
+				boardGame.play(playerAction);
 				boardGame.printGameBoard();
 
 				currentPlayer = players.switchPlayer(chatModel);
-				print("%Press <enter> to continue to next play ");
+				print("Press <enter> to continue to next play ");
 				waitForUserInput(input);
 			}
 
@@ -148,7 +151,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 			.map(provider -> "%d. %s%n".formatted(count.getAndIncrement(), provider.getName()))
 			.forEach(ConnectFourApplication::print);
 
-		print("Select player one: ");
+		print("%nSelect player one: ");
 
 		int providerIndex = input.nextInt() - 1;
 		Player playerOne = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.GOLD);
@@ -158,7 +161,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		providerIndex = input.nextInt() - 1;
 		Player playerTwo = Player.from(AI_PROVIDERS.get(providerIndex)).playing(Disc.RED);
 
-		print("Player 1 [%s] is playing [%s]%n%n", playerOne.getName(), playerOne.disc());
+		print("Player 1 [%s] is playing [%s]%n", playerOne.getName(), playerOne.disc());
 		print("Player 2 [%s] is playing [%s]%n%n", playerTwo.getName(), playerTwo.disc());
 
 		return Players.of(playerOne, playerTwo);
@@ -177,9 +180,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		}
 	}
 
-	private Play promptModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
-		return MOCK_AI_ENABLED ? promptMockModel(chatClient, promptTemplateArguments, model)
-			: promptRealModel(chatClient, promptTemplateArguments, model);
+	private Play promptModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
+		return MOCK_AI_ENABLED ? promptMockModel(model, promptTemplateArguments, chatClient)
+			: promptRealModel(model, promptTemplateArguments, chatClient);
 	}
 
 	@Override
