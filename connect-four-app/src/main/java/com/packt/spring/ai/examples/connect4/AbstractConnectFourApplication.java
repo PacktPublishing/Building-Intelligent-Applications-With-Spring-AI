@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
@@ -68,7 +69,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 
 		private final ConnectFourApplication.Columns columns;
 
-		private final ConnectFourApplication.Disc[][] gameBoard = new ConnectFourApplication.Disc[ROWS][COLUMNS];
+		private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
 
 		ConnectFourBoardGame() {
 
@@ -141,19 +142,19 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return !isWinner();
 		}
 
-		@Nullable ConnectFourApplication.Disc getWinner() {
+		@Nullable Disc getWinner() {
 
 			for (int rowIndex = 0; rowIndex < ROWS; rowIndex++) {
 				for (int columnIndex = 0; columnIndex < COLUMNS; columnIndex++) {
-					ConnectFourApplication.Disc disc = this.gameBoard[rowIndex][columnIndex];
+					Disc disc = this.gameBoard[rowIndex][columnIndex];
 					if (disc != null) {
-						if (ConnectFourApplication.Disc.exists(checkConnectFourUp(disc, rowIndex, columnIndex))) {
+						if (Disc.exists(checkConnectFourUp(disc, rowIndex, columnIndex))) {
 							return disc;
 						}
-						if (ConnectFourApplication.Disc.exists(checkConnectFourForward(disc, rowIndex, columnIndex))) {
+						if (Disc.exists(checkConnectFourForward(disc, rowIndex, columnIndex))) {
 							return disc;
 						}
-						if (ConnectFourApplication.Disc.exists(checkConnectFourDiagonally(disc, rowIndex, columnIndex))) {
+						if (Disc.exists(checkConnectFourDiagonally(disc, rowIndex, columnIndex))) {
 							return disc;
 						}
 					}
@@ -179,7 +180,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return rowIndex + CONNECT_FOUR <= ROWS;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFour(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFour(Disc disc,
 				int rowIndex, int columnIndex,
 				BiFunction<Integer, Integer, Integer> rowIndexFunction,
 				BiFunction<Integer, Integer, Integer> columnIndexFunction) {
@@ -187,7 +188,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			for (int indexOffset = 1; indexOffset < CONNECT_FOUR; indexOffset++) {
 				int nextRowIndex = rowIndexFunction.apply(rowIndex, indexOffset);
 				int nextColumnIndex = columnIndexFunction.apply(columnIndex, indexOffset);
-				ConnectFourApplication.Disc nextDisc = this.gameBoard[nextRowIndex][nextColumnIndex];
+				Disc nextDisc = this.gameBoard[nextRowIndex][nextColumnIndex];
 				if (!disc.equals(nextDisc)) {
 					return null;
 				}
@@ -196,11 +197,11 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return disc;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonally(ConnectFourApplication.Disc disc, int rowIndex, int columnIndex) {
+		private Disc checkConnectFourDiagonally(Disc disc, int rowIndex, int columnIndex) {
 
 			if (isUpPossible(rowIndex)) {
 				if (isBackwardPossible(columnIndex)) {
-					ConnectFourApplication.Disc winner = checkConnectFourDiagonallyBackward(disc, rowIndex, columnIndex);
+					Disc winner = checkConnectFourDiagonallyBackward(disc, rowIndex, columnIndex);
 					if (winner != null) {
 						return winner;
 					}
@@ -214,26 +215,26 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return null;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonally(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFourDiagonally(Disc disc,
 				int rowIndex, int columnIndex,
 				BiFunction<Integer, Integer, Integer> columnIndexFunction) {
 
 			return checkConnectFour(disc, rowIndex, columnIndex, Integer::sum, columnIndexFunction);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonallyBackward(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFourDiagonallyBackward(Disc disc,
 				int rowIndex, int columnIndex) {
 
 			return checkConnectFourDiagonally(disc, rowIndex, columnIndex, this::subtract);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourDiagonallyForward(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFourDiagonallyForward(Disc disc,
 				int rowIndex, int columnIndex) {
 
 			return checkConnectFourDiagonally(disc, rowIndex, columnIndex, Integer::sum);
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourForward(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFourForward(Disc disc,
 				int rowIndex, int columnIndex) {
 
 			return isForwardPossible(columnIndex)
@@ -241,7 +242,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 				: null;
 		}
 
-		private ConnectFourApplication.Disc checkConnectFourUp(ConnectFourApplication.Disc disc,
+		private Disc checkConnectFourUp(Disc disc,
 				int rowIndex, int columnIndex) {
 
 			return isUpPossible(rowIndex)
@@ -304,7 +305,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 		}
 
 		private String columnToString(int rowIndex, int columnIndex) {
-			ConnectFourApplication.Disc disc = this.gameBoard[rowIndex][columnIndex];
+			Disc disc = this.gameBoard[rowIndex][columnIndex];
 			return "| %s ".formatted(disc != null ? disc.getSymbol() : StringUtils.SINGLE_SPACE);
 		}
 
@@ -354,7 +355,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			return ConnectFourApplication.RowColumn.asRowIndex(getRow());
 		}
 
-		Column play(ConnectFourApplication.Disc disc) {
+		Column play(Disc disc) {
 			int rowIndex = nextRowIndex();
 			int columnIndex = getIndex();
 			getBoardGame().play(disc, rowIndex, columnIndex);
@@ -431,30 +432,6 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 
 		default Stream<Column> stream() {
 			return StreamUtils.stream(this);
-		}
-	}
-
-	@Getter
-	enum Disc {
-
-		RED("X"), GOLD("O");
-
-		private final String symbol;
-
-		Disc(String symbol) {
-			this.symbol = StringUtils.requireText(symbol, "Symbol is required");
-		}
-
-		static boolean exists(Disc disc) {
-			return disc != null;
-		}
-
-		static String resolveName(Disc disc, String defaultName) {
-			return disc != null ? disc.name() : defaultName;
-		}
-
-		static String resolveSymbol(Disc disc, String defaultSymbol) {
-			return disc != null ? disc.getSymbol() : defaultSymbol;
 		}
 	}
 

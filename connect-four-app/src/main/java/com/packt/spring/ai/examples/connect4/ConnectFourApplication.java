@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
+import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;

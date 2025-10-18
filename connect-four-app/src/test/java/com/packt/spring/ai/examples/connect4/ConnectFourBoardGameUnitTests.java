@@ -17,6 +17,8 @@ package com.packt.spring.ai.examples.connect4;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.packt.spring.ai.examples.connect4.model.Disc;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -32,29 +34,29 @@ public class ConnectFourBoardGameUnitTests {
 	void gameBoardOne() {
 
 		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
-			.play(ConnectFourApplication.Disc.RED, 1)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 2)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 3)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 4)
+			.play(Disc.RED, 1)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 2)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 3)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 4)
 			.printGameBoard();
 
 		assertThat(boardGame.isWinner()).isTrue();
-		assertThat(boardGame.getWinner()).isEqualTo(ConnectFourApplication.Disc.RED);
+		assertThat(boardGame.getWinner()).isEqualTo(Disc.RED);
 	}
 
 	@Test
 	void gameBoardTwo() {
 
 		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
-			.play(ConnectFourApplication.Disc.RED, 1)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 2)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 3)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
+			.play(Disc.RED, 1)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 2)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 3)
+			.play(Disc.GOLD, 1)
 			.printGameBoard();
 
 		assertThat(boardGame.isWinner()).isFalse();
@@ -65,41 +67,41 @@ public class ConnectFourBoardGameUnitTests {
 	void gameBoardThree() {
 
 		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
-			.play(ConnectFourApplication.Disc.RED, 1)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 2)
-			.play(ConnectFourApplication.Disc.GOLD, 2)
-			.play(ConnectFourApplication.Disc.RED, 1)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 3)
-			.play(ConnectFourApplication.Disc.GOLD, 4)
-			.play(ConnectFourApplication.Disc.RED, 7)
-			.play(ConnectFourApplication.Disc.GOLD, 2)
-			.play(ConnectFourApplication.Disc.RED, 7)
-			.play(ConnectFourApplication.Disc.GOLD, 3)
+			.play(Disc.RED, 1)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 2)
+			.play(Disc.GOLD, 2)
+			.play(Disc.RED, 1)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 3)
+			.play(Disc.GOLD, 4)
+			.play(Disc.RED, 7)
+			.play(Disc.GOLD, 2)
+			.play(Disc.RED, 7)
+			.play(Disc.GOLD, 3)
 			.printGameBoard();
 
 		assertThat(boardGame.isWinner()).isTrue();
-		assertThat(boardGame.getWinner()).isEqualTo(ConnectFourApplication.Disc.GOLD);
+		assertThat(boardGame.getWinner()).isEqualTo(Disc.GOLD);
 	}
 
 	@Test
 	void gameBoardFour() {
 
 		ConnectFourApplication.ConnectFourBoardGame boardGame = new ConnectFourApplication.ConnectFourBoardGame()
-			.play(ConnectFourApplication.Disc.RED, 1)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 2)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 3)
-			.play(ConnectFourApplication.Disc.GOLD, 4)
-			.play(ConnectFourApplication.Disc.RED, 7)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
-			.play(ConnectFourApplication.Disc.RED, 7)
-			.play(ConnectFourApplication.Disc.GOLD, 1)
+			.play(Disc.RED, 1)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 2)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 3)
+			.play(Disc.GOLD, 4)
+			.play(Disc.RED, 7)
+			.play(Disc.GOLD, 1)
+			.play(Disc.RED, 7)
+			.play(Disc.GOLD, 1)
 			.printGameBoard();
 
 		assertThat(boardGame.isWinner()).isTrue();
-		assertThat(boardGame.getWinner()).isEqualTo(ConnectFourApplication.Disc.GOLD);
+		assertThat(boardGame.getWinner()).isEqualTo(Disc.GOLD);
 	}
 }
