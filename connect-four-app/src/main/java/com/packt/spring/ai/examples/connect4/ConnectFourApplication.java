@@ -19,6 +19,9 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.UUID;
+
+import com.packt.spring.ai.examples.connect4.model.Play;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
@@ -29,7 +32,7 @@ import io.codeprimate.extensions.util.Utils;
 import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -59,25 +62,23 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private static final boolean MOCK_AI_ENABLED = false;
 
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
-		You are a player in the 2-player board game Connect 4. The game board is a 2 dimensional grid with 6 rows
+		You are a player in the 2 player board game Connect4. The game board is a 2 dimensional grid with 6 rows
 		and 7 columns. A player chooses a column and plays either the letter "X" or the letter "O". To win, a player
 		must be the first to play the same letter in 4 adjacent cells of the grid, either in the same row,
 		the same column, or diagonally. Play continues until a player wins or there are no more available moves.
 	""";
 
 	private static final String USER_PROMPT_TEMPLATE = """
-		You will be playing the letter "{playerDisc}". The current state of the game board is "{gameBoard}". Think
-		carefully and strategically in order to minimize the number of moves needed to connect 4 and beat your opponent.
-		Select from 1 of the available columns represented as a letter in {availableColumns}. What is your move?
-		Respond with only a single column letter.
+		You are playing letter "{playerDisc}". The current state of the game board is "{gameBoard}". Think carefully
+		and strategically about your next move. Minimize the number of moves needed to connect 4 and beat your opponent.
+		Select 1 of the available columns represented as a letter in {availableColumns}. What is your move? Explain.
 	""";
 
 	private static final SpringAiProvider PLAYER_ONE = SpringAiProvider.OPEN_AI;
 	private static final SpringAiProvider PLAYER_TWO = SpringAiProvider.VERTEX_AI_GEMINI;
-	private static final SpringAiProvider FIRST_PLAYER = PLAYER_TWO;
 
 	private static final SecureRandom SECURE_RANDOM =
-		new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes());
+		new SecureRandom(UUID.randomUUID().toString().getBytes());
 
 	private static final Map<AiProvider, Disc> PLAYER_TO_DISC = Map.of(
 		PLAYER_ONE, Disc.RED,
@@ -104,7 +105,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		return args -> {
 
-			print("%n%nWelcome to Connect 4!%n%n");
+			print("%n%nWelcome to Connect4!%n%n");
 			print("Player 1 is [%s] playing [%s]%n%n", PLAYER_ONE.getName(), PLAYER_TO_DISC.get(PLAYER_ONE).getSymbol());
 			print("Player 2 is [%s] playing [%s]%n%n", PLAYER_TWO.getName(), PLAYER_TO_DISC.get(PLAYER_TWO).getSymbol());
 
@@ -128,31 +129,29 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				String model = resolveModel(environment, currentPlayer);
 
-				String response = promptAiModel(chatClient, promptTemplateArguments, model);
+				Play play = promptAiModel(chatClient, promptTemplateArguments, model);
 
-				logInfo("AI model response [{}]", response);
+				logInfo("AI model response [{}]", play.move());
 
-				RowColumn rowColumn = RowColumn.fromColumnLetter(response);
-
-				boardGame.play(currentPlayerDisc, rowColumn);
+				boardGame.play(currentPlayerDisc, play);
 				boardGame.printGameBoard();
 
-				print("%nHit <enter> to continue to next play ");
-				waitForUserInput(input);
 				currentPlayer = switchPlayer(currentPlayer, chatModel);
+				print("%Press <enter> to continue to next play ");
+				waitForUserInput(input);
 			}
 
 			endGame(boardGame, PLAYER_TO_DISC);
 		};
 	}
 
-	private String promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	private Play promptAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
 		return MOCK_AI_ENABLED ? promptMockAiModel(chatClient, promptTemplateArguments, model)
 			: promptRealAiModel(chatClient, promptTemplateArguments, model);
 	}
 
 	@SuppressWarnings("all")
-	private String promptMockAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	private Play promptMockAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
 
 		String availableColumns = String.valueOf(promptTemplateArguments.get("availableColumns"));
 		String letters = StringUtils.getLetters(availableColumns);
@@ -161,19 +160,19 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		String letter = String.valueOf(letters.charAt(index));
 
-		return letter;
+		return Play.from(letter, "Because");
 	}
 
-	private String promptRealAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
+	private Play promptRealAiModel(ChatClient chatClient, Map<String, Object> promptTemplateArguments, String model) {
 
-		ChatResponse chatResponse = chatClient.prompt()
+		BeanOutputConverter<Play> playConverter = new BeanOutputConverter<>(Play.class);
+
+		return chatClient.prompt()
 			.system(SYSTEM_PROMPT_TEMPLATE)
 			.user(promptUserSpec -> promptUserSpec.text(USER_PROMPT_TEMPLATE).params(promptTemplateArguments))
 			.options(Utils.buildChatOptions(model))
 			.call()
-			.chatResponse();
-
-		return Utils.generatedContent(chatResponse);
+			.entity(playConverter);
 	}
 
 	private String resolveModel(Environment environment, SpringAiProvider aiProvider) {
@@ -204,7 +203,6 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		Disc winner = boardGame.getWinner();
 
 		if (winner != null) {
-
 			AiProvider winningAiProvider = playerDisc.entrySet().stream()
 				.filter(entry -> entry.getValue().equals(winner))
 				.map(Map.Entry::getKey).findFirst()
