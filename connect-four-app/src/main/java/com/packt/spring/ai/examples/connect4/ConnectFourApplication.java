@@ -120,12 +120,12 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				String model = resolveModel(environment, currentPlayer);
 
 				logDebug("Prompt Arguments [{}]; Model [{}]", promptTemplateArguments, model);
-				logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+				logInfo("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
 
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
 				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);
 
-				logDebug("AI model response [{}]", playerAction.move());
+				logInfo("AI model response [{}]", playerAction.move());
 				logDebug("AI model explanation [{}]", playerAction.reason());
 
 				boardGame.play(playerAction);
