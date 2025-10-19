@@ -54,6 +54,7 @@ import org.springframework.core.env.Environment;
  * @see PlayerAction
  * @see Players
  * @see Player
+ * @see Play
  * @see <a href="https://en.wikipedia.org/wiki/Connect_Four">connect4</a>
  * @since 0.1.0
  */
@@ -62,6 +63,7 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ConnectFourApplication extends AbstractConnectFourApplication {
 
+	private static final boolean LOG_EXPLANATION = true;
 	private static final boolean MOCK_AI_ENABLED = false;
 
 	static final String CONNECT_FOUR_PROFILE = "connect4";
@@ -125,8 +127,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
 				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);
 
-				logInfo("AI model response [{}]", playerAction.move());
-				logDebug("AI model explanation [{}]", playerAction.reason());
+				if (LOG_EXPLANATION) {
+					logInfo("AI model explanation [{}]", playerAction.reason());
+				}
 
 				boardGame.play(playerAction);
 				boardGame.printGameBoard();
