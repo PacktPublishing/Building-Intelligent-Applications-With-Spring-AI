@@ -114,14 +114,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				print("Current player is [%s]%n%n", currentPlayer.getName());
 
-				Disc currentPlayerDisc = currentPlayer.disc();
-
-				Map<String, Object> promptTemplateArguments = Map.of(
-					"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
-					"playerDisc", currentPlayerDisc.getSymbol(),
-					"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
-				);
-
+				Map<String, Object> promptTemplateArguments = getPromptTemplateArguments(boardGame, currentPlayer);
 				String model = resolveModel(environment, currentPlayer);
 
 				logDebug("Prompt Arguments [{}]; Model [{}]", promptTemplateArguments, model);
@@ -173,21 +166,17 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		return Player.from(provider).playing(disc);
 	}
 
-	private void endGame(ConnectFourBoardGame boardGame, Players players) {
-
-		Disc winningDisc = boardGame.getWinner();
-
-		if (winningDisc != null) {
-			Player winningPlayer = players.findByDisc(winningDisc);
-			print("[%s] playing [%s] wins!", winningPlayer.getName(), winningDisc);
-		}
-		else {
-			print("No Winner!");
-		}
+	private Map<String, Object> getPromptTemplateArguments(ConnectFourBoardGame boardGame, Player player) {
+		return Map.of(
+			"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
+			"playerDisc", player.disc().getSymbol(),
+			"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
+		);
 	}
 
 	private Play promptModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
-		return MOCK_AI_ENABLED ? promptMockModel(model, promptTemplateArguments, chatClient)
+		return MOCK_AI_ENABLED
+			? promptMockModel(model, promptTemplateArguments, chatClient)
 			: promptRealModel(model, promptTemplateArguments, chatClient);
 	}
 
@@ -203,5 +192,18 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	private void waitForUserInput(Scanner input) {
 		input.nextLine();
+	}
+
+	private void endGame(ConnectFourBoardGame boardGame, Players players) {
+
+		Disc winningDisc = boardGame.getWinner();
+
+		if (winningDisc != null) {
+			Player winningPlayer = players.findByDisc(winningDisc);
+			print("[%s] playing [%s] wins!", winningPlayer.getName(), winningDisc);
+		}
+		else {
+			print("No Winner!");
+		}
 	}
 }
