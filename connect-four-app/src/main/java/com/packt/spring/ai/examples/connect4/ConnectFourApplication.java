@@ -45,13 +45,15 @@ import org.springframework.core.env.Environment;
  * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
  *
  * @author John Blum
- * @see io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel
- * @see io.codeprimate.extensions.spring.ai.config.EnableChatClient
- * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
- * @see io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication
- * @see org.springframework.ai.chat.client.ChatClient
- * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.ai.chat.client.ChatClient
+ * @see ConnectFourBoardGame
+ * @see CompositeChatModel
+ * @see EnableChatClient
+ * @see AiProvider
+ * @see PlayerAction
+ * @see Players
+ * @see Player
  * @see <a href="https://en.wikipedia.org/wiki/Connect_Four">connect4</a>
  * @since 0.1.0
  */
