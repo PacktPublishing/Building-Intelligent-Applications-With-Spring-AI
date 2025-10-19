@@ -60,6 +60,8 @@ public class ConnectFourBoardGame {
 	private static final int COLUMNS = 7;
 	private static final int GAME_BOARD_SIZE = ROWS * COLUMNS;
 
+	private static final String COLUMN_LETTER_INDENT = "  ";
+	private static final String COLUMN_LETTER_SPACING = "   ";
 	private static final String COLUMN_POSITIONS = "ABCDEFG";
 	private static final String COLUMN_SYMBOL = "C%d";
 	private static final String ROW_SYMBOL = "R%d";
@@ -288,7 +290,16 @@ public class ConnectFourBoardGame {
 
 	private String gameBoardToString() {
 
-		StringBuilder stringBuilder = new StringBuilder(borderToString());
+		StringBuilder stringBuilder = new StringBuilder();
+
+		String header = IntStream.range(0, COLUMN_POSITIONS.length())
+			.mapToObj(index -> String.valueOf(COLUMN_POSITIONS.charAt(index)))
+			.reduce((charOne, charTwo) -> String.join(COLUMN_LETTER_SPACING, charOne, charTwo))
+			.orElse(Utils.EMPTY_STRING);
+
+		header = "%s%s%n".formatted(COLUMN_LETTER_INDENT, header);
+		stringBuilder.append(header);
+		stringBuilder.append(borderToString());
 
 		for (int rowIndex = 0; rowIndex < ROWS; rowIndex++) {
 			stringBuilder.append(rowToString(rowIndex));
@@ -330,7 +341,7 @@ public class ConnectFourBoardGame {
 		return IntStream.range(0, COLUMNS)
 			.mapToObj(index -> " ---")
 			.reduce("%s%s"::formatted)
-			.orElse(StringUtils.EMPTY_STRING)
+			.orElse(Utils.EMPTY_STRING)
 			.concat("\n");
 	}
 
@@ -418,14 +429,18 @@ public class ConnectFourBoardGame {
 
 		default Column findByColumnIndex(int columnIndex) {
 			return findBy(column -> column.getIndex() == columnIndex)
-				.orElseThrow(() -> newIllegalStateException("Column with index [%d] not found"
-					.formatted(columnIndex)));
+				.orElseThrow(() -> {
+					String message = "Column with index [%d] not found".formatted(columnIndex);
+					return newIllegalStateException(message);
+				});
 		}
 
 		default Column findByColumnNumber(int columnNumber) {
 			return findBy(column -> column.getNumber() == columnNumber)
-				.orElseThrow(() -> newIllegalStateException("Column with number [%d] not found"
-					.formatted(columnNumber)));
+				.orElseThrow(() -> {
+					String message = "Column with number [%d] not found".formatted(columnNumber);
+					return newIllegalStateException(message);
+				});
 		}
 
 		default Columns findPlayableColumns() {
@@ -475,8 +490,10 @@ public class ConnectFourBoardGame {
 		}
 
 		private static int assertIndexInbounds(int index, String letter) {
+
 			Assert.isTrue(index > -1, new IndexOutOfBoundsException("Index [%d] for letter [%s] is not valid"
 				.formatted(index, letter)));
+
 			return index;
 		}
 
