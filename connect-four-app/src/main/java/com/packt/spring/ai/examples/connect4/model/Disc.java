@@ -50,6 +50,6 @@ public enum Disc {
 
 	@Override
 	public String toString() {
-		return name();
+		return getSymbol();
 	}
 }
