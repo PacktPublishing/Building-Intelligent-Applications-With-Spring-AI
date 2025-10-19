@@ -15,6 +15,7 @@
  */
 package com.packt.spring.ai.examples.connect4.model;
 
+import org.cp.elements.lang.StringUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -25,9 +26,11 @@ import org.springframework.util.Assert;
  */
 public record Play(String move, String explanation) {
 
+	public static final String DEFAULT_EXPLANATION = "?";
+
 	public Play {
 		Assert.hasText(move, "Move is required");
-		Assert.hasText(explanation, "Explanation is required");
+		explanation = StringUtils.defaultIfBlank(explanation, DEFAULT_EXPLANATION);
 	}
 
 	public static Play from(String move, String explanation) {
