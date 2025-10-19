@@ -119,7 +119,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				print("Current player is [%s]%n%n", currentPlayer.getName());
 
-				Map<String, Object> promptTemplateArguments = getPromptTemplateArguments(boardGame, currentPlayer);
+				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
 				String model = resolveModel(environment, currentPlayer);
 
 				logDebug("Prompt Arguments [{}]; Model [{}]", promptTemplateArguments, model);
@@ -128,9 +128,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
 				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);
 
-				if (LOG_EXPLANATION) {
-					logInfo("AI model explanation [{}]", playerAction.reason());
-				}
+				logExplanation(playerAction);
 
 				boardGame.play(playerAction);
 				boardGame.printGameBoard();
@@ -173,7 +171,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		return Player.from(provider).playing(disc);
 	}
 
-	private Map<String, Object> getPromptTemplateArguments(ConnectFourBoardGame boardGame, Player player) {
+	private Map<String, Object> resolvePromptTemplateArguments(ConnectFourBoardGame boardGame, Player player) {
 		return Map.of(
 			"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
 			"playerDisc", player.disc().getSymbol(),
@@ -195,6 +193,12 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	@Override
 	String userPromptTemplate() {
 		return USER_PROMPT_TEMPLATE;
+	}
+
+	private void logExplanation(PlayerAction playerAction) {
+		if (LOG_EXPLANATION) {
+			logInfo("AI model explanation [{}]", playerAction.reason());
+		}
 	}
 
 	private void waitForUserInput(Scanner input) {
