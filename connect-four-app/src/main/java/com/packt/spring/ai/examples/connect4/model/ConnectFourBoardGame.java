@@ -301,7 +301,12 @@ public class ConnectFourBoardGame {
 
 	private String columnToString(int rowIndex, int columnIndex) {
 		Disc disc = this.gameBoard[rowIndex][columnIndex];
-		return "| %s ".formatted(disc != null ? disc.getSymbol() : StringUtils.SINGLE_SPACE);
+		return "| %s ".formatted(disc != null ? discToString(disc) : StringUtils.SINGLE_SPACE);
+	}
+
+	private String discToString(Disc disc) {
+		String discColor = Disc.RED.equals(disc) ? "\u001b[31m" : "\u001b[33m";
+		return "%s%s\u001b[0m".formatted(discColor, disc.getSymbol());
 	}
 
 	private String borderToString() {
