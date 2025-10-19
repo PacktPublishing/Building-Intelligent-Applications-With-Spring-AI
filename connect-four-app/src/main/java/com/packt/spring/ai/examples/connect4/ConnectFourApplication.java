@@ -82,6 +82,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	""";
 
 	private static final List<SpringAiProvider> AI_PROVIDERS = List.of(
+		SpringAiProvider.OLLAMA,
 		SpringAiProvider.OPEN_AI,
 		SpringAiProvider.VERTEX_AI_GEMINI,
 		SpringAiProvider.MISTRAL_AI
