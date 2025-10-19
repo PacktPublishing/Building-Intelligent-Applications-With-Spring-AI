@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.packt.spring.ai.examples.connect4.support.AsciiColors;
+
 import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.Assert;
@@ -36,13 +38,17 @@ import org.springframework.lang.Nullable;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract base class encapsulating functionality common to the {@literal Connect4} board game application.
  *
  * @author John Blum
  * @see Disc
+ * @see Play
+ * @see Player
  * @see PlayerAction
+ * @see Players
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
@@ -59,6 +65,9 @@ public class ConnectFourBoardGame {
 	private static final String ROW_SYMBOL = "R%d";
 	private static final String ROW_COLUMN_SYMBOL = "(" + ROW_SYMBOL + ", " + COLUMN_SYMBOL + ")";
 
+	@Setter(AccessLevel.PROTECTED)
+	private RowColumn currentRowColumnPlayed = null;
+
 	private final Columns columns;
 
 	private final Disc[][] gameBoard = new Disc[ROWS][COLUMNS];
@@ -72,7 +81,6 @@ public class ConnectFourBoardGame {
 			Arrays.fill(this.gameBoard[rowIndex], null);
 		}
 
-		// Not Thread-safe; this reference escapes!
 		this.columns = Columns.from(this);
 	}
 
@@ -175,10 +183,9 @@ public class ConnectFourBoardGame {
 		return rowIndex + CONNECT_FOUR <= ROWS;
 	}
 
-	private Disc checkConnectFour(Disc disc,
-		int rowIndex, int columnIndex,
-		BiFunction<Integer, Integer, Integer> rowIndexFunction,
-		BiFunction<Integer, Integer, Integer> columnIndexFunction) {
+	private Disc checkConnectFour(Disc disc, int rowIndex, int columnIndex,
+			BiFunction<Integer, Integer, Integer> rowIndexFunction,
+			BiFunction<Integer, Integer, Integer> columnIndexFunction) {
 
 		for (int indexOffset = 1; indexOffset < CONNECT_FOUR; indexOffset++) {
 			int nextRowIndex = rowIndexFunction.apply(rowIndex, indexOffset);
@@ -264,7 +271,8 @@ public class ConnectFourBoardGame {
 	}
 
 	public ConnectFourBoardGame play(PlayerAction playerAction) {
-		RowColumn rowColumn = RowColumn.fromColumnLetter(playerAction.play().move());
+		RowColumn rowColumn = RowColumn.fromColumnLetter(this, playerAction.play().move());
+		setCurrentRowColumnPlayed(rowColumn);
 		return play(playerAction.player().disc(), rowColumn);
 	}
 
@@ -300,13 +308,21 @@ public class ConnectFourBoardGame {
 	}
 
 	private String columnToString(int rowIndex, int columnIndex) {
+
 		Disc disc = this.gameBoard[rowIndex][columnIndex];
-		return "| %s ".formatted(disc != null ? discToString(disc) : StringUtils.SINGLE_SPACE);
+
+		return "| %s ".formatted(disc != null
+			? discToString(rowIndex, columnIndex, disc)
+			: StringUtils.SINGLE_SPACE);
 	}
 
-	private String discToString(Disc disc) {
-		String discColor = Disc.RED.equals(disc) ? "\u001b[31m" : "\u001b[33m";
-		return "%s%s\u001b[0m".formatted(discColor, disc.getSymbol());
+	private String discToString(int rowIndex, int columnIndex, Disc disc) {
+
+		AsciiColors discColor = getCurrentRowColumnPlayed().is(rowIndex, columnIndex) ? AsciiColors.GREEN
+			: Disc.RED.equals(disc) ? AsciiColors.RED
+			: AsciiColors.YELLOW;
+
+		return discColor.format(disc.getSymbol());
 	}
 
 	private String borderToString() {
@@ -458,16 +474,6 @@ public class ConnectFourBoardGame {
 			return rowIndex + 1;
 		}
 
-		static RowColumn fromColumn(int columnNumber) {
-			return new RowColumn(0, columnNumber);
-		}
-
-		static RowColumn fromColumnLetter(String letter) {
-			String singleLetter = assertSingleLetter(StringUtils.getLetters(letter));
-			int index = assertIndexInbounds(ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(singleLetter), singleLetter);
-			return RowColumn.fromColumn(RowColumn.asColumnNumber(index));
-		}
-
 		private static int assertIndexInbounds(int index, String letter) {
 			Assert.isTrue(index > -1, new IndexOutOfBoundsException("Index [%d] for letter [%s] is not valid"
 				.formatted(index, letter)));
@@ -483,8 +489,29 @@ public class ConnectFourBoardGame {
 			return value != null && value.length() == 1 && Character.isLetter(value.charAt(0));
 		}
 
-		static RowColumn fromRow(int rowNumber) {
-			return new RowColumn(rowNumber, 0);
+		static RowColumn fromColumnLetter(ConnectFourBoardGame boardGame, String letter) {
+			String singleLetter = assertSingleLetter(StringUtils.getLetters(letter));
+			int index = assertIndexInbounds(ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(singleLetter), singleLetter);
+			return fromColumnNumber(boardGame, RowColumn.asColumnNumber(index));
+		}
+
+		static RowColumn fromColumnNumber(ConnectFourBoardGame boardGame, int columnNumber) {
+			int rowNumber = resolveRowNumber(boardGame, columnNumber);
+			return new RowColumn(rowNumber, columnNumber);
+		}
+
+		private static int resolveRowNumber(ConnectFourBoardGame boardGame, int columnNumber) {
+
+			int columnIndex = asColumnIndex(columnNumber);
+
+			for (int rowNumber = ROWS; rowNumber > 0; rowNumber--) {
+				int rowIndex = asRowIndex(rowNumber);
+				if (boardGame.gameBoard[rowIndex][columnIndex] == null) {
+					return rowNumber;
+				}
+			}
+
+			return ROWS;
 		}
 
 		static RowColumn parse(String value) {
@@ -515,6 +542,10 @@ public class ConnectFourBoardGame {
 
 		int rowIndex() {
 			return asRowIndex(rowNumber());
+		}
+
+		boolean is(int rowIndex, int columnIndex) {
+			return rowIndex() == rowIndex && columnIndex() == columnIndex;
 		}
 	}
 }
