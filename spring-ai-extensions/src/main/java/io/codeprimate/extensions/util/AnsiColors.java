@@ -13,28 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.packt.spring.ai.examples.connect4.support;
+package io.codeprimate.extensions.util;
 
 import lombok.Getter;
 
 /**
- * {@link Enum Enumeration} of {@literal ASCII} colors.
+ * {@link Enum Enumeration} of {@literal ANSI} colors.
  *
  * @author John Blum
  * @see java.lang.Enum
  * @since 0.1.0
  */
 @Getter
-public enum AsciiColors {
+public enum AnsiColors {
 
+	BLACK("\u001b[30m"),
+	BLACK_BACKGROUND("\u001b[40m"),
+	BLUE("\u001b[34m"),
+	BLUE_BACKGROUND("\u001b[44m"),
+	CYAN("\u001b[36m"),
+	CYAN_BACKGROUND("\u001b[46m"),
 	GREEN("\u001b[32m"),
+	GREEN_BACKGROUND("\u001b[42m"),
+	MAGENTA("\u001b[35m"),
+	MAGENTA_BACKGROUND("\u001b[45m"),
 	RED("\u001b[31m"),
+	RED_BACKGROUND("\u001b[41m"),
 	RESET("\u001b[0m"),
-	YELLOW("\u001b[33m");
+	WHITE("\u001b[37m"),
+	WHITE_BACKGROUND("\u001b[47m"),
+	YELLOW("\u001b[33m"),
+	YELLOW_BACKGROUND("\u001b[43m");
 
 	private final String asciiColorCode;
 
-	AsciiColors(String asciiColorCode) {
+	AnsiColors(String asciiColorCode) {
 		this.asciiColorCode = asciiColorCode;
 	}
 

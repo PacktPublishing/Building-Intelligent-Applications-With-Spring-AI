@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.packt.spring.ai.examples.connect4.support.AsciiColors;
+import io.codeprimate.extensions.util.AnsiColors;
 
 import io.codeprimate.extensions.util.Utils;
 
@@ -329,9 +329,9 @@ public class ConnectFourBoardGame {
 
 	private String discToString(int rowIndex, int columnIndex, Disc disc) {
 
-		AsciiColors discColor = getCurrentRowColumnPlayed().is(rowIndex, columnIndex) ? AsciiColors.GREEN
-			: Disc.RED.equals(disc) ? AsciiColors.RED
-			: AsciiColors.YELLOW;
+		AnsiColors discColor = getCurrentRowColumnPlayed().is(rowIndex, columnIndex) ? AnsiColors.GREEN
+			: Disc.RED.equals(disc) ? AnsiColors.RED
+			: AnsiColors.YELLOW;
 
 		return discColor.format(disc.getSymbol());
 	}
