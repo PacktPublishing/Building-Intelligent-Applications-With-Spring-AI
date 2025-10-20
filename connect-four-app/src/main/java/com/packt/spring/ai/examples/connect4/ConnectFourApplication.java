@@ -118,7 +118,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 			while (boardGame.isPlayable()) {
 
-				print("Current player is [%s - [%s]]%n%n",
+				print("Current player is [%s playing [%s]]%n%n",
 					currentPlayer.getName(), currentPlayer.disc().toColoredString());
 
 				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
@@ -161,8 +161,8 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		Player playerTwo = selectPlayer(input, Disc.RED);
 
-		print("Player 1 [%s] is playing [%s]%n", playerOne.getName(), playerOne.disc());
-		print("Player 2 [%s] is playing [%s]%n%n", playerTwo.getName(), playerTwo.disc());
+		print("Player 1 [%s] is playing [%s]%n", playerOne.getName(), playerOne.disc().toColoredString());
+		print("Player 2 [%s] is playing [%s]%n%n", playerTwo.getName(), playerTwo.disc().toColoredString());
 
 		return Players.of(playerOne, playerTwo);
 	}
