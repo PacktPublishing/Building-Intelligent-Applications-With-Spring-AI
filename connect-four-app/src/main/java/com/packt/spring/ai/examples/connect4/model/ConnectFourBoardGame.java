@@ -28,7 +28,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.codeprimate.extensions.util.AnsiColors;
-
 import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.Assert;
@@ -329,11 +328,9 @@ public class ConnectFourBoardGame {
 
 	private String discToString(int rowIndex, int columnIndex, Disc disc) {
 
-		AnsiColors discColor = getCurrentRowColumnPlayed().is(rowIndex, columnIndex) ? AnsiColors.GREEN
-			: Disc.RED.equals(disc) ? AnsiColors.RED
-			: AnsiColors.YELLOW;
-
-		return discColor.format(disc.getSymbol());
+		return getCurrentRowColumnPlayed().is(rowIndex, columnIndex)
+			? AnsiColors.GREEN.format(disc.toString())
+			: disc.toColoredString();
 	}
 
 	private String borderToString() {

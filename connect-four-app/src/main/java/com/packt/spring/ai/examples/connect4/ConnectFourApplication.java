@@ -45,8 +45,9 @@ import org.springframework.core.env.Environment;
  * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
  *
  * @author John Blum
- * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.ai.chat.client.ChatClient
+ * @see org.springframework.boot.autoconfigure.SpringBootApplication
+ * @see org.springframework.context.annotation.Profile
  * @see ConnectFourBoardGame
  * @see CompositeChatModel
  * @see EnableChatClient
@@ -117,13 +118,15 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 			while (boardGame.isPlayable()) {
 
-				print("Current player is [%s]%n%n", currentPlayer.getName());
+				print("Current player is [%s - [%s]]%n%n",
+					currentPlayer.getName(), currentPlayer.disc().toColoredString());
 
 				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
 				String model = resolveModel(environment, currentPlayer);
 
-				logDebug("Prompt Arguments [{}]; Model [{}]", promptTemplateArguments, model);
-				logInfo("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+				logDebug("Model [{}]", model);
+				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
+				logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
 
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
 				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);

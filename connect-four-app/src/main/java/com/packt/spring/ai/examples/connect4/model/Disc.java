@@ -15,25 +15,34 @@
  */
 package com.packt.spring.ai.examples.connect4.model;
 
+import io.codeprimate.extensions.util.AnsiColors;
+
+import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.lang.StringUtils;
 
 import lombok.Getter;
 
 /**
- * The Disc class...
+ * Abstract Data Type (ADT) modeling a {@literal disc} played by a player in Connect4.
  *
  * @author John Blum
- * @since 1.0.0
+ * @see AnsiColors
+ * @since 0.1.0
  */
 @Getter
+@SuppressWarnings("unused")
 public enum Disc {
 
-	RED("X"), GOLD("O");
+	RED("X", AnsiColors.RED),
+	GOLD("O", AnsiColors.YELLOW);
+
+	private final AnsiColors color;
 
 	private final String symbol;
 
-	Disc(String symbol) {
+	Disc(String symbol, AnsiColors color) {
 		this.symbol = StringUtils.requireText(symbol, "Symbol is required");
+		this.color = ObjectUtils.requireObject(color, "ANSI Color is required");
 	}
 
 	public static boolean exists(Disc disc) {
@@ -51,5 +60,9 @@ public enum Disc {
 	@Override
 	public String toString() {
 		return getSymbol();
+	}
+
+	public String toColoredString() {
+		return getColor().format(toString());
 	}
 }
