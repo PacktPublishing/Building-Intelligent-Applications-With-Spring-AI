@@ -113,7 +113,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 			Scanner input = new Scanner(System.in);
 
 			Players players = selectPlayers(input);
-			Player currentPlayer = players.getCurrentPlayer();
+			Player currentPlayer = players.startingPlayer(SECURE_RANDOM, chatModel);
 
 			while (boardGame.isPlayable()) {
 
