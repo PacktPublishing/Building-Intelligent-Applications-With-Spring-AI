@@ -15,6 +15,7 @@
  */
 package com.packt.spring.ai.examples.connect4.model;
 
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -81,6 +82,14 @@ public abstract class Players implements Iterable<Player> {
 	@Override
 	public @NonNull Iterator<Player> iterator() {
 		return List.of(one(), two()).iterator();
+	}
+
+	public Player startingPlayer(SecureRandom random, CompositeChatModel chatModel) {
+		Player startingPlayer = random.nextInt(100) % 2 == 0 ? two() : one();
+		AiProvider provider = startingPlayer.provider();
+		chatModel.use(provider);
+		setCurrentPlayer(startingPlayer);
+		return startingPlayer;
 	}
 
 	public Player switchPlayer(CompositeChatModel chatModel) {
