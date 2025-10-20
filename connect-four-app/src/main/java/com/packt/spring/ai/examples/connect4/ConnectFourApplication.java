@@ -15,6 +15,7 @@
  */
 package com.packt.spring.ai.examples.connect4;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -130,8 +131,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
 				logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
 
+				long timestamp = System.currentTimeMillis();
+
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
-				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play);
+				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play)
+					.in(Duration.ofMillis(System.currentTimeMillis() - timestamp));
 
 				logExplanation(playerAction);
 
@@ -219,6 +223,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private void logExplanation(PlayerAction playerAction) {
 		if (LOG_EXPLANATION) {
 			logInfo("AI model explanation [{}]", playerAction.reason());
+			logInfo("AI model decision duration {} ms", playerAction.time().toMillis());
 		}
 	}
 
