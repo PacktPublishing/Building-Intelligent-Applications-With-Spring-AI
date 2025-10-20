@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
 import com.packt.spring.ai.examples.connect4.model.Disc;
@@ -27,6 +28,7 @@ import com.packt.spring.ai.examples.connect4.model.Play;
 import com.packt.spring.ai.examples.connect4.model.Player;
 import com.packt.spring.ai.examples.connect4.model.PlayerAction;
 import com.packt.spring.ai.examples.connect4.model.Players;
+import com.packt.spring.ai.examples.connect4.support.ConnectFourException;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
@@ -133,8 +135,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				logExplanation(playerAction);
 
-				boardGame.play(playerAction);
-				boardGame.printGameBoard();
+				playSafely(boardGameArgument -> {
+					boardGameArgument.play(playerAction);
+					boardGameArgument.printGameBoard();
+				}).accept(boardGame);
 
 				currentPlayer = players.switchPlayer(chatModel);
 				print("Press <enter> to continue to next play ");
@@ -196,6 +200,20 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	@Override
 	String userPromptTemplate() {
 		return USER_PROMPT_TEMPLATE;
+	}
+
+	private Consumer<ConnectFourBoardGame> playSafely(Consumer<ConnectFourBoardGame> boardGameConsumer) {
+
+		return boardGame -> {
+			try {
+				boardGameConsumer.accept(boardGame);
+			}
+			catch (RuntimeException cause) {
+				logWarn("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+				logWarn("Connect4 Game Board State [{}]", boardGame.getGameBoardStateAsGrid());
+				throw ConnectFourException.because("AI model fumbled the ball", cause);
+			}
+		};
 	}
 
 	private void logExplanation(PlayerAction playerAction) {
