@@ -15,6 +15,8 @@
  */
 package com.packt.spring.ai.examples.connect4.model;
 
+import java.time.Duration;
+
 import org.cp.elements.lang.Assert;
 
 import lombok.AccessLevel;
@@ -31,7 +33,9 @@ import lombok.RequiredArgsConstructor;
  * @see Play
  */
 @SuppressWarnings("unused")
-public record PlayerAction(Player player, Play play) {
+public record PlayerAction(Player player, Play play, Duration time) {
+
+	public static final Duration DEFAULT_TIME = Duration.ZERO;
 
 	public PlayerAction {
 		Assert.notNull(player, "Player is required");
@@ -40,6 +44,12 @@ public record PlayerAction(Player player, Play play) {
 
 	public static Builder by(Player player) {
 		return new Builder(player);
+	}
+
+	public PlayerAction in(Duration time) {
+		Assert.notNull(time, "Duration is required");
+		Assert.isTrue(time.compareTo(Duration.ZERO) > 0, "Duration [%s] must greater than 0".formatted(time));
+		return new PlayerAction(player(), play(), time);
 	}
 
 	public String move() {
@@ -57,7 +67,7 @@ public record PlayerAction(Player player, Play play) {
 		private final Player player;
 
 		public PlayerAction played(Play play) {
-			return new PlayerAction(getPlayer(), play);
+			return new PlayerAction(getPlayer(), play, DEFAULT_TIME);
 		}
 	}
 }
