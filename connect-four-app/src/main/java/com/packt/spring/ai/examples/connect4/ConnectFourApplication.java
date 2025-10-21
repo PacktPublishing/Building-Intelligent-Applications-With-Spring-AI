@@ -37,6 +37,7 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -48,13 +49,11 @@ import org.springframework.core.env.Environment;
  * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
  *
  * @author John Blum
- * @see org.springframework.ai.chat.client.ChatClient
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.context.annotation.Profile
- * @see ConnectFourBoardGame
- * @see CompositeChatModel
- * @see EnableChatClient
+ * @see AbstractConnectFourApplication
  * @see AiProvider
+ * @see ConnectFourBoardGame
  * @see PlayerAction
  * @see Players
  * @see Player
@@ -96,6 +95,16 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		runSpringApplication(ConnectFourApplication.class, useProfiles(CONNECT_FOUR_PROFILE), args);
 	}
 
+	/**
+	 * {@link SpringBootConfiguration} used to configure the Connect4 board game.
+	 *
+	 * @see org.springframework.ai.chat.client.ChatClient
+	 * @see org.springframework.boot.SpringBootConfiguration
+	 * @see org.springframework.context.annotation.Bean
+	 * @see ConnectFourBoardGame
+	 * @see CompositeChatModel
+	 * @see EnableChatClient
+	 */
 	@SpringBootConfiguration
 	@EnableChatClient
 	static class ConnectFourConfiguration {
@@ -106,6 +115,21 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		}
 	}
 
+	/**
+	 * Main {@link ApplicationRunner program runner} used to play Connect4.
+	 *
+	 * @param environment Spring {@link Environment} with access to environment-specific application configuration.
+	 * @param chatClient {@link ChatClient} used to send chat requests to the configured AI models.
+	 * @param chatModel {@link CompositeChatModel} configured with access to all available {@link ChatModel ChatModels}
+	 * declared on the application classpath.
+	 * @param boardGame {@link ConnectFourBoardGame} used to manage game state.
+	 * @return a new {@link ApplicationRunner} initiating the board game.
+	 * @see org.springframework.ai.chat.client.ChatClient
+	 * @see org.springframework.boot.ApplicationRunner
+	 * @see org.springframework.core.env.Environment
+	 * @see ConnectFourBoardGame
+	 * @see CompositeChatModel
+	 */
 	@Bean
 	ApplicationRunner playGame(Environment environment, ChatClient chatClient, CompositeChatModel chatModel,
 			ConnectFourBoardGame boardGame) {
@@ -127,9 +151,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
 				String model = resolveModel(environment, currentPlayer);
 
-				logDebug("Model [{}]", model);
-				logDebug("Prompt Arguments [{}]", promptTemplateArguments);
-				logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+				logModelInput(model, promptTemplateArguments, boardGame);
 
 				long timestamp = System.currentTimeMillis();
 
@@ -139,14 +161,14 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				logExplanation(playerAction);
 
-				playSafely(boardGameArgument -> {
-					boardGameArgument.play(playerAction);
-					boardGameArgument.printGameBoard();
+				playSafely(it -> {
+					it.play(playerAction);
+					it.printGameBoard();
 				}).accept(boardGame);
 
 				currentPlayer = players.switchPlayer(chatModel);
-				print("Press <enter> to continue to next play ");
-				waitForUserInput(input);
+				print("Press <enter> to continue next play ");
+				waitOnUserInput(input);
 			}
 
 			endGame(boardGame, players);
@@ -183,6 +205,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	private Map<String, Object> resolvePromptTemplateArguments(ConnectFourBoardGame boardGame, Player player) {
+
 		return Map.of(
 			"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
 			"playerDisc", player.disc().getSymbol(),
@@ -191,6 +214,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	private Play promptModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
+
 		return MOCK_AI_ENABLED
 			? promptMockModel(model, promptTemplateArguments, chatClient)
 			: promptRealModel(model, promptTemplateArguments, chatClient);
@@ -221,13 +245,22 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	private void logExplanation(PlayerAction playerAction) {
+
 		if (LOG_EXPLANATION) {
 			logInfo("AI model explanation [{}]", playerAction.reason());
 			logInfo("AI model decision duration {} ms", playerAction.time().toMillis());
 		}
 	}
 
-	private void waitForUserInput(Scanner input) {
+	private void logModelInput(String model, Map<String, Object> promptTemplateArguments,
+			ConnectFourBoardGame boardGame) {
+
+		logDebug("Model [{}]", model);
+		logDebug("Prompt Arguments [{}]", promptTemplateArguments);
+		logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+	}
+
+	private void waitOnUserInput(Scanner input) {
 		input.nextLine();
 	}
 
