@@ -30,6 +30,7 @@ import org.springframework.lang.NonNull;
  * @param <T> {@link Class type} in which to map the JSON.
  * @see org.springframework.ai.converter.BeanOutputConverter
  * @see org.springframework.ai.converter.StructuredOutputConverter
+ * @see <a href="https://github.com/OWASP/json-sanitizer">Google JsonSanitizer</a>
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
