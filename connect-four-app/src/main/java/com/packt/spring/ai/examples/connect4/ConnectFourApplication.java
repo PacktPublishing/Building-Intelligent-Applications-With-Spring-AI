@@ -158,8 +158,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				long timestamp = System.currentTimeMillis();
 
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
+
 				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play)
-					.in(Duration.ofMillis(System.currentTimeMillis() - timestamp));
+					.in(durationInMilliseconds(timestamp));
 
 				logExplanation(playerAction);
 
@@ -244,6 +245,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				throw ConnectFourException.because("AI model fumbled the ball", cause);
 			}
 		};
+	}
+
+	private static Duration durationInMilliseconds(long timestamp) {
+		long timeDifferenceInMilliseconds = System.currentTimeMillis() - timestamp;
+		return Duration.ofMillis(timeDifferenceInMilliseconds);
 	}
 
 	private void logExplanation(PlayerAction playerAction) {
