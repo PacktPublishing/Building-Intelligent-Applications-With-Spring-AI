@@ -22,6 +22,7 @@ import java.util.UUID;
 import com.packt.spring.ai.examples.connect4.model.Play;
 import com.packt.spring.ai.examples.connect4.model.Player;
 
+import io.codeprimate.extensions.spring.ai.converter.JsonSanitizerOutputConverter;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.Utils;
@@ -60,13 +61,14 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 	Play promptRealModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
 
 		BeanOutputConverter<Play> playConverter = new BeanOutputConverter<>(Play.class);
+		JsonSanitizerOutputConverter<Play> jsonConverter = JsonSanitizerOutputConverter.from(playConverter);
 
 		return chatClient.prompt()
 			.system(systemPromptTemplate())
 			.user(promptUserSpec -> promptUserSpec.text(userPromptTemplate()).params(promptTemplateArguments))
 			.options(Utils.buildChatOptions(model))
 			.call()
-			.entity(playConverter);
+			.entity(jsonConverter);
 	}
 
 	String resolveModel(Environment environment, Player player) {
