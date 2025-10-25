@@ -259,6 +259,7 @@ public class ConnectFourBoardGame {
 
 	ConnectFourBoardGame play(Disc disc, int columnNumber) {
 		getColumns().findByColumnNumber(columnNumber).play(disc);
+		setCurrentRowColumnPlayed(RowColumn.fromColumnNumber(this, columnNumber));
 		return this;
 	}
 
@@ -267,13 +268,13 @@ public class ConnectFourBoardGame {
 	}
 
 	ConnectFourBoardGame play(Disc disc, int rowIndex, int columnIndex) {
+		setCurrentRowColumnPlayed(RowColumn.of(rowIndex, columnIndex));
 		this.gameBoard[rowIndex][columnIndex] = disc;
 		return this;
 	}
 
 	public ConnectFourBoardGame play(PlayerAction playerAction) {
 		RowColumn rowColumn = RowColumn.fromColumnLetter(this, playerAction.play().move());
-		setCurrentRowColumnPlayed(rowColumn);
 		return play(playerAction.player().disc(), rowColumn);
 	}
 
@@ -503,6 +504,10 @@ public class ConnectFourBoardGame {
 			return value != null && value.length() == 1 && Character.isLetter(value.charAt(0));
 		}
 
+		static RowColumn from(int rowNumber, int columnNumber) {
+			return new RowColumn(rowNumber, columnNumber);
+		}
+
 		static RowColumn fromColumnLetter(ConnectFourBoardGame boardGame, String letter) {
 			String singleLetter = assertSingleLetter(StringUtils.getLetters(letter));
 			int index = assertIndexInbounds(ConnectFourBoardGame.COLUMN_POSITIONS.indexOf(singleLetter), singleLetter);
@@ -512,6 +517,10 @@ public class ConnectFourBoardGame {
 		static RowColumn fromColumnNumber(ConnectFourBoardGame boardGame, int columnNumber) {
 			int rowNumber = resolveRowNumber(boardGame, columnNumber);
 			return new RowColumn(rowNumber, columnNumber);
+		}
+
+		static RowColumn of(int rowIndex, int columnIndex) {
+			return from(asRowNumber(rowIndex), asColumnNumber(columnIndex));
 		}
 
 		private static int resolveRowNumber(ConnectFourBoardGame boardGame, int columnNumber) {
