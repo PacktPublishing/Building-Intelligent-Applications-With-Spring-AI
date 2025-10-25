@@ -71,17 +71,19 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	static final String CONNECT_FOUR_PROFILE = "connect4";
 
+	// System & User Prompts prompting the AI models on how to play Connect4 and instructing them to play.
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
 		You are a player in the 2 player board game Connect4. The game board is a 2 dimensional grid with 6 rows
 		and 7 columns. A player chooses a column and plays either the letter "X" or the letter "O". To win, a player
-		must be the first to play the same letter in 4 adjacent cells of the grid, either in the same row,
+		must be the first one to play the same letter in 4 adjacent cells of the grid, either in the same row,
 		the same column, or diagonally. Play continues until a player wins or there are no more available moves.
 	""";
 
 	private static final String USER_PROMPT_TEMPLATE = """
 		You are playing letter "{playerDisc}". The current state of the game board is "{gameBoard}". Think carefully
 		and strategically about your next move. Minimize the number of moves needed to connect 4 and beat your opponent.
-		Select 1 of the available columns represented as a letter in {availableColumns}. What is your move? Explain.
+		If you have an opportunity to win, then you must make a move to win. Select 1 of the available columns
+		represented as a letter in {availableColumns}. What is your move? Explain.
 	""";
 
 	private static final List<SpringAiProvider> AI_PROVIDERS = List.of(
