@@ -147,7 +147,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 			while (boardGame.isPlayable()) {
 
-				print("Current player is [%s playing [%s]]%n%n",
+				print("Current player is [%s] playing [%s]%n%n",
 					currentPlayer.getName(), currentPlayer.disc().toColoredString());
 
 				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
