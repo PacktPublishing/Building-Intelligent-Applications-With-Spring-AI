@@ -49,6 +49,7 @@
 	<properties>
 		<codeprimate-elements.version>2.0.0</codeprimate-elements.version>
 		<extensions.main-class>io.codeprimate.extensions.CodeprimateExtensionsApplication</extensions.main-class>
+		<json-sanitizer.version>1.2.3</json-sanitizer.version>
 	</properties>
 
 	<dependencies>
@@ -64,6 +65,11 @@
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mikesamuel</groupId>
+			<artifactId>json-sanitizer</artifactId>
+			<version>${json-sanitizer.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
