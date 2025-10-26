@@ -259,7 +259,6 @@ public class ConnectFourBoardGame {
 
 	ConnectFourBoardGame play(Disc disc, int columnNumber) {
 		getColumns().findByColumnNumber(columnNumber).play(disc);
-		setCurrentRowColumnPlayed(RowColumn.fromColumnNumber(this, columnNumber));
 		return this;
 	}
 
