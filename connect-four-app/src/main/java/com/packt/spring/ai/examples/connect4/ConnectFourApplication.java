@@ -202,7 +202,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	private Player selectPlayer(Scanner input, Disc disc) {
 		int selection = input.nextInt();
-		int providerIndex = Math.max(selection, 1) % AI_PROVIDERS.size() - 1;
+		int providerIndex = Math.max(Math.abs(selection) - 1, 0) % AI_PROVIDERS.size();
 		AiProvider provider = AI_PROVIDERS.get(providerIndex);
 		return Player.from(provider).playing(disc);
 	}
