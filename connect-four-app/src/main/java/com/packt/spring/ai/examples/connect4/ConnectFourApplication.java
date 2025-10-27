@@ -118,14 +118,14 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	/**
-	 * Main {@link ApplicationRunner program runner} used to play Connect4.
+	 * Main {@link ApplicationRunner program runner} used to play Connect 4.
 	 *
-	 * @param environment Spring {@link Environment} with access to environment-specific application configuration.
-	 * @param chatClient {@link ChatClient} used to send chat requests to the configured AI models.
-	 * @param chatModel {@link CompositeChatModel} configured with access to all available {@link ChatModel ChatModels}
-	 * declared on the application classpath.
+	 * @param environment Spring {@link Environment} used to access environment-specific application configuration.
+	 * @param chatClient {@link ChatClient} used to send chat requests to configured AI models.
+	 * @param chatModel {@link CompositeChatModel} encapsulating access to all available, configured
+	 *  declared on the application classpath.
 	 * @param boardGame {@link ConnectFourBoardGame} used to manage game state.
-	 * @return a new {@link ApplicationRunner} initiating the board game.
+	 * @return a new {@link ApplicationRunner} to initiate the board game.
 	 * @see org.springframework.ai.chat.client.ChatClient
 	 * @see org.springframework.boot.ApplicationRunner
 	 * @see org.springframework.core.env.Environment
