@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Constants;
 import org.cp.elements.security.model.User;
-import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.ai.converter.StructuredOutputConverter;
 
 /**
  * Unit Tests for {@link JsonSanitizerOutputConverter}.
@@ -52,12 +52,12 @@ public class JsonSanitizerOutputConverterUnitTests {
 	@Test
 	void constructsNewJsonSanitizerOutputConverter() {
 
-		BeanOutputConverter<Object> mockConverter = mock(BeanOutputConverter.class);
+		StructuredOutputConverter<Object> mockConverter = mock(StructuredOutputConverter.class);
 
 		JsonSanitizerOutputConverter<Object> converter = new JsonSanitizerOutputConverter<>(mockConverter);
 
 		assertThat(converter).isNotNull();
-		assertThat(converter.getBeanOutputConverter()).isSameAs(mockConverter);
+		assertThat(converter.getConverter()).isSameAs(mockConverter);
 	}
 
 	@Test
@@ -65,19 +65,19 @@ public class JsonSanitizerOutputConverterUnitTests {
 
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JsonSanitizerOutputConverter<>(null))
-			.withMessage("BeanOutputConverter is required")
+			.withMessage("StructuredOutputConverter is required")
 			.withNoCause();
 	}
 
 	@Test
 	void fromBeanOutputConverter() {
 
-		BeanOutputConverter<Object> mockConverter = mock(BeanOutputConverter.class);
+		StructuredOutputConverter<Object> mockConverter = mock(StructuredOutputConverter.class);
 
 		JsonSanitizerOutputConverter<Object> converter = JsonSanitizerOutputConverter.from(mockConverter);
 
 		assertThat(converter).isNotNull();
-		assertThat(converter.getBeanOutputConverter()).isSameAs(mockConverter);
+		assertThat(converter.getConverter()).isSameAs(mockConverter);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class JsonSanitizerOutputConverterUnitTests {
 
 		String JSON = "{ \"name\": \"jonDoe\" }";
 
-		BeanOutputConverter<Object> mockConverter = mock(BeanOutputConverter.class);
+		StructuredOutputConverter<Object> mockConverter = mock(StructuredOutputConverter.class);
 
 		doReturn(TestUser.named("jonDoe")).when(mockConverter).convert(anyString());
 
@@ -97,7 +97,7 @@ public class JsonSanitizerOutputConverterUnitTests {
 
 		verify(converter, times(1)).convert(eq(JSON));
 		verify(converter, times(1)).sanitizeJson(eq(JSON));
-		verify(converter, times(1)).getBeanOutputConverter();
+		verify(converter, times(1)).getConverter();
 		verify(mockConverter, times(1)).convert(eq(JSON));
 		verifyNoMoreInteractions(converter, mockConverter);
 	}
@@ -105,7 +105,7 @@ public class JsonSanitizerOutputConverterUnitTests {
 	@Test
 	void getFormat() {
 
-		BeanOutputConverter<Object> mockConverter = mock(BeanOutputConverter.class);
+		StructuredOutputConverter<Object> mockConverter = mock(StructuredOutputConverter.class);
 
 		doReturn("Test Format").when(mockConverter).getFormat();
 
@@ -120,7 +120,7 @@ public class JsonSanitizerOutputConverterUnitTests {
 	@Test
 	void sanitizeIllegalJson() {
 
-		BeanOutputConverter<Object> mockConverter = mock(BeanOutputConverter.class);
+		StructuredOutputConverter<Object> mockConverter = mock(StructuredOutputConverter.class);
 		JsonSanitizerOutputConverter<Object> converter = spy(JsonSanitizerOutputConverter.from(mockConverter));
 
 		Arrays.asList("  ", "", null).forEach(json ->
