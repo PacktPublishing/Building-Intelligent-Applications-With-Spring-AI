@@ -284,7 +284,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		if (winningDisc != null) {
 			Player winningPlayer = players.findByDisc(winningDisc);
-			print("[%s] playing [%s] wins!%s%s", winningPlayer.getName(), winningDisc);
+			print("[%s] playing [%s] wins!%n%n", winningPlayer.getName(), winningDisc);
 		}
 		else {
 			print("No Winner!");
