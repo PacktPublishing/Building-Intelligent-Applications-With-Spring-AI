@@ -37,7 +37,6 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -141,37 +140,39 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 			print("%n%nWelcome to Connect4!%n%n");
 
 			Scanner input = new Scanner(System.in);
-
 			Players players = selectPlayers(input);
 			Player currentPlayer = players.startingPlayer(SECURE_RANDOM, chatModel);
 
 			while (boardGame.isPlayable()) {
 
-				print("Current player is [%s] playing [%s]%n%n",
-					currentPlayer.getName(), currentPlayer.disc().toColoredString());
-
-				Map<String, Object> promptTemplateArguments = resolvePromptTemplateArguments(boardGame, currentPlayer);
 				String model = resolveModel(environment, currentPlayer);
 
+				Map<String, Object> promptTemplateArguments =
+					resolvePromptTemplateArguments(boardGame, currentPlayer);
+
+				logCurrentPlayer(currentPlayer);
 				logModelInput(model, promptTemplateArguments, boardGame);
 
 				long timestamp = System.currentTimeMillis();
 
 				Play play = promptModel(model, promptTemplateArguments, chatClient);
 
-				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play)
-					.in(durationInMilliseconds(timestamp));
+				Duration milliseconds = durationInMilliseconds(timestamp);
+
+				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play).in(milliseconds);
 
 				logExplanation(playerAction);
 
-				playSafely(it -> {
-					it.play(playerAction);
-					it.printGameBoard();
+				playSafely(gameBoard -> {
+					gameBoard.play(playerAction);
+					gameBoard.printGameBoard();
 				}).accept(boardGame);
 
-				currentPlayer = players.switchPlayer(chatModel);
-				print("Press <enter> to continue next play ");
-				waitOnUserInput(input);
+				if (boardGame.isPlayable()) {
+					currentPlayer = players.switchPlayer(chatModel);
+					print("Press <enter> to continue next play ");
+					waitOnUserInput(input);
+				}
 			}
 
 			endGame(boardGame, players);
@@ -252,6 +253,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		return Duration.ofMillis(timeDifferenceInMilliseconds);
 	}
 
+	private void logCurrentPlayer(Player currentPlayer) {
+		print("Current player is [%s] playing [%s]%n%n",
+			currentPlayer.getName(), currentPlayer.disc().toColoredString());
+	}
+
 	private void logExplanation(PlayerAction playerAction) {
 
 		if (LOG_EXPLANATION) {
@@ -278,7 +284,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		if (winningDisc != null) {
 			Player winningPlayer = players.findByDisc(winningDisc);
-			print("[%s] playing [%s] wins!", winningPlayer.getName(), winningDisc);
+			print("[%s] playing [%s] wins!%s%s", winningPlayer.getName(), winningDisc);
 		}
 		else {
 			print("No Winner!");
