@@ -81,8 +81,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private static final String USER_PROMPT_TEMPLATE = """
 		You are playing letter "{playerDisc}". The current state of the game board is "{gameBoard}". Think carefully
 		and strategically about your next move. Minimize the number of moves needed to connect 4 and beat your opponent.
-		If you have an opportunity to win, then you must make a move to win. Select 1 of the available columns
-		represented as a letter in {availableColumns}. What is your move? Explain.
+		If you have an opportunity to win, then you must make a move to win. If your opponent has an opportunity to win,
+		then you should block your opponent and prevent them from winning. Select 1 of the available columns represented
+		as a letter in {availableColumns}. What is your move? Explain.
 	""";
 
 	private static final List<SpringAiProvider> AI_PROVIDERS = List.of(
@@ -100,6 +101,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	 * {@link SpringBootConfiguration} used to configure the Connect4 board game.
 	 *
 	 * @see org.springframework.ai.chat.client.ChatClient
+	 * @see org.springframework.ai.chat.model.ChatModel
 	 * @see org.springframework.boot.SpringBootConfiguration
 	 * @see org.springframework.context.annotation.Bean
 	 * @see ConnectFourBoardGame
