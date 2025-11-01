@@ -188,7 +188,7 @@ public class GaugedChatModelCallObservationApplication extends AbstractSpringBoo
 	}
 
 	private void block(Future<?> future) {
-		ExceptionThrowingSupplier.doSafely(future::get);
+		ExceptionThrowingSupplier.getSafely(future::get);
 	}
 
 	private void pause(Duration duration) {

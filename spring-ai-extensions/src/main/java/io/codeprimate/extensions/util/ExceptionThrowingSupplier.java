@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.util;
 
+import java.util.function.Function;
+
 /**
  * Java {@link FunctionalInterface} used to supply a value with the possibility of throwing an {@link Exception}.
  *
@@ -28,12 +30,18 @@ package io.codeprimate.extensions.util;
 public interface ExceptionThrowingSupplier<T> {
 
 	static <T> T getSafely(ExceptionThrowingSupplier<T> supplier) {
+		return getSafely(supplier, cause -> {
+			throw new RuntimeException(cause);
+		});
+	}
+
+	static <T> T getSafely(ExceptionThrowingSupplier<T> supplier, Function<Exception, T> exceptionHandler) {
 
 		try {
 			return supplier.get();
 		}
 		catch (Exception cause) {
-			throw new RuntimeException(cause);
+			return exceptionHandler.apply(cause);
 		}
 	}
 
