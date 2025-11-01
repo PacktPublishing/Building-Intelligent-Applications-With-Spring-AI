@@ -34,19 +34,20 @@ import org.springframework.core.env.Environment;
  * Abstract utility class for processing network resources.
  *
  * @author John Blum
- * @see Extensions
  * @see java.net.InetAddress
  * @see java.net.NetworkInterface
  * @see java.net.URI
  * @see java.net.URL
  * @since 0.1.0
  */
-public abstract class NetworkUtils extends Extensions {
+public abstract class NetworkUtils {
 
 	public static final int DEFAULT_SERVER_PORT = 8080;
 
 	public static final String NETWORK_IP_ADDRESS_PREFIX_PROPERTY = "app.network.host.ip-address-prefix";
 	public static final String WEB_PATH_SEPARATOR = "/";
+
+	protected static final String EMPTY_STRING = "";
 
 	@SuppressWarnings("unused")
 	public static String resolveHostIpAddress(String hostname) {
@@ -83,8 +84,8 @@ public abstract class NetworkUtils extends Extensions {
 		return networkInterface -> {
 			try {
 				return networkInterface.isUp()
-					&& isNot(networkInterface.isLoopback())
-					&& isNot(networkInterface.isVirtual());
+					&& !networkInterface.isLoopback()
+					&& !networkInterface.isVirtual();
 			}
 			catch (SocketException e) {
 				return false;
@@ -97,13 +98,13 @@ public abstract class NetworkUtils extends Extensions {
 	}
 
 	private static Stream<NetworkInterface> streamNetworkInterfaces() {
-		return getSafely(NetworkInterface::networkInterfaces, cause -> {
+		return ExceptionThrowingSupplier.getSafely(NetworkInterface::networkInterfaces, cause -> {
 			throw new IllegalStateException("Failed to resolve NetworkInterfaces", cause);
 		});
 	}
 
 	public static String resolveLocalhostName() {
-		return getSafely(() -> InetAddress.getLocalHost().getHostName(), cause -> {
+		return ExceptionThrowingSupplier.getSafely(() -> InetAddress.getLocalHost().getHostName(), cause -> {
 			throw new IllegalStateException("Failed to resolve localhost name", cause);
 		});
 	}

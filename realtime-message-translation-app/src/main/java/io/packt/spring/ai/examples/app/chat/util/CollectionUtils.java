@@ -27,7 +27,7 @@ import java.util.function.Predicate;
  * @see Collection
  * @since 0.1.0
  */
-public abstract class CollectionUtils extends Extensions {
+public abstract class CollectionUtils {
 
 	public static <T> Optional<T> lastElement(List<T> list) {
 		int index = toIndex(nullSafeSize(list));
@@ -35,7 +35,7 @@ public abstract class CollectionUtils extends Extensions {
 	}
 
 	public static Predicate<Collection<?>> notEmpty() {
-		return collection -> collection != null && isNot(collection.isEmpty());
+		return collection -> collection != null && !collection.isEmpty();
 	}
 
 	public static int nullSafeSize(Collection<?> collection) {
