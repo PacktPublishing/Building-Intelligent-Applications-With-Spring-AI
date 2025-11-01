@@ -23,10 +23,10 @@ import java.util.Set;
 
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Integers;
 import org.cp.elements.lang.Nameable;
 import org.cp.elements.lang.StringUtils;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -21,12 +21,12 @@ import java.util.List;
 
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
-import org.springframework.util.StringUtils;
 
 /**
- * Abstract base class supporting implementations of Spring AI's {@link TextSplitter}.
+ * Abstract base class encapsulating functionality supporting implementations of Spring AI's {@link TextSplitter}.
  *
  * @author John Blum
  * @see org.springframework.ai.document.Document

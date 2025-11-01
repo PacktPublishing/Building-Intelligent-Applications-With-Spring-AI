@@ -17,10 +17,10 @@ package io.codeprimate.extensions.spring.ai.transformer.splitter;
 
 import java.util.Optional;
 
-import org.springframework.util.StringUtils;
+import org.cp.elements.lang.StringUtils;
 
 /**
- * Abstract base class removing all punctuation from a body of {@link String plaintext}.
+ * Abstract base class used to remove all punctuation from a body of {@link String plaintext}.
  *
  * @author John Blum
  * @see io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractLowercasePreProcessingTextSplitter

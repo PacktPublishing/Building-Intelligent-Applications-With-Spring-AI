@@ -24,12 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 /**
  * Spring AI {@link Document} extension that stores the {@literal embedding}

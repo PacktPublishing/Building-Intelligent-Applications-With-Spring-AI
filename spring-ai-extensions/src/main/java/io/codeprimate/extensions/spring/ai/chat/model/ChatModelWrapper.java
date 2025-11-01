@@ -16,13 +16,13 @@
 package io.codeprimate.extensions.spring.ai.chat.model;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.lang.StringUtils;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import lombok.Getter;
 

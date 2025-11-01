@@ -17,6 +17,7 @@ package io.codeprimate.extensions.spring.ai.provider.model;
 
 import java.util.List;
 
+import org.cp.elements.lang.Assert;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.StreamingChatModel;
 import org.springframework.ai.embedding.DocumentEmbeddingModel;
@@ -24,7 +25,6 @@ import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.model.Model;
 import org.springframework.ai.moderation.ModerationModel;
-import org.springframework.util.Assert;
 
 /**
  * Interface defining a contract to resolve the Spring AI {@link Model} {@link String name}.

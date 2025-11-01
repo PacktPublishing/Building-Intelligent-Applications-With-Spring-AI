@@ -28,7 +28,9 @@ import java.util.stream.IntStream;
 
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
+import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for all {@link SpringBootApplication SpringBootApplications}.
@@ -211,7 +211,7 @@ public abstract class AbstractSpringBootApplication {
 	}
 
 	private boolean isExit(String value) {
-		return EXIT.equalsIgnoreCase(StringUtils.trimAllWhitespace(value));
+		return EXIT.equalsIgnoreCase(StringUtils.trimAll(value));
 	}
 
 	private boolean isNotExit(String value) {

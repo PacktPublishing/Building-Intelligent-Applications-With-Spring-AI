@@ -31,12 +31,12 @@ import io.codeprimate.extensions.spring.ai.provider.AiProviders;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderModel;
 import io.codeprimate.extensions.util.Utils;
 
+import org.cp.elements.lang.Assert;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.DefaultChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;

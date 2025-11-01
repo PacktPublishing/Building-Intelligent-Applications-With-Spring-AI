@@ -19,11 +19,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
+import org.cp.elements.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 /**
  * Spring AI {@link StructuredOutputConverter} used to parse a {@literal RFC 1123} formatted {@link String}

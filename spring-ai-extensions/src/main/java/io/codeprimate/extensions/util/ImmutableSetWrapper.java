@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.cp.elements.lang.Assert;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Getter;

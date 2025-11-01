@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Nameable;
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
@@ -32,7 +33,6 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,13 +42,15 @@ import lombok.Setter;
 import reactor.core.publisher.Flux;
 
 /**
- * Spring AI {@link CallAdvisor} and {@link StreamAdvisor} enforcing a configured rate limit
+ * Spring AI {@link CallAdvisor} and {@link StreamAdvisor} implementation enforcing a configured rate limit
  * when making requests to an AI model.
  *
  * @author John Blum
  * @see java.time.Duration
  * @see java.util.concurrent.atomic.AtomicInteger
  * @see org.cp.elements.lang.Nameable
+ * @see org.springframework.ai.chat.client.ChatClientRequest
+ * @see org.springframework.ai.chat.client.ChatClientResponse
  * @see org.springframework.ai.chat.client.advisor.api.CallAdvisor
  * @see org.springframework.ai.chat.client.advisor.api.StreamAdvisor
  * @since 0.1.0
