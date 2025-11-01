@@ -41,7 +41,7 @@
 		<module>opposites-app</module>
 		<module>spring-ai-tools</module>
 		<module>connect-four-app</module>
-		<module>realtime-chat-translation-app</module>
+		<module>realtime-message-translation-app</module>
 	</modules>
 
 	<licenses>
