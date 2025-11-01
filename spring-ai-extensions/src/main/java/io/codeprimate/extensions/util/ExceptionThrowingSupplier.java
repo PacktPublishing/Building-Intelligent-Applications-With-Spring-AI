@@ -27,7 +27,7 @@ package io.codeprimate.extensions.util;
 @SuppressWarnings("unused")
 public interface ExceptionThrowingSupplier<T> {
 
-	static <T> T doSafely(ExceptionThrowingSupplier<T> supplier) {
+	static <T> T getSafely(ExceptionThrowingSupplier<T> supplier) {
 
 		try {
 			return supplier.get();

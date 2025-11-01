@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -48,7 +50,7 @@ public abstract class NetworkUtils extends Extensions {
 
 	@SuppressWarnings("unused")
 	public static String resolveHostIpAddress(String hostname) {
-		return getSafely(() -> InetAddress.getByName(hostname).getHostAddress(), cause -> {
+		return ExceptionThrowingSupplier.getSafely(() -> InetAddress.getByName(hostname).getHostAddress(), cause -> {
 			String message = "Failed to resolve host's [%s] IP address".formatted(hostname);
 			throw new IllegalStateException(message, cause);
 		});
