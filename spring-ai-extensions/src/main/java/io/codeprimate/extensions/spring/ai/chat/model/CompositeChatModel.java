@@ -15,14 +15,13 @@
  */
 package io.codeprimate.extensions.spring.ai.chat.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -32,6 +31,7 @@ import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderMode
 import io.codeprimate.extensions.util.Utils;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.lang.annotation.ThreadSafe;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -47,6 +47,7 @@ import lombok.NonNull;
  *
  * @author John Blum
  * @see java.lang.Iterable
+ * @see org.cp.elements.lang.annotation.ThreadSafe
  * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
  * @see io.codeprimate.extensions.spring.ai.provider.AiProviders
  * @see io.codeprimate.extensions.spring.ai.provider.support.SpringAiProviderModel
@@ -54,6 +55,7 @@ import lombok.NonNull;
  * @see <a href="https://en.wikipedia.org/wiki/Composite_pattern">Composite Software Design Pattern</a>
  * @since 0.1.0
  */
+@ThreadSafe
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
@@ -72,17 +74,18 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 	private final AiProviders aiProviders;
 
-	private volatile ChatModel currentChatModel;
+	private final ThreadLocal<ChatModel> currentChatModel = new ThreadLocal<>();
 
-	private final Set<ChatModel> chatModels;
+	private final List<ChatModel> chatModels;
 
 	public CompositeChatModel(List<ChatModel> chatModels) {
 
 		List<ChatModel> resolvedChatModels = resolveChatModels(chatModels);
 
 		this.aiProviders = resolveAiProviders(resolvedChatModels);
-		this.chatModels = new HashSet<>(resolvedChatModels);
-		this.currentChatModel = resolveCurrentChatModel(resolvedChatModels);
+		this.chatModels = new ArrayList<>(resolvedChatModels);
+
+		setCurrentChatModel(resolveCurrentChatModel(resolvedChatModels));
 	}
 
 	private AiProviders resolveAiProviders(List<ChatModel> chatModels) {
@@ -108,14 +111,32 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 	public ChatModel getCurrentChatModel() {
 
-		Assert.state(this.currentChatModel != null, "ChatModel has not been initialized;"
+		ChatModel currentChatModel = initCurrentChatModelOnFirstRequest();
+
+		Assert.state(currentChatModel != null, "ChatModel has not been initialized;"
 			+ " Did you include a ChatModel implementation on your application classpath?");
 
-		return this.currentChatModel;
+		return currentChatModel;
 	}
 
 	protected Optional<ChatModel> getOptionalCurrentChatModel() {
-		return Optional.ofNullable(this.currentChatModel);
+		return Optional.ofNullable(this.currentChatModel.get());
+	}
+
+	private void setCurrentChatModel(ChatModel currentChatModel) {
+		this.currentChatModel.set(currentChatModel);
+	}
+
+	private ChatModel initCurrentChatModelOnFirstRequest() {
+
+		ChatModel currentChatModel = this.currentChatModel.get();
+
+		if (currentChatModel == null) {
+			currentChatModel = resolveCurrentChatModel(getChatModels());
+			this.currentChatModel.set(currentChatModel);
+		}
+
+		return currentChatModel;
 	}
 
 	@Override
@@ -142,7 +163,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 
 	@Override
 	public @NonNull Iterator<ChatModel> iterator() {
-		return Collections.unmodifiableSet(getChatModels()).iterator();
+		return Collections.unmodifiableList(getChatModels()).iterator();
 	}
 
 	public Stream<ChatModel> stream() {
@@ -169,7 +190,7 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 		Assert.notNull(chatModel, "ChatModel is required");
 
 		getChatModels().add(chatModel);
-		this.currentChatModel = chatModel;
+		setCurrentChatModel(chatModel);
 
 		return this;
 	}
