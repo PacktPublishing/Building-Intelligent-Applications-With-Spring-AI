@@ -41,7 +41,7 @@ import lombok.ToString;
  */
 @Getter
 @SuppressWarnings("unused")
-public class Audio {
+public class Audio implements AudioSource {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -61,14 +61,14 @@ public class Audio {
 		return new Audio(data);
 	}
 
-	public static Audio from(MultipartFile file) {
-		Assert.notNull(file, "File is required");
-		return from(ExceptionThrowingSupplier.getSafely(file::getBytes));
+	public static Audio from(MultipartFile audio) {
+		Assert.notNull(audio, "File is required");
+		return from(ExceptionThrowingSupplier.getSafely(audio::getBytes));
 	}
 
-	public static Audio from(Resource resource) {
-		Assert.notNull(resource, "Resource is required");
-		return from(ExceptionThrowingSupplier.getSafely(resource::getContentAsByteArray));
+	public static Audio from(Resource audio) {
+		Assert.notNull(audio, "Resource is required");
+		return from(ExceptionThrowingSupplier.getSafely(audio::getContentAsByteArray));
 	}
 
 	public static Audio nullSafe(Audio audio) {
@@ -83,6 +83,11 @@ public class Audio {
 
 	public Audio(byte[] data) {
 		this.data = data != null ? data : EMPTY_BYTE_ARRAY;
+	}
+
+	@Override
+	public Audio getAudio() {
+		return this;
 	}
 
 	public String encode() {
