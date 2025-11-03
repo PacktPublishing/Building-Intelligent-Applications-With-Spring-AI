@@ -19,9 +19,14 @@ import java.util.UUID;
 
 import org.cp.elements.lang.StringUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,33 +38,63 @@ import lombok.ToString;
  * @author John Blum
  * @see Audio
  * @see AudioSource
+ * @see jakarta.persistence.Entity
+ * @see jakarta.persistence.Table
  * @since 0.1.0
  */
+@Entity
 @Getter
-@SuppressWarnings("unused")
+@Table(name = "Songs")
 @ToString(of = { "artist", "album", "title" })
 @EqualsAndHashCode(of = { "artist", "album", "title" })
+@SuppressWarnings("unused")
 public class Song implements AudioSource {
 
 	private static final String NO_ALBUM = null;
 
+	/**
+	 * Factory method returning a {@link Song.Builder} used to construct a new {@link Song} using a DSL.
+	 *
+	 * @return a new {@link Song.Builder} used to construct a new {@link Song}.
+	 */
 	public static Song.Builder builder() {
 		return new Song.Builder();
 	}
 
+	@Transient
 	private transient Audio audio;
 
 	private final String artist;
 	private final String album;
 	private final String title;
 
-	private final UUID id;
+	@Id
+	@SuppressWarnings("all")
+	private UUID id;
 
+	/**
+	 * Constructs a new {@link Song} with the given {@link String artist} and {@link String title}.
+	 *
+	 * @param artist {@link String} containing the name of the song's artist.
+	 * @param title {@link String} containing the title of the song.
+	 * @throws IllegalArgumentException if {@link String artist} or {@link String title}
+	 * are {@literal null} or blank.
+	 */
 	private Song(String artist, String title) {
 		this(artist, NO_ALBUM, title);
 	}
 
-	private Song(String artist, String album, String title) {
+	/**
+	 * Constructs a new {@link Song} with the given {@link String artist} and {@link String title}.
+	 *
+	 * @param artist {@link String} containing the name of the song's artist.
+	 * @param album {@link String} containing the name of album from which this song originates.
+	 * @param title {@link String} containing the title of the song.
+	 * @throws IllegalArgumentException if {@link String artist} or {@link String title}
+	 * are {@literal null} or blank.
+	 */
+	@PersistenceCreator
+	Song(String artist, String album, String title) {
 
 		Assert.hasText(artist, "Artist of song is required");
 		Assert.hasText(title, "Song title is required");
@@ -70,6 +105,7 @@ public class Song implements AudioSource {
 		this.title = title;
 	}
 
+	@Transient
 	public boolean isSingle() {
 		return !StringUtils.hasText(getAlbum());
 	}
