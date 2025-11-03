@@ -17,8 +17,10 @@ package io.packt.spring.ai.examples.app.shazam.config;
 
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
+import io.packt.spring.ai.examples.app.shazam.model.Song;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -34,6 +36,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootConfiguration
 @EnableChatClient
+@EntityScan(basePackageClasses = Song.class)
 @EnableConfigurationProperties({ AudioProperties.class, SongSearchProperties.class })
 @SuppressWarnings("unused")
 public class ShazamConfiguration {
