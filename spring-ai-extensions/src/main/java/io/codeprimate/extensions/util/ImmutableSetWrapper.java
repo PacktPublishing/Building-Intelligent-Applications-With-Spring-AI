@@ -16,6 +16,7 @@
 package io.codeprimate.extensions.util;
 
 import java.util.AbstractSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -46,7 +47,7 @@ public class ImmutableSetWrapper<E> extends AbstractSet<E> {
 
 	ImmutableSetWrapper(Set<E> set) {
 		Assert.notNull(set, "Set to wrap is required");
-		this.set = set;
+		this.set = new HashSet<>(set);
 	}
 
 	public void ifNotEmpty(Consumer<Set<E>> consumer) {
@@ -62,6 +63,16 @@ public class ImmutableSetWrapper<E> extends AbstractSet<E> {
 	@Override
 	public @NonNull Iterator<E> iterator() {
 		return getSet().iterator();
+	}
+
+	public E onlyOne() {
+
+		if (size() != 1) {
+			String message = "Expected a single element in set, but was [%s]".formatted(size());
+			throw new IllegalStateException(message);
+		}
+
+		return iterator().next();
 	}
 
 	@Override
