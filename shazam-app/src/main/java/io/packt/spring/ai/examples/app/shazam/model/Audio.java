@@ -34,9 +34,11 @@ import lombok.ToString;
  * Abstract Data Type (ADT) modeling audio data.
  *
  * @author John Blum
+ * @see AudioSource
  * @see java.time.Duration
  * @see org.springframework.ai.document.Document
  * @see org.springframework.core.io.Resource
+ * @see org.springframework.web.multipart.MultipartFile
  * @since 0.1.0
  */
 @Getter
