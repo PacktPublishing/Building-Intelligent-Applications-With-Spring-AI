@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.model;
 
 import java.util.UUID;
 
+import org.cp.elements.lang.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,6 +70,10 @@ public class Song implements AudioSource {
 		this.title = title;
 	}
 
+	public boolean isSingle() {
+		return !StringUtils.hasText(getAlbum());
+	}
+
 	public Song with(Audio audio) {
 		this.audio = Audio.nullSafe(audio);
 		return this;
@@ -110,12 +115,12 @@ public class Song implements AudioSource {
 			return this;
 		}
 
-		public Builder having(MultipartFile file) {
-			return having(Audio.from(file));
+		public Builder having(MultipartFile audio) {
+			return having(Audio.from(audio));
 		}
 
-		public Builder having(Resource resource) {
-			return having(Audio.from(resource));
+		public Builder having(Resource audio) {
+			return having(Audio.from(audio));
 		}
 
 		public Song build() {
