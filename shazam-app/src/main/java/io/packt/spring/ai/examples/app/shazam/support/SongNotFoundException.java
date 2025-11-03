@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.support;
 
+import java.util.UUID;
+
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 
 /**
@@ -26,6 +28,11 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
  */
 @SuppressWarnings("unused")
 public class SongNotFoundException extends RuntimeException {
+
+	public static SongNotFoundException from(UUID songIdentifier) {
+		String message = "Song having identifier [%s] not found".formatted(songIdentifier);
+		throw new SongNotFoundException(message);
+	}
 
 	public SongNotFoundException() {
 
