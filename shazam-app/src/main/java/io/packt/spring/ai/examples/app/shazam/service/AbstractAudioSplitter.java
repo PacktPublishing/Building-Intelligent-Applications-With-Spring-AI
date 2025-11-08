@@ -19,7 +19,7 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.UuidIdGenerator;
+import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
 
 import org.slf4j.Logger;
 import org.springframework.ai.document.Document;
@@ -65,7 +65,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	protected Document buildDocument(AudioClip audioClip) {
 
 		return Document.builder()
-			.idGenerator(UuidIdGenerator.INSTANCE)
+			.idGenerator(UuidGenerator.INSTANCE)
 			.text(audioClip.encode())
 			.build();
 	}

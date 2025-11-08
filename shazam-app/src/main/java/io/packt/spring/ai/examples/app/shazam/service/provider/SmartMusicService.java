@@ -31,7 +31,7 @@ import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.NonUniqueSongException;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
-import io.packt.spring.ai.examples.app.shazam.support.UuidIdGenerator;
+import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
 
 import org.slf4j.Logger;
 import org.springframework.ai.document.Document;
@@ -180,7 +180,7 @@ public class SmartMusicService implements MusicService {
 	private Document copy(Document document) {
 
 		return Document.builder()
-			.idGenerator(UuidIdGenerator.INSTANCE)
+			.idGenerator(UuidGenerator.INSTANCE)
 			.media(document.getMedia())
 			.score(document.getScore())
 			.text(document.getText())

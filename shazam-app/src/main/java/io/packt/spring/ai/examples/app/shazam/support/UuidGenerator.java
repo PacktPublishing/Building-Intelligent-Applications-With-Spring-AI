@@ -27,9 +27,9 @@ import org.springframework.ai.document.id.IdGenerator;
  * @see IdGenerator
  * @since 0.1.0
  */
-public class UuidIdGenerator implements IdGenerator {
+public class UuidGenerator implements IdGenerator {
 
-	public static UuidIdGenerator INSTANCE = new UuidIdGenerator();
+	public static UuidGenerator INSTANCE = new UuidGenerator();
 
 	@Override
 	public String generateId(Object... contents) {
