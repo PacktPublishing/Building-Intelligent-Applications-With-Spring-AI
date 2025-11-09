@@ -106,8 +106,13 @@ public class Song implements AudioSource {
 	}
 
 	@Transient
+	public boolean isAlbumTrack() {
+		return StringUtils.hasText(getAlbum());
+	}
+
+	@Transient
 	public boolean isSingle() {
-		return !StringUtils.hasText(getAlbum());
+		return !isAlbumTrack();
 	}
 
 	public Song with(Audio audio) {
@@ -131,7 +136,6 @@ public class Song implements AudioSource {
 		}
 
 		public Builder from(String album) {
-			Assert.hasText(album, "Album of song is required");
 			this.album = album;
 			return this;
 		}
