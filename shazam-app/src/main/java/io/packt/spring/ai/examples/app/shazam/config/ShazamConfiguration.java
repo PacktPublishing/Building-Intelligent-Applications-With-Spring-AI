@@ -32,9 +32,11 @@ import org.springframework.context.annotation.Bean;
  * {@link SpringBootConfiguration} for the Shazam application.
  *
  * @author John Blum
+ * @see Bean
  * @see SpringBootConfiguration
  * @see EnableConfigurationProperties
  * @see EnableChatClient
+ * @see SongSearchProperties
  * @see AudioProperties
  * @since 0.1.0
  */
