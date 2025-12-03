@@ -19,6 +19,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,9 +57,10 @@ public class ShazamApiController {
 	}
 
 	@PostMapping("/songs")
-	public void uploadSong(@ModelAttribute UploadSongForm form) {
+	public ResponseEntity<Object> upload(@ModelAttribute UploadSongForm form) {
 		Song song = form.toSong();
 		getMusicService().store(song);
+		return ResponseEntity.ok().build();
 	}
 
 	public interface SongSearchResponse {
@@ -100,7 +102,7 @@ public class ShazamApiController {
 				.by(getArtist())
 				.from(getAlbum())
 				.with(getSongTitle())
-				.having(getSongFile().getResource())
+				.having(getSongFile())
 				.build();
 		}
 	}
