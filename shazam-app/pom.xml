@@ -20,8 +20,17 @@
 	<url/>
 
 	<properties>
+		<tarsosdsp.version>2.5</tarsosdsp.version>
 		<tritonus.version>0.3.7.4</tritonus.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>TarsosDSP Repository</id>
+			<name>Maven Repository containing the TarsosDSP library @ https://github.com/JorenSix/TarsosDSP</name>
+			<url>https://mvn.0110.be/releases</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -62,6 +71,16 @@
 			<version>0.3.6</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/tritonus_mp3-0.3.6.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>be.tarsos.dsp</groupId>
+			<artifactId>core</artifactId>
+			<version>${tarsosdsp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.tarsos.dsp</groupId>
+			<artifactId>jvm</artifactId>
+			<version>${tarsosdsp.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
