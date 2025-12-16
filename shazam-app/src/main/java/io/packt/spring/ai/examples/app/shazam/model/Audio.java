@@ -131,9 +131,12 @@ public class Audio implements AudioSource {
 		AIFF("Audio Interchange File Format", Category.UNCOMPRESSED),
 		ALAC("Apple Lossless Audio Codec", Category.LOSSLESS_COMPRESSED),
 		AU("Sun Microsystems UNIX Audio File Format", Category.UNCOMPRESSED),
+		DSD("Direct Stream Digital", Category.UNCOMPRESSED),
 		FLAC("Free Lossless Audio Codec", Category.LOSSLESS_COMPRESSED),
 		MP3("MPEG-1 Audio Layer III", Category.LOSSLESS_COMPRESSED),
-		WAV("Waveform Audio File Format", Category.UNCOMPRESSED);
+		MP4("MPEG-4 Part 14", Category.LOSSY_COMPRESSED),
+		WAV("Waveform Audio File Format", Category.UNCOMPRESSED),
+		WMA("Microsoft Media Audio", Category.UNCOMPRESSED);
 
 		private final Category category;
 
