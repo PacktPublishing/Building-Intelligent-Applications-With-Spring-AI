@@ -85,7 +85,7 @@ class JavaSoundAudioSplitterIntegrationTests {
 		assertThat(documents).isNotNull();
 		assertThat(documents).hasSizeGreaterThanOrEqualTo(90).hasSizeLessThanOrEqualTo(92); // Size is 91
 
-		int documentsSize = 0;
+		long documentsSize = 0;
 
 		for (Document document : documents) {
 			String data = document.getText();

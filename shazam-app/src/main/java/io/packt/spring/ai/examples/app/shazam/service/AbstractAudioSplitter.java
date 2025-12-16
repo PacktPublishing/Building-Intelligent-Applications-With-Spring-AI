@@ -107,27 +107,30 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 		}
 
 		public AudioClip firstHalf() {
-			int length = size() / 2;
+			int length = Long.valueOf(size() / 2).intValue();
 			byte[] audioData = dataCopy(0, length);
 			return AudioClip.from(audioData);
 		}
 
 		public AudioClip merge(AudioClip audioClip) {
-			byte[] audioData = new byte[size() + audioClip.size()];
-			System.arraycopy(data(), 0, audioData, 0, size());
-			System.arraycopy(audioClip.data(), 0, audioData, size(), audioClip.size());
+			int audioLength = Long.valueOf(size()).intValue();
+			int audioClipLength = Long.valueOf(audioClip.size()).intValue();
+			int length = audioLength + audioClipLength;
+			byte[] audioData = new byte[length];
+			System.arraycopy(data(), 0, audioData, 0, audioLength);
+			System.arraycopy(audioClip.data(), 0, audioData, audioLength, audioClipLength);
 			return AudioClip.from(audioData);
 		}
 
 		public AudioClip secondHalf() {
-			int size = size();
-			int halfSize = size / 2;
-			int length = size - halfSize;
+			long size = size();
+			int halfSize = Long.valueOf(size / 2).intValue();
+			int length = Long.valueOf(size - halfSize).intValue();
 			byte[] audioData = dataCopy(halfSize, length);
 			return AudioClip.from(audioData);
 		}
 
-		public int size() {
+		public long size() {
 			return audio().size();
 		}
 	}

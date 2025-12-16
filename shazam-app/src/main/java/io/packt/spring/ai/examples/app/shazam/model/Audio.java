@@ -127,7 +127,7 @@ public class Audio implements AudioSource {
 		return getDataSource().getResource();
 	}
 
-	public int size() {
+	public long size() {
 		return getDataSource().size();
 	}
 
@@ -179,8 +179,8 @@ public class Audio implements AudioSource {
 				}
 
 				@Override
-				public int size() {
-					return Long.valueOf(file.length()).intValue();
+				public long size() {
+					return file.length();
 				}
 			};
 		}
@@ -212,8 +212,8 @@ public class Audio implements AudioSource {
 				}
 
 				@Override
-				public int size() {
-					return Long.valueOf(file.getSize()).intValue();
+				public long size() {
+					return file.getSize();
 				}
 			};
 		}
@@ -254,7 +254,7 @@ public class Audio implements AudioSource {
 			return ExceptionThrowingSupplier.getSafely(getResource()::getURL);
 		}
 
-		default int size() {
+		default long size() {
 			return getData().length;
 		}
 	}

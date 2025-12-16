@@ -191,7 +191,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		}
 
 		protected int getAudioSizeInBytes() {
-			return getAudio().size();
+			return getAudio().getData().length;
 		}
 
 		protected int getAudioSizeInBits() {
