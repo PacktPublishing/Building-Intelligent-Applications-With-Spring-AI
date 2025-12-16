@@ -132,7 +132,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	}
 
 	private AudioInputStream toInputStream(Audio audio) throws IOException, UnsupportedAudioFileException {
-		InputStream in = audio.toResource().getInputStream();
+		InputStream in = audio.inputStream();
 		return AudioSystem.getAudioInputStream(in);
 	}
 

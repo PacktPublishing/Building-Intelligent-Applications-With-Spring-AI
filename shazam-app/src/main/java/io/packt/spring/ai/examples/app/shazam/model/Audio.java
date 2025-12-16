@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Set;
@@ -24,7 +26,6 @@ import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
-import org.springframework.util.MimeType;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
@@ -35,6 +36,7 @@ import lombok.ToString;
  *
  * @author John Blum
  * @see AudioSource
+ * @see java.io.InputStream
  * @see java.time.Duration
  * @see org.springframework.ai.document.Document
  * @see org.springframework.core.io.Resource
@@ -46,8 +48,6 @@ import lombok.ToString;
 public class Audio implements AudioSource {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
-	protected static final MimeType AUDIO_MP3 = MimeType.valueOf("audio/mpeg");
 
 	public static Audio decode(String data) {
 		Assert.hasText(data, "Data is required");
@@ -105,6 +105,10 @@ public class Audio implements AudioSource {
 	public Audio in(Format format) {
 		this.format = format;
 		return this;
+	}
+
+	public InputStream inputStream() throws IOException {
+		return toResource().getInputStream();
 	}
 
 	public int size() {
