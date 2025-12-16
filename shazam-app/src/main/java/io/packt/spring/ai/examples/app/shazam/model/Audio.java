@@ -108,15 +108,15 @@ public class Audio implements AudioSource {
 	}
 
 	public InputStream inputStream() throws IOException {
-		return toResource().getInputStream();
+		return resource().getInputStream();
+	}
+
+	public Resource resource() {
+		return new ByteArrayResource(getData());
 	}
 
 	public int size() {
 		return getData().length;
-	}
-
-	public Resource toResource() {
-		return new ByteArrayResource(getData());
 	}
 
 	public enum Category {
