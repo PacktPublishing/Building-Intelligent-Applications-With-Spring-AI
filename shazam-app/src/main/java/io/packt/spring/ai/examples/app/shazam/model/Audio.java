@@ -15,6 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 
+import org.cp.elements.io.NoSuchFileException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -95,6 +97,13 @@ public class Audio implements AudioSource {
 	public String encode() {
 		byte[] data = getData();
 		return Base64.getEncoder().encodeToString(data);
+	}
+
+	public File file() {
+		return ExceptionThrowingSupplier.getSafely(() -> resource().getFile(), cause -> {
+			String message = "File for audio [%s] not found".formatted(this);
+			throw new NoSuchFileException(message, cause);
+		});
 	}
 
 	public Audio havingDuration(Duration duration) {
