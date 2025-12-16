@@ -15,8 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -25,8 +26,8 @@ import java.util.Set;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 
-import org.cp.elements.io.NoSuchFileException;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,9 +40,7 @@ import lombok.ToString;
  *
  * @author John Blum
  * @see AudioSource
- * @see java.io.InputStream
- * @see java.time.Duration
- * @see org.springframework.ai.document.Document
+ * @see java.io.File
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.multipart.MultipartFile
  * @since 0.1.0
@@ -63,31 +62,34 @@ public class Audio implements AudioSource {
 	}
 
 	public static Audio from(byte[] data) {
-		return new Audio(data);
+		return new Audio(DataSource.from(data));
 	}
 
-	public static Audio from(MultipartFile audio) {
-		Assert.notNull(audio, "File is required");
-		return from(ExceptionThrowingSupplier.getSafely(audio::getBytes));
+	public static Audio from(File audioFile) {
+		return new Audio(DataSource.from(audioFile));
 	}
 
-	public static Audio from(Resource audio) {
-		Assert.notNull(audio, "Resource is required");
-		return from(ExceptionThrowingSupplier.getSafely(audio::getContentAsByteArray));
+	public static Audio from(MultipartFile audioFile) {
+		return new Audio(DataSource.from(audioFile));
+	}
+
+	public static Audio from(Resource audioResource) {
+		return new Audio(DataSource.from(audioResource));
 	}
 
 	public static Audio nullSafe(Audio audio) {
 		return audio != null ? audio : empty();
 	}
 
-	private final byte[] data;
+	private final DataSource dataSource;
 
 	private Duration duration;
 
 	private Format format;
 
-	public Audio(byte[] data) {
-		this.data = data != null ? data : EMPTY_BYTE_ARRAY;
+	Audio(DataSource dataSource) {
+		Assert.notNull(dataSource, "Source of audio data is required");
+		this.dataSource = dataSource;
 	}
 
 	@Override
@@ -95,16 +97,16 @@ public class Audio implements AudioSource {
 		return this;
 	}
 
+	public byte[] getData() {
+		return getDataSource().getData();
+	}
+
 	public String encode() {
-		byte[] data = getData();
-		return Base64.getEncoder().encodeToString(data);
+		return Base64.getEncoder().encodeToString(getData());
 	}
 
 	public File file() {
-		return ExceptionThrowingSupplier.getSafely(() -> resource().getFile(), cause -> {
-			String message = "File for audio [%s] not found".formatted(this);
-			throw new NoSuchFileException(message, cause);
-		});
+		return getDataSource().getFile();
 	}
 
 	public Audio havingDuration(Duration duration) {
@@ -117,24 +119,144 @@ public class Audio implements AudioSource {
 		return this;
 	}
 
-	public InputStream inputStream() throws IOException {
-		return resource().getInputStream();
+	public InputStream inputStream() {
+		return getDataSource().getInputStream();
 	}
 
 	public Resource resource() {
-		return new ByteArrayResource(getData());
+		return getDataSource().getResource();
 	}
 
 	public int size() {
-		return getData().length;
+		return getDataSource().size();
 	}
 
 	public URL url() {
-		return ExceptionThrowingSupplier.getSafely(() -> resource().getURL());
+		return getDataSource().getUrl();
 	}
 
 	public enum Category {
 		LOSSLESS_COMPRESSED, LOSSY_COMPRESSED, UNCOMPRESSED
+	}
+
+	interface DataSource {
+
+		static DataSource from(byte[] data) {
+			Assert.notNull(data, "Audio data is required");
+			return () -> new ByteArrayResource(data);
+		}
+
+		static DataSource from(File file) {
+
+			Assert.notNull(file, "Audio file is required");
+			Assert.isTrue(file.isFile(), () -> "File [%s] must exist".formatted(file));
+
+			return new DataSource() {
+
+				@Override
+				public boolean isFile() {
+					return true;
+				}
+
+				@Override
+				public File getFile() {
+					return file;
+				}
+
+				@Override
+				public InputStream getInputStream() {
+					return ExceptionThrowingSupplier.getSafely(() -> new FileInputStream(file));
+				}
+
+				@Override
+				public Resource getResource() {
+					return new FileSystemResource(file);
+				}
+
+				@Override
+				public URL getUrl() {
+					return ExceptionThrowingSupplier.getSafely(file.toURI()::toURL);
+				}
+
+				@Override
+				public int size() {
+					return Long.valueOf(file.length()).intValue();
+				}
+			};
+		}
+
+		static DataSource from(MultipartFile file) {
+
+			Assert.notNull(file, "Audio file is required");
+
+			return new DataSource() {
+
+				@Override
+				public boolean isFile() {
+					return true;
+				}
+
+				@Override
+				public byte[] getData() {
+					return ExceptionThrowingSupplier.getSafely(file::getBytes);
+				}
+
+				@Override
+				public String getFilename() {
+					return file.getOriginalFilename();
+				}
+
+				@Override
+				public Resource getResource() {
+					return file.getResource();
+				}
+
+				@Override
+				public int size() {
+					return Long.valueOf(file.getSize()).intValue();
+				}
+			};
+		}
+
+		static DataSource from(Resource resource) {
+			Assert.notNull(resource, "Audio resource is required");
+			return () -> resource;
+		}
+
+		default boolean isFile() {
+			return getResource().isFile();
+		}
+
+		default byte[] getData() {
+			return ExceptionThrowingSupplier.getSafely(getResource()::getContentAsByteArray);
+		}
+
+		default File getFile() {
+			Assert.state(isFile(), "DataSource did not originate from a file");
+			return ExceptionThrowingSupplier.getSafely(getResource()::getFile);
+		}
+
+		default String getFilename() {
+			return getFile().getName();
+		}
+
+		default String getFilepath() {
+			return getFile().getAbsolutePath();
+		}
+
+		default InputStream getInputStream() {
+			return new ByteArrayInputStream(getData());
+		}
+
+		Resource getResource();
+
+		default URL getUrl() {
+			return ExceptionThrowingSupplier.getSafely(getResource()::getURL);
+		}
+
+		default int size() {
+			return getData().length;
+		}
 	}
 
 	/**
