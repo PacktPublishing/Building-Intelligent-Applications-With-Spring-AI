@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.model;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Set;
@@ -126,6 +127,10 @@ public class Audio implements AudioSource {
 
 	public int size() {
 		return getData().length;
+	}
+
+	public URL url() {
+		return ExceptionThrowingSupplier.getSafely(() -> resource().getURL());
 	}
 
 	public enum Category {
