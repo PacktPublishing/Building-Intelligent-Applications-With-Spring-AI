@@ -123,6 +123,9 @@ public class Audio implements AudioSource {
 		LOSSLESS_COMPRESSED, LOSSY_COMPRESSED, UNCOMPRESSED
 	}
 
+	/**
+	 * @see <a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a>
+	 */
 	@Getter
 	@ToString(of = "name")
 	public enum Format {
