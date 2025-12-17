@@ -230,8 +230,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		// Number of Samples / Second (measured in Hertz (Hz) or Kilohertz (kHz))
 		protected int getSampleRate() {
-			float audioFormatSampleRate = getAudioFormat().getSampleRate();
-			return asInt(audioFormatSampleRate);
+			float sampleRate = getAudioFormat().getSampleRate();
+			return asInt(sampleRate);
 		}
 
 		protected boolean isSampleSizePresent() {
@@ -335,7 +335,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				case 1 -> MONO;
 				case 2 -> STEREO;
 				default -> {
-					String message = "[%d] is not a valid AudioChannels".formatted(value);
+					String message = "[%d] is not valid audio channels".formatted(value);
 					throw new IllegalArgumentException(message);
 				}
 			};
@@ -355,6 +355,10 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 		AudioChannels(int value) {
 			this.value = value;
+		}
+
+		public boolean isMono() {
+			return this.equals(MONO);
 		}
 
 		public boolean inStereo() {
