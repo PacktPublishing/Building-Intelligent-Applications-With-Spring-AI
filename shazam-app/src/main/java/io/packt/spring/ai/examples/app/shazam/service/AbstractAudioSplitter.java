@@ -16,16 +16,21 @@
 package io.packt.spring.ai.examples.app.shazam.service;
 
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
 
 import org.slf4j.Logger;
+import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.springframework.util.MimeType;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 0.1.0
  */
 @Slf4j
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractAudioSplitter implements AudioSplitter, InitializingBean {
 
 	private final AudioProperties audioProperties;
@@ -47,10 +53,6 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	public AbstractAudioSplitter(AudioProperties audioProperties) {
 		Assert.notNull(audioProperties, "AudioProperties are required");
 		this.audioProperties = audioProperties;
-	}
-
-	protected AudioProperties getAudioProperties() {
-		return this.audioProperties;
 	}
 
 	protected Logger getLogger() {
@@ -66,8 +68,12 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 
 		return Document.builder()
 			.idGenerator(UuidGenerator.INSTANCE)
-			.text(audioClip.encode())
+			.media(buildMedia(audioClip))
 			.build();
+	}
+
+	protected Media buildMedia(AudioClip audioClip) {
+		return new Media(new MimeType("audio", "mpeg"), audioClip.audio().resource());
 	}
 
 	@Override
@@ -102,19 +108,15 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 			return dataCopy;
 		}
 
-		public String encode() {
-			return audio().encode();
-		}
-
 		public AudioClip firstHalf() {
-			int length = Long.valueOf(size() / 2).intValue();
+			int length = asInt(size() / 2L);
 			byte[] audioData = dataCopy(0, length);
 			return AudioClip.from(audioData);
 		}
 
 		public AudioClip merge(AudioClip audioClip) {
-			int audioLength = Long.valueOf(size()).intValue();
-			int audioClipLength = Long.valueOf(audioClip.size()).intValue();
+			int audioLength = asInt(size());
+			int audioClipLength = asInt(audioClip.size());
 			int length = audioLength + audioClipLength;
 			byte[] audioData = new byte[length];
 			System.arraycopy(data(), 0, audioData, 0, audioLength);
@@ -124,8 +126,8 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 
 		public AudioClip secondHalf() {
 			long size = size();
-			int halfSize = Long.valueOf(size / 2).intValue();
-			int length = Long.valueOf(size - halfSize).intValue();
+			int halfSize = asInt(size / 2L);
+			int length = asInt(size - halfSize);
 			byte[] audioData = dataCopy(halfSize, length);
 			return AudioClip.from(audioData);
 		}
@@ -139,7 +141,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	protected interface CompactDiscMetadata {
 
 		int CD_SAMPLE_RATE = 44_100; // 44,100 Hz (44.1 kHz); 44,100 samples per second
-		int CD_SAMPLE_SIZE_IN_BITS = 16; // AKA Bit Depth | Bit Resolution
+		int CD_SAMPLE_SIZE_IN_BITS = 16; // Bit Depth | Bit Resolution
 
 	}
 
