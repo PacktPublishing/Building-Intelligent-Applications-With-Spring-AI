@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Set;
 
@@ -133,6 +134,25 @@ public class Audio implements AudioSource {
 
 	public URL url() {
 		return getDataSource().getUrl();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof Audio that)) {
+			return false;
+		}
+
+		return Arrays.equals(this.getData(), that.getData());
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(getData());
 	}
 
 	public enum Category {
