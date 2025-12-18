@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * @see Audio
  * @see AudioSplitter
  * @see AudioProperties
+ * @see org.springframework.ai.content.Media
  * @see org.springframework.ai.document.Document
  * @see org.springframework.beans.factory.InitializingBean
  * @since 0.1.0
