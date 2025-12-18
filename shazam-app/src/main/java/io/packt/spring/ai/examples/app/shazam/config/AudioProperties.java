@@ -34,13 +34,21 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "shazam.audio")
 public class AudioProperties {
 
-	// 192 kbps / 8 bits per bytes * 5 seconds
+	// 192 kbps / 8 bits per byte * 5 seconds
 	public static final int DEFAULT_AUDIO_BUFFER_SIZE = 120_000;
 	public static final int DEFAULT_AUDIO_BUFFER_DIVISOR = 20;
 	public static final int DEFAULT_MP3_BIT_RATE = 128_000;
 	public static final int DEFAULT_MP3_SAMPLE_RATE = 22_050;
 
 	public static final Duration DEFAULT_AUDIO_CLIP_LENGTH = Duration.ofSeconds(5);
+
+	public static AudioProperties defaultAudioProperties() {
+		return new AudioProperties();
+	}
+
+	public static AudioProperties nullSafe(AudioProperties audioProperties) {
+		return audioProperties != null ? audioProperties : defaultAudioProperties();
+	}
 
 	private AudioBuffer buffer = new AudioBuffer();
 
