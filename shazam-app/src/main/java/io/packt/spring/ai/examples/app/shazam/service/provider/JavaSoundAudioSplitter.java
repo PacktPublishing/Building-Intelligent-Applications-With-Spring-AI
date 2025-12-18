@@ -288,22 +288,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				this.audio = audio;
 			}
 
-			private boolean isMpegAudioFormat() {
-				return describe(getAudioFormat()).contains(MPEG);
-			}
-
-			private String describe(AudioFormat audioFormat) {
-				return getAudioFormat().toString().toLowerCase();
-			}
-
-			private AudioProperties defaultAudioProperties() {
-				return new AudioProperties();
-			}
-
-			private AudioProperties resolveAudioProperties(AudioProperties audioProperties) {
-				return audioProperties != null ? audioProperties : defaultAudioProperties();
-			}
-
 			Builder in(AudioFormat audioFormat) {
 				Assert.notNull(audioFormat, "AudioFormat is required");
 				this.audioFormat = audioFormat;
@@ -311,8 +295,16 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			}
 
 			Builder using(AudioProperties audioProperties) {
-				this.audioProperties = resolveAudioProperties(audioProperties);
+				this.audioProperties = AudioProperties.nullSafe(audioProperties);
 				return this;
+			}
+
+			private boolean isMpegAudioFormat() {
+				return describe(getAudioFormat()).contains(MPEG);
+			}
+
+			private String describe(AudioFormat audioFormat) {
+				return getAudioFormat().toString().toLowerCase();
 			}
 
 			AbstractAudioClipCalculator build() {
