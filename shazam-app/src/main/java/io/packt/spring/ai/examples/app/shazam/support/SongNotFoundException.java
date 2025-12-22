@@ -29,6 +29,10 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
 @SuppressWarnings("unused")
 public class SongNotFoundException extends RuntimeException {
 
+	public static SongNotFoundException because(String reason) {
+		return new SongNotFoundException(reason);
+	}
+
 	public static SongNotFoundException from(UUID songIdentifier) {
 		String message = "Song having identifier [%s] not found".formatted(songIdentifier);
 		throw new SongNotFoundException(message);
