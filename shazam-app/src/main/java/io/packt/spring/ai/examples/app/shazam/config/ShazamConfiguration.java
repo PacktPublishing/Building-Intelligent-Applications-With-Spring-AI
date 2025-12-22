@@ -19,9 +19,11 @@ import com.knuddels.jtokkit.api.EncodingType;
 
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
+import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 
 import org.springframework.ai.embedding.BatchingStrategy;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -50,6 +52,11 @@ public class ShazamConfiguration {
 	@Bean
 	AdminController adminController() {
 		return new AdminController();
+	}
+
+	@Bean
+	EmbeddingModel embeddingModel() {
+		return new AudioEmbeddingModel();
 	}
 
 	@Bean
