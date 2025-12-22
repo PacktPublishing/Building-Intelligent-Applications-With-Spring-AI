@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.AudioDispatcherBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
-import org.cp.elements.lang.Assert;
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
@@ -32,12 +31,13 @@ import org.springframework.ai.embedding.EmbeddingRequest;
 import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.ai.embedding.EmbeddingResponseMetadata;
 import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 import org.springframework.util.MimeTypeUtils;
 
 import be.tarsos.dsp.AudioDispatcher;
 
 /**
- * {@link EmbeddingModel} implementation based on the {@literal TarsosDSP} library.
+ * {@link EmbeddingModel} implementation based on the {@literal TarsosDSP} library used to embed {@link Audio}.
  *
  * @author John Blum
  * @see Audio
