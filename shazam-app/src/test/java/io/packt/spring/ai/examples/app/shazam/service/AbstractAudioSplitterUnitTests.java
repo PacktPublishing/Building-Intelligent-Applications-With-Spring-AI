@@ -60,6 +60,7 @@ public class AbstractAudioSplitterUnitTests {
 		AbstractAudioSplitter.AudioClip bothHalves = firstHalf.merge(secondHalf);
 
 		assertThat(bothHalves).isNotNull();
+		assertThat(bothHalves).isNotSameAs(firstHalf).isNotSameAs(secondHalf);
 		assertThat(bothHalves.size()).isEqualTo(audioData.length);
 		assertThat(bothHalves.data()).contains(audioData);
 	}

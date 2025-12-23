@@ -26,7 +26,9 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
+import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -49,6 +51,8 @@ import org.springframework.core.io.Resource;
 @SuppressWarnings("unused")
 class JavaSoundAudioSplitterIntegrationTests {
 
+	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+
 	@Autowired
 	private JavaSoundAudioSplitter audioSplitter;
 
@@ -70,31 +74,36 @@ class JavaSoundAudioSplitterIntegrationTests {
 	 * 18,301,368 bits / (128k + 64k = 192k / 2 = 96 kbps) = ~191 seconds
 	 */
 	@Test
+	@EnabledIf("resourceExists")
 	void readsAndSplitsMp3() {
 
-		Resource mp3 = new ClassPathResource("/Matchbox20-Unwell.mp3");
+		Resource mp3 = new ClassPathResource(RESOURCE_PATH);
 
-		assumeThat(mp3.exists()).describedAs("MP3 [%s] is not present", mp3).isTrue();
+		assumeThat(mp3.exists())
+			.describedAs("MP3 [%s] is not present", mp3)
+			.isTrue();
 
 		Audio audio = Audio.from(mp3).havingDuration(Duration.ofMinutes(3).plusSeconds(49));
 
 		List<Document> documents = this.audioSplitter.split(audio);
 
-		System.out.printf("Documents Size [%d]%n", documents.size());
-
 		assertThat(documents).isNotNull();
-		assertThat(documents).hasSizeGreaterThanOrEqualTo(90).hasSizeLessThanOrEqualTo(92); // Size is 91
+		assertThat(documents).hasSize(91);
 
 		long documentsSize = 0;
 
 		for (Document document : documents) {
-			String data = document.getText();
-			Audio decodedAudio = Audio.decode(data);
-			documentsSize += decodedAudio.size();
+			Media media = document.getMedia();
+			byte[] documentData = media.getDataAsByteArray();
+			documentsSize += documentData.length;
 		}
 
-		// the size of the Documents in bytes should be greater than the Audio size in bytes given the overlap
-		assertThat(documentsSize).isGreaterThan(audio.size());
+		// The size of the Documents in bytes should be greater than the Audio size in bytes given the overlap
+		assertThat(documentsSize).isGreaterThan(audio.getData().length);
+	}
+
+	boolean resourceExists() {
+		return new ClassPathResource(RESOURCE_PATH).exists();
 	}
 
 	@SpringBootConfiguration

@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.model;
 
+import static io.codeprimate.extensions.util.ExceptionThrowingSupplier.getSafely;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,15 +24,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Set;
 
-import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
-
+import org.springframework.ai.content.Media;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
@@ -42,6 +43,7 @@ import lombok.ToString;
  * @author John Blum
  * @see AudioSource
  * @see java.io.File
+ * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.multipart.MultipartFile
  * @since 0.1.0
@@ -52,12 +54,6 @@ public class Audio implements AudioSource {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
-	public static Audio decode(String data) {
-		Assert.hasText(data, "Data is required");
-		byte[] audioData = Base64.getDecoder().decode(data);
-		return from(audioData);
-	}
-
 	public static Audio empty() {
 		return from(EMPTY_BYTE_ARRAY);
 	}
@@ -66,16 +62,16 @@ public class Audio implements AudioSource {
 		return new Audio(DataSource.from(data));
 	}
 
-	public static Audio from(File audioFile) {
-		return new Audio(DataSource.from(audioFile));
+	public static Audio from(File file) {
+		return new Audio(DataSource.from(file));
 	}
 
-	public static Audio from(MultipartFile audioFile) {
-		return new Audio(DataSource.from(audioFile));
+	public static Audio from(MultipartFile file) {
+		return new Audio(DataSource.from(file));
 	}
 
-	public static Audio from(Resource audioResource) {
-		return new Audio(DataSource.from(audioResource));
+	public static Audio from(Resource resource) {
+		return new Audio(DataSource.from(resource));
 	}
 
 	public static Audio nullSafe(Audio audio) {
@@ -102,12 +98,8 @@ public class Audio implements AudioSource {
 		return getDataSource().getData();
 	}
 
-	public String encode() {
-		return Base64.getEncoder().encodeToString(getData());
-	}
-
-	public File file() {
-		return getDataSource().getFile();
+	public Media getMedia() {
+		return new Media(MimeTypeUtils.APPLICATION_OCTET_STREAM, resource());
 	}
 
 	public Audio havingDuration(Duration duration) {
@@ -118,6 +110,10 @@ public class Audio implements AudioSource {
 	public Audio in(Format format) {
 		this.format = format;
 		return this;
+	}
+
+	public File file() {
+		return getDataSource().getFile();
 	}
 
 	public InputStream inputStream() {
@@ -155,10 +151,6 @@ public class Audio implements AudioSource {
 		return Arrays.hashCode(getData());
 	}
 
-	public enum Category {
-		LOSSLESS_COMPRESSED, LOSSY_COMPRESSED, UNCOMPRESSED
-	}
-
 	interface DataSource {
 
 		static DataSource from(byte[] data) {
@@ -185,7 +177,7 @@ public class Audio implements AudioSource {
 
 				@Override
 				public InputStream getInputStream() {
-					return ExceptionThrowingSupplier.getSafely(() -> new FileInputStream(file));
+					return getSafely(() -> new FileInputStream(file));
 				}
 
 				@Override
@@ -195,7 +187,7 @@ public class Audio implements AudioSource {
 
 				@Override
 				public URL getUrl() {
-					return ExceptionThrowingSupplier.getSafely(file.toURI()::toURL);
+					return getSafely(file.toURI()::toURL);
 				}
 
 				@Override
@@ -218,7 +210,7 @@ public class Audio implements AudioSource {
 
 				@Override
 				public byte[] getData() {
-					return ExceptionThrowingSupplier.getSafely(file::getBytes);
+					return getSafely(file::getBytes);
 				}
 
 				@Override
@@ -239,7 +231,7 @@ public class Audio implements AudioSource {
 		}
 
 		static DataSource from(Resource resource) {
-			Assert.notNull(resource, "Audio resource is required");
+			Assert.notNull(resource, "Resource containing audio is required");
 			return () -> resource;
 		}
 
@@ -248,12 +240,12 @@ public class Audio implements AudioSource {
 		}
 
 		default byte[] getData() {
-			return ExceptionThrowingSupplier.getSafely(getResource()::getContentAsByteArray);
+			return getSafely(getResource()::getContentAsByteArray);
 		}
 
 		default File getFile() {
 			Assert.state(isFile(), "DataSource did not originate from a file");
-			return ExceptionThrowingSupplier.getSafely(getResource()::getFile);
+			return getSafely(getResource()::getFile);
 		}
 
 		default String getFilename() {
@@ -271,12 +263,16 @@ public class Audio implements AudioSource {
 		Resource getResource();
 
 		default URL getUrl() {
-			return ExceptionThrowingSupplier.getSafely(getResource()::getURL);
+			return getSafely(getResource()::getURL);
 		}
 
 		default long size() {
 			return getData().length;
 		}
+	}
+
+	public enum Category {
+		LOSSLESS_COMPRESSED, LOSSY_COMPRESSED, UNCOMPRESSED
 	}
 
 	/**
