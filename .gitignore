@@ -4,8 +4,9 @@ target/
 temp/
 tmp/
 application-user.properties
+ffprobe*
 
-### STS ###
+### Eclipse / STS ###
 .apt_generated
 .classpath
 .factorypath
@@ -19,6 +20,7 @@ application-user.properties
 *.iws
 *.iml
 *.ipr
+out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -26,7 +28,6 @@ application-user.properties
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
