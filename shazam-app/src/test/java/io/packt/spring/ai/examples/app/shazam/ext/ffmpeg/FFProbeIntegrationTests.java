@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 /**
  * Integration Tests for {@link FFProbe}.
@@ -42,23 +43,33 @@ public class FFProbeIntegrationTests {
 	@EnabledIf("resourceExists")
 	void audioFormatIsCorrect() {
 
-		Audio audio = Audio.from(new ClassPathResource(RESOURCE_PATH));
+		Audio audio = Audio.from(resource());
 
-		FFProbe probe = new FFProbe();
+		FFProbe probe = FFProbe.builder()
+			.enableDownload()
+			.build();
 
 		FFProbe.Format format = probe.showFormat(audio);
 
 		assertThat(format).isNotNull();
 		assertThat(format.bitRate()).isEqualTo(80_000);
-		assertThat(format.getDuration()).isGreaterThan(Duration.ofMinutes(3).plusSeconds(47));
+		assertThat(format.getDuration()).isGreaterThan(Duration.ofMinutes(3).plusSeconds(48));
 		assertThat(format.filename()).isEqualTo(audio.file().getAbsolutePath());
 		assertThat(format.name().toLowerCase()).isEqualTo("mp3");
+		assertThat(format.description()).contains("MPEG audio layer 2/3");
 		assertThat(format.numberOfPrograms()).isZero();
 		assertThat(format.numberOfStreams()).isOne();
+		assertThat(format.numberOfStreamGroups()).isZero();
+		assertThat(format.probeScore()).isEqualTo(51); // ?
 		assertThat(format.size()).isGreaterThan(2_200_000);
+		assertThat(format.startTime()).isEqualTo(0.0d);
+	}
+
+	Resource resource() {
+		return new ClassPathResource(RESOURCE_PATH);
 	}
 
 	boolean resourceExists() {
-		return new ClassPathResource(RESOURCE_PATH).exists();
+		return resource().exists();
 	}
 }
