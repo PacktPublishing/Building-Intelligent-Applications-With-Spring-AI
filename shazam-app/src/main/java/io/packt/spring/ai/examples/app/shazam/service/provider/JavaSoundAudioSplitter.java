@@ -19,8 +19,6 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PE
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +26,11 @@ import java.util.List;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioInputStreamBuilder;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
@@ -76,7 +76,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		try {
 			List<Document> documents = new ArrayList<>();
 
-			try (AudioInputStream in = toInputStream(audio)) {
+			try (AudioInputStream in = openInputStream(audio)) {
 				AudioClip previousAudioClip = null;
 				AudioFormat audioFormat = log(in.getFormat());
 				int audioBufferSize = calculateAudioBufferSize(audio, audioFormat);
@@ -131,9 +131,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		return audioFormat;
 	}
 
-	private AudioInputStream toInputStream(Audio audio) throws IOException, UnsupportedAudioFileException {
-		InputStream in = audio.inputStream();
-		return AudioSystem.getAudioInputStream(in);
+	private AudioInputStream openInputStream(Audio audio) {
+		return AudioInputStreamBuilder.from(audio).build();
 	}
 
 	/**
@@ -199,11 +198,20 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		}
 
 		// Number of Bits per Second (measured in kilobits per second (kbps))
-		// For example, if 128 kbps, then returns 128,000
+		// For example, if 128 kbps, then returns 128,000 bits in 1 second
 		// AKA Bit Depth | Bit Resolution
 		protected int getBitRate() {
 
-			if (isSampleRatePresent() && isSampleSizePresent()) {
+			// If bit rate is known, return it
+			if (getAudioFormat() instanceof ShazamAudioFormat shazamAudioFormat) {
+				Integer bitRate = shazamAudioFormat.getBitRate();
+				if (bitRate != null) {
+					return bitRate;
+				}
+			}
+
+			// Compute bit rate as number of samples per second multiplied by the size of a sample in bits
+			if (isSampleRateSpecified() && isSampleSizeSpecified()) {
 				int sampleRate = getSampleRate();
 				int sampleSize = getTotalSampleSizeInBits();
 				return sampleRate * sampleSize;
@@ -211,6 +219,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 			Duration audioDuration = getAudioDuration();
 
+			// Compute bit rate as size of audio in bits divided by the duration of audio in seconds
 			if (TimeUtils.isNotZero(audioDuration)) {
 				float audioSizeInBits = getAudioSizeInBits();
 				float seconds = asInt(audioDuration.getSeconds());
@@ -224,8 +233,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			return DEFAULT_COMPRESSION_RATIO;
 		}
 
-		protected boolean isSampleRatePresent() {
-			return isSpecified(getSampleRate());
+		protected boolean isSampleRateSpecified() {
+			return AudioUtils.isSpecified(getSampleRate());
 		}
 
 		// Number of Samples / Second (measured in Hertz (Hz) or Kilohertz (kHz))
@@ -234,8 +243,8 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			return asInt(sampleRate);
 		}
 
-		protected boolean isSampleSizePresent() {
-			return isSpecified(getSampleSizeInBits());
+		protected boolean isSampleSizeSpecified() {
+			return AudioUtils.isSpecified(getSampleSizeInBits());
 		}
 
 		// Number of Bits / Sample
@@ -246,10 +255,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		// Number of Bits / Sample * Number of Audio Channels
 		protected int getTotalSampleSizeInBits() {
 			return getSampleSizeInBits() * getAudioChannels().value();
-		}
-
-		protected boolean isSpecified(int audioValue) {
-			return Math.max(audioValue, AudioSystem.NOT_SPECIFIED) > 0;
 		}
 
 		// @see getBitRate()
@@ -376,19 +381,19 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		@Override
 		protected int getBitRate() {
 			int bitRate = super.getBitRate();
-			return isSpecified(bitRate) ? bitRate : CD_BIT_RATE;
+			return AudioUtils.isSpecified(bitRate) ? bitRate : CD_BIT_RATE;
 		}
 
 		@Override
 		protected int getSampleRate() {
 			int sampleRate = super.getSampleRate();
-			return isSpecified(sampleRate) ? sampleRate : CD_SAMPLE_RATE;
+			return AudioUtils.isSpecified(sampleRate) ? sampleRate : CD_SAMPLE_RATE;
 		}
 
 		@Override
 		protected int getSampleSizeInBits() {
 			int sampleSize = super.getSampleSizeInBits();
-			return isSpecified(sampleSize) ? sampleSize : CD_SAMPLE_SIZE_IN_BITS;
+			return AudioUtils.isSpecified(sampleSize) ? sampleSize : CD_SAMPLE_SIZE_IN_BITS;
 		}
 	}
 
@@ -402,15 +407,15 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		@Override
 		protected int getBitRate() {
 			int bitRate = super.getBitRate();
-			int configuredBitRate = getAudioProperties().getMp3BitRate(MP3_BIT_RATE);
-			return isSpecified(bitRate) ? bitRate : configuredBitRate;
+			return AudioUtils.isSpecified(bitRate) ? bitRate
+				: getAudioProperties().getMp3BitRate(MP3_BIT_RATE);
 		}
 
 		@Override
 		protected int getSampleRate() {
 			int sampleRate = super.getSampleRate();
-			int configuredSampleRate = getAudioProperties().getMp3SampleRate(MP3_SAMPLE_RATE);
-			return isSpecified(sampleRate) ? sampleRate : configuredSampleRate;
+			return AudioUtils.isSpecified(sampleRate) ? sampleRate
+				: getAudioProperties().getMp3SampleRate(MP3_SAMPLE_RATE);
 		}
 	}
 }

@@ -151,9 +151,9 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	protected interface MpegLayer3Metadata {
 
 		int MP3_BIT_RATE_STANDARD_QUALITY = 128_000; // 128 kbps (128,000 bits per second)
+		int MP3_BIT_RATE_MEDIUM_QUALITY = 192_000; // 192 kbps
 		int MP3_BIT_RATE_HIGH_QUALITY = 320_000; // 320 kbps; low compression
 		int MP3_BIT_RATE_LOW_QUALITY = 64_000; // 64 kbps; high compression
-		int MP3_BIT_RATE_AVG_QUALITY = (MP3_BIT_RATE_STANDARD_QUALITY + MP3_BIT_RATE_LOW_QUALITY) / 2;
 		int MP3_BIT_RATE = MP3_BIT_RATE_STANDARD_QUALITY;
 		int MP3_SAMPLE_RATE = 22_050;
 		int MP3_SAMPLE_SIZE_IN_BITS = Math.round(asFloat(MP3_BIT_RATE) / asFloat(MP3_SAMPLE_RATE));
