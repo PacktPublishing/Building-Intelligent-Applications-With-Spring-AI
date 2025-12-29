@@ -16,7 +16,6 @@
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
@@ -40,6 +38,7 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see Audio
+ * @see ShazamAudioFormat
  * @see javax.sound.sampled.AudioFormat
  * @see org.cp.elements.lang.Builder
  * @since 0.1.0
@@ -108,27 +107,12 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	protected int getSampleSizeInBits() {
-
-		int sampleSizeInBits = getFormat().getSampleSizeInBits();
-
-		if (AudioUtils.isNotSpecified(sampleSizeInBits)) {
-
-			FFProbe.Format probeFormat = AudioUtils.probeFormat(getAudio());
-
-			int audioSizeInBytes = probeFormat.size();
-			int audioSizeInBits = audioSizeInBytes * BITS_PER_BYTE;
-			int audioDurationInSeconds = asInt(probeFormat.getDuration().toSeconds());
-			int sampleRate = asInt(getFormat().getSampleRate()); // samples per second
-			int totalSamples = audioDurationInSeconds * sampleRate;
-
-			sampleSizeInBits = audioSizeInBits / totalSamples;
-		}
-
-		return sampleSizeInBits;
+		return getFormat().getSampleSizeInBits();
 	}
 
 	public AudioFormat build() {
-		return new AudioFormat(getEncoding(), getSampleRate(), getSampleSizeInBits(), getChannels(),
-			getFrameSize(), getFrameRate(), isBigEndian(), getAudioProperties());
+		return new ShazamAudioFormat(getAudio(), getEncoding(), getSampleRate(), getSampleSizeInBits(), getChannels(),
+			getFrameRate(), getFrameSize(), isBigEndian(), getAudioProperties());
+
 	}
 }
