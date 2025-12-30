@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -69,6 +70,11 @@ public abstract class AudioUtils {
 		}
 
 		return audioFormat;
+	}
+
+	public static AudioFileFormat resolveAudioFileFormat(Audio audio) {
+		return ExceptionThrowingSupplier.getSafely(() ->
+			AudioSystem.getAudioFileFormat(audio.file()));
 	}
 
 	private static FFProbe resolveFFProbe(FFProbe ffprobe) {
