@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.util;
 
+import java.util.function.Consumer;
+
 /**
  * Java {@link FunctionalInterface} used to execute a computation with the possibility of throwing an {@link Exception}.
  * @author John Blum
@@ -27,12 +29,18 @@ package io.codeprimate.extensions.util;
 public interface ExceptionThrowingRunnable {
 
 	static void doSafely(ExceptionThrowingRunnable runnable) {
+		doSafely(runnable, cause -> {
+			throw new RuntimeException(cause);
+		});
+	}
+
+	static void doSafely(ExceptionThrowingRunnable runnable, Consumer<Exception> exceptionHandler) {
 
 		try {
 			runnable.run();
 		}
 		catch (Exception cause) {
-			throw new RuntimeException(cause);
+			exceptionHandler.accept(cause);
 		}
 	}
 
