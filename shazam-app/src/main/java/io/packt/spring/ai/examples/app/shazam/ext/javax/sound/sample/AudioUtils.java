@@ -15,6 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,9 +24,12 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+
+import org.springframework.ai.document.Document;
 
 /**
  * Abstract utility class used to process {@link Audio} using the {@literal javax.sound} API and {@link FFProbe}.
@@ -33,6 +37,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
  * @author John Blum
  * @see Audio
  * @see AudioSystem
+ * @see Document
  * @see FFProbe
  * @since 0.1.0
  */
@@ -48,9 +53,30 @@ public abstract class AudioUtils {
 		return !isSpecified(audioValue);
 	}
 
+	public static void close(AudioInputStream in) {
+		ExceptionThrowingRunnable.doSafely(in::close, cause -> { });
+	}
+
 	public static AudioInputStream openInputStream(Audio audio) {
 		return ExceptionThrowingSupplier.getSafely(() ->
 			AudioSystem.getAudioInputStream(audio.inputStream()));
+	}
+
+	public static AudioInputStream openInputStream(Audio audio, Document document) {
+
+		return ExceptionThrowingSupplier.getSafely(() -> {
+
+			AudioInputStream audioInputStream = openInputStream(audio);
+			AudioFormat format = audioInputStream.getFormat();
+			long frameLength = audioInputStream.getFrameLength();
+
+			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(document.getMedia().getDataAsByteArray())) {
+				return new AudioInputStream(inputStream, format, frameLength);
+			}
+			finally {
+				close(audioInputStream);
+			}
+		});
 	}
 
 	public static FFProbe.Format probeFormat(Audio audio) {
