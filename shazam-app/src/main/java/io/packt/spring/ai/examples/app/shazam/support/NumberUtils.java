@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.support;
 
+import java.util.Random;
+
 /**
  * Abstract utility class used to process {@link Number numbers}.
  *
@@ -35,5 +37,9 @@ public abstract class NumberUtils {
 
 	public static int asInt(long value) {
 		return Long.valueOf(value).intValue();
+	}
+
+	public static int randomInt(int bound) {
+		return new Random(System.currentTimeMillis()).nextInt(bound);
 	}
 }
