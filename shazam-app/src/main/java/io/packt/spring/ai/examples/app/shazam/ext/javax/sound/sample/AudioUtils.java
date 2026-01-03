@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -43,6 +44,8 @@ import org.springframework.ai.document.Document;
  */
 public abstract class AudioUtils {
 
+	public static AudioFileFormat.Type MP3_AUDIO_FILE_FORMAT = new AudioFileFormat.Type("MP3", "mp3");
+
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
 	public static boolean isSpecified(int audioValue) {
@@ -62,13 +65,20 @@ public abstract class AudioUtils {
 			AudioSystem.getAudioInputStream(audio.inputStream()));
 	}
 
+	@SuppressWarnings("unused")
 	public static AudioInputStream openInputStream(Audio audio, Document document) {
+		return openInputStream(audio, document, AudioInputStream::getFormat, AudioInputStream::getFrameLength);
+	}
+
+	public static AudioInputStream openInputStream(Audio audio, Document document,
+			Function<AudioInputStream, AudioFormat> audioFormatResolver,
+			Function<AudioInputStream, Long> frameLengthResolver) {
 
 		return ExceptionThrowingSupplier.getSafely(() -> {
 
 			AudioInputStream audioInputStream = openInputStream(audio);
-			AudioFormat format = audioInputStream.getFormat();
-			long frameLength = audioInputStream.getFrameLength();
+			AudioFormat format = audioFormatResolver.apply(audioInputStream);
+			long frameLength = frameLengthResolver.apply(audioInputStream);
 
 			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(document.getMedia().getDataAsByteArray())) {
 				return new AudioInputStream(inputStream, format, frameLength);
