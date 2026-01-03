@@ -30,10 +30,12 @@ import org.springframework.lang.NonNull;
  * Simple, read-only, {@literal Cache} data structure.
  *
  * @author John Blum
+ * @see FunctionalInterface
  * @see Cache.Entry
  * @see java.lang.Iterable
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
 public interface Cache<KEY, VALUE> extends Iterable<Cache.Entry<KEY, VALUE>> {
 
@@ -87,7 +89,9 @@ public interface Cache<KEY, VALUE> extends Iterable<Cache.Entry<KEY, VALUE>> {
 		return null;
 	}
 
-	VALUE get(KEY key);
+	default VALUE get(KEY key) {
+		return null;
+	}
 
 	default VALUE get(KEY key, Function<KEY, VALUE> cacheLoader) {
 
