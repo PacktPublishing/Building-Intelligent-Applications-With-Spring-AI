@@ -15,6 +15,8 @@
  */
 package io.codeprimate.extensions.spring.ai.document;
 
+import java.util.UUID;
+
 import org.springframework.ai.document.Document;
 
 /**
@@ -29,10 +31,17 @@ import org.springframework.ai.document.Document;
 public class DocumentNotFoundException extends RuntimeException {
 
 	public static DocumentNotFoundException forDocumentId(String documentId) {
-		return new DocumentNotFoundException("Document with ID [%s] not found".formatted(documentId));
+		String message = "Document with ID [%s] not found".formatted(documentId);
+		return new DocumentNotFoundException(message);
 	}
 
-	public DocumentNotFoundException() { }
+	public static DocumentNotFoundException forDocumentId(UUID id) {
+		return forDocumentId(id.toString());
+	}
+
+	public DocumentNotFoundException() {
+
+	}
 
 	public DocumentNotFoundException(String message) {
 		super(message);
