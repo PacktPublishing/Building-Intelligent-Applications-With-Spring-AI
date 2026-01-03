@@ -18,6 +18,7 @@ package io.codeprimate.extensions.data.caching;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -87,6 +88,18 @@ public interface Cache<KEY, VALUE> extends Iterable<Cache.Entry<KEY, VALUE>> {
 	}
 
 	VALUE get(KEY key);
+
+	default VALUE get(KEY key, Function<KEY, VALUE> cacheLoader) {
+
+		VALUE value = get(key);
+
+		if (value == null) {
+			value = cacheLoader.apply(key);
+			put(key, value);
+		}
+
+		return value;
+	}
 
 	default void put(KEY key, VALUE value) {
 		throw new IllegalStateException("Cache is read-only");
