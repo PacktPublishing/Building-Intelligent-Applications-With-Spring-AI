@@ -49,6 +49,11 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 		return new DocumentStore() {
 
 			@Override
+			public boolean isEmpty() {
+				return documentCache.isEmpty();
+			}
+
+			@Override
 			public Document get(String id) {
 
 				if (StringUtils.hasText(id)) {
@@ -64,6 +69,11 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 			@Override
 			public boolean remove(Document document) {
 				return document != null && documentCache.evict(document.getId()) != null;
+			}
+
+			@Override
+			public long size() {
+				return documentCache.size();
 			}
 
 			@Override

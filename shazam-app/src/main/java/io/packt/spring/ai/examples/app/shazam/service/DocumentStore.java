@@ -34,8 +34,16 @@ public interface DocumentStore {
 		throw DocumentNotFoundException.forDocumentId(id);
 	}
 
+	boolean isEmpty();
+
+	default boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	boolean remove(Document document);
 
 	Document store(Document document);
+
+	long size();
 
 }
