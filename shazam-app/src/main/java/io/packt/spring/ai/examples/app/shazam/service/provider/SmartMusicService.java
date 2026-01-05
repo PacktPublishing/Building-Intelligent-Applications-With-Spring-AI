@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.codeprimate.extensions.util.ImmutableSetWrapper;
 import io.packt.spring.ai.examples.app.shazam.config.SongSearchProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.vectorstore.MediaSearchRequest;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.repo.SongRepository;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
+import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.NonUniqueSongException;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
@@ -39,7 +41,6 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
@@ -53,8 +54,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author John Blum
  * @see Audio
  * @see Song
- * @see MusicService
  * @see AudioSplitter
+ * @see DocumentStore
+ * @see MusicService
  * @see SongRepository
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.vectorstore.VectorStore
@@ -71,6 +73,8 @@ public class SmartMusicService implements MusicService {
 	private static final String SONG_ID_KEY = "songId";
 
 	private final AudioSplitter audioSplitter;
+
+	private final DocumentStore documentStore;
 
 	private final SongRepository songRepository;
 
@@ -106,16 +110,24 @@ public class SmartMusicService implements MusicService {
 				SongNotFoundException.from(matchingSongIdentifier));
 		}
 
-		throw new SongNotFoundException("No song was found for the given audio");
+		throw SongNotFoundException.because("No song was found for the given audio");
 	}
 
 	private SearchRequest buildSearchRequest(Audio audio) {
 
-		return SearchRequest.builder()
+		SearchRequest searchRequest = SearchRequest.builder()
 			.similarityThreshold(getSongSearchProperties().resolveSimilarityThreshold())
 			.topK(getSongSearchProperties().resolveTopK())
-			.query(audio.encode())
+			.query(UuidGenerator.INSTANCE.generateId())
 			.build();
+
+		MediaSearchRequest mediaSearchRequest = MediaSearchRequest.builder(searchRequest)
+			.query(audio.getMedia())
+			.build();
+
+		getDocumentStore().store(mediaSearchRequest.toDocument());
+
+		return mediaSearchRequest;
 	}
 
 	private List<Document> search(SearchRequest searchRequest) {
@@ -156,34 +168,16 @@ public class SmartMusicService implements MusicService {
 		getSongRepository().save(song);
 	}
 
-	private Document associateSong(Document document, Song song) {
-		document.getMetadata().put(SONG_ID_KEY, song.getId());
-		return document;
-	}
-
 	private List<Document> identify(List<Document> documents, Song song) {
 
 		return documents.stream()
 			.map(document -> associateSong(document, song))
-			.map(this::identify)
+			.map(getDocumentStore()::store)
 			.toList();
 	}
 
-	private Document identify(Document document) {
-		return isIdentified(document) ? document : copy(document);
-	}
-
-	private boolean isIdentified(Document document) {
-		return StringUtils.hasText(document.getId());
-	}
-
-	private Document copy(Document document) {
-
-		return Document.builder()
-			.idGenerator(UuidGenerator.INSTANCE)
-			.media(document.getMedia())
-			.score(document.getScore())
-			.text(document.getText())
-			.build();
+	private Document associateSong(Document document, Song song) {
+		document.getMetadata().put(SONG_ID_KEY, song.getId());
+		return document;
 	}
 }
