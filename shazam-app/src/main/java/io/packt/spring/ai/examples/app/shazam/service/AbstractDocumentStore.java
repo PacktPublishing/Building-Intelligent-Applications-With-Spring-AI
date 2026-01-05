@@ -75,12 +75,22 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 	}
 
 	public static AudioDocument newAudioDocument(AudioSource audioSource) {
-		return newAudioDocument(audioSource, null);
+		return newAudioDocument(null, audioSource, null);
+	}
+
+	public static AudioDocument newAudioDocument(String id, AudioSource audioSource) {
+		return newAudioDocument(id, audioSource, null);
 	}
 
 	public static AudioDocument newAudioDocument(AudioSource audioSource, Map<String, Object> metadata) {
+		return newAudioDocument(null, audioSource, metadata);
+	}
+
+	public static AudioDocument newAudioDocument(String id, AudioSource audioSource, Map<String, Object> metadata) {
+
 		return AudioDocument.builder(audioSource)
 			.with(metadata)
+			.identifiedBy(id)
 			.build();
 	}
 
@@ -128,9 +138,16 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 
 			private Map<String, Object> metadata;
 
+			private String id;
+
 			protected Builder(AudioSource audioSource) {
 				Assert.notNull(audioSource, "AudioSource is required");
 				this.audioSource = audioSource;
+			}
+
+			protected Builder identifiedBy(String id) {
+				this.id = id;
+				return this;
 			}
 
 			protected Builder with(Map<String, Object> metadata) {
@@ -142,13 +159,18 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 				return UuidGenerator.INSTANCE.generateId(getAudioSource());
 			}
 
+			protected String resolveId() {
+				String id = getId();
+				return StringUtils.hasText(id) ? id : generateId();
+			}
+
 			protected Map<String, Object> resolveMetadata() {
 				Map<String, Object> configuredMetadata = getMetadata();
 				return configuredMetadata != null ? configuredMetadata : new HashMap<>();
 			}
 
 			protected AudioDocument build() {
-				return new AudioDocument(generateId(), getAudioSource(), resolveMetadata());
+				return new AudioDocument(resolveId(), getAudioSource(), resolveMetadata());
 			}
 		}
 	}
