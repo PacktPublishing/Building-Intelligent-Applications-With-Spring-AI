@@ -63,7 +63,7 @@ public class MediaSearchRequest extends SearchRequest {
 	}
 
 	public Document toDocument() {
-		return AbstractDocumentStore.newAudioDocument(getId(), Audio.from(getMedia()));
+		return AbstractDocumentStore.newAudioDocument(Audio.from(getMedia()), getId());
 	}
 
 	public interface MediaBuilder {

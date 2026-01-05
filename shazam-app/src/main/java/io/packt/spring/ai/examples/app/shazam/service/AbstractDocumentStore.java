@@ -80,18 +80,18 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 	}
 
 	public static AudioDocument newAudioDocument(AudioSource audioSource) {
-		return newAudioDocument(null, audioSource, null);
-	}
-
-	public static AudioDocument newAudioDocument(String id, AudioSource audioSource) {
-		return newAudioDocument(id, audioSource, null);
+		return newAudioDocument(audioSource, null, null);
 	}
 
 	public static AudioDocument newAudioDocument(AudioSource audioSource, Map<String, Object> metadata) {
-		return newAudioDocument(null, audioSource, metadata);
+		return newAudioDocument(audioSource, metadata, null);
 	}
 
-	public static AudioDocument newAudioDocument(String id, AudioSource audioSource, Map<String, Object> metadata) {
+	public static AudioDocument newAudioDocument(AudioSource audioSource, String id) {
+		return newAudioDocument(audioSource, null, id);
+	}
+
+	public static AudioDocument newAudioDocument(AudioSource audioSource, Map<String, Object> metadata, String id) {
 
 		return AudioDocument.builder(audioSource)
 			.with(metadata)
