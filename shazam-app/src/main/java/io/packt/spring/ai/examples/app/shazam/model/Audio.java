@@ -67,6 +67,10 @@ public class Audio implements AudioSource, MediaSource {
 		return new Audio(DataSource.from(file));
 	}
 
+	public static Audio from(Media media) {
+		return new Audio(DataSource.from(media));
+	}
+
 	public static Audio from(MultipartFile file) {
 		return new Audio(DataSource.from(file));
 	}
@@ -100,7 +104,7 @@ public class Audio implements AudioSource, MediaSource {
 	}
 
 	public Media getMedia() {
-		return new Media(MimeTypeUtils.APPLICATION_OCTET_STREAM, resource());
+		return getDataSource().getMedia();
 	}
 
 	public Audio havingDuration(Duration duration) {
@@ -198,6 +202,24 @@ public class Audio implements AudioSource, MediaSource {
 			};
 		}
 
+		static DataSource from(Media media) {
+
+			Assert.notNull(media, "Media is required");
+
+			return new DataSource() {
+
+				@Override
+				public Media getMedia() {
+					return media;
+				}
+
+				@Override
+				public Resource getResource() {
+					return new ByteArrayResource(media.getDataAsByteArray());
+				}
+			};
+		}
+
 		static DataSource from(MultipartFile file) {
 
 			Assert.notNull(file, "Audio file is required");
@@ -259,6 +281,10 @@ public class Audio implements AudioSource, MediaSource {
 
 		default InputStream getInputStream() {
 			return new ByteArrayInputStream(getData());
+		}
+
+		default Media getMedia() {
+			return new Media(MimeTypeUtils.APPLICATION_OCTET_STREAM, getResource());
 		}
 
 		Resource getResource();
