@@ -42,6 +42,7 @@ import lombok.ToString;
  *
  * @author John Blum
  * @see AudioSource
+ * @see MediaSource
  * @see java.io.File
  * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
@@ -50,7 +51,7 @@ import lombok.ToString;
  */
 @Getter
 @SuppressWarnings("unused")
-public class Audio implements AudioSource {
+public class Audio implements AudioSource, MediaSource {
 
 	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
