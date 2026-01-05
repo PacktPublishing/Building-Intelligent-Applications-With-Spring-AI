@@ -62,6 +62,11 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 			}
 
 			@Override
+			public boolean remove(Document document) {
+				return document != null && documentCache.evict(document.getId()) != null;
+			}
+
+			@Override
 			public Document store(Document document) {
 
 				Assert.notNull(document, "Document to save is required");

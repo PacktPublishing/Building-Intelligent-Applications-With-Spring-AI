@@ -24,17 +24,17 @@ import org.springframework.ai.document.Document;
  * for subsequent processing in an application workflow (processing pipeline).
  *
  * @author John Blum
- * @see FunctionalInterface
  * @see Document
  * @since 0.1.0
  */
-@FunctionalInterface
 @SuppressWarnings("unused")
 public interface DocumentStore {
 
 	default Document get(String id) {
 		throw DocumentNotFoundException.forDocumentId(id);
 	}
+
+	boolean remove(Document document);
 
 	Document store(Document document);
 
