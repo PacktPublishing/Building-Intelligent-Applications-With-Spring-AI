@@ -18,6 +18,8 @@ package io.packt.spring.ai.examples.app.shazam.config;
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
+import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.boot.SpringBootConfiguration;
@@ -32,8 +34,11 @@ import org.springframework.context.annotation.Bean;
  * @see SpringBootConfiguration
  * @see EnableConfigurationProperties
  * @see EntityScan
- * @see SongSearchProperties
+ * @see AdminController
  * @see AudioProperties
+ * @see AudioEmbeddingModel
+ * @see DocumentStore
+ * @see SongSearchProperties
  * @since 0.1.0
  */
 @SpringBootConfiguration
@@ -48,7 +53,12 @@ public class ShazamConfiguration {
 	}
 
 	@Bean
-	EmbeddingModel embeddingModel() {
-		return new AudioEmbeddingModel();
+	DocumentStore documentStore() {
+		return AbstractDocumentStore.inMemory();
+	}
+
+	@Bean
+	EmbeddingModel embeddingModel(DocumentStore documentStore) {
+		return new AudioEmbeddingModel(documentStore);
 	}
 }
