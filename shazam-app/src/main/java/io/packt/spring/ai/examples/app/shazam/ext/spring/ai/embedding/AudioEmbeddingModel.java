@@ -15,12 +15,13 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.AudioDispatcherBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.content.Media;
@@ -32,9 +33,10 @@ import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.ai.embedding.EmbeddingResponseMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import org.springframework.util.MimeTypeUtils;
 
 import be.tarsos.dsp.AudioDispatcher;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * {@link EmbeddingModel} implementation based on the {@literal TarsosDSP} library used to embed {@link Audio}.
@@ -43,19 +45,28 @@ import be.tarsos.dsp.AudioDispatcher;
  * @see Audio
  * @see AudioDispatcher
  * @see Document
+ * @see DocumentStore
  * @see Embedding
  * @see EmbeddingModel
  * @see Media
  * @since 0.1.0
  */
+@Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class AudioEmbeddingModel implements EmbeddingModel {
 
-	public static final int DEFAULT_VECTOR_DIMENSIONS = 53;
+	public static final int DEFAULT_VECTOR_DIMENSIONS = 37;
 	private static final int DEFAULT_INDEX = 0;
 
 	private static final String EMPTY_STRING = "";
 	private static final String EMBEDDING_MODEL = "mfcc";
+
+	private final DocumentStore documentStore;
+
+	public AudioEmbeddingModel(DocumentStore documentStore) {
+		Assert.notNull(documentStore, "DocumentStore is required");
+		this.documentStore = documentStore;
+	}
 
 	@Override
 	public @NonNull EmbeddingResponse call(@NonNull EmbeddingRequest request) {
@@ -90,21 +101,20 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 
 		Assert.notNull(document, "Document is required");
 
-		Media media = document.getMedia();
-		byte[] data = media.getDataAsByteArray();
-
-		return Audio.from(data);
+		if (document instanceof AbstractDocumentStore.AudioDocument audioDocument) {
+			return audioDocument.getAudio();
+		}
+		else {
+			Media media = document.getMedia();
+			byte[] data = media.getDataAsByteArray();
+			return Audio.from(data);
+		}
 	}
 
 	private Document toDocument(EmbeddingRequest request) {
-
 		List<String> instructions = request.getInstructions();
-		String text = String.join(EMPTY_STRING, instructions);
-		byte[] data = Base64.getDecoder().decode(text);
-
-		return Document.builder()
-			.media(toMedia(data))
-			.build();
+		String id = String.join(EMPTY_STRING, instructions);
+		return getDocumentStore().get(id);
 	}
 
 	private Embedding toEmbedding(float[] vector) {
@@ -123,12 +133,5 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 
 	private EmbeddingResponseMetadata withEmbeddingResponseMetadata() {
 		return new EmbeddingResponseMetadata(EMBEDDING_MODEL, new EmptyUsage());
-	}
-
-	private Media toMedia(byte[] data) {
-		return Media.builder()
-			.mimeType(MimeTypeUtils.APPLICATION_OCTET_STREAM)
-			.data(data)
-			.build();
 	}
 }
