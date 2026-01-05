@@ -20,7 +20,8 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
+import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
+import io.packt.spring.ai.examples.app.shazam.model.MediaSource;
 
 import org.slf4j.Logger;
 import org.springframework.ai.content.Media;
@@ -66,15 +67,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	}
 
 	protected Document buildDocument(AudioClip audioClip) {
-
-		return Document.builder()
-			.idGenerator(UuidGenerator.INSTANCE)
-			.media(buildMedia(audioClip))
-			.build();
-	}
-
-	protected Media buildMedia(AudioClip audioClip) {
-		return new Media(new MimeType("audio", "mpeg"), audioClip.audio().resource());
+		return AbstractDocumentStore.newAudioDocument(audioClip);
 	}
 
 	@Override
@@ -87,9 +80,13 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	 *
 	 * @param audio {@link Audio} clip
 	 * @see Audio
+	 * @see AudioSource
+	 * @see MediaSource
 	 */
 	@SuppressWarnings("unused")
-	public record AudioClip(Audio audio) {
+	public record AudioClip(Audio audio) implements AudioSource, MediaSource {
+
+		private static final MimeType AUDIO_MPEG = new MimeType("audio", "mpeg");
 
 		public AudioClip {
 			Assert.notNull(audio, "Audio is required");
@@ -97,6 +94,16 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 
 		public static AudioClip from(byte[] audioData) {
 			return new AudioClip(Audio.from(audioData));
+		}
+
+		@Override
+		public Audio getAudio() {
+			return audio();
+		}
+
+		@Override
+		public Media getMedia() {
+			return new Media(AUDIO_MPEG, audio().resource());
 		}
 
 		public byte[] data() {
