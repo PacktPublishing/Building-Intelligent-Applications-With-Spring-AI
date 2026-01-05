@@ -60,6 +60,11 @@ public interface SimpleCache<KEY, VALUE> extends Iterable<SimpleCache.Entry<KEY,
 		return new SimpleCache<>() {
 
 			@Override
+			public boolean isEmpty() {
+				return cache.isEmpty();
+			}
+
+			@Override
 			public boolean evictAll() {
 				throw new IllegalStateException("Cache is read-only");
 			}
@@ -109,6 +114,11 @@ public interface SimpleCache<KEY, VALUE> extends Iterable<SimpleCache.Entry<KEY,
 		return new SimpleCache<>() {
 
 			@Override
+			public boolean isEmpty() {
+				return cache.isEmpty();
+			}
+
+			@Override
 			public boolean evictAll() {
 				cache.clear();
 				return true;
@@ -142,6 +152,28 @@ public interface SimpleCache<KEY, VALUE> extends Iterable<SimpleCache.Entry<KEY,
 				return cache.size();
 			}
 		};
+	}
+
+	/**
+	 * Determines whether this {@link SimpleCache} contains any {@link SimpleCache.Entry entries}.
+	 *
+	 * @return a boolean value indicating whether this {@link SimpleCache}
+	 * contains any {@link SimpleCache.Entry entries}.
+	 * @see #isNotEmpty()
+	 */
+	default boolean isEmpty() {
+		return size() == 0L;
+	}
+
+	/**
+	 * Determines whether this {@link SimpleCache} contains any {@link SimpleCache.Entry entries}.
+	 *
+	 * @return a boolean value indicating whether this {@link SimpleCache}
+	 * contains any {@link SimpleCache.Entry entries}.
+	 * @see #isEmpty()
+	 */
+	default boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	/**
