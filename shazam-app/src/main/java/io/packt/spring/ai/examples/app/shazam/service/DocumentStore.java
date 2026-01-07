@@ -15,6 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import io.codeprimate.extensions.spring.ai.document.DocumentNotFoundException;
 
 import org.springframework.ai.document.Document;
@@ -24,11 +27,14 @@ import org.springframework.ai.document.Document;
  * for subsequent processing in an application workflow (processing pipeline).
  *
  * @author John Blum
+ * @see FunctionalInterface
+ * @see Iterable
  * @see Document
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
-public interface DocumentStore {
+public interface DocumentStore extends Iterable<Document> {
 
 	default boolean isEmpty() {
 		return size() == 0L;
@@ -50,6 +56,11 @@ public interface DocumentStore {
 		throw new IllegalStateException("DocumentStore is read-only");
 	}
 
-	long size();
+	default long size() {
+		return stream().count();
+	}
 
+	default Stream<Document> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 }

@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.shazam.service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import io.codeprimate.extensions.data.caching.SimpleCache;
@@ -67,13 +68,18 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 			}
 
 			@Override
-			public boolean remove(Document document) {
-				return document != null && documentCache.evict(document.getId()) != null;
+			@SuppressWarnings("all")
+			public Iterator<Document> iterator() {
+
+				return documentCache.stream()
+					.map(SimpleCache.Entry::getValue)
+					.toList()
+					.iterator();
 			}
 
 			@Override
-			public long size() {
-				return documentCache.size();
+			public boolean remove(Document document) {
+				return document != null && documentCache.evict(document.getId()) != null;
 			}
 
 			@Override
@@ -85,6 +91,11 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 				documentCache.put(document.getId(), document);
 
 				return document;
+			}
+
+			@Override
+			public long size() {
+				return documentCache.size();
 			}
 		};
 	}
