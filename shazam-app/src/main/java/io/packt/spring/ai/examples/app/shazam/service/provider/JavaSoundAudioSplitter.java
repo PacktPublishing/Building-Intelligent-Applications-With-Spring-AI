@@ -34,7 +34,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudio
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.support.AudioReadException;
+import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.springframework.ai.document.Document;
@@ -101,7 +101,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 			return documents;
 		}
 		catch (Exception cause) {
-			throw AudioReadException.because("Failed to read audio", cause);
+			throw AudioAccessException.because("Failed to read audio", cause);
 		}
 	}
 
