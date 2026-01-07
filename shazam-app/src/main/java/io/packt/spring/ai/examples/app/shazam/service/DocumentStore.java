@@ -30,10 +30,6 @@ import org.springframework.ai.document.Document;
 @SuppressWarnings("unused")
 public interface DocumentStore {
 
-	default Document get(String id) {
-		throw DocumentNotFoundException.forDocumentId(id);
-	}
-
 	default boolean isEmpty() {
 		return size() == 0L;
 	}
@@ -42,9 +38,17 @@ public interface DocumentStore {
 		return !isEmpty();
 	}
 
-	boolean remove(Document document);
+	default Document get(String id) {
+		throw DocumentNotFoundException.forDocumentId(id);
+	}
 
-	Document save(Document document);
+	default boolean remove(Document document) {
+		throw new IllegalStateException("DocumentStore is read-only");
+	}
+
+	default Document save(Document document) {
+		throw new IllegalStateException("DocumentStore is read-only");
+	}
 
 	long size();
 
