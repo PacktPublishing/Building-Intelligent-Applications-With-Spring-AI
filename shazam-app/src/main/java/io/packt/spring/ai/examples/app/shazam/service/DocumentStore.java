@@ -42,7 +42,7 @@ public interface DocumentStore {
 
 	boolean remove(Document document);
 
-	Document store(Document document);
+	Document save(Document document);
 
 	long size();
 

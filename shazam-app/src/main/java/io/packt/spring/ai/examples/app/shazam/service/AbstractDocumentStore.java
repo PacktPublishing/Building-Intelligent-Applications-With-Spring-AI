@@ -77,7 +77,7 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 			}
 
 			@Override
-			public Document store(Document document) {
+			public Document save(Document document) {
 
 				Assert.notNull(document, "Document to save is required");
 				Assert.hasText(document.getId(), "Document ID was not set");
