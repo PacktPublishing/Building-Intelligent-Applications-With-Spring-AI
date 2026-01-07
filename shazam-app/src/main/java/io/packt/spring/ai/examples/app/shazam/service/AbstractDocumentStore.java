@@ -137,7 +137,7 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 
 		@Override
 		public boolean isText() {
-			return false;
+			return true;
 		}
 
 		@Override
