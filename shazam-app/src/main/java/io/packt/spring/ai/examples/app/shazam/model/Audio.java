@@ -26,6 +26,9 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
 
+import javax.sound.sampled.AudioFormat;
+
+import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.content.Media;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -84,6 +87,8 @@ public class Audio implements AudioSource, MediaSource {
 		return audio != null ? audio : empty();
 	}
 
+	private AudioFormat format;
+
 	private final DataSource dataSource;
 
 	private Duration duration;
@@ -102,6 +107,10 @@ public class Audio implements AudioSource, MediaSource {
 
 	public byte[] getData() {
 		return getDataSource().getData();
+	}
+
+	public AudioFormat getFormat() {
+		return ObjectUtils.requireState(this.format, "AudioFormat was not configured");
 	}
 
 	public Media getMedia() {
@@ -143,6 +152,11 @@ public class Audio implements AudioSource, MediaSource {
 
 	public Audio havingDuration(Duration duration) {
 		this.duration = duration;
+		return this;
+	}
+
+	public Audio in(AudioFormat format) {
+		this.format = format;
 		return this;
 	}
 
