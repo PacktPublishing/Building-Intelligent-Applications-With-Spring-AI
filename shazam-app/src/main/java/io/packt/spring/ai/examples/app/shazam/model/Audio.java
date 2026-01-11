@@ -88,7 +88,7 @@ public class Audio implements AudioSource, MediaSource {
 
 	private Duration duration;
 
-	private Format format;
+	private Type type;
 
 	Audio(DataSource dataSource) {
 		Assert.notNull(dataSource, "Source of audio data is required");
@@ -136,13 +136,13 @@ public class Audio implements AudioSource, MediaSource {
 		return getDataSource().getUrl();
 	}
 
-	public Audio havingDuration(Duration duration) {
-		this.duration = duration;
+	public Audio as(Type type) {
+		this.type = type;
 		return this;
 	}
 
-	public Audio in(Format format) {
-		this.format = format;
+	public Audio havingDuration(Duration duration) {
+		this.duration = duration;
 		return this;
 	}
 
@@ -322,7 +322,7 @@ public class Audio implements AudioSource, MediaSource {
 	 */
 	@Getter
 	@ToString(of = "name")
-	public enum Format {
+	public enum Type {
 
 		AAC("Advanced Audio Coding", Category.LOSSY_COMPRESSED),
 		AIFF("Audio Interchange File Format", Category.UNCOMPRESSED),
@@ -339,7 +339,7 @@ public class Audio implements AudioSource, MediaSource {
 
 		private final String name;
 
-		Format(String name, Category category) {
+		Type(String name, Category category) {
 			this.name = name;
 			this.category = category;
 		}
