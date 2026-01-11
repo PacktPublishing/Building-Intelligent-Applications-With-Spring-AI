@@ -78,6 +78,10 @@ public class FFProbe {
 		return new Builder();
 	}
 
+	public static FFProbe nullSafe(FFProbe ffprobe, Supplier<FFProbe> ffProbeSupplier) {
+		return ffprobe != null ? ffprobe : ffProbeSupplier.get();
+	}
+
 	private final File program;
 
 	private final JsonMapper jsonMapper;
