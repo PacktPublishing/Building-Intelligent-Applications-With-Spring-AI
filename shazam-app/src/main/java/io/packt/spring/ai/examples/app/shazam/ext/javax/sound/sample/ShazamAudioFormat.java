@@ -26,8 +26,7 @@ import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-
-import org.cp.elements.lang.Assert;
+import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,16 +49,15 @@ public class ShazamAudioFormat extends AudioFormat {
 
 	private final Audio audio;
 
-	public ShazamAudioFormat(Audio audio, Encoding encoding, float sampleRate, int sampleSizeInBits, int channels,
+	public ShazamAudioFormat(Audio audio, Encoding encoding, int channels, float sampleRate, int sampleSizeInBits,
 			float frameRate, int frameSize, boolean bigEndian, Map<String, Object> properties) {
 
 		super(encoding, sampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian, properties);
-		Assert.notNull(audio, "Audio is required");
-		this.audio = audio;
+		this.audio = AudioUtils.assertAudio(audio);
 	}
 
-	public int getAudioSize() {
-		return getAudio().getData().length;
+	public long getAudioSize() {
+		return getAudio().size();
 	}
 
 	public Integer getBitRate() {
@@ -71,8 +69,15 @@ public class ShazamAudioFormat extends AudioFormat {
 	}
 
 	public FFProbe.Format getProbeFormat() {
-		return this.probeFormat.updateAndGet(format -> format != null ? format
-			: AudioUtils.probeFormat(getAudio()));
+		return this.probeFormat.updateAndGet(this::resolveProbeFormat);
+	}
+
+	private FFProbe.Format resolveProbeFormat(FFProbe.Format probeFormat) {
+		return probeFormat != null ? probeFormat : AudioUtils.probeFormat(getAudio());
+	}
+
+	public int getProbeFormatSize() {
+		return getProbeFormat().size();
 	}
 
 	@Override
@@ -103,8 +108,7 @@ public class ShazamAudioFormat extends AudioFormat {
 	}
 
 	public Integer getSize() {
-		int size = getAudioSize();
-		return AudioUtils.isSpecified(size) ? size
-			: getProbeFormat().size();
+		int size = NumberUtils.asInt(getAudioSize());
+		return AudioUtils.isSpecified(size) ? size : getProbeFormatSize();
 	}
 }
