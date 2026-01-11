@@ -15,13 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
@@ -31,6 +27,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.springframework.ai.document.Document;
+import org.springframework.util.Assert;
 
 /**
  * Abstract utility class used to process {@link Audio} using the {@literal javax.sound} API and {@link FFProbe}.
@@ -48,6 +45,11 @@ public abstract class AudioUtils {
 
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
+	public static Audio assertAudio(Audio audio) {
+		Assert.notNull(audio, "Audio is required");
+		return audio;
+	}
+
 	public static boolean isSpecified(int audioValue) {
 		return Math.max(audioValue, AudioSystem.NOT_SPECIFIED) > 0;
 	}
@@ -57,7 +59,7 @@ public abstract class AudioUtils {
 	}
 
 	public static void close(AudioInputStream in) {
-		ExceptionThrowingRunnable.doSafely(in::close, cause -> { });
+		ExceptionThrowingRunnable.doSafely(in::close, cause -> { /* ignore */ });
 	}
 
 	public static AudioInputStream openInputStream(Audio audio) {
@@ -65,56 +67,9 @@ public abstract class AudioUtils {
 			AudioSystem.getAudioInputStream(audio.inputStream()));
 	}
 
-	@SuppressWarnings("unused")
-	public static AudioInputStream openInputStream(Audio audio, Document document) {
-		return openInputStream(audio, document, AudioInputStream::getFormat, AudioInputStream::getFrameLength);
-	}
-
-	public static AudioInputStream openInputStream(Audio audio, Document document,
-			Function<AudioInputStream, AudioFormat> audioFormatResolver,
-			Function<AudioInputStream, Long> frameLengthResolver) {
-
-		return ExceptionThrowingSupplier.getSafely(() -> {
-
-			AudioInputStream audioInputStream = openInputStream(audio);
-			AudioFormat format = audioFormatResolver.apply(audioInputStream);
-			long frameLength = frameLengthResolver.apply(audioInputStream);
-
-			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(document.getMedia().getDataAsByteArray())) {
-				return new AudioInputStream(inputStream, format, frameLength);
-			}
-			finally {
-				close(audioInputStream);
-			}
-		});
-	}
-
 	public static FFProbe.Format probeFormat(Audio audio) {
-		return ffprobe.updateAndGet(AudioUtils::resolveFFProbe).showFormat(audio);
-	}
-
-	public static AudioFormat resolveAudioFormat(Audio audio) {
-
-		AudioFormat audioFormat = null;
-
-		try (AudioInputStream in = openInputStream(audio)) {
-			audioFormat = in.getFormat();
-		}
-		catch (IOException ignore) {
-			// IOException thrown from AudioInputStream.close(); ignore
-			// Throws RuntimeException when trying to open AudioInputStream
-		}
-
-		return audioFormat;
-	}
-
-	public static AudioFileFormat resolveAudioFileFormat(Audio audio) {
-		return ExceptionThrowingSupplier.getSafely(() ->
-			AudioSystem.getAudioFileFormat(audio.file()));
-	}
-
-	private static FFProbe resolveFFProbe(FFProbe ffprobe) {
-		return ffprobe != null ? ffprobe : buildFFProbe();
+		return ffprobe.updateAndGet(it -> FFProbe.nullSafe(it, AudioUtils::buildFFProbe))
+			.showFormat(audio);
 	}
 
 	private static FFProbe buildFFProbe() {
