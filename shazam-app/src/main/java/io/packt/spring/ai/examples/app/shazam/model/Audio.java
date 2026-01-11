@@ -44,6 +44,7 @@ import lombok.ToString;
  * @see AudioSource
  * @see MediaSource
  * @see java.io.File
+ * @see java.net.URL
  * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.multipart.MultipartFile
@@ -67,12 +68,12 @@ public class Audio implements AudioSource, MediaSource {
 		return new Audio(DataSource.from(file));
 	}
 
-	public static Audio from(Media media) {
-		return new Audio(DataSource.from(media));
-	}
-
 	public static Audio from(MultipartFile file) {
 		return new Audio(DataSource.from(file));
+	}
+
+	public static Audio from(Media media) {
+		return new Audio(DataSource.from(media));
 	}
 
 	public static Audio from(Resource resource) {
@@ -107,14 +108,12 @@ public class Audio implements AudioSource, MediaSource {
 		return getDataSource().getMedia();
 	}
 
-	public Audio havingDuration(Duration duration) {
-		this.duration = duration;
-		return this;
+	public boolean isEmpty() {
+		return size() == 0L;
 	}
 
-	public Audio in(Format format) {
-		this.format = format;
-		return this;
+	public boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	public File file() {
@@ -137,6 +136,16 @@ public class Audio implements AudioSource, MediaSource {
 		return getDataSource().getUrl();
 	}
 
+	public Audio havingDuration(Duration duration) {
+		this.duration = duration;
+		return this;
+	}
+
+	public Audio in(Format format) {
+		this.format = format;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 
@@ -156,6 +165,7 @@ public class Audio implements AudioSource, MediaSource {
 		return Arrays.hashCode(getData());
 	}
 
+	@FunctionalInterface
 	interface DataSource {
 
 		static DataSource from(byte[] data) {
@@ -202,24 +212,6 @@ public class Audio implements AudioSource, MediaSource {
 			};
 		}
 
-		static DataSource from(Media media) {
-
-			Assert.notNull(media, "Media is required");
-
-			return new DataSource() {
-
-				@Override
-				public Media getMedia() {
-					return media;
-				}
-
-				@Override
-				public Resource getResource() {
-					return new ByteArrayResource(media.getDataAsByteArray());
-				}
-			};
-		}
-
 		static DataSource from(MultipartFile file) {
 
 			Assert.notNull(file, "Audio file is required");
@@ -242,6 +234,11 @@ public class Audio implements AudioSource, MediaSource {
 				}
 
 				@Override
+				public InputStream getInputStream() {
+					return getSafely(file::getInputStream);
+				}
+
+				@Override
 				public Resource getResource() {
 					return file.getResource();
 				}
@@ -249,6 +246,24 @@ public class Audio implements AudioSource, MediaSource {
 				@Override
 				public long size() {
 					return file.getSize();
+				}
+			};
+		}
+
+		static DataSource from(Media media) {
+
+			Assert.notNull(media, "Media is required");
+
+			return new DataSource() {
+
+				@Override
+				public Media getMedia() {
+					return media;
+				}
+
+				@Override
+				public Resource getResource() {
+					return new ByteArrayResource(media.getDataAsByteArray());
 				}
 			};
 		}
