@@ -15,9 +15,6 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.vectorstore;
 
-import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
-
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -31,10 +28,9 @@ import lombok.Getter;
  * {@link SearchRequest} implementation for Spring AI {@link Media}.
  *
  * @author John Blum
- * @see Audio
+ * @see SearchRequest
  * @see Document
  * @see Media
- * @see SearchRequest
  * @since 0.1.0
  */
 @Getter
@@ -46,10 +42,14 @@ public class MediaSearchRequest extends SearchRequest {
 
 	private final Media media;
 
-	private MediaSearchRequest(SearchRequest searchRequest, Media media) {
+	protected MediaSearchRequest(SearchRequest searchRequest, Media media) {
 		super(searchRequest);
+		this.media = assertMedia(media);
+	}
+
+	private Media assertMedia(Media media) {
 		Assert.notNull(media, "Media is required");
-		this.media = media;
+		return media;
 	}
 
 	@Override
@@ -63,14 +63,17 @@ public class MediaSearchRequest extends SearchRequest {
 	}
 
 	public Document toDocument() {
-		return AbstractDocumentStore.newAudioDocument(Audio.from(getMedia()), getId());
+		return Document.builder()
+			.media(getMedia())
+			.id(getId())
+			.build();
 	}
 
 	public interface MediaBuilder {
 		org.cp.elements.lang.Builder<MediaSearchRequest> query(Media media);
 	}
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PROTECTED)
 	protected static class MediaSearchRequestBuilder implements MediaBuilder,
 			org.cp.elements.lang.Builder<MediaSearchRequest> {
 
