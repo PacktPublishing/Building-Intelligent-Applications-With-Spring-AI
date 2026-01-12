@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.function.Function;
 
@@ -144,13 +145,17 @@ class JavaSoundAudioSplitterIntegrationTests {
 			AudioFormat audioFormat = audioFormatResolver.apply(audioInputStream);
 			long frameLength = frameLengthResolver.apply(audioInputStream);
 
-			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(document.getMedia().getDataAsByteArray())) {
+			try (InputStream inputStream = openInputStream(document)) {
 				return new AudioInputStream(inputStream, audioFormat, frameLength);
 			}
 			finally {
 				AudioUtils.close(audioInputStream);
 			}
 		});
+	}
+
+	private InputStream openInputStream(Document document) {
+		return new ByteArrayInputStream(document.getMedia().getDataAsByteArray());
 	}
 
 	private AudioFormat copyAudioFormat(AudioInputStream inputStream) {
