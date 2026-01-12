@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.codeprimate.extensions.util.ImmutableSetWrapper;
 import io.packt.spring.ai.examples.app.shazam.config.SongSearchProperties;
-import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.vectorstore.MediaSearchRequest;
+import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.vectorstore.AudioSearchRequest;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.repo.SongRepository;
@@ -96,24 +96,33 @@ public class SmartMusicService implements MusicService {
 
 		Assert.notNull(audio, "Audio is required");
 
-		SearchRequest searchRequest = buildSearchRequest(audio);
-		List<Document> songMatches = search(searchRequest);
-		ImmutableSetWrapper<UUID> songIdentifiers = resolveSongIdentifiers(songMatches);
+		AudioSearchRequest searchRequest = buildSearchRequest(audio);
+		Document document = searchRequest.toDocument();
 
-		if (songIdentifiers.isNotEmpty()) {
+		try {
+			getDocumentStore().save(document);
 
-			UUID matchingSongIdentifier = ExceptionThrowingSupplier.getSafely(songIdentifiers::onlyOne, cause -> {
-				throw NonUniqueSongException.with(songIdentifiers, cause);
-			});
+			List<Document> matchingSongs = search(searchRequest);
+			ImmutableSetWrapper<UUID> songIdentifiers = identifySongs(matchingSongs);
 
-			return getSongRepository().findById(matchingSongIdentifier).orElseThrow(() ->
-				SongNotFoundException.from(matchingSongIdentifier));
+			if (songIdentifiers.isNotEmpty()) {
+
+				UUID matchingSongIdentifier = ExceptionThrowingSupplier.getSafely(songIdentifiers::onlyOne, cause -> {
+					throw NonUniqueSongException.with(songIdentifiers, cause);
+				});
+
+				return getSongRepository().findById(matchingSongIdentifier).orElseThrow(() ->
+					SongNotFoundException.from(matchingSongIdentifier));
+			}
+
+			throw SongNotFoundException.because("No song was found for the given audio");
 		}
-
-		throw SongNotFoundException.because("No song was found for the given audio");
+		finally {
+			getDocumentStore().remove(document);
+		}
 	}
 
-	private SearchRequest buildSearchRequest(Audio audio) {
+	private AudioSearchRequest buildSearchRequest(Audio audio) {
 
 		SearchRequest searchRequest = SearchRequest.builder()
 			.similarityThreshold(getSongSearchProperties().resolveSimilarityThreshold())
@@ -121,13 +130,9 @@ public class SmartMusicService implements MusicService {
 			.query(UuidGenerator.INSTANCE.generateId())
 			.build();
 
-		MediaSearchRequest mediaSearchRequest = MediaSearchRequest.builder(searchRequest)
-			.query(audio.getMedia())
+		return AudioSearchRequest.builder(searchRequest)
+			.query(audio)
 			.build();
-
-		getDocumentStore().store(mediaSearchRequest.toDocument());
-
-		return mediaSearchRequest;
 	}
 
 	private List<Document> search(SearchRequest searchRequest) {
@@ -139,21 +144,21 @@ public class SmartMusicService implements MusicService {
 		return (UUID) songId;
 	}
 
-	private <T> List<T> nullSafeList(List<T> list) {
-		return list != null ? list : Collections.emptyList();
-	}
-
-	private UUID resolveSongIdentifier(Document document) {
-		return assertSongIdentifier(document.getMetadata().get(SONG_ID_KEY));
-	}
-
-	private ImmutableSetWrapper<UUID> resolveSongIdentifiers(List<Document> songMatches) {
+	private ImmutableSetWrapper<UUID> identifySongs(List<Document> songMatches) {
 
 		Set<UUID> songIdentifiers = nullSafeList(songMatches).stream()
 			.map(this::resolveSongIdentifier)
 			.collect(Collectors.toSet());
 
 		return ImmutableSetWrapper.from(songIdentifiers);
+	}
+
+	private <T> List<T> nullSafeList(List<T> list) {
+		return list != null ? list : Collections.emptyList();
+	}
+
+	private UUID resolveSongIdentifier(Document document) {
+		return assertSongIdentifier(document.getMetadata().get(SONG_ID_KEY));
 	}
 
 	@Override
@@ -164,15 +169,20 @@ public class SmartMusicService implements MusicService {
 		List<Document> documents = getAudioSplitter().split(song);
 		List<Document> identifiedDocuments = identify(documents, song);
 
-		getVectorStore().accept(identifiedDocuments);
-		getSongRepository().save(song);
+		try {
+			getVectorStore().accept(identifiedDocuments);
+			getSongRepository().save(song);
+		}
+		finally {
+			identifiedDocuments.forEach(getDocumentStore()::remove);
+		}
 	}
 
 	private List<Document> identify(List<Document> documents, Song song) {
 
 		return documents.stream()
 			.map(document -> associateSong(document, song))
-			.map(getDocumentStore()::store)
+			.map(getDocumentStore()::save)
 			.toList();
 	}
 
