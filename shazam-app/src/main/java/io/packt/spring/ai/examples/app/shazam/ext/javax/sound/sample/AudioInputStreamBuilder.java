@@ -16,13 +16,16 @@
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
-import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
 
 import lombok.AccessLevel;
@@ -47,27 +50,43 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	private final Audio audio;
 
 	protected AudioInputStreamBuilder(Audio audio) {
-		Assert.notNull(audio, "Audio is required");
-		this.audio = audio;
+		this.audio = AudioUtils.assertAudio(audio);
+	}
+
+	protected AudioFormat getAudioFormat() {
+		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause ->  null);
 	}
 
 	public AudioInputStream build() {
 
 		Audio audio = getAudio();
+		AudioFormat audioFormat = getAudioFormat();
+
+		return audioFormat != null
+			? newAudioInputStream(audio, audioFormat)
+			: buildAudioInputStream(audio);
+	}
+
+	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat) {
+		return new AudioInputStream(audio.inputStream(), audioFormat, AudioSystem.NOT_SPECIFIED);
+	}
+
+	private AudioInputStream buildAudioInputStream(Audio audio) {
 
 		try (AudioInputStream audioInputStream = AudioUtils.openInputStream(audio)) {
-			long frameLength = audioInputStream.getFrameLength();
 			AudioFormat audioFormat = buildAudioFormat(audio, audioInputStream);
-			return new AudioInputStream(audio.inputStream(), audioFormat, frameLength);
+			long frameLength = audioInputStream.getFrameLength();
+			InputStream inputStream = audio.inputStream();
+			return new AudioInputStream(inputStream, audioFormat, frameLength);
 		}
 		catch (IOException cause) {
-			throw new RuntimeException("Failed to open InputStream to Audio", cause);
+			throw AudioAccessException.because("Failed to open InputStream to Audio", cause);
 		}
 	}
 
-	protected AudioFormat buildAudioFormat(Audio audio, AudioInputStream audioInputStream) {
+	private AudioFormat buildAudioFormat(Audio audio, AudioInputStream audioInputStream) {
 		return AudioFormatBuilder.from(audio)
-			.copyFormatFrom(audioInputStream)
+			.copyAudioFormat(audioInputStream)
 			.build();
 	}
 }
