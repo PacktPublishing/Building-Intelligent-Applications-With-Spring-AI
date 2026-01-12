@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.sound.sampled.AudioFormat;
+
 import io.codeprimate.extensions.data.caching.SimpleCache;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
@@ -115,8 +117,8 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 	public static AudioDocument newAudioDocument(AudioSource audioSource, Map<String, Object> metadata, String id) {
 
 		return AudioDocument.builder(audioSource)
-			.with(metadata)
 			.identifiedBy(id)
+			.with(metadata)
 			.build();
 	}
 
@@ -137,6 +139,10 @@ public abstract class AbstractDocumentStore implements DocumentStore {
 		@Override
 		public Audio getAudio() {
 			return getAudioSource().getAudio();
+		}
+
+		public AudioFormat getFormat() {
+			return getAudio().getFormat();
 		}
 
 		// Hacky workaround to Spring AI (API) limitations thats supports text-only embeddings!
