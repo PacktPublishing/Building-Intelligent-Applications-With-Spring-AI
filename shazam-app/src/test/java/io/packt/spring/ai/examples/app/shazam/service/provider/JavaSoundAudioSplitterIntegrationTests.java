@@ -16,9 +16,9 @@
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +29,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
@@ -62,6 +63,8 @@ import org.tritonus.sampled.file.mpeg.MpegAudioFileWriter;
 @SuppressWarnings("unused")
 class JavaSoundAudioSplitterIntegrationTests {
 
+	private static final boolean DEBUG = false;
+
 	private static final String AUDIO_CLIP_FILENAME = "Matchbox20-Unwell-clip.mp3";
 	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
 
@@ -89,14 +92,7 @@ class JavaSoundAudioSplitterIntegrationTests {
 	@EnabledIf("resourceExists")
 	void readsAndSplitsMp3() {
 
-		Resource mp3 = resource();
-
-		assumeThat(mp3.exists())
-			.describedAs("MP3 [%s] is not present", mp3)
-			.isTrue();
-
-		Audio audio = Audio.from(mp3);
-
+		Audio audio = Audio.from(resource());
 		List<Document> documents = this.audioSplitter.split(audio);
 
 		assertThat(documents).isNotNull();
@@ -114,13 +110,12 @@ class JavaSoundAudioSplitterIntegrationTests {
 		// The size of the Documents in bytes should be greater than the Audio size in bytes given the overlap
 		assertThat(documentsSize).isGreaterThan(audio.getData().length);
 
-		saveAndAssertRandomAudioClip(audio, documents);
+		saveAndAssertAudioClip(audio, documents);
 	}
 
-	private void saveAndAssertRandomAudioClip(Audio audio, List<Document> documents) {
+	private void saveAndAssertAudioClip(Audio audio, List<Document> documents) {
 
 		int index = NumberUtils.randomInt(documents.size());
-
 		Document document = documents.get(index);
 
 		try (AudioInputStream in = openInputStream(audio, document)) {
@@ -136,11 +131,35 @@ class JavaSoundAudioSplitterIntegrationTests {
 	}
 
 	private AudioInputStream openInputStream(Audio audio, Document document) {
+		return openInputStream(audio, document, this::copyAudioFormat, AudioInputStream::getFrameLength);
+	}
 
-		Function<AudioInputStream, AudioFormat> audioFormatResolver = inputStream ->
-			new AudioFormat(MpegAudioFileWriter.MPEG1L3, -1.0F, -1, 2, -1, -1.0F, inputStream.getFormat().isBigEndian());
+	private AudioInputStream openInputStream(Audio audio, Document document,
+			Function<AudioInputStream, AudioFormat> audioFormatResolver,
+			Function<AudioInputStream, Long> frameLengthResolver) {
 
-		return AudioUtils.openInputStream(audio, document, audioFormatResolver, AudioInputStream::getFrameLength);
+		return ExceptionThrowingSupplier.getSafely(() -> {
+
+			AudioInputStream audioInputStream = AudioUtils.openInputStream(audio);
+			AudioFormat audioFormat = audioFormatResolver.apply(audioInputStream);
+			long frameLength = frameLengthResolver.apply(audioInputStream);
+
+			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(document.getMedia().getDataAsByteArray())) {
+				return new AudioInputStream(inputStream, audioFormat, frameLength);
+			}
+			finally {
+				AudioUtils.close(audioInputStream);
+			}
+		});
+	}
+
+	private AudioFormat copyAudioFormat(AudioInputStream inputStream) {
+
+		AudioFormat audioFormat = inputStream.getFormat();
+
+		return new AudioFormat(MpegAudioFileWriter.MPEG1L3, audioFormat.getSampleRate(),
+			audioFormat.getSampleSizeInBits(), audioFormat.getChannels(), audioFormat.getFrameSize(),
+			audioFormat.getFrameRate(), audioFormat.isBigEndian());
 	}
 
 	Resource resource() {
@@ -152,9 +171,11 @@ class JavaSoundAudioSplitterIntegrationTests {
 	}
 
 	private void saveToFile(byte[] audioClipData) throws IOException {
-		try (FileOutputStream fileOut = new FileOutputStream(AUDIO_CLIP_FILENAME, false)) {
-			fileOut.write(audioClipData);
-			fileOut.flush();
+		if (DEBUG) {
+			try (FileOutputStream fileOut = new FileOutputStream(AUDIO_CLIP_FILENAME, false)) {
+				fileOut.write(audioClipData);
+				fileOut.flush();
+			}
 		}
 	}
 

@@ -17,10 +17,12 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.junit.jupiter.api.Test;
@@ -44,19 +46,15 @@ class AudioFileFormatIntegrationTests {
 
 	@Test
 	@EnabledIf("resourceExists")
-	void audioFileFormat() {
+	void audioFileFormat() throws UnsupportedAudioFileException, IOException {
 
 		Audio audio = Audio.from(resource());
-
-		assertThat(audio).isNotNull();
-		assertThat(audio.getData()).isNotEmpty();
-
-		AudioFileFormat audioFileFormat = AudioUtils.resolveAudioFileFormat(audio);
+		AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(audio.file());
 
 		assertThat(audioFileFormat).isNotNull();
 		assertThat(audioFileFormat.getByteLength()).isEqualTo(audio.getData().length);
 		assertThat(audioFileFormat.getFrameLength()).isEqualTo(AudioSystem.NOT_SPECIFIED);
-		assertThat(audioFileFormat.getType().toString().toLowerCase()).isEqualTo("mpeg");
+		assertThat(audioFileFormat.getType().getExtension()).isEqualTo("mpeg");
 		assertThat(audioFileFormat.properties()).isNull();
 	}
 

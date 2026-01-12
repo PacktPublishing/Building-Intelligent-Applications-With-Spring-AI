@@ -18,6 +18,8 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
+import javax.sound.sampled.AudioFormat;
+
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
@@ -41,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  * @see Audio
  * @see AudioSplitter
  * @see AudioProperties
+ * @see javax.sound.sampled.AudioFormat
  * @see org.springframework.ai.content.Media
  * @see org.springframework.ai.document.Document
  * @see org.springframework.beans.factory.InitializingBean
@@ -92,13 +95,18 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 			Assert.notNull(audio, "Audio is required");
 		}
 
-		public static AudioClip from(byte[] audioData) {
-			return new AudioClip(Audio.from(audioData));
+		public static AudioClip from(byte[] audioData, AudioFormat audioFormat) {
+			Audio audio = Audio.from(audioData).in(audioFormat);
+			return new AudioClip(audio);
 		}
 
 		@Override
 		public Audio getAudio() {
 			return audio();
+		}
+
+		public AudioFormat getFormat() {
+			return getAudio().getFormat();
 		}
 
 		@Override
@@ -119,7 +127,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 		public AudioClip firstHalf() {
 			int length = asInt(size() / 2L);
 			byte[] audioData = dataCopy(0, length);
-			return AudioClip.from(audioData);
+			return AudioClip.from(audioData, getFormat());
 		}
 
 		public AudioClip merge(AudioClip audioClip) {
@@ -129,7 +137,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 			byte[] audioData = new byte[length];
 			System.arraycopy(data(), 0, audioData, 0, audioLength);
 			System.arraycopy(audioClip.data(), 0, audioData, audioLength, audioClipLength);
-			return AudioClip.from(audioData);
+			return AudioClip.from(audioData, getFormat());
 		}
 
 		public AudioClip secondHalf() {
@@ -137,7 +145,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 			int halfSize = asInt(size / 2L);
 			int length = asInt(size - halfSize);
 			byte[] audioData = dataCopy(halfSize, length);
-			return AudioClip.from(audioData);
+			return AudioClip.from(audioData, getFormat());
 		}
 
 		public long size() {

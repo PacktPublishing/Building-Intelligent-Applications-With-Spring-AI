@@ -21,7 +21,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.sampled.AudioFormat;
+
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
@@ -73,17 +76,19 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 	@Override
 	public List<Document> split(Audio audio) {
 
+		byte[] audioData = audio.getData();
+		int audioBufferSize = getCalculator().calculate(audio);
+
 		AudioClip previousAudioClip = null;
 
-		int audioBufferSize = getCalculator().calculate(audio);
-		byte[] audioData = audio.getData();
+		AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
 
 		List<Document> documents = new ArrayList<>();
 
 		for (int index = 0; index < audioData.length; index += audioBufferSize) {
 			int length = Math.min(audioData.length - index, audioBufferSize);
 			byte[] audioBuffer = newAudioBuffer(audioData, index, length);
-			AudioClip audioClip = AudioClip.from(audioBuffer);
+			AudioClip audioClip = AudioClip.from(audioBuffer, audioFormat);
 			Document document = buildDocument(audioClip);
 			documents.add(document);
 

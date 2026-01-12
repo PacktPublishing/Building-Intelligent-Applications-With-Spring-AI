@@ -84,7 +84,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 
 				for (int bytesRead = in.read(audioBuffer); bytesRead > -1; bytesRead = in.read(audioBuffer)) {
 					byte[] audioData = copyAudioData(audioBuffer, bytesRead);
-					AudioClip audioClip = AudioClip.from(audioData);
+					AudioClip audioClip = AudioClip.from(audioData, audioFormat);
 					Document document = buildDocument(audioClip);
 
 					if (previousAudioClip != null) {

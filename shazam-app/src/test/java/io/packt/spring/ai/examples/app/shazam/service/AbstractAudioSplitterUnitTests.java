@@ -17,7 +17,13 @@ package io.packt.spring.ai.examples.app.shazam.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.sound.sampled.AudioFormat;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit Tests for {@link AbstractAudioSplitter}
@@ -27,7 +33,11 @@ import org.junit.jupiter.api.Test;
  * @see org.junit.jupiter.api.Test
  * @since 0.1.0
  */
+@ExtendWith(MockitoExtension.class)
 public class AbstractAudioSplitterUnitTests {
+
+	@Mock
+	private AudioFormat mockAudioFormat;
 
 	private byte asByte(int integer) {
 		return (byte) integer;
@@ -40,7 +50,8 @@ public class AbstractAudioSplitterUnitTests {
 			asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE), asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE)
 		};
 
-		AbstractAudioSplitter.AudioClip audioClip = AbstractAudioSplitter.AudioClip.from(audioData);
+		AbstractAudioSplitter.AudioClip audioClip =
+			AbstractAudioSplitter.AudioClip.from(audioData, this.mockAudioFormat);
 
 		assertThat(audioClip).isNotNull();
 		assertThat(audioClip.size()).isEqualTo(audioData.length);
@@ -72,7 +83,8 @@ public class AbstractAudioSplitterUnitTests {
 			asByte(0xD), asByte(0xE), asByte(0xC), asByte(0xA), asByte(0xF)
 		};
 
-		AbstractAudioSplitter.AudioClip audioClip = AbstractAudioSplitter.AudioClip.from(audioData);
+		AbstractAudioSplitter.AudioClip audioClip =
+			AbstractAudioSplitter.AudioClip.from(audioData, this.mockAudioFormat);
 
 		assertThat(audioClip).isNotNull();
 		assertThat(audioClip.size()).isEqualTo(audioData.length);
