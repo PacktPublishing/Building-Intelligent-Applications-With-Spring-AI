@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +26,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
@@ -34,7 +36,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Builder for {@link AudioFormat}.
+ * Builder for Java Sound {@link AudioFormat}.
  *
  * @author John Blum
  * @see Audio
@@ -57,18 +59,23 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	private final Map<String, Object> audioProperties = new HashMap<>();
 
 	protected AudioFormatBuilder(Audio audio) {
-		Assert.notNull(audio, "Audio is required");
-		this.audio = audio;
+		this.audio = AudioUtils.assertAudio(audio);
 	}
 
 	public AudioFormatBuilder copy(AudioFormat audioFormat) {
+		Assert.notNull(audioFormat, "AudioFormat to copy is required");
 		this.audioFormat.set(audioFormat);
 		this.audioProperties.putAll(audioFormat.properties());
 		return this;
 	}
 
-	public AudioFormatBuilder copyFormatFrom(AudioInputStream audioInputStream) {
+	public AudioFormatBuilder copyAudioFormat(AudioInputStream audioInputStream) {
+		Assert.notNull(audioInputStream, "AudioInputStream is required");
 		return copy(audioInputStream.getFormat());
+	}
+
+	protected AudioFormat getAudioFormat() {
+		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause -> null);
 	}
 
 	protected boolean isBigEndian() {
@@ -84,8 +91,25 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	protected AudioFormat getFormat() {
-		return this.audioFormat.updateAndGet(it -> it != null ? it
-			: AudioUtils.resolveAudioFormat(getAudio()));
+		return this.audioFormat.updateAndGet(this::resolveFormat);
+	}
+
+	private AudioFormat resolveFormat(AudioFormat audioFormat) {
+		return audioFormat != null ? audioFormat : resolveFormat(getAudio());
+	}
+
+	private AudioFormat resolveFormat(Audio audio) {
+
+		return ExceptionThrowingSupplier.getSafely(audio::getFormat, cause -> {
+			try (AudioInputStream in = AudioUtils.openInputStream(audio)) {
+				return in.getFormat();
+			}
+			catch (IOException ignore) {
+				// IOException thrown from AudioInputStream.close(); ignore
+				// Throws RuntimeException when trying to open AudioInputStream
+				return null;
+			}
+		});
 	}
 
 	protected float getFrameRate() {
@@ -111,8 +135,13 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	public AudioFormat build() {
-		return new ShazamAudioFormat(getAudio(), getEncoding(), getSampleRate(), getSampleSizeInBits(), getChannels(),
-			getFrameRate(), getFrameSize(), isBigEndian(), getAudioProperties());
+		AudioFormat audioFormat = getAudioFormat();
+		return audioFormat instanceof ShazamAudioFormat shazamAudioFormat ? shazamAudioFormat
+			: newAudioFormat();
+	}
 
+	private ShazamAudioFormat newAudioFormat() {
+		return new ShazamAudioFormat(getAudio(), getEncoding(), getChannels(), getSampleRate(), getSampleSizeInBits(),
+			getFrameRate(), getFrameSize(), isBigEndian(), getAudioProperties());
 	}
 }
