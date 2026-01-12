@@ -21,9 +21,10 @@ import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioInputStreamBuilder;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.springframework.util.Assert;
@@ -43,7 +44,6 @@ import lombok.Getter;
  * @see Audio
  * @see AudioDispatcher
  * @see AudioProcessor
- * @see AudioSystem
  * @see MFCC
  * @since 0.1.0
  */
@@ -70,47 +70,38 @@ public class AudioDispatcherBuilder {
 
 	private final Audio audio;
 
-	private final AudioInputStream audioInputStream;
-
 	private final List<AudioProcessor> audioProcessors = new ArrayList<>();
 
 	protected AudioDispatcherBuilder(Audio audio) {
-		Assert.notNull(audio, "Audio is required");
-		this.audio = audio;
-		this.audioInputStream = openAudioInputStream(audio);
-	}
-
-	private AudioInputStream openAudioInputStream(Audio audio) {
-		Assert.notNull(audio, "Audio is required");
-		return AudioInputStreamBuilder.from(audio).build();
+		this.audio = AudioUtils.assertAudio(audio);
 	}
 
 	public int getAudioBufferOverlap() {
 		Integer audioBufferOverlap = this.audioBufferOverlap;
-		return audioBufferOverlap != null ? audioBufferOverlap : DEFAULT_AUDIO_BUFFER_OVERLAP;
+		return audioBufferOverlap != null ? audioBufferOverlap
+			: DEFAULT_AUDIO_BUFFER_OVERLAP;
 	}
 
 	public int getAudioBufferSize() {
 		Integer audioBufferSize = this.audioBufferSize;
-		return audioBufferSize != null ? audioBufferSize : DEFAULT_AUDIO_BUFFER_SIZE;
+		return audioBufferSize != null ? audioBufferSize
+			: DEFAULT_AUDIO_BUFFER_SIZE;
 	}
 
 	public AudioFormat getAudioFormat() {
-		return getAudioInputStream().getFormat();
+		return AudioFormatBuilder.from(getAudio()).build();
 	}
 
 	protected int getNumberOfCoefficients() {
 		Integer numberOfCoefficients = this.numberOfCoefficients;
-		return numberOfCoefficients != null ? numberOfCoefficients : NUMBER_OF_MEL_FREQUENCY_CEPSTRUM_COEFFICIENTS;
+		return numberOfCoefficients != null ? numberOfCoefficients
+			: NUMBER_OF_MEL_FREQUENCY_CEPSTRUM_COEFFICIENTS;
 	}
 
 	protected int getNumberOfFilters() {
 		Integer numberOfFilters = this.numberOfFilters;
-		return numberOfFilters != null ? numberOfFilters : NUMBER_OF_MEL_FILTERS;
-	}
-
-	protected float getSampleRate() {
-		return getAudioFormat().getSampleRate();
+		return numberOfFilters != null ? numberOfFilters
+			: NUMBER_OF_MEL_FILTERS;
 	}
 
 	public AudioDispatcherBuilder register(AudioProcessor audioProcessor) {
@@ -159,15 +150,19 @@ public class AudioDispatcherBuilder {
 		return this;
 	}
 
-	private TarsosDSPAudioInputStream asTarsosDspAudioInputStream(AudioInputStream inputStream) {
-		return new JVMAudioInputStream(inputStream);
+	private TarsosDSPAudioInputStream asTarsosDSPAudioInputStream(AudioInputStream audioInputStream) {
+		return new JVMAudioInputStream(audioInputStream);
+	}
+
+	private AudioInputStream openInputStream(Audio audio) {
+		return AudioInputStreamBuilder.from(audio).build();
 	}
 
 	public AudioDispatcher build() {
 
-		AudioInputStream audioInputStream = getAudioInputStream();
+		AudioInputStream audioInputStream = openInputStream(getAudio());
 
-		AudioDispatcher audioDispatcher = new AudioDispatcher(asTarsosDspAudioInputStream(audioInputStream),
+		AudioDispatcher audioDispatcher = new AudioDispatcher(asTarsosDSPAudioInputStream(audioInputStream),
 			getAudioBufferSize(), getAudioBufferOverlap());
 
 		getAudioProcessors().forEach(audioDispatcher::addAudioProcessor);
