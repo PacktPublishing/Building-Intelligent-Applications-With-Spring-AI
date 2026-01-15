@@ -70,9 +70,15 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 
 	@Override
 	public @NonNull EmbeddingResponse call(@NonNull EmbeddingRequest request) {
-		Document document = toDocument(request);
-		float[] embedding = embed(document);
-		return toEmbeddingResponse(embedding);
+
+		List<Document> documents = toDocuments(request);
+
+		List<Embedding> embeddings = documents.stream()
+			.map(this::embed)
+			.map(this::toEmbedding)
+			.toList();
+
+		return toEmbeddingResponse(embeddings);
 	}
 
 	@Override
@@ -111,10 +117,13 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 		}
 	}
 
-	private Document toDocument(EmbeddingRequest request) {
+	private List<Document> toDocuments(EmbeddingRequest request) {
+
 		List<String> instructions = request.getInstructions();
-		String id = String.join(EMPTY_STRING, instructions);
-		return getDocumentStore().get(id);
+
+		return instructions.stream()
+			.map(getDocumentStore()::get)
+			.toList();
 	}
 
 	private Embedding toEmbedding(float[] vector) {
@@ -125,9 +134,7 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 		return new Embedding(vector, index);
 	}
 
-	private EmbeddingResponse toEmbeddingResponse(float[] vector) {
-		Embedding embedding = toEmbedding(vector);
-		List<Embedding> embeddings = List.of(embedding);
+	private EmbeddingResponse toEmbeddingResponse(List<Embedding> embeddings) {
 		return new EmbeddingResponse(embeddings, withEmbeddingResponseMetadata());
 	}
 
