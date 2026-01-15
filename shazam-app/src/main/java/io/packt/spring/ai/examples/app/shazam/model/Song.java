@@ -30,6 +30,7 @@ import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -46,6 +47,7 @@ import lombok.ToString;
 @Getter
 @Table(name = "Songs")
 @ToString(of = { "artist", "album", "title" })
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = { "artist", "album", "title" })
 @SuppressWarnings("unused")
 public class Song implements AudioSource {
@@ -64,9 +66,9 @@ public class Song implements AudioSource {
 	@Transient
 	private transient Audio audio;
 
-	private final String artist;
-	private final String album;
-	private final String title;
+	private String artist;
+	private String album;
+	private String title;
 
 	@Id
 	@SuppressWarnings("all")
