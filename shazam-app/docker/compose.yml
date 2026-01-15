@@ -1,18 +1,16 @@
 services:
   postgres:
-#    image: pgvector/pgvector:pg18-trixie
-    image: postgres:18-alpine
+    image: pgvector/pgvector:pg17
     container_name: shazam-database
     restart: always
     shm_size: 128mb
     environment:
-      POSTGRES_DB: shazam_db
       POSTGRES_USER: shazam
       POSTGRES_PASSWORD: s3cr3t
+      POSTGRES_DB: shazam_db
     ports:
       - "5432:5432"
     volumes:
-      - ./src/main/resources/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
       - shazam_db_data:/var/lib/postgresql/data
 
 volumes:
