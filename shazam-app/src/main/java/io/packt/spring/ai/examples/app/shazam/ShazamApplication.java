@@ -20,6 +20,7 @@ import io.codeprimate.extensions.spring.boot.AbstractDesktopSpringBootApplicatio
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 /**
@@ -32,9 +33,10 @@ import org.springframework.core.env.Environment;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
+@Profile(ShazamApplication.SHAZAM_APP_PROFILE)
 public class ShazamApplication extends AbstractDesktopSpringBootApplication {
 
-	private static final String SHAZAM_APP_PROFILE = "shazam-app";
+	public static final String SHAZAM_APP_PROFILE = "shazam-app";
 	private static final String WEBAPP_URI = "/view/recorder";
 
 	public static void main(String[] args) {
