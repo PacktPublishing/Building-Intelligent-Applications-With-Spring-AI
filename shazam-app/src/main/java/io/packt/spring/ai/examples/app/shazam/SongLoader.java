@@ -17,20 +17,28 @@ package io.packt.spring.ai.examples.app.shazam;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Year;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
+import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
+import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
 
+import org.cp.elements.io.FileUtils;
 import org.cp.elements.util.ArrayUtils;
+import org.springframework.ai.document.Document;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -53,6 +61,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author John Blum
  * @see SpringBootApplication
  * @see AbstractSpringBootApplication
+ * @see MusicService
+ * @see Song
  * @since 0.1.0
  */
 @Slf4j
@@ -60,6 +70,9 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("unused")
 @Profile(SongLoader.SONG_LOADER_PROFILE)
 public class SongLoader extends AbstractSpringBootApplication {
+
+	private static final boolean LOAD_SONG = true;
+	private static final boolean SAVE_AUDIO_CLIP = false;
 
 	public static final String SONG_LOADER_PROFILE = "shazam-song-loader";
 
@@ -104,11 +117,56 @@ public class SongLoader extends AbstractSpringBootApplication {
 				SongMetadata songMetadata = songLoaderService.loadSongMetadata(songMetadataFile);
 				Song song = songLoaderService.loadSong(songMetadata);
 
+				songMetadata = songMetadata.from(songMetadataFile);
+
 				log.info("Loading song [{}] by artist [{}]...", song.getTitle(), song.getArtist());
 
-				songLoaderService.store(song);
+				songLoaderService.store(song, randomAudioClipWriter(songMetadata));
 			}
 		};
+	}
+
+	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(SongMetadata songMetadata) {
+
+		return (song, audioDocuments) -> {
+
+			if (SAVE_AUDIO_CLIP) {
+				int index = NumberUtils.randomInt(audioDocuments.size());
+
+				Document audioClipDocument = audioDocuments.get(index);
+
+				File songMetadataSource = songMetadata.getSource();
+
+				String songFilename = FileUtils.getName(songMetadataSource);
+				String songFileExtension = FileUtils.getExtension(songMetadataSource);
+				String audioClipFilename = "%s-clip.%s".formatted(songFilename, songFileExtension);
+
+				File audioClipFile = new File(songMetadataSource.getParentFile(), audioClipFilename);
+
+				byte[] audioData = audioClipDocument.getMedia().getDataAsByteArray();
+
+				ExceptionThrowingRunnable.doSafely(() -> saveToFile(audioClipFile, audioData), cause -> {
+					log.error("Failed to write audio data for song [{}}] to file [{}]",
+						songFilename, audioClipFile.getAbsolutePath());
+					log.error("Caused by: ", cause);
+				});
+			}
+
+			if (!LOAD_SONG) {
+				String message = "Loading Song [%s] has been short-circuited".formatted(song);
+				throw SongLoadException.because(message);
+			}
+
+			return audioDocuments;
+		};
+	}
+
+	private static void saveToFile(File audioClipFile, byte[] audioData) throws IOException {
+
+		try (FileOutputStream audioFileOutputStream = new FileOutputStream(audioClipFile, false)) {
+			audioFileOutputStream.write(audioData);
+			audioFileOutputStream.flush();
+		}
 	}
 
 	private FileFilter songMetadataFileFilter() {
@@ -125,7 +183,15 @@ public class SongLoader extends AbstractSpringBootApplication {
 		private String album;
 		private String resourcePath;
 		private String title;
+
+		private File source;
+
 		private Year year;
+
+		public SongMetadata from(File songMetadataSource) {
+			this.source = songMetadataSource;
+			return this;
+		}
 
 		public Song toSong(ResourceLoader resourceLoader) {
 
@@ -184,6 +250,10 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 		default void store(Song song) {
 			getMusicService().store(song);
+		}
+
+		default void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor) {
+			getMusicService().store(song, songProcessor);
 		}
 	}
 }
