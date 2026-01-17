@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
+import io.packt.spring.ai.examples.app.shazam.config.SongLoaderProperties;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
@@ -43,6 +44,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
@@ -71,9 +73,6 @@ import lombok.extern.slf4j.Slf4j;
 @Profile(SongLoader.SONG_LOADER_PROFILE)
 public class SongLoader extends AbstractSpringBootApplication {
 
-	private static final boolean LOAD_SONG = true;
-	private static final boolean SAVE_AUDIO_CLIP = false;
-
 	public static final String SONG_LOADER_PROFILE = "shazam-song-loader";
 
 	private static final String SONG_DATABASE_DATA_LOCATION = "/database/data";
@@ -87,6 +86,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 	}
 
 	@SpringBootConfiguration
+	@EnableConfigurationProperties(SongLoaderProperties.class)
 	static class SongLoaderConfiguration {
 
 		@Bean
@@ -96,7 +96,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 	}
 
 	@Bean
-	ApplicationRunner programRunner(SongLoaderService songLoaderService) {
+	ApplicationRunner programRunner(SongLoaderProperties songLoaderProperties, SongLoaderService songLoaderService) {
 
 		return args -> {
 
@@ -121,16 +121,18 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 				log.info("Loading song [{}] by artist [{}]...", song.getTitle(), song.getArtist());
 
-				songLoaderService.store(song, randomAudioClipWriter(songMetadata));
+				songLoaderService.store(song, randomAudioClipWriter(songLoaderProperties, songMetadata));
 			}
 		};
 	}
 
-	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(SongMetadata songMetadata) {
+	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(
+			SongLoaderProperties songLoaderProperties, SongMetadata songMetadata) {
 
 		return (song, audioDocuments) -> {
 
-			if (SAVE_AUDIO_CLIP) {
+			if (songLoaderProperties.isAudioClipSavingEanbled()) {
+
 				int index = NumberUtils.randomInt(audioDocuments.size());
 
 				Document audioClipDocument = audioDocuments.get(index);
@@ -152,7 +154,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 				});
 			}
 
-			if (!LOAD_SONG) {
+			if (songLoaderProperties.isSongLoadingEnabled()) {
 				String message = "Loading Song [%s] has been short-circuited".formatted(song);
 				throw SongLoadException.because(message);
 			}
