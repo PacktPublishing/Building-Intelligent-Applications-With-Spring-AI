@@ -30,6 +30,10 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
 @SuppressWarnings("unused")
 public class SongLoadException extends RuntimeException {
 
+	public static SongLoadException because(String message) {
+		return new SongLoadException(message);
+	}
+
 	public static SongLoadException from(File song, Throwable cause) {
 		String message = "Failed to load song from file [%s]".formatted(song.getAbsolutePath());
 		return new SongLoadException(message, cause);
