@@ -29,6 +29,7 @@ import org.springframework.core.env.Environment;
  * @author John Blum
  * @see SpringBootApplication
  * @see AbstractDesktopSpringBootApplication
+ * @see org.springframework.boot.ApplicationRunner
  * @since 0.1.0
  */
 @SpringBootApplication
