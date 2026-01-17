@@ -25,10 +25,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
+import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
 
+import org.cp.elements.util.ArrayUtils;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
@@ -69,8 +73,17 @@ public class SongLoader extends AbstractSpringBootApplication {
 		runSpringApplication(SongLoader.class, asStringArray(SONG_LOADER_PROFILE), applicationBuilder, args);
 	}
 
+	@SpringBootConfiguration
+	static class SongLoaderConfiguration {
+
+		@Bean
+		SongLoaderService songLoaderService(MusicService musicService, ObjectMapper objectMapper, ResourceLoader resourceLoader) {
+			return SongLoaderService.from(musicService, objectMapper, resourceLoader);
+		}
+	}
+
 	@Bean
-	ApplicationRunner programRunner(MusicService musicService, ObjectMapper objectMapper, ResourceLoader resourceLoader) {
+	ApplicationRunner programRunner(SongLoaderService songLoaderService) {
 
 		return args -> {
 
@@ -82,24 +95,20 @@ public class SongLoader extends AbstractSpringBootApplication {
 				.formatted(SONG_DATABASE_DATA_LOCATION));
 
 			File directory = resource.getFile();
-			File[] songMetadataFiles = nullSafeFileArray(directory.listFiles(songMetadataFileFilter()));
+			File[] songMetadataFiles = ArrayUtils.nullSafeArray(directory.listFiles(songMetadataFileFilter()));
 
 			for (File songMetadataFile : songMetadataFiles) {
 
 				log.info("Found song metadata [{}]", songMetadataFile);
 
-				SongMetadata songMetadata = objectMapper.readValue(songMetadataFile, SongMetadata.class);
-				Song song = songMetadata.toSong(resourceLoader);
+				SongMetadata songMetadata = songLoaderService.loadSongMetadata(songMetadataFile);
+				Song song = songLoaderService.loadSong(songMetadata);
 
 				log.info("Loading song [{}] by artist [{}]...", song.getTitle(), song.getArtist());
 
-				musicService.store(song);
+				songLoaderService.store(song);
 			}
 		};
-	}
-
-	private File[] nullSafeFileArray(File[] array) {
-		return array != null ? array : new File[0];
 	}
 
 	private FileFilter songMetadataFileFilter() {
@@ -128,6 +137,53 @@ public class SongLoader extends AbstractSpringBootApplication {
 				.with(getTitle())
 				.having(audioResource)
 				.build();
+		}
+	}
+
+	interface SongLoaderService {
+
+		static SongLoaderService from(MusicService musicService, ObjectMapper objectMapper, ResourceLoader resourceLoader) {
+
+			Assert.notNull(musicService, "MusicService is required");
+			Assert.notNull(objectMapper, "JSON ObjectMapper is required");
+			Assert.notNull(resourceLoader, "ResourceLoader is required");
+
+			return new SongLoaderService() {
+
+				@Override
+				public MusicService getMusicService() {
+					return musicService;
+				}
+
+				@Override
+				public ObjectMapper getObjectMapper() {
+					return objectMapper;
+				}
+
+				@Override
+				public ResourceLoader getResourceLoader() {
+					return resourceLoader;
+				}
+			};
+		}
+
+		MusicService getMusicService();
+
+		ObjectMapper getObjectMapper();
+
+		ResourceLoader getResourceLoader();
+
+		default Song loadSong(SongMetadata songMetadata) {
+			return songMetadata.toSong(getResourceLoader());
+		}
+
+		default SongMetadata loadSongMetadata(File songMetadataFile) {
+			return ExceptionThrowingSupplier.getSafely(() -> getObjectMapper().readValue(songMetadataFile, SongMetadata.class),
+				cause -> { throw SongLoadException.from(songMetadataFile, cause); });
+		}
+
+		default void store(Song song) {
+			getMusicService().store(song);
 		}
 	}
 }
