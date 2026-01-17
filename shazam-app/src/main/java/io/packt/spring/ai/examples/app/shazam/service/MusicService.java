@@ -15,8 +15,13 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service;
 
+import java.util.List;
+import java.util.function.BiFunction;
+
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
+
+import org.springframework.ai.document.Document;
 
 /**
  * Interface defining a service for processing music.
@@ -43,8 +48,22 @@ public interface MusicService {
 	 * Stores the given {@link Song} and its {@link Audio} data in the database.
 	 *
 	 * @param song {@link Song} to store.
+	 * @see #store(Song, BiFunction)
 	 * @see Song
 	 */
-	void store(Song song);
+	default void store(Song song) {
+		store(song, (theSong, documents) -> documents);
+	}
+
+	/**
+	 * Stores the given {@link Song} and its {@link Audio} data in the database.
+	 *
+	 * @param song {@link Song} to store.
+	 * @param songProcessor {@link BiFunction} used to process the {@link Song} and the {@link List}
+	 * of audio {@link Document Documents} that make up the {@link Song} before storage.
+	 * @see BiFunction
+	 * @see Song
+	 */
+	void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor);
 
 }

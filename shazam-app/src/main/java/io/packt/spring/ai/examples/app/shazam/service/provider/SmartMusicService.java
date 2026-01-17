@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
@@ -162,12 +163,15 @@ public class SmartMusicService implements MusicService {
 	}
 
 	@Override
-	public void store(Song song) {
+	public void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor) {
 
 		Assert.notNull(song, "Song is required");
+		Assert.notNull(songProcessor, "Song processor is required");
 
 		List<Document> documents = getAudioSplitter().split(song);
 		List<Document> identifiedDocuments = identify(documents, song);
+
+		identifiedDocuments = songProcessor.apply(song, identifiedDocuments);
 
 		try {
 			getVectorStore().accept(identifiedDocuments);
