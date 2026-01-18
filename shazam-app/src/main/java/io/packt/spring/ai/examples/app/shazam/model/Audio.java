@@ -339,6 +339,7 @@ public class Audio implements AudioSource, MediaSource {
 	public enum Type {
 
 		AAC("Advanced Audio Coding", Category.LOSSY_COMPRESSED),
+		AIFC("Apple Interchange File Format Compressed", Category.LOSSLESS_COMPRESSED),
 		AIFF("Audio Interchange File Format", Category.UNCOMPRESSED),
 		ALAC("Apple Lossless Audio Codec", Category.LOSSLESS_COMPRESSED),
 		AU("Sun Microsystems UNIX Audio File Format", Category.UNCOMPRESSED),
