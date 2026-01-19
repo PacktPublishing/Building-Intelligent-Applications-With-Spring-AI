@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,12 +35,17 @@ import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.config.SongLoaderProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
+import io.packt.spring.ai.examples.app.shazam.ext.tarsos.MpegAudioFormatBuilder;
+import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
 
 import org.cp.elements.io.FileUtils;
+import org.cp.elements.lang.Builder;
 import org.cp.elements.util.ArrayUtils;
 import org.springframework.ai.document.Document;
 import org.springframework.boot.ApplicationRunner;
@@ -52,6 +60,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -62,6 +71,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author John Blum
  * @see SpringBootApplication
+ * @see ApplicationRunner
  * @see AbstractSpringBootApplication
  * @see MusicService
  * @see Song
@@ -102,7 +112,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 			log.info("Shazam Song Loader");
 
-			Resource resource = new ClassPathResource(SONG_DATABASE_DATA_LOCATION);
+			Resource resource = newResource(SONG_DATABASE_DATA_LOCATION);
 
 			Assert.state(resource.exists(), () -> "Resource location [%s] for song data not found"
 				.formatted(SONG_DATABASE_DATA_LOCATION));
@@ -117,44 +127,55 @@ public class SongLoader extends AbstractSpringBootApplication {
 				SongMetadata songMetadata = songLoaderService.loadSongMetadata(songMetadataFile);
 				Song song = songLoaderService.loadSong(songMetadata);
 
-				songMetadata = songMetadata.from(songMetadataFile);
+				songMetadata.from(songMetadataFile);
 
 				log.info("Loading song [{}] by artist [{}]...", song.getTitle(), song.getArtist());
 
-				songLoaderService.store(song, randomAudioClipWriter(songLoaderProperties, songMetadata));
+				ExceptionThrowingRunnable.runSafely(
+					() -> songLoaderService.store(song, randomAudioClipWriter(songLoaderProperties)),
+					cause -> logWarn(cause.getMessage())
+				);
 			}
 		};
 	}
 
+	private Resource newResource(String resourcePath) {
+		return new ClassPathResource(resourcePath);
+	}
+
 	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(
-			SongLoaderProperties songLoaderProperties, SongMetadata songMetadata) {
+			SongLoaderProperties songLoaderProperties
+	) {
 
 		return (song, audioDocuments) -> {
 
-			if (songLoaderProperties.isAudioClipSavingEanbled()) {
+			if (songLoaderProperties.isAudioClipSavingEnabled()) {
 
 				int index = NumberUtils.randomInt(audioDocuments.size());
 
 				Document audioClipDocument = audioDocuments.get(index);
 
-				File songMetadataSource = songMetadata.getSource();
+				File audioFile = song.getAudio().file();
 
-				String songFilename = FileUtils.getName(songMetadataSource);
-				String songFileExtension = FileUtils.getExtension(songMetadataSource);
-				String audioClipFilename = "%s-clip.%s".formatted(songFilename, songFileExtension);
+				String audioFilename = FileUtils.getName(audioFile);
+				String audioFileExtension = FileUtils.getExtension(audioFile);
+				String audioClipFilename = "%s-clip.%s".formatted(audioFilename, audioFileExtension);
 
-				File audioClipFile = new File(songMetadataSource.getParentFile(), audioClipFilename);
+				File audioClipFile = new File(audioFile.getParentFile(), audioClipFilename);
 
-				byte[] audioData = audioClipDocument.getMedia().getDataAsByteArray();
+				if (!audioClipFile.isFile()) {
 
-				ExceptionThrowingRunnable.runSafely(() -> saveToFile(audioClipFile, audioData), cause -> {
-					log.error("Failed to write audio data for song [{}}] to file [{}]",
-						songFilename, audioClipFile.getAbsolutePath());
-					log.error("Caused by: ", cause);
-				});
+					byte[] audioData = audioClipDocument.getMedia().getDataAsByteArray();
+
+					ExceptionThrowingRunnable.runSafely(() -> saveToFile(audioClipFile, audioData), cause -> {
+						log.error("Failed to write audio data for song [{}}] to file [{}]",
+							audioFilename, audioClipFile.getAbsolutePath());
+						log.debug("Caused by: ", cause);
+					});
+				}
 			}
 
-			if (songLoaderProperties.isSongLoadingEnabled()) {
+			if (songLoaderProperties.isSongLoadingDisabled()) {
 				String message = "Loading Song [%s] has been short-circuited".formatted(song);
 				throw SongLoadException.because(message);
 			}
@@ -163,7 +184,9 @@ public class SongLoader extends AbstractSpringBootApplication {
 		};
 	}
 
-	private static void saveToFile(File audioClipFile, byte[] audioData) throws IOException {
+	private void saveToFile(File audioClipFile, byte[] audioData) throws IOException {
+
+		log.info("Saving audio clip to file [{}}]", audioClipFile.getAbsolutePath());
 
 		try (FileOutputStream audioFileOutputStream = new FileOutputStream(audioClipFile, false)) {
 			audioFileOutputStream.write(audioData);
@@ -173,6 +196,48 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 	private FileFilter songMetadataFileFilter() {
 		return file -> file != null && file.isFile() && file.getName().endsWith("metadata.json");
+	}
+
+	@Getter(AccessLevel.PACKAGE)
+	static class AudioBuilder implements Builder<Audio> {
+
+		static AudioBuilder from(Resource audioResource) {
+			return new AudioBuilder(audioResource);
+		}
+
+		private final Audio audio;
+
+		AudioBuilder(Resource resource) {
+			Assert.notNull(resource, "Resource containing audio is required");
+			this.audio = Audio.from(resource);
+		}
+
+		@Override
+		public Audio build() {
+			Audio audio = getAudio();
+			return audio.in(resolveAudioFormat(audio));
+		}
+
+		private AudioFormat resolveAudioFormat(Audio audio) {
+
+			try {
+				try (AudioInputStream audioInputStream = AudioUtils.openInputStream(audio)) {
+					return AudioFormatBuilder.from(audio)
+						.copyAudioFormat(audioInputStream)
+						.build();
+				}
+			}
+			catch (Exception ignore) {
+				return buildAudioFormat(audio);
+			}
+		}
+
+		private AudioFormat buildAudioFormat(Audio audio) {
+
+			return MpegAudioFormatBuilder.mpegOneLayerThree(audio)
+				.withSampleRateOf44100()
+				.build();
+		}
 	}
 
 	@Getter
@@ -199,11 +264,13 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 			Resource audioResource = resourceLoader.getResource(getResourcePath());
 
+			Audio audio = AudioBuilder.from(audioResource).build();
+
 			return Song.builder()
 				.by(getArtist())
 				.from(getAlbum())
 				.with(getTitle())
-				.having(audioResource)
+				.having(audio)
 				.build();
 		}
 	}
