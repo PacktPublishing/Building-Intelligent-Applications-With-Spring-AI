@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -228,13 +229,28 @@ public class FFProbe {
 		@JsonProperty("nb_stream_groups") Integer numberOfStreamGroups,
 		@JsonProperty("probe_score") Integer probeScore,
 		@JsonProperty("size") Integer size, // Size in bytes
-		@JsonProperty("start_time") Double startTime
+		@JsonProperty("start_time") Double startTime,
+		@JsonProperty("tags") Tags tags
 	) {
 
 		public Duration getDuration() {
 			long seconds = Math.round(duration());
 			return Duration.ofSeconds(seconds);
 		}
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public record Tags(
+		@JsonProperty("artist") String artists,
+		@JsonProperty("album") String album,
+		@JsonProperty("date") String date,
+		@JsonProperty("TCM") String composer,
+		@JsonProperty("encoded_by") String encodedBy,
+		@JsonProperty("genre") String genre,
+		@JsonProperty("title") String title,
+		@JsonProperty("track") String track
+	) {
+
 	}
 
 	@SuppressWarnings("unused")
