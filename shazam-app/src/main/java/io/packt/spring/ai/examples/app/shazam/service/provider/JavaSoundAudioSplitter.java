@@ -85,11 +85,11 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				for (int bytesRead = in.read(audioBuffer); bytesRead > -1; bytesRead = in.read(audioBuffer)) {
 					byte[] audioData = copyAudioData(audioBuffer, bytesRead);
 					AudioClip audioClip = AudioClip.from(audioData, audioFormat);
-					Document document = buildDocument(audioClip);
+					Document document = buildDocument(audioClip, false);
 
 					if (previousAudioClip != null) {
 						AudioClip overlappingAudioClip = previousAudioClip.secondHalf().merge(audioClip.firstHalf());
-						Document overlappingDocument = buildDocument(overlappingAudioClip);
+						Document overlappingDocument = buildDocument(overlappingAudioClip, true);
 						documents.add(overlappingDocument);
 					}
 

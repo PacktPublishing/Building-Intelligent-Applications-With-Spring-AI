@@ -18,6 +18,9 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
@@ -53,6 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractAudioSplitter implements AudioSplitter, InitializingBean {
 
+	public static final String AUDIO_CLIP_OVERLAP_KEY = "overlap";
+
 	private final AudioProperties audioProperties;
 
 	public AbstractAudioSplitter(AudioProperties audioProperties) {
@@ -69,8 +74,9 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 		getLogger().info("Using AudioSplitter [{}]", this);
 	}
 
-	protected Document buildDocument(AudioClip audioClip) {
-		return AbstractDocumentStore.newAudioDocument(audioClip);
+	protected Document buildDocument(AudioClip audioClip, boolean overlap) {
+		Map<String, Object> audioClipMetadata = Collections.singletonMap(AUDIO_CLIP_OVERLAP_KEY, overlap);
+		return AbstractDocumentStore.newAudioDocument(audioClip, audioClipMetadata);
 	}
 
 	@Override
