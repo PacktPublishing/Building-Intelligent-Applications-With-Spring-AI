@@ -96,6 +96,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 	}
 
 	@SpringBootConfiguration
+	@Profile(SONG_LOADER_PROFILE)
 	@EnableConfigurationProperties(SongLoaderProperties.class)
 	static class SongLoaderConfiguration {
 
