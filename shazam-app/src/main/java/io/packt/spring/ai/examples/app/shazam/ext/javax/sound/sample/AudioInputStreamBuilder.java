@@ -54,7 +54,7 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	}
 
 	protected AudioFormat getAudioFormat() {
-		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause ->  null);
+		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause -> null);
 	}
 
 	public AudioInputStream build() {
