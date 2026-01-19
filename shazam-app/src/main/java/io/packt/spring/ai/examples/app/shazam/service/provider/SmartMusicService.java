@@ -159,7 +159,12 @@ public class SmartMusicService implements MusicService {
 	}
 
 	private UUID resolveSongIdentifier(Document document) {
-		return assertSongIdentifier(document.getMetadata().get(SONG_ID_KEY));
+		return resolveSongIdentifier(document.getMetadata().get(SONG_ID_KEY));
+	}
+
+	private UUID resolveSongIdentifier(Object songId) {
+		return songId instanceof String stringSongId ? UUID.fromString(songId.toString())
+			: assertSongIdentifier(songId);
 	}
 
 	@Override
