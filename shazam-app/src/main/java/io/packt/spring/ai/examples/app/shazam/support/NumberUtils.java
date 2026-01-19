@@ -25,6 +25,8 @@ import java.util.Random;
  */
 public abstract class NumberUtils {
 
+	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
 	public static final int BITS_PER_BYTE = 8;
 
 	public static float asFloat(int value) {
