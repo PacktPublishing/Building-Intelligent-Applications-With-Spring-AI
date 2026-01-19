@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -124,6 +125,15 @@ public class FFProbe {
 		}
 	}
 
+	protected void logInfo(Supplier<String> message) {
+
+		Logger logger = getLogger();
+
+		if (logger.isInfoEnabled()) {
+			logger.info(message.get());
+		}
+	}
+
 	protected Process run(CommandLine commandLine) throws IOException {
 		return new ProcessBuilder(commandLine.getCommand()).start();
 	}
@@ -175,7 +185,14 @@ public class FFProbe {
 	}
 
 	private <T> T readJson(String json, Class<T> type) throws IOException {
-		return getJsonMapper().readValue(json, type);
+
+		try {
+			return getJsonMapper().readValue(json, type);
+		}
+		catch (JsonProcessingException cause) {
+			logInfo(() -> "JSON [%s]".formatted(json));
+			throw cause;
+		}
 	}
 
 	private String readOutput(Process process) throws IOException {
