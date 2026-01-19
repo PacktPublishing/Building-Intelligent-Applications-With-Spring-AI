@@ -192,7 +192,7 @@ public class GaugedChatModelCallObservationApplication extends AbstractSpringBoo
 	}
 
 	private void pause(Duration duration) {
-		ExceptionThrowingRunnable.doSafely(() -> Thread.sleep(duration.toMillis()));
+		ExceptionThrowingRunnable.runSafely(() -> Thread.sleep(duration.toMillis()));
 	}
 
 	private Callable<String> promptRunner(ChatClient chatClient, Prompt prompt) {

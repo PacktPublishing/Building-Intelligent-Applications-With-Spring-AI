@@ -59,7 +59,7 @@ public abstract class AudioUtils {
 	}
 
 	public static void close(AudioInputStream in) {
-		ExceptionThrowingRunnable.doSafely(in::close, cause -> { /* ignore */ });
+		ExceptionThrowingRunnable.runSafely(in::close, cause -> { /* ignore */ });
 	}
 
 	public static AudioInputStream openInputStream(Audio audio) {

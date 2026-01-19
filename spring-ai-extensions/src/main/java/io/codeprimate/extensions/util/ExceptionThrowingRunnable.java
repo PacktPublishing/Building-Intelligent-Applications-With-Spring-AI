@@ -28,13 +28,13 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public interface ExceptionThrowingRunnable {
 
-	static void doSafely(ExceptionThrowingRunnable runnable) {
-		doSafely(runnable, cause -> {
+	static void runSafely(ExceptionThrowingRunnable runnable) {
+		runSafely(runnable, cause -> {
 			throw new RuntimeException(cause);
 		});
 	}
 
-	static void doSafely(ExceptionThrowingRunnable runnable, Consumer<Exception> exceptionHandler) {
+	static void runSafely(ExceptionThrowingRunnable runnable, Consumer<Exception> exceptionHandler) {
 
 		try {
 			runnable.run();

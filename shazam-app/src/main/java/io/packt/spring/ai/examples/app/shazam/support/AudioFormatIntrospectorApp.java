@@ -90,7 +90,7 @@ public class AudioFormatIntrospectorApp implements Runnable {
 
 		Audio audio = newAudio(resource);
 
-		ExceptionThrowingRunnable.doSafely(() -> {
+		ExceptionThrowingRunnable.runSafely(() -> {
 			try (AudioInputStream audioInputStream = openInputStream(audio)) {
 				AudioFormat audioFormat = audioInputStream.getFormat();
 				printOut("Audio [%s] format [%s]%n", resource, audioFormat);

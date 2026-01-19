@@ -147,7 +147,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 				byte[] audioData = audioClipDocument.getMedia().getDataAsByteArray();
 
-				ExceptionThrowingRunnable.doSafely(() -> saveToFile(audioClipFile, audioData), cause -> {
+				ExceptionThrowingRunnable.runSafely(() -> saveToFile(audioClipFile, audioData), cause -> {
 					log.error("Failed to write audio data for song [{}}] to file [{}]",
 						songFilename, audioClipFile.getAbsolutePath());
 					log.error("Caused by: ", cause);
