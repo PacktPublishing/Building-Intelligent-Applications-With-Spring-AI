@@ -41,6 +41,10 @@ public abstract class NumberUtils {
 		return Long.valueOf(value).intValue();
 	}
 
+	public static int nullSafeLength(byte[] data) {
+		return data != null ? data.length : 0;
+	}
+
 	public static int randomInt(int bound) {
 		return new Random(System.currentTimeMillis()).nextInt(bound);
 	}
