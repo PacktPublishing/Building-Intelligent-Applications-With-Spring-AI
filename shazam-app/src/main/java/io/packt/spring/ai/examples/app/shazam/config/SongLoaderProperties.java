@@ -38,12 +38,16 @@ public class SongLoaderProperties {
 
 	private Song song = new Song();
 
-	public boolean isAudioClipSavingEanbled() {
+	public boolean isAudioClipSavingEnabled() {
 		return getAudioClip().isSaveEnabled();
 	}
 
 	public boolean isSongLoadingEnabled() {
 		return getSong().isLoadEnabled();
+	}
+
+	public boolean isSongLoadingDisabled() {
+		return !isSongLoadingEnabled();
 	}
 
 	@Data
