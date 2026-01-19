@@ -15,7 +15,7 @@
  */
 package com.packt.spring.ai.examples.similaritysearch;
 
-import static io.codeprimate.extensions.util.ExceptionThrowingFunction.doSafely;
+import static io.codeprimate.extensions.util.ExceptionThrowingFunction.applySafely;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -196,8 +196,8 @@ public class SongSimilaritySearchApplication {
 		return Arrays.stream(SONG_JSON_FILES)
 			.filter(songPredicate())
 			.map(ClassPathResource::new)
-			.map(doSafely(ClassPathResource::getContentAsByteArray))
-			.map(doSafely(byteArray -> objectMapper.readValue(byteArray, Song.class)))
+			.map(applySafely(ClassPathResource::getContentAsByteArray))
+			.map(applySafely(byteArray -> objectMapper.readValue(byteArray, Song.class)))
 			.map(this::logSong)
 			.map(Song::toChunkedDocuments)
 			.flatMap(List::stream)

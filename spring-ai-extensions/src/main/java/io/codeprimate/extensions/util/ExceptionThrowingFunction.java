@@ -29,7 +29,7 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface ExceptionThrowingFunction<T, R> {
 
-	static <T, R> Function<T, R> doSafely(ExceptionThrowingFunction<T, R> function) {
+	static <T, R> Function<T, R> applySafely(ExceptionThrowingFunction<T, R> function) {
 
 		return target -> {
 			try {
