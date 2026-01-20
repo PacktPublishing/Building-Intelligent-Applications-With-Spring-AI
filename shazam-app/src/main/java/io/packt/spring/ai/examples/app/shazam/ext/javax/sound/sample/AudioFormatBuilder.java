@@ -25,7 +25,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
@@ -82,7 +81,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	protected AudioFormat getAudioFormat() {
-		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause -> null);
+		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
 	}
 
 	protected boolean isBigEndian() {
