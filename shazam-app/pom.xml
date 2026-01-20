@@ -20,6 +20,7 @@
 	<url/>
 
 	<properties>
+		<jlayer.version>1.0.3</jlayer.version>
 		<tarsosdsp.version>2.5</tarsosdsp.version>
 		<tritonus.version>0.3.7.4</tritonus.version>
 	</properties>
@@ -29,6 +30,11 @@
 			<id>TarsosDSP Repository</id>
 			<name>Maven Repository containing the TarsosDSP library @ https://github.com/JorenSix/TarsosDSP</name>
 			<url>https://mvn.0110.be/releases</url>
+		</repository>
+		<repository>
+			<id>jitpack-io</id>
+			<name>JitPack IO Repository</name>
+			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 
@@ -58,6 +64,13 @@
 			<artifactId>tritonus-share</artifactId>
 			<version>${tritonus.version}</version>
 		</dependency>
+<!--
+		<dependency>
+			<groupId>com.github.umjammer</groupId>
+			<artifactId>jlayer</artifactId>
+			<version>${jlayer.version}</version>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.tritonus</groupId>
 			<artifactId>javalayer</artifactId>
