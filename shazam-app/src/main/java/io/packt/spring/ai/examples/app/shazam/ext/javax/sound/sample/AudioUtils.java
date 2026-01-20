@@ -25,6 +25,7 @@ import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
@@ -63,8 +64,9 @@ public abstract class AudioUtils {
 	}
 
 	public static AudioInputStream openInputStream(Audio audio) {
-		return ExceptionThrowingSupplier.getSafely(() ->
-			AudioSystem.getAudioInputStream(audio.inputStream()));
+		return ExceptionThrowingSupplier.getSafely(() -> AudioSystem.getAudioInputStream(audio.inputStream()), cause -> {
+			throw AudioAccessException.because("Failed to open InputStream to Audio", cause);
+		});
 	}
 
 	public static FFProbe.Format probeFormat(Audio audio) {
