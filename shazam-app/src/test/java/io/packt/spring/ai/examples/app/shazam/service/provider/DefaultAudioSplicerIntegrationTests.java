@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sound.sampled.AudioFormat;
+
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatResolver;
+import io.packt.spring.ai.examples.app.shazam.ext.tarsos.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
@@ -60,7 +64,8 @@ public class DefaultAudioSplicerIntegrationTests {
 
 	private static final boolean DEBUG = false;
 
-	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	//private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	private static final String RESOURCE_PATH = "PearlJam-NoCode-RedMosquito.mp3";
 
 	@Autowired
 	private AudioSplicer audioSplicer;
@@ -78,6 +83,8 @@ public class DefaultAudioSplicerIntegrationTests {
 
 		assertThat(audio).isNotNull();
 		assertThat(audio.size()).isEqualTo(audioFile.length());
+
+		audio = audio.in(resolveAudioFormat(audio));
 
 		List<Document> audioClips = this.audioSplitter.split(audio);
 
@@ -104,6 +111,11 @@ public class DefaultAudioSplicerIntegrationTests {
 			.hasSameSizeAs(audioData);
 
 		assertThat(Arrays.equals(audioData, splicedAudioData)).isTrue();
+	}
+
+	private AudioFormat resolveAudioFormat(Audio audio) {
+		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio, () ->
+			MpegAudioFormatBuilder.mpegOneLayerThree(audio).withSampleRateOf44100().build());
 	}
 
 	Resource resource() {
