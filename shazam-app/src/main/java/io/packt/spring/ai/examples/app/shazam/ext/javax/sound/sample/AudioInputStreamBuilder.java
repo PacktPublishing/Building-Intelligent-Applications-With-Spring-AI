@@ -22,7 +22,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
@@ -54,7 +53,7 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	}
 
 	protected AudioFormat getAudioFormat() {
-		return ExceptionThrowingSupplier.getSafely(getAudio()::getFormat, cause -> null);
+		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
 	}
 
 	public AudioInputStream build() {
