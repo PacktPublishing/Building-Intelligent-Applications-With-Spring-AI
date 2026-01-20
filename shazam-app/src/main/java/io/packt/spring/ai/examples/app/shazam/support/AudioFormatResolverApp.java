@@ -35,7 +35,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
- * Java program used to inspect the {@link AudioFormat} of an {@link Audio} {@link Resource}.
+ * Java program used to resolve (introspect) the {@link AudioFormat} of an {@link Audio} {@link Resource}.
  *
  * @author John Blum
  * @see Audio
@@ -45,7 +45,7 @@ import org.springframework.core.io.Resource;
  * @see org.springframework.core.io.Resource
  * @since 0.1.0
  */
-public class AudioFormatIntrospectorApp implements Runnable {
+public class AudioFormatResolverApp implements Runnable {
 
 	private static final boolean DEBUG = false;
 
@@ -53,21 +53,21 @@ public class AudioFormatIntrospectorApp implements Runnable {
 
 		if (args.length < 1) {
 			System.err.printf("> java -cp <classpath> %s </path/to/audio/file[.mp3]>%n",
-				AudioFormatIntrospectorApp.class.getName());
+				AudioFormatResolverApp.class.getName());
 			System.exit(-1);
 		}
 
-		new AudioFormatIntrospectorApp(args).run();
+		new AudioFormatResolverApp(args).run();
 	}
 
 	private final String[] arguments;
 
-	public AudioFormatIntrospectorApp(String[] args) {
+	public AudioFormatResolverApp(String[] args) {
 		this.arguments = args;
 	}
 
 	protected String getFirstArgument() {
-		return arguments[0];
+		return this.arguments[0];
 	}
 
 	@Override
