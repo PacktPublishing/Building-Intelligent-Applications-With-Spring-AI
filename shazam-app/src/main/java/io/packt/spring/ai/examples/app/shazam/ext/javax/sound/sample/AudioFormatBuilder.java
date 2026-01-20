@@ -17,7 +17,6 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,6 +39,7 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see Audio
+ * @see AudioFormatResolver
  * @see ShazamAudioFormat
  * @see javax.sound.sampled.AudioFormat
  * @see org.cp.elements.lang.Builder
@@ -99,17 +99,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	private AudioFormat resolveFormat(Audio audio) {
-
-		return ExceptionThrowingSupplier.getSafely(audio::getFormat, cause -> {
-			try (AudioInputStream in = AudioUtils.openInputStream(audio)) {
-				return in.getFormat();
-			}
-			catch (IOException ignore) {
-				// IOException thrown from AudioInputStream.close(); ignore
-				// Throws RuntimeException when trying to open AudioInputStream
-				return null;
-			}
-		});
+		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio);
 	}
 
 	protected float getFrameRate() {
