@@ -54,7 +54,7 @@ public class DefaultAudioFormatResolver implements AudioFormatResolver {
 			catch (AudioAccessException e) {
 				audioFormat = FunctionUtils.nullSafeSupplier(defaultAudioFormat).get();
 				if (audioFormat == null) {
-					throw e;
+					throw AudioAccessException.because("Failed to resolve AudioFormat of Audio", e);
 				}
 			}
 			catch (IOException ignore) {
