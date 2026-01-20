@@ -54,7 +54,7 @@ public class DefaultAudioSplicer implements AudioSplicer {
 	}
 
 	private boolean isNonOverlappingAudioClip(Document document) {
-		return Boolean.TRUE.equals(document.getMetadata().get(AbstractAudioSplitter.AUDIO_CLIP_OVERLAP_KEY));
+		return Boolean.FALSE.equals(document.getMetadata().get(AbstractAudioSplitter.AUDIO_CLIP_OVERLAP_KEY));
 	}
 
 	private byte[] extractAudioData(Document document) {
