@@ -136,13 +136,13 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 			return AudioClip.from(audioData, getFormat());
 		}
 
-		public AudioClip merge(AudioClip audioClip) {
-			int audioLength = asInt(size());
-			int audioClipLength = asInt(audioClip.size());
-			int length = audioLength + audioClipLength;
-			byte[] audioData = new byte[length];
-			System.arraycopy(data(), 0, audioData, 0, audioLength);
-			System.arraycopy(audioClip.data(), 0, audioData, audioLength, audioClipLength);
+		public AudioClip merge(AudioClip thatAudioClip) {
+			int thisAudioClipLength = asInt(size());
+			int thatAudioClipLength = asInt(thatAudioClip.size());
+			int audioDataLength = thisAudioClipLength + thatAudioClipLength;
+			byte[] audioData = new byte[audioDataLength];
+			System.arraycopy(data(), 0, audioData, 0, thisAudioClipLength);
+			System.arraycopy(thatAudioClip.data(), 0, audioData, thisAudioClipLength, thatAudioClipLength);
 			return AudioClip.from(audioData, getFormat());
 		}
 
