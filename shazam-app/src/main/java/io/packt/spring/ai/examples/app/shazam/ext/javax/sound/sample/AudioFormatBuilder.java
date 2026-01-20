@@ -56,6 +56,8 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 
 	private final Audio audio;
 
+	private volatile AudioFormat defaultAudioFormat;
+
 	private final Map<String, Object> audioProperties = new HashMap<>();
 
 	protected AudioFormatBuilder(Audio audio) {
@@ -72,6 +74,11 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	public AudioFormatBuilder copyAudioFormat(AudioInputStream audioInputStream) {
 		Assert.notNull(audioInputStream, "AudioInputStream is required");
 		return copy(audioInputStream.getFormat());
+	}
+
+	public AudioFormatBuilder defaultAudioFormat(AudioFormat defaultAudioFormat) {
+		this.defaultAudioFormat = defaultAudioFormat;
+		return this;
 	}
 
 	protected AudioFormat getAudioFormat() {
@@ -99,7 +106,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	private AudioFormat resolveFormat(Audio audio) {
-		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio);
+		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio, getDefaultAudioFormat());
 	}
 
 	protected float getFrameRate() {
