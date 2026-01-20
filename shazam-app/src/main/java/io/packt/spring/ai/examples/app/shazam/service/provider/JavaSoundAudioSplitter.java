@@ -85,16 +85,16 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				for (int bytesRead = in.read(audioBuffer); bytesRead > -1; bytesRead = in.read(audioBuffer)) {
 					byte[] audioData = copyAudioData(audioBuffer, bytesRead);
 					AudioClip audioClip = AudioClip.from(audioData, audioFormat);
-					Document document = buildDocument(audioClip, false);
+					Document audioDocument = buildDocument(audioClip, false);
 
 					if (previousAudioClip != null) {
 						AudioClip overlappingAudioClip = previousAudioClip.secondHalf().merge(audioClip.firstHalf());
-						Document overlappingDocument = buildDocument(overlappingAudioClip, true);
-						documents.add(overlappingDocument);
+						Document overlappingAudioDocument = buildDocument(overlappingAudioClip, true);
+						documents.add(overlappingAudioDocument);
 					}
 
 					previousAudioClip = audioClip;
-					documents.add(document);
+					documents.add(audioDocument);
 				}
 			}
 
@@ -332,7 +332,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				case 1 -> MONO;
 				case 2 -> STEREO;
 				default -> {
-					String message = "[%d] is not valid audio channels".formatted(value);
+					String message = "[%d] is not valid number of audio channels".formatted(value);
 					throw new IllegalArgumentException(message);
 				}
 			};
