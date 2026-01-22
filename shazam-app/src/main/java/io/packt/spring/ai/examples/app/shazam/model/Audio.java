@@ -28,6 +28,8 @@ import java.util.Set;
 
 import javax.sound.sampled.AudioFormat;
 
+import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.content.Media;
 import org.springframework.core.io.ByteArrayResource;
@@ -48,6 +50,7 @@ import lombok.ToString;
  * @see MediaSource
  * @see java.io.File
  * @see java.net.URL
+ * @see java.time.Duration
  * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.multipart.MultipartFile
@@ -57,10 +60,8 @@ import lombok.ToString;
 @SuppressWarnings("unused")
 public class Audio implements AudioSource, MediaSource {
 
-	protected static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
 	public static Audio empty() {
-		return from(EMPTY_BYTE_ARRAY);
+		return from(NumberUtils.EMPTY_BYTE_ARRAY);
 	}
 
 	public static Audio from(byte[] data) {
@@ -332,6 +333,8 @@ public class Audio implements AudioSource, MediaSource {
 	}
 
 	/**
+	 * {@link Enum Enumeration} of various audio types.
+	 *
 	 * @see <a href="https://en.wikipedia.org/wiki/Audio_file_format">Audio file format</a>
 	 */
 	@Getter
