@@ -22,8 +22,10 @@ import java.util.Set;
 import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
+import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.SpectrogramAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
@@ -68,9 +70,22 @@ public class VectorCosineSimilarityApp implements Runnable {
 	private final String[] arguments;
 
 	public VectorCosineSimilarityApp(String[] args) {
-		this.audioSplitter = new JavaSoundAudioSplitter(AudioProperties.defaultAudioProperties());
-		this.embeddingModel = new AudioEmbeddingModel(AbstractDocumentStore.inMemory());
 		this.arguments = args;
+		this.audioSplitter = newAudioSplitter();
+		this.embeddingModel = newEmbeddingModel();
+	}
+
+	protected AudioSplitter newAudioSplitter() {
+		return new JavaSoundAudioSplitter(AudioProperties.defaultAudioProperties());
+	}
+
+	protected EmbeddingModel newEmbeddingModel() {
+		return new AudioEmbeddingModel(newAudioFingerprintFunction(), AbstractDocumentStore.inMemory());
+	}
+
+	private AudioFingerprintFunction newAudioFingerprintFunction() {
+		//return new MfccAudioFingerprintFunction();
+		return new SpectrogramAudioFingerprintFunction();
 	}
 
 	protected String getAudioClipArgument() {
