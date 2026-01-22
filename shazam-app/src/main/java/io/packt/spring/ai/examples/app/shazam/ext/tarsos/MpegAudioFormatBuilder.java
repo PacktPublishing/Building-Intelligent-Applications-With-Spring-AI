@@ -46,8 +46,10 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class MpegAudioFormatBuilder implements Builder<AudioFormat> {
 
+	protected static final AudioFormat.Encoding MPEG_ONE_LAYER_THREE_ENCODING = MpegAudioFileWriter.MPEG1L3;
+
 	public static MpegAudioFormatBuilder mpegOneLayerThree(Audio audio) {
-		return new MpegAudioFormatBuilder(audio, MpegAudioFileWriter.MPEG1L3);
+		return new MpegAudioFormatBuilder(audio, MPEG_ONE_LAYER_THREE_ENCODING);
 	}
 
 	private final Audio audio;
