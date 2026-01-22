@@ -20,6 +20,7 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PE
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -55,7 +56,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 
 	private final Audio audio;
 
-	private volatile AudioFormat defaultAudioFormat;
+	private volatile Supplier<AudioFormat> defaultAudioFormat;
 
 	private final Map<String, Object> audioProperties = new HashMap<>();
 
@@ -75,7 +76,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 		return copy(audioInputStream.getFormat());
 	}
 
-	public AudioFormatBuilder defaultAudioFormat(AudioFormat defaultAudioFormat) {
+	public AudioFormatBuilder defaultAudioFormat(Supplier<AudioFormat> defaultAudioFormat) {
 		this.defaultAudioFormat = defaultAudioFormat;
 		return this;
 	}
