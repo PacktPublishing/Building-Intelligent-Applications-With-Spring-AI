@@ -53,11 +53,6 @@ public class AudioDispatcherBuilder {
 
 	protected static final int DEFAULT_AUDIO_BUFFER_OVERLAP = 1024;
 	protected static final int DEFAULT_AUDIO_BUFFER_SIZE = 2048;
-	protected static final int NUMBER_OF_MEL_FREQUENCY_CEPSTRUM_COEFFICIENTS = 30;
-	protected static final int NUMBER_OF_MEL_FILTERS = 30;
-
-	protected static final float LOWER_FREQUENCY_FILTER = 35.0f; // Low range for humans is 20-50 Hz
-	protected static final float UPPER_FREQUENCY_FILTER = 20_000.0f; // High range for human is 20 kHz
 
 	public static AudioDispatcherBuilder from(Audio audio) {
 		return new AudioDispatcherBuilder(audio);
@@ -65,8 +60,8 @@ public class AudioDispatcherBuilder {
 
 	private Integer audioBufferOverlap;
 	private Integer audioBufferSize;
-	private Integer numberOfCoefficients;
-	private Integer numberOfFilters;
+	private Integer numberOfCepstrumCoefficients;
+	private Integer numberOfMelFilters;
 
 	private final Audio audio;
 
@@ -92,16 +87,16 @@ public class AudioDispatcherBuilder {
 		return AudioFormatBuilder.from(getAudio()).build();
 	}
 
-	protected int getNumberOfCoefficients() {
-		Integer numberOfCoefficients = this.numberOfCoefficients;
+	protected int getNumberOfCepstrumCoefficients() {
+		Integer numberOfCoefficients = this.numberOfCepstrumCoefficients;
 		return numberOfCoefficients != null ? numberOfCoefficients
-			: NUMBER_OF_MEL_FREQUENCY_CEPSTRUM_COEFFICIENTS;
+			: MfccAudioFingerprintFunction.DEFAULT_NUMBER_OF_CEPSTRUM_COEFFICIENTS;
 	}
 
-	protected int getNumberOfFilters() {
-		Integer numberOfFilters = this.numberOfFilters;
+	protected int getNumberOfMelFilters() {
+		Integer numberOfFilters = this.numberOfMelFilters;
 		return numberOfFilters != null ? numberOfFilters
-			: NUMBER_OF_MEL_FILTERS;
+			: MfccAudioFingerprintFunction.DEFAULT_NUMBER_OF_MEL_FILTERS;
 	}
 
 	public AudioDispatcherBuilder register(AudioProcessor audioProcessor) {
@@ -114,13 +109,13 @@ public class AudioDispatcherBuilder {
 		return register(newMFCC(mfccConsumer));
 	}
 
-	public AudioDispatcherBuilder withNumberOfCoefficients(int numberOfCoefficients) {
-		this.numberOfCoefficients = numberOfCoefficients;
+	public AudioDispatcherBuilder withNumberOfCepstrumCoefficients(int numberOfCoefficients) {
+		this.numberOfCepstrumCoefficients = numberOfCoefficients;
 		return this;
 	}
 
-	public AudioDispatcherBuilder withNumberOfFilters(int numberOfFilters) {
-		this.numberOfFilters = numberOfFilters;
+	public AudioDispatcherBuilder withNumberOfMelFilters(int numberOfFilters) {
+		this.numberOfMelFilters = numberOfFilters;
 		return this;
 	}
 
@@ -129,8 +124,8 @@ public class AudioDispatcherBuilder {
 		int samplesPerFrame = getAudioBufferSize();
 		float sampleRate = getAudioFormat().getSampleRate();
 
-		return new MFCC(samplesPerFrame, sampleRate, getNumberOfCoefficients(), getNumberOfFilters(),
-			LOWER_FREQUENCY_FILTER, UPPER_FREQUENCY_FILTER) {
+		return new MFCC(samplesPerFrame, sampleRate, getNumberOfCepstrumCoefficients(), getNumberOfMelFilters(),
+			MfccAudioFingerprintFunction.LOWER_FREQUENCY_FILTER, MfccAudioFingerprintFunction.UPPER_FREQUENCY_FILTER) {
 
 			@Override
 			public void processingFinished() {

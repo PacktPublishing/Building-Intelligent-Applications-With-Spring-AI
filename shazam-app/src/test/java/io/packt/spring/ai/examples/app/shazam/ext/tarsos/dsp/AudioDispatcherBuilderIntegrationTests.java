@@ -62,7 +62,7 @@ class AudioDispatcherBuilderIntegrationTests {
 		};
 
 		AudioDispatcher audioDispatcher = AudioDispatcherBuilder.from(audio)
-			.withNumberOfCoefficients(45)
+			.withNumberOfCepstrumCoefficients(45)
 			.registerMFCC(mfccConsumer)
 			.build();
 
