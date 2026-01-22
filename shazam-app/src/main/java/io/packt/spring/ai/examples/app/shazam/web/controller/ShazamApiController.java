@@ -49,7 +49,7 @@ public class ShazamApiController {
 
 	private final MusicService musicService;
 
-	@PostMapping("/song/search")
+	@PostMapping("/songs/search")
 	public SongSearchResponse search(@RequestBody MultipartFile file) {
 		Audio audio = Audio.from(file);
 		Song song = getMusicService().search(audio);
