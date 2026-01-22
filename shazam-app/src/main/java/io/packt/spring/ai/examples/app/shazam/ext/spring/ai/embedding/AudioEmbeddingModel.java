@@ -16,9 +16,9 @@
 package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
-import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.AudioDispatcherBuilder;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.MfccAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
@@ -39,11 +39,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * {@link EmbeddingModel} implementation based on the {@literal TarsosDSP} library used to embed {@link Audio}.
+ * {@link EmbeddingModel} implementation based on a {@link AudioFingerprintFunction} algorithm
+ * used to embed {@link Audio}.
  *
  * @author John Blum
  * @see Audio
  * @see AudioDispatcher
+ * @see AudioFingerprintFunction
  * @see Document
  * @see DocumentStore
  * @see Embedding
@@ -59,12 +61,19 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 	private static final int DEFAULT_INDEX = 0;
 
 	private static final String EMPTY_STRING = "";
-	private static final String EMBEDDING_MODEL = "mfcc";
+
+	private final AudioFingerprintFunction audioFingerprintFunction;
 
 	private final DocumentStore documentStore;
 
-	public AudioEmbeddingModel(DocumentStore documentStore) {
+	AudioEmbeddingModel(DocumentStore documentStore) {
+		this(new MfccAudioFingerprintFunction(DEFAULT_VECTOR_DIMENSIONS), documentStore);
+	}
+
+	public AudioEmbeddingModel(AudioFingerprintFunction audioFingerprintFunction, DocumentStore documentStore) {
+		Assert.notNull(audioFingerprintFunction, "AudioFingerprintFunction is required");
 		Assert.notNull(documentStore, "DocumentStore is required");
+		this.audioFingerprintFunction = audioFingerprintFunction;
 		this.documentStore = documentStore;
 	}
 
@@ -88,19 +97,8 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 
 	@Override
 	public @NonNull float[] embed(@NonNull Document document) {
-
-		AtomicReference<float[]> mfcc = new AtomicReference<>();
-
 		Audio audio = toAudio(document);
-
-		AudioDispatcher audioDispatcher = AudioDispatcherBuilder.from(audio)
-			.withNumberOfCoefficients(dimensions())
-			.registerMFCC(mfcc::set)
-			.build();
-
-		audioDispatcher.run();
-
-		return mfcc.get();
+		return getAudioFingerprintFunction().compute(audio);
 	}
 
 	private Audio toAudio(Document document) {
@@ -139,6 +137,6 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 	}
 
 	private EmbeddingResponseMetadata withEmbeddingResponseMetadata() {
-		return new EmbeddingResponseMetadata(EMBEDDING_MODEL, new EmptyUsage());
+		return new EmbeddingResponseMetadata(getAudioFingerprintFunction().getName(), new EmptyUsage());
 	}
 }
