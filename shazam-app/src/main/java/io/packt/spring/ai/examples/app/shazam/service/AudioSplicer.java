@@ -26,8 +26,10 @@ import org.springframework.ai.document.Document;
  *
  * @author John Blum
  * @see Audio
+ * @see FunctionalInterface
  * @since 0.1.0
  */
+@FunctionalInterface
 public interface AudioSplicer {
 
 	Audio splice(List<Document> audioDocuments);
