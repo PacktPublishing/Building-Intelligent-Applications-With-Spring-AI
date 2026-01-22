@@ -16,11 +16,12 @@
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
+import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
@@ -30,44 +31,31 @@ import org.springframework.stereotype.Service;
  *
  * @author John Blum
  * @see Audio
- * @see AudioSplicer
+ * @see AbstractAudioSplicer
  * @see org.springframework.ai.document.Document
  * @see org.springframework.stereotype.Service
  * @since 0.1.0
  */
 @Service
-public class DefaultAudioSplicer implements AudioSplicer {
+public class DefaultAudioSplicer extends AbstractAudioSplicer {
 
 	@Override
+	@SuppressWarnings("all")
 	public Audio splice(List<Document> audioDocuments) {
 
-		List<byte[]> audioClipData = audioDocuments.stream()
-			.filter(this::isNonOverlappingAudioClip)
-			.map(this::extractAudioData)
-			.toList();
+		List<byte[]> audioClips = extractAudioClips(audioDocuments);
+		byte[] audioData = spliceAudioClips(audioClips);
+		Audio audio = Audio.from(audioData);
 
-		byte[] audioData = audioClipData.stream()
-			.reduce(this::splice)
-			.orElse(NumberUtils.EMPTY_BYTE_ARRAY);
+		return audio;
+	}
 
-		return Audio.from(audioData);
+	@Override
+	protected Predicate<Document> audioClipFilter() {
+		return super.audioClipFilter().and(this::isNonOverlappingAudioClip);
 	}
 
 	private boolean isNonOverlappingAudioClip(Document document) {
 		return Boolean.FALSE.equals(document.getMetadata().get(AbstractAudioSplitter.AUDIO_CLIP_OVERLAP_KEY));
-	}
-
-	private byte[] extractAudioData(Document document) {
-		return document.getMedia().getDataAsByteArray();
-	}
-
-	private byte[] splice(byte[] audioClipOne, byte[] audioClipTwo) {
-
-		byte[] audioData = new byte[audioClipOne.length + audioClipTwo.length];
-
-		System.arraycopy(audioClipOne, 0, audioData, 0, audioClipOne.length);
-		System.arraycopy(audioClipTwo, 0, audioData, audioClipOne.length, audioClipTwo.length);
-
-		return audioData;
 	}
 }
