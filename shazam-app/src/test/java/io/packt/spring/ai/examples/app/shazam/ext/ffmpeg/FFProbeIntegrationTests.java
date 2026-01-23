@@ -37,13 +37,14 @@ import org.springframework.core.io.Resource;
  */
 public class FFProbeIntegrationTests {
 
-	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	private static final String MATCHBOX20_UNWELL_RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	private static final String PEARL_JAM_NO_CODE_RED_MOSQUITO_RESOURCE_PATH = "PearlJam-NoCode-RedMosquito.mp3";
 
 	@Test
-	@EnabledIf("resourceExists")
-	void audioFormatIsCorrect() {
+	@EnabledIf("matchbox20UnwellResourceExists")
+	void matchbox20UnwellAudioFormatIsCorrect() {
 
-		Audio audio = Audio.from(resource());
+		Audio audio = Audio.from(matchbox20UnwellResource());
 
 		FFProbe probe = FFProbe.builder()
 			.enableDownload()
@@ -65,11 +66,45 @@ public class FFProbeIntegrationTests {
 		assertThat(format.startTime()).isEqualTo(0.0d);
 	}
 
-	Resource resource() {
-		return new ClassPathResource(RESOURCE_PATH);
+	@Test
+	@EnabledIf("pearlJamNoCodeRedMosquitoResourceExists")
+	void pearlJamNoCodeRedMosquitoAudioFormatIsCorrect() {
+
+		Audio audio = Audio.from(pearlJamNoCodeRedMosquitoResource());
+
+		FFProbe probe = FFProbe.builder()
+			.enableDownload()
+			.build();
+
+		FFProbe.Format format = probe.showFormat(audio);
+
+		assertThat(format).isNotNull();
+		assertThat(format.bitRate()).isGreaterThanOrEqualTo(160_000);
+		assertThat(format.getDuration()).isGreaterThan(Duration.ofMinutes(4).plusSeconds(3));
+		assertThat(format.filename()).isEqualTo(audio.file().getAbsolutePath());
+		assertThat(format.name().toLowerCase()).isEqualTo("mp3");
+		assertThat(format.description()).contains("MPEG audio layer 2/3");
+		assertThat(format.numberOfPrograms()).isZero();
+		assertThat(format.numberOfStreams()).isOne();
+		assertThat(format.numberOfStreamGroups()).isZero();
+		assertThat(format.probeScore()).isEqualTo(51); // ?
+		assertThat(format.size()).isGreaterThan(4_800_000);
+		assertThat(format.startTime()).isEqualTo(0.0d);
 	}
 
-	boolean resourceExists() {
-		return resource().exists();
+	Resource matchbox20UnwellResource() {
+		return new ClassPathResource(MATCHBOX20_UNWELL_RESOURCE_PATH);
+	}
+
+	boolean matchbox20UnwellResourceExists() {
+		return matchbox20UnwellResource().exists();
+	}
+
+	Resource pearlJamNoCodeRedMosquitoResource() {
+		return new ClassPathResource(PEARL_JAM_NO_CODE_RED_MOSQUITO_RESOURCE_PATH);
+	}
+
+	boolean pearlJamNoCodeRedMosquitoResourceExists() {
+		return pearlJamNoCodeRedMosquitoResource().exists();
 	}
 }
