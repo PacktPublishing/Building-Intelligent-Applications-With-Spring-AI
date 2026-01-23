@@ -20,6 +20,7 @@
 	<url/>
 
 	<properties>
+		<jdsp.version>3.1.0</jdsp.version>
 		<jlayer.version>1.0.3</jlayer.version>
 		<tarsosdsp.version>2.5</tarsosdsp.version>
 		<tritonus.version>0.3.7.4</tritonus.version>
@@ -51,6 +52,11 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.psambit9791</groupId>
+			<artifactId>jdsp</artifactId>
+			<version>${jdsp.version}</version>
 		</dependency>
 <!--
 		<dependency>
