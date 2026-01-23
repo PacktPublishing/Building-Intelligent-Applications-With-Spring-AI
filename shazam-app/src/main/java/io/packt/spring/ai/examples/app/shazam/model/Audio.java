@@ -51,6 +51,7 @@ import lombok.ToString;
  * @see java.io.File
  * @see java.net.URL
  * @see java.time.Duration
+ * @see javax.sound.sampled.AudioFormat
  * @see org.springframework.ai.content.Media
  * @see org.springframework.core.io.Resource
  * @see org.springframework.web.multipart.MultipartFile
@@ -119,11 +120,11 @@ public class Audio implements AudioSource, MediaSource {
 	}
 
 	public boolean isEmpty() {
-		return size() == 0L;
+		return getDataSource().isEmpty();
 	}
 
 	public boolean isNotEmpty() {
-		return !isEmpty();
+		return getDataSource().isNotEmpty();
 	}
 
 	public File file() {
@@ -286,6 +287,14 @@ public class Audio implements AudioSource, MediaSource {
 		static DataSource from(Resource resource) {
 			Assert.notNull(resource, "Resource containing audio is required");
 			return () -> resource;
+		}
+
+		default boolean isEmpty() {
+			return size() == 0L;
+		}
+
+		default boolean isNotEmpty() {
+			return !isEmpty();
 		}
 
 		default boolean isFile() {
