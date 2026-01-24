@@ -40,9 +40,15 @@ import org.springframework.core.io.Resource;
  * @see org.junit.jupiter.api.Test
  * @since 0.1.0
  */
+@SuppressWarnings("unused")
 class AudioFileFormatIntegrationTests {
 
-	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	private static final String MATCHBOX20_UNWELL_RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+
+	// Throws UnsupportedAudioFileException: File of unsupported format
+	private static final String PEARL_JAM_NO_CODE_RED_MOSQUITO_RESOURCE_PATH = "PearlJam-NoCode-RedMosquito.mp3";
+
+	private static final String RESOURCE_PATH = MATCHBOX20_UNWELL_RESOURCE_PATH;
 
 	@Test
 	@EnabledIf("resourceExists")
