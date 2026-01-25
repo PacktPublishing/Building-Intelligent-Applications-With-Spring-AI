@@ -28,14 +28,19 @@
 
 	<repositories>
 		<repository>
-			<id>TarsosDSP Repository</id>
-			<name>Maven Repository containing the TarsosDSP library @ https://github.com/JorenSix/TarsosDSP</name>
-			<url>https://mvn.0110.be/releases</url>
+			<id>jcenter</id>
+			<name>JCenter</name>
+			<url>https://jcenter.bintray.com/</url>
 		</repository>
 		<repository>
 			<id>jitpack-io</id>
 			<name>JitPack IO Repository</name>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>tarsosdsp-repo</id>
+			<name>Maven Repository containing the TarsosDSP library @ https://github.com/JorenSix/TarsosDSP</name>
+			<url>https://mvn.0110.be/releases</url>
 		</repository>
 	</repositories>
 
@@ -53,11 +58,6 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.psambit9791</groupId>
-			<artifactId>jdsp</artifactId>
-			<version>${jdsp.version}</version>
-		</dependency>
 <!--
 		<dependency>
 			<groupId>com.googlecode.soundlibs</groupId>
@@ -70,13 +70,6 @@
 			<artifactId>tritonus-share</artifactId>
 			<version>${tritonus.version}</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>com.github.umjammer</groupId>
-			<artifactId>jlayer</artifactId>
-			<version>${jlayer.version}</version>
-		</dependency>
--->
 		<dependency>
 			<groupId>org.tritonus</groupId>
 			<artifactId>javalayer</artifactId>
@@ -84,6 +77,13 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/javalayer-0.1.0.jar</systemPath>
 		</dependency>
+		<!--
+				<dependency>
+					<groupId>com.github.umjammer</groupId>
+					<artifactId>jlayer</artifactId>
+					<version>${jlayer.version}</version>
+				</dependency>
+		-->
 		<dependency>
 			<groupId>org.tritonus</groupId>
 			<artifactId>tritonus_mp3</artifactId>
@@ -104,6 +104,11 @@
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.psambit9791</groupId>
+			<artifactId>jdsp</artifactId>
+			<version>${jdsp.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
