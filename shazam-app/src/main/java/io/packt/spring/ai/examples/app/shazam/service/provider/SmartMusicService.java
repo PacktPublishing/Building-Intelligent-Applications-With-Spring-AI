@@ -83,13 +83,13 @@ public class SmartMusicService implements MusicService {
 
 	private final VectorStore vectorStore;
 
-	protected Logger getLogger() {
-		return log;
-	}
-
 	@PostConstruct
 	public void afterInit() {
 		getLogger().info("Using VectorStore [{}]", getVectorStore().getClass().getName());
+	}
+
+	protected Logger getLogger() {
+		return log;
 	}
 
 	@Override
