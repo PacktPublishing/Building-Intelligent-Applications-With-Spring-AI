@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
  */
 public abstract class AudioUtils {
 
-	public static AudioFileFormat.Type MP3_AUDIO_FILE_FORMAT = new AudioFileFormat.Type("MP3", "mp3");
+	public static final AudioFileFormat.Type MP3_AUDIO_FILE_FORMAT = new AudioFileFormat.Type("MP3", "mp3");
 
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
