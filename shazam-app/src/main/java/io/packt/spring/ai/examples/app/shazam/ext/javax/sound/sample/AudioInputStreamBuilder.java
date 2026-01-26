@@ -16,16 +16,16 @@
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.function.Supplier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
+import org.cp.elements.function.FunctionUtils;
 import org.cp.elements.lang.Builder;
+import org.cp.elements.lang.ObjectUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -48,12 +48,25 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 	private final Audio audio;
 
+	private Long frameLength;
+
 	protected AudioInputStreamBuilder(Audio audio) {
 		this.audio = AudioUtils.assertAudio(audio);
 	}
 
 	protected AudioFormat getAudioFormat() {
 		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
+	}
+
+	protected Long resolveFrameLength(Supplier<Long> defaultFrameLength) {
+		return ObjectUtils.returnValueOrDefaultIfNull(this.frameLength,
+			FunctionUtils.nullSafeSupplier(defaultFrameLength));
+	}
+
+	@SuppressWarnings("unused")
+	public AudioInputStreamBuilder withFrameLength(Long frameLength) {
+		this.frameLength = frameLength;
+		return this;
 	}
 
 	public AudioInputStream build() {
@@ -67,20 +80,27 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	}
 
 	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat) {
-		return new AudioInputStream(audio.inputStream(), audioFormat, AudioSystem.NOT_SPECIFIED);
+		return newAudioInputStream(audio, audioFormat, AudioUtils.unspecified());
+	}
+
+	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat, long frameLength) {
+		return new AudioInputStream(audio.inputStream(), audioFormat, frameLength);
 	}
 
 	private AudioInputStream buildAudioInputStream(Audio audio) {
 
-		try (AudioInputStream audioInputStream = AudioUtils.openInputStream(audio)) {
-			AudioFormat audioFormat = buildAudioFormat(audio, audioInputStream);
-			long frameLength = audioInputStream.getFrameLength();
-			InputStream inputStream = audio.inputStream();
-			return new AudioInputStream(inputStream, audioFormat, frameLength);
+		AudioInputStream audioInputStream = null;
+
+		try (AudioInputStream in = AudioUtils.openInputStream(audio)) {
+			AudioFormat audioFormat = buildAudioFormat(audio, in);
+			long frameLength = resolveFrameLength(in::getFrameLength);
+			audioInputStream = newAudioInputStream(audio, audioFormat, frameLength);
 		}
-		catch (IOException cause) {
-			throw AudioAccessException.because("Failed to open InputStream to Audio", cause);
+		catch (IOException ignore) {
+			// IOException thrown when closing intermediate AudioInputStream
 		}
+
+		return audioInputStream;
 	}
 
 	private AudioFormat buildAudioFormat(Audio audio, AudioInputStream audioInputStream) {
