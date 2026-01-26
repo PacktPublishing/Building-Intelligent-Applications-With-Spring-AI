@@ -137,7 +137,7 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 
 		return ObjectUtils.returnValueOrDefaultIfNull(this.frameSize, () -> {
 
-			int channels = getChannels();
+			int channels = Math.max(getChannels(), AudioChannels.MONO.value());
 			int sampleSizeInBits = getSampleSizeInBits();
 
 			return AudioUtils.isSpecified(sampleSizeInBits) && AudioUtils.isSpecified(channels)
