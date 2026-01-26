@@ -19,18 +19,21 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PE
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
+import org.cp.elements.lang.ObjectUtils;
+import org.cp.elements.util.MapUtils;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,6 +50,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
 public class AudioFormatBuilder implements Builder<AudioFormat> {
 
 	public static AudioFormatBuilder from(Audio audio) {
@@ -57,9 +61,20 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 
 	private final Audio audio;
 
-	private volatile Supplier<AudioFormat> defaultAudioFormat;
+	private AudioFormat.Encoding encoding;
+
+	private Boolean bigEndian;
+
+	private Float frameRate;
+	private Float sampleRate;
+
+	private Integer channels;
+	private Integer frameSize;
+	private Integer sampleSizeInBits;
 
 	private final Map<String, Object> audioProperties = new HashMap<>();
+
+	private volatile Supplier<AudioFormat> defaultAudioFormat;
 
 	protected AudioFormatBuilder(Audio audio) {
 		this.audio = AudioUtils.assertAudio(audio);
@@ -77,7 +92,6 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 		return copy(audioInputStream.getFormat());
 	}
 
-	@SuppressWarnings("unused")
 	public AudioFormatBuilder defaultAudioFormat(AudioFormat defaultAudioFormat) {
 		return defaultAudioFormat(() -> defaultAudioFormat);
 	}
@@ -92,15 +106,15 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	protected boolean isBigEndian() {
-		return getFormat().isBigEndian();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.bigEndian, () -> getFormat().isBigEndian());
 	}
 
 	protected int getChannels() {
-		return getFormat().getChannels();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.channels, () -> getFormat().getChannels());
 	}
 
 	protected AudioFormat.Encoding getEncoding() {
-		return getFormat().getEncoding();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.encoding, () -> getFormat().getEncoding());
 	}
 
 	protected AudioFormat getFormat() {
@@ -116,25 +130,74 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	protected float getFrameRate() {
-		return getSampleRate();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.frameRate, this::getSampleRate);
 	}
 
 	protected int getFrameSize() {
 
-		int channels = getChannels();
-		int sampleSizeInBits = getSampleSizeInBits();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.frameSize, () -> {
 
-		return AudioUtils.isSpecified(sampleSizeInBits) && AudioUtils.isSpecified(channels)
-			? (sampleSizeInBits + 7) / BITS_PER_BYTE * channels
-			: AudioSystem.NOT_SPECIFIED;
+			int channels = getChannels();
+			int sampleSizeInBits = getSampleSizeInBits();
+
+			return AudioUtils.isSpecified(sampleSizeInBits) && AudioUtils.isSpecified(channels)
+				? (sampleSizeInBits + 7) / BITS_PER_BYTE * channels
+				: AudioUtils.unspecified();
+		});
 	}
 
 	protected float getSampleRate() {
-		return getFormat().getSampleRate();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.sampleRate, () -> getFormat().getSampleRate());
 	}
 
 	protected int getSampleSizeInBits() {
-		return getFormat().getSampleSizeInBits();
+		return ObjectUtils.returnValueOrDefaultIfNull(this.sampleSizeInBits, () -> getFormat().getSampleSizeInBits());
+	}
+
+	public AudioFormatBuilder withBigEndian(Boolean bigEndian) {
+		this.bigEndian = bigEndian;
+		return this;
+	}
+
+	public AudioFormatBuilder withChannels(Integer channels) {
+		this.channels = channels;
+		return this;
+	}
+
+	public AudioFormatBuilder withFrameRate(Float frameRate) {
+		this.frameRate = frameRate;
+		return this;
+	}
+
+	public AudioFormatBuilder withFrameSize(Integer frameSize) {
+		this.frameSize = frameSize;
+		return this;
+	}
+
+	public AudioFormatBuilder withProperty(String propertyName, Object propertyValue) {
+		Assert.hasText(propertyName, "Property name is required");
+		Assert.notNull(propertyValue, "Property value is required");
+		this.audioProperties.put(propertyName, propertyValue);
+		return this;
+	}
+
+	public AudioFormatBuilder withProperties(Map<String, Object> properties) {
+
+		MapUtils.nullSafeMap(properties).entrySet().stream()
+			.filter(entry -> StringUtils.hasText(entry.getKey()) && Objects.nonNull(entry.getValue()))
+			.forEach(entry -> withProperty(entry.getKey(), entry.getValue()));
+
+		return this;
+	}
+
+	public AudioFormatBuilder withSampleRate(Float sampleRate) {
+		this.sampleRate = sampleRate;
+		return this;
+	}
+
+	public AudioFormatBuilder withSampleSizeInBits(Integer frameSize) {
+		this.frameSize = frameSize;
+		return this;
 	}
 
 	public AudioFormat build() {
