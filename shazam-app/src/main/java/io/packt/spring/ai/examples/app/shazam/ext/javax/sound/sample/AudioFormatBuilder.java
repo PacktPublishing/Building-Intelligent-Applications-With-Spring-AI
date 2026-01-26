@@ -30,6 +30,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
+import org.springframework.lang.Nullable;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -76,12 +77,17 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 		return copy(audioInputStream.getFormat());
 	}
 
+	@SuppressWarnings("unused")
+	public AudioFormatBuilder defaultAudioFormat(AudioFormat defaultAudioFormat) {
+		return defaultAudioFormat(() -> defaultAudioFormat);
+	}
+
 	public AudioFormatBuilder defaultAudioFormat(Supplier<AudioFormat> defaultAudioFormat) {
 		this.defaultAudioFormat = defaultAudioFormat;
 		return this;
 	}
 
-	protected AudioFormat getAudioFormat() {
+	protected @Nullable AudioFormat getAudioFormat() {
 		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
 	}
 
@@ -132,7 +138,9 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	public AudioFormat build() {
+
 		AudioFormat audioFormat = getAudioFormat();
+
 		return audioFormat instanceof ShazamAudioFormat shazamAudioFormat ? shazamAudioFormat
 			: newAudioFormat();
 	}
