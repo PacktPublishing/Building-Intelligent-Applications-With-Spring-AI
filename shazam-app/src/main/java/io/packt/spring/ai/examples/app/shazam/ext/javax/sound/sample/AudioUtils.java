@@ -79,4 +79,9 @@ public abstract class AudioUtils {
 			.enableDownload()
 			.build();
 	}
+
+	@SuppressWarnings("unused")
+	public static int unspecified() {
+		return AudioSystem.NOT_SPECIFIED;
+	}
 }
