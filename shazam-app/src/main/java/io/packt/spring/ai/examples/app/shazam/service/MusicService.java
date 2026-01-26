@@ -24,7 +24,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
 import org.springframework.ai.document.Document;
 
 /**
- * Interface defining a service for processing music.
+ * Interface defining a service to process music.
  *
  * @author John Blum
  * @see Audio
