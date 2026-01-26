@@ -28,6 +28,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioChannels;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioInputStreamBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
@@ -50,9 +51,11 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see Audio
+ * @see AudioChannels
  * @see AudioProperties
  * @see AudioSplitter
  * @see java.time.Duration
+ * @see javax.sound.sampled.AudioFormat
  * @see javax.sound.sampled.AudioSystem
  * @see org.springframework.ai.document.Document
  * @see org.springframework.stereotype.Service
@@ -318,52 +321,6 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 					? new MpegLayer3AudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties())
 					: new CompactDiscAudioClipCalculator(getAudio(), getAudioFormat(), getAudioProperties());
 			}
-		}
-	}
-
-	@SuppressWarnings("unused")
-	public enum AudioChannels {
-
-		MONO(1), STEREO(2);
-
-		static AudioChannels from(int value) {
-
-			return switch (value) {
-				case 1 -> MONO;
-				case 2 -> STEREO;
-				default -> {
-					String message = "[%d] is not valid number of audio channels".formatted(value);
-					throw new IllegalArgumentException(message);
-				}
-			};
-		}
-
-		static AudioChannels from(AudioFormat audioFormat) {
-
-			try {
-				return from(audioFormat.getChannels());
-			}
-			catch (Exception ignore) {
-				return MONO;
-			}
-		}
-
-		private final int value;
-
-		AudioChannels(int value) {
-			this.value = value;
-		}
-
-		public boolean isMono() {
-			return this.equals(MONO);
-		}
-
-		public boolean inStereo() {
-			return this.equals(STEREO);
-		}
-
-		public int value() {
-			return this.value;
 		}
 	}
 
