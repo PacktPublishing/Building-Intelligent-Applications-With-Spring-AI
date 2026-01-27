@@ -27,7 +27,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
-import org.springframework.ai.document.Document;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -36,7 +36,6 @@ import org.springframework.util.Assert;
  * @author John Blum
  * @see Audio
  * @see AudioSystem
- * @see Document
  * @see FFProbe
  * @since 0.1.0
  */
@@ -46,7 +45,7 @@ public abstract class AudioUtils {
 
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
-	public static Audio assertAudio(Audio audio) {
+	public static @NonNull Audio assertAudio(Audio audio) {
 		Assert.notNull(audio, "Audio is required");
 		return audio;
 	}
