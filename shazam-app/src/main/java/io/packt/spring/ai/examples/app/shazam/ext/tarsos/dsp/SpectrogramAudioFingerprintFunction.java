@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp;
 import java.util.List;
 
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 
@@ -36,7 +37,7 @@ import be.tarsos.dsp.SpectralPeakProcessor;
  * @see <a href="https://github.com/JorenSix/TarsosDSP">TarsosDSP</a>
  * @since 0.1.0
  */
-public class SpectrogramAudioFingerprintFunction implements AudioFingerprintFunction {
+public class SpectrogramAudioFingerprintFunction implements AudioFingerprintFunction<float[]> {
 
 	protected static final int DEFAULT_FAST_FOURIER_TRANSFORM_SIZE = 1024;
 	protected static final int DEFAULT_NUMBER_OF_PEAKS = 256;
@@ -51,7 +52,7 @@ public class SpectrogramAudioFingerprintFunction implements AudioFingerprintFunc
 
 	// TODO: reevaluate implementation for correctness
 	@Override
-	public float[] compute(Audio audio) {
+	public Fingerprint<float[]> compute(Audio audio) {
 
 		int fftSize = getFastFourierTransformSize();
 		int overlap = fftSize / 2;
@@ -83,7 +84,9 @@ public class SpectrogramAudioFingerprintFunction implements AudioFingerprintFunc
 			.map(SpectralPeakProcessor.SpectralPeak::getRefFrequencyInHertz)
 			.toList();
 
-		return toPrimitiveFloatArray(spectralPeakFrequencies);
+		// TODO: Algorithm is incomplete!
+
+		return toFingerprint(toPrimitiveFloatArray(spectralPeakFrequencies));
 	}
 
 	@SuppressWarnings("unused")
@@ -110,5 +113,29 @@ public class SpectrogramAudioFingerprintFunction implements AudioFingerprintFunc
 		}
 
 		return array;
+	}
+
+	private Fingerprint<float[]> toFingerprint(float[] array) {
+
+		return new Fingerprint<>() {
+
+			@Override
+			public float[] get() {
+				return array;
+			}
+
+			@Override
+			public byte[] getData() {
+
+				float[] array = get();
+				byte[] data = new byte[array.length];
+
+				for (int index = 0; index < array.length; index++) {
+					data[index] = Float.valueOf(array[index]).byteValue();
+				}
+
+				return data;
+			}
+		};
 	}
 }
