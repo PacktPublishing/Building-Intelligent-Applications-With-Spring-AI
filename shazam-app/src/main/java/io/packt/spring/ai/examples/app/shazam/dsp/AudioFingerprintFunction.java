@@ -26,6 +26,7 @@ import org.cp.elements.lang.Nameable;
  * the {@literal fingerprint} ({@literal digital signature}) for {@link Audio}.
  *
  * @author John Blum
+ * @param <T> {@link Class Data type} of the {@literal fingerprint}.
  * @see Audio
  * @see java.util.function.Function
  * @see org.cp.elements.lang.Nameable
@@ -33,7 +34,7 @@ import org.cp.elements.lang.Nameable;
  */
 @FunctionalInterface
 @SuppressWarnings("unused")
-public interface AudioFingerprintFunction extends Function<Audio, float[]>, Nameable<String> {
+public interface AudioFingerprintFunction<T> extends Function<Audio, Fingerprint<T>>, Nameable<String> {
 
 	@Override
 	default String getName() {
@@ -41,17 +42,18 @@ public interface AudioFingerprintFunction extends Function<Audio, float[]>, Name
 	}
 
 	@Override
-	default float[] apply(Audio audio) {
+	default Fingerprint<T> apply(Audio audio) {
 		return compute(audio);
 	}
 
 	/**
-	 * Computes a {@literal fingerprint} ({@literal digital signature}) for the given {@link Audio}.
+	 * Computes a {@link Fingerprint} ({@literal digital signature}) for the given {@link Audio}.
 	 *
-	 * @param audio {@link Audio} used to compute the digital signature ({@literal fingerprint}.
-	 * @return the computed {@literal fingerprint} of the given {@link Audio}.
+	 * @param audio {@link Audio} used to compute a {@link Fingerprint} ({@literal digital signature}).
+	 * @return the computed {@link Fingerprint} of the given {@link Audio}.
+	 * @see Fingerprint
 	 * @see Audio
 	 */
-	float[] compute(Audio audio);
+	Fingerprint<T> compute(Audio audio);
 
 }
