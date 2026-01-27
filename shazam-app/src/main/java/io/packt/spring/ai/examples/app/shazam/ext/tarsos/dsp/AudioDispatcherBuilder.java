@@ -17,7 +17,6 @@ package io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -58,12 +57,10 @@ public class AudioDispatcherBuilder {
 		return new AudioDispatcherBuilder(audio);
 	}
 
+	private final Audio audio;
+
 	private Integer audioBufferOverlap;
 	private Integer audioBufferSize;
-	private Integer numberOfCepstrumCoefficients;
-	private Integer numberOfMelFilters;
-
-	private final Audio audio;
 
 	private final List<AudioProcessor> audioProcessors = new ArrayList<>();
 
@@ -87,52 +84,10 @@ public class AudioDispatcherBuilder {
 		return AudioFormatBuilder.from(getAudio()).build();
 	}
 
-	protected int getNumberOfCepstrumCoefficients() {
-		Integer numberOfCoefficients = this.numberOfCepstrumCoefficients;
-		return numberOfCoefficients != null ? numberOfCoefficients
-			: MfccAudioFingerprintFunction.DEFAULT_NUMBER_OF_CEPSTRUM_COEFFICIENTS;
-	}
-
-	protected int getNumberOfMelFilters() {
-		Integer numberOfFilters = this.numberOfMelFilters;
-		return numberOfFilters != null ? numberOfFilters
-			: MfccAudioFingerprintFunction.DEFAULT_NUMBER_OF_MEL_FILTERS;
-	}
-
 	public AudioDispatcherBuilder register(AudioProcessor audioProcessor) {
 		Assert.notNull(audioProcessor, "AudioProcessor is required");
 		this.audioProcessors.add(audioProcessor);
 		return this;
-	}
-
-	public AudioDispatcherBuilder registerMFCC(Consumer<float[]> mfccConsumer) {
-		return register(newMFCC(mfccConsumer));
-	}
-
-	public AudioDispatcherBuilder withNumberOfCepstrumCoefficients(int numberOfCoefficients) {
-		this.numberOfCepstrumCoefficients = numberOfCoefficients;
-		return this;
-	}
-
-	public AudioDispatcherBuilder withNumberOfMelFilters(int numberOfFilters) {
-		this.numberOfMelFilters = numberOfFilters;
-		return this;
-	}
-
-	private MFCC newMFCC(Consumer<float[]> mfccConsumer) {
-
-		int samplesPerFrame = getAudioBufferSize();
-		float sampleRate = getAudioFormat().getSampleRate();
-
-		return new MFCC(samplesPerFrame, sampleRate, getNumberOfCepstrumCoefficients(), getNumberOfMelFilters(),
-			MfccAudioFingerprintFunction.LOWER_FREQUENCY_FILTER, MfccAudioFingerprintFunction.UPPER_FREQUENCY_FILTER) {
-
-			@Override
-			public void processingFinished() {
-				super.processingFinished();
-				mfccConsumer.accept(getMFCC());
-			}
-		};
 	}
 
 	public AudioDispatcherBuilder usingAudioBufferOverlap(Integer audioBufferOverlap) {
