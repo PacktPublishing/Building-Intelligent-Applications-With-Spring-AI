@@ -17,8 +17,8 @@ package io.packt.spring.ai.examples.app.shazam.config;
 
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.ext.honerlaw.HonerlawAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
-import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.MfccAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
@@ -28,6 +28,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 /**
  * {@link SpringBootConfiguration} for the Shazam application.
@@ -52,8 +54,15 @@ public class ShazamConfiguration {
 	}
 
 	@Bean
-	AudioFingerprintFunction audioFingerprintFunction() {
-		return new MfccAudioFingerprintFunction();
+	@Profile("chromaprint")
+	AudioFingerprintFunction<?> chromaprintAudioFingerprintFunction() {
+		throw new IllegalStateException("Not Implemented");
+	}
+
+	@Bean
+	@Profile("honerlaw")
+	AudioFingerprintFunction<?> honerlawAudioFingerprintFunction() {
+		return new HonerlawAudioFingerprintFunction();
 	}
 
 	@Bean
@@ -62,7 +71,10 @@ public class ShazamConfiguration {
 	}
 
 	@Bean
-	EmbeddingModel embeddingModel(AudioFingerprintFunction audioFingerprintFunction, DocumentStore documentStore) {
-		return new AudioEmbeddingModel(audioFingerprintFunction, documentStore);
+	@Primary
+	EmbeddingModel embeddingModel(AudioFingerprintFunction<?> audioFingerprintFunction,
+			DocumentStore documentStore, EmbeddingModel embeddingModel) {
+
+		return new AudioEmbeddingModel(audioFingerprintFunction, documentStore, embeddingModel);
 	}
 }
