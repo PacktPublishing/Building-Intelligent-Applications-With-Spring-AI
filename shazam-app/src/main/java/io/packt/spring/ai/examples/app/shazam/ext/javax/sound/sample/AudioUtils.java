@@ -40,9 +40,11 @@ import org.springframework.util.Assert;
  * @see FFProbe
  * @since 0.1.0
  */
+@SuppressWarnings("unused")
 public abstract class AudioUtils {
 
 	public static final AudioFileFormat.Type MP3_AUDIO_FILE_FORMAT = new AudioFileFormat.Type("MP3", "mp3");
+	public static final AudioFileFormat.Type WAV_AUDIO_FILE_FORMAT = AudioFileFormat.Type.WAVE;
 
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
