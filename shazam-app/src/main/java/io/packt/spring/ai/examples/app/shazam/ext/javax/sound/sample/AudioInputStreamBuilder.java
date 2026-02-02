@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+
 import java.io.IOException;
 import java.util.function.Supplier;
 
@@ -35,6 +37,7 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see Audio
+ * @see javax.sound.sampled.AudioFormat
  * @see javax.sound.sampled.AudioInputStream
  * @see org.cp.elements.lang.Builder
  * @since 0.1.0
@@ -58,8 +61,13 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
 	}
 
+	protected Long getFrameLength() {
+		Long frameLength = this.frameLength;
+		return frameLength != null && AudioUtils.isSpecified(asInt(frameLength)) ? frameLength : null;
+	}
+
 	protected Long resolveFrameLength(Supplier<Long> defaultFrameLength) {
-		return ObjectUtils.returnValueOrDefaultIfNull(this.frameLength,
+		return ObjectUtils.returnValueOrDefaultIfNull(getFrameLength(),
 			FunctionUtils.nullSafeSupplier(defaultFrameLength));
 	}
 
@@ -75,12 +83,8 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 		AudioFormat audioFormat = getAudioFormat();
 
 		return audioFormat != null
-			? newAudioInputStream(audio, audioFormat)
+			? newAudioInputStream(audio, audioFormat, getFrameLength())
 			: buildAudioInputStream(audio);
-	}
-
-	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat) {
-		return newAudioInputStream(audio, audioFormat, AudioUtils.unspecified());
 	}
 
 	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat, long frameLength) {
