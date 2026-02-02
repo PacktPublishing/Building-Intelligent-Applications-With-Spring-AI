@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
@@ -48,6 +49,11 @@ public abstract class AudioUtils {
 	public static @NonNull Audio assertAudio(Audio audio) {
 		Assert.notNull(audio, "Audio is required");
 		return audio;
+	}
+
+	public static @NonNull AudioFormat assertAudioFormat(AudioFormat audioFormat) {
+		Assert.notNull(audioFormat, "AudioFormat is required");
+		return audioFormat;
 	}
 
 	public static boolean isSpecified(int audioValue) {
