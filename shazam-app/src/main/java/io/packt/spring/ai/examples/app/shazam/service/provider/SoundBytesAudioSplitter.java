@@ -127,7 +127,7 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		@SuppressWarnings("all")
 		protected int calculateFromBitRate(Audio audio, int bitRate) {
 
-			Duration audioClipLength = getAudioProperties().getClipLength();
+			Duration audioClipLength = getAudioProperties().getClipDuration();
 
 			int audioClipLengthInSeconds = asInt(audioClipLength.toSeconds());
 			int bitsPerAudioClipLengthInSeconds = bitRate * audioClipLengthInSeconds;
@@ -162,9 +162,9 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 
 	@Service
 	@Profile("MP3")
-	public static class MpegLayer3SoundBytesCalculator extends AbstractSoundBytesCalculator implements MpegLayer3Metadata {
+	public static class MpegSoundBytesCalculator extends AbstractSoundBytesCalculator implements MpegMetadata {
 
-		public MpegLayer3SoundBytesCalculator(AudioProperties audioProperties) {
+		public MpegSoundBytesCalculator(AudioProperties audioProperties) {
 			super(audioProperties);
 		}
 

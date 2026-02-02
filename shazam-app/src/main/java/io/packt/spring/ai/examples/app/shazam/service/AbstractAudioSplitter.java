@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
 import io.packt.spring.ai.examples.app.shazam.model.MediaSource;
@@ -96,9 +97,10 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 	public record AudioClip(Audio audio) implements AudioSource, MediaSource {
 
 		private static final MimeType AUDIO_MPEG = new MimeType("audio", "mpeg");
+		private static final MimeType AUDIO_WAVE = new MimeType("audio", "wav");
 
 		public AudioClip {
-			Assert.notNull(audio, "Audio is required");
+			AudioUtils.assertAudio(audio);
 		}
 
 		public static AudioClip from(byte[] audioData, AudioFormat audioFormat) {
@@ -117,7 +119,7 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 
 		@Override
 		public Media getMedia() {
-			return new Media(AUDIO_MPEG, audio().resource());
+			return new Media(AUDIO_WAVE, audio().resource());
 		}
 
 		public byte[] data() {
@@ -159,25 +161,21 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 		}
 	}
 
-	// CD
+	// Compact Disc (CD)
 	protected interface CompactDiscMetadata {
-
 		int CD_SAMPLE_RATE = 44_100; // 44,100 Hz (44.1 kHz); 44,100 samples per second
 		int CD_SAMPLE_SIZE_IN_BITS = 16; // Bit Depth | Bit Resolution
-
 	}
 
 	// MP3
 	@SuppressWarnings("unused")
-	protected interface MpegLayer3Metadata {
-
-		int MP3_BIT_RATE_STANDARD_QUALITY = 128_000; // 128 kbps (128,000 bits per second)
-		int MP3_BIT_RATE_MEDIUM_QUALITY = 192_000; // 192 kbps
-		int MP3_BIT_RATE_HIGH_QUALITY = 320_000; // 320 kbps; low compression
-		int MP3_BIT_RATE_LOW_QUALITY = 64_000; // 64 kbps; high compression
-		int MP3_BIT_RATE = MP3_BIT_RATE_STANDARD_QUALITY;
+	protected interface MpegMetadata {
+		int MP3_BIT_RATE_128 = 128_000; // 128 kbps (128,000 bits per second)
+		int MP3_BIT_RATE_160 = 160_000; // 160 kbps; higher compression
+		int MP3_BIT_RATE_192 = 192_000; // 192 kbps
+		int MP3_BIT_RATE_320 = 320_000; // 320 kbps; low compression
+		int MP3_BIT_RATE = MP3_BIT_RATE_160;
 		int MP3_SAMPLE_RATE = 22_050;
 		int MP3_SAMPLE_SIZE_IN_BITS = Math.round(asFloat(MP3_BIT_RATE) / asFloat(MP3_SAMPLE_RATE));
-
 	}
 }
