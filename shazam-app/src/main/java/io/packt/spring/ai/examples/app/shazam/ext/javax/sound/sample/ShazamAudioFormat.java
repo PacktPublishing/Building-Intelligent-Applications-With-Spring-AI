@@ -68,6 +68,12 @@ public class ShazamAudioFormat extends AudioFormat {
 		return getProbeFormat().getDuration();
 	}
 
+	public Long getFrameLength() {
+		long audioSize = getAudioSize();
+		long frameSize = getFrameSize();
+		return audioSize / frameSize;
+	}
+
 	public FFProbe.Format getProbeFormat() {
 		return this.probeFormat.updateAndGet(this::resolveProbeFormat);
 	}
@@ -101,7 +107,6 @@ public class ShazamAudioFormat extends AudioFormat {
 
 				sampleSizeInBits = audioSizeInBits / totalSamples;
 			}
-
 		}
 
 		return sampleSizeInBits;
