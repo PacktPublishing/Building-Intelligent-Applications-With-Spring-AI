@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam;
 
+import javax.sound.sampled.AudioFormat;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -24,11 +26,31 @@ import org.springframework.core.io.Resource;
  * @author John Blum
  * @since 0.1.0
  */
+@SuppressWarnings("unused")
 public abstract class AbstractShazamIntegrationTests {
+
+	private static final boolean DEBUG = false;
+
+	protected boolean isDebug() {
+		return DEBUG;
+	}
 
 	protected void log(String message, Object... args) {
 		System.out.printf(message, args);
 		System.out.flush();
+	}
+
+	protected void logAudioFormat(AudioFormat audioFormat) {
+
+		if (isDebug()) {
+			log("AudioFormat [%s]%n", audioFormat);
+			log("AudioFormat - Channels [%s]%n", audioFormat.getChannels());
+			log("AudioFormat - Encoding [%s]%n", audioFormat.getEncoding());
+			log("AudioFormat - FrameRate [%s]%n", audioFormat.getFrameRate());
+			log("AudioFormat - FrameSize [%s]%n", audioFormat.getFrameSize());
+			log("AudioFormat - SampleRate [%s]%n", audioFormat.getSampleRate());
+			log("AudioFormat - SampleSizeInBits [%s]%n", audioFormat.getSampleSizeInBits());
+		}
 	}
 
 	protected Resource resource() {
