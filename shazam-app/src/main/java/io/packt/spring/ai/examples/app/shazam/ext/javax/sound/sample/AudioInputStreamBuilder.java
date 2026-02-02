@@ -25,9 +25,8 @@ import javax.sound.sampled.AudioInputStream;
 
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
-import org.cp.elements.function.FunctionUtils;
 import org.cp.elements.lang.Builder;
-import org.cp.elements.lang.ObjectUtils;
+import org.springframework.lang.Nullable;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -57,18 +56,8 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 		this.audio = AudioUtils.assertAudio(audio);
 	}
 
-	protected AudioFormat getAudioFormat() {
+	protected @Nullable AudioFormat getAudioFormat() {
 		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
-	}
-
-	protected Long getFrameLength() {
-		Long frameLength = this.frameLength;
-		return frameLength != null && AudioUtils.isSpecified(asInt(frameLength)) ? frameLength : null;
-	}
-
-	protected Long resolveFrameLength(Supplier<Long> defaultFrameLength) {
-		return ObjectUtils.returnValueOrDefaultIfNull(getFrameLength(),
-			FunctionUtils.nullSafeSupplier(defaultFrameLength));
 	}
 
 	@SuppressWarnings("unused")
@@ -81,9 +70,10 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 		Audio audio = getAudio();
 		AudioFormat audioFormat = getAudioFormat();
+		Long frameLength = getFrameLength();
 
-		return audioFormat != null
-			? newAudioInputStream(audio, audioFormat, getFrameLength())
+		return audioFormat != null && isFrameLengthSpecified(frameLength)
+			? newAudioInputStream(audio, audioFormat, frameLength)
 			: buildAudioInputStream(audio);
 	}
 
@@ -97,7 +87,8 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 		try (AudioInputStream in = AudioUtils.openInputStream(audio)) {
 			AudioFormat audioFormat = buildAudioFormat(audio, in);
-			long frameLength = resolveFrameLength(in::getFrameLength);
+			long frameLength = resolveFrameLength(resolveFrameLength(getFrameLength(), in::getFrameLength),
+				() -> computeFrameLength(audio, audioFormat));
 			audioInputStream = newAudioInputStream(audio, audioFormat, frameLength);
 		}
 		catch (IOException ignore) {
@@ -111,5 +102,19 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 		return AudioFormatBuilder.from(audio)
 			.copyAudioFormat(audioInputStream)
 			.build();
+	}
+
+	private boolean isFrameLengthSpecified(Long frameLength) {
+		return frameLength != null && AudioUtils.isSpecified(asInt(frameLength));
+	}
+
+	private long computeFrameLength(Audio audio, AudioFormat audioFormat) {
+		long audioSize = audio.size();
+		long frameSize = audioFormat.getFrameSize();
+		return audioSize / frameSize;
+	}
+
+	private Long resolveFrameLength(Long frameLength, Supplier<Long> defaultFrameLength) {
+		return isFrameLengthSpecified(frameLength) ? frameLength : defaultFrameLength.get();
 	}
 }
