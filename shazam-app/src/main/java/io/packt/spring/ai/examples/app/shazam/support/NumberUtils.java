@@ -41,6 +41,10 @@ public abstract class NumberUtils {
 		return Long.valueOf(value).intValue();
 	}
 
+	public static long asLong(int value) {
+		return Integer.valueOf(value).longValue();
+	}
+
 	public static int nullSafeLength(byte[] data) {
 		return data != null ? data.length : 0;
 	}
