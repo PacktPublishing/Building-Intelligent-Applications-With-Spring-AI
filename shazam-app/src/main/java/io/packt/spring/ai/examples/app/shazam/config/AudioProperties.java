@@ -74,12 +74,12 @@ public class AudioProperties {
 		return configuredByteBufferSize != null ? configuredByteBufferSize : defaultAudioBufferSize;
 	}
 
-	public Duration getClipLength() {
-		return getClipLength(DEFAULT_AUDIO_CLIP_LENGTH);
+	public Duration getClipDuration() {
+		return getClipDuration(DEFAULT_AUDIO_CLIP_LENGTH);
 	}
 
-	public Duration getClipLength(Duration defaultAudioClipLength) {
-		Duration configuredAudioClipLength = getClip().getLength();
+	public Duration getClipDuration(Duration defaultAudioClipLength) {
+		Duration configuredAudioClipLength = getClip().getDuration();
 		return TimeUtils.isNotZero(configuredAudioClipLength) ? configuredAudioClipLength : defaultAudioClipLength;
 	}
 
@@ -92,7 +92,7 @@ public class AudioProperties {
 		return configuredMp3BitRate != null ? configuredMp3BitRate : defaultMp3BitRate;
 	}
 
-	public int getDefaultMp3SampleRate() {
+	public int getMp3SampleRate() {
 		return getMp3SampleRate(DEFAULT_MP3_SAMPLE_RATE);
 	}
 
@@ -109,7 +109,7 @@ public class AudioProperties {
 
 	@Data
 	public static class AudioClip {
-		private Duration length;
+		private Duration duration;
 	}
 
 	@Data
