@@ -32,6 +32,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -115,7 +116,9 @@ public class AudioFormatResolverApp implements Runnable {
 
 	private Resource newResource(String resourcePath) {
 		Assert.hasText(resourcePath, "Resource path [%s] is required", resourcePath);
-		return new ClassPathResource(resourcePath);
+		Resource resource = new ClassPathResource(resourcePath);
+		resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
+		return resource;
 	}
 
 	private AudioInputStream openInputStream(Audio audio) {
