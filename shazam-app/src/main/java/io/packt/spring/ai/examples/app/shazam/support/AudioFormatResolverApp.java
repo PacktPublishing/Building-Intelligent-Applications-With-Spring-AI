@@ -25,9 +25,9 @@ import javax.sound.sampled.AudioInputStream;
 import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatResolver;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioInputStreamBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
-import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
@@ -49,15 +49,21 @@ public class AudioFormatResolverApp implements Runnable {
 
 	private static final boolean DEBUG = false;
 
+	private static final String USAGE_MESSAGE = "$ java -cp <classpath> %s </path/to/audio/file[.mp3]>%n";
+
 	public static void main(String[] args) {
+		new AudioFormatResolverApp(validateArguments(args)).run();
+	}
+
+	private static String[] validateArguments(String[] args) {
 
 		if (args.length < 1) {
-			System.err.printf("> java -cp <classpath> %s </path/to/audio/file[.mp3]>%n",
-				AudioFormatResolverApp.class.getName());
+			String message = USAGE_MESSAGE.formatted(AudioFormatResolverApp.class.getName());
+			System.err.printf(message);
 			System.exit(-1);
 		}
 
-		new AudioFormatResolverApp(args).run();
+		return args;
 	}
 
 	private final String[] arguments;
@@ -73,10 +79,11 @@ public class AudioFormatResolverApp implements Runnable {
 	@Override
 	public void run() {
 
-		Resource resource = newResource(getFirstArgument());
+		String resourcePath = getFirstArgument();
+		Resource resource = newResource(resourcePath);
 
 		if (!resource.exists()) {
-			printError("Audio resource [%s] does not exist%n", resource);
+			printError("Audio resource [%s] not found%n", resource);
 			System.exit(-2);
 		}
 
@@ -85,7 +92,8 @@ public class AudioFormatResolverApp implements Runnable {
 		ExceptionThrowingRunnable.runSafely(() -> {
 			try (AudioInputStream audioInputStream = openInputStream(audio)) {
 				AudioFormat audioFormat = audioInputStream.getFormat();
-				printOut("Audio [%s] format [%s]%n", resource, audioFormat);
+				printOut("Audio resource [%s]", resource);
+				printOut("Audio format [%s]%n", audioFormat);
 				printOut("Audio duration [%s]%n", ((ShazamAudioFormat) audioFormat).getDuration());
 			}
 			catch (IOException cause) {
@@ -96,21 +104,26 @@ public class AudioFormatResolverApp implements Runnable {
 		});
 	}
 
-	private static Audio newAudio(Resource resource) {
+	private Audio newAudio(Resource resource) {
+		Assert.notNull(resource, "Resource is required");
 		Assert.isTrue(resource.isFile(), "Expecting resource [%s] to originate from file", resource);
 		File file = ExceptionThrowingSupplier.getSafely(resource::getFile);
 		Audio audio = Audio.from(file);
-		AudioFormat audioFormat = MpegAudioFormatBuilder.mpegOneLayerThree(audio).build();
-		audio = audio.in(audioFormat);
+		audio = audio.in(resolveAudioFormat(audio));
 		return audio;
 	}
 
-	private static Resource newResource(String resourcePath) {
+	private Resource newResource(String resourcePath) {
+		Assert.hasText(resourcePath, "Resource path [%s] is required", resourcePath);
 		return new ClassPathResource(resourcePath);
 	}
 
-	private static AudioInputStream openInputStream(Audio audio) {
+	private AudioInputStream openInputStream(Audio audio) {
 		return AudioInputStreamBuilder.from(audio).build();
+	}
+
+	private AudioFormat resolveAudioFormat(Audio audio) {
+		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio);
 	}
 
 	private void print(PrintStream out, String message, Object... arguments) {
