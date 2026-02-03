@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -48,6 +49,13 @@ public abstract class AudioUtils {
 
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
+	private static final Function<Audio, Long> frameLengthFunction = audio -> {
+		AudioFormat audioFormat = audio.getFormat();
+		long audioSize = audio.size();
+		int frameSize = audioFormat.getFrameSize();
+		return audioSize / frameSize;
+	};
+
 	public static @NonNull Audio assertAudio(Audio audio) {
 		Assert.notNull(audio, "Audio is required");
 		return audio;
@@ -64,6 +72,11 @@ public abstract class AudioUtils {
 
 	public static boolean isNotSpecified(int audioValue) {
 		return !isSpecified(audioValue);
+	}
+
+	public static long calculateFrameLength(Audio audio) {
+		return audio.getFormat() instanceof ShazamAudioFormat shazamAudioFormat ? shazamAudioFormat.getFrameLength()
+			: frameLengthFunction.apply(audio);
 	}
 
 	public static void close(AudioInputStream in) {
