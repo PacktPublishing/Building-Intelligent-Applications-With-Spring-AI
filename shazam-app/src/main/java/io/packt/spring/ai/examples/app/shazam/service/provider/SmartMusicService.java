@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import io.codeprimate.extensions.spring.ai.document.id.UuidGenerator;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.codeprimate.extensions.util.ImmutableSetWrapper;
 import io.packt.spring.ai.examples.app.shazam.config.SongSearchProperties;
@@ -34,7 +35,6 @@ import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.NonUniqueSongException;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
-import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
 
 import org.slf4j.Logger;
 import org.springframework.ai.document.Document;

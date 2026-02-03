@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.packt.spring.ai.examples.app.shazam.support;
+package io.codeprimate.extensions.spring.ai.document.id;
 
 import java.util.UUID;
 
+import org.cp.elements.lang.IdentifierSequence;
 import org.springframework.ai.document.id.IdGenerator;
 
 /**
@@ -24,12 +25,18 @@ import org.springframework.ai.document.id.IdGenerator;
  *
  * @author John Blum
  * @see java.util.UUID
- * @see IdGenerator
+ * @see org.cp.elements.lang.IdentifierSequence
+ * @see org.springframework.ai.document.id.IdGenerator
  * @since 0.1.0
  */
-public class UuidGenerator implements IdGenerator {
+public class UuidGenerator implements IdGenerator, IdentifierSequence<String> {
 
 	public static UuidGenerator INSTANCE = new UuidGenerator();
+
+	@Override
+	public String nextId() {
+		return generateId();
+	}
 
 	@Override
 	public String generateId(Object... contents) {

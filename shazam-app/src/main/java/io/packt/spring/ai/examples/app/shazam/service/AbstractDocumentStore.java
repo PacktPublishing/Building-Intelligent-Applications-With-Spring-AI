@@ -22,10 +22,10 @@ import java.util.Map;
 import javax.sound.sampled.AudioFormat;
 
 import io.codeprimate.extensions.data.caching.SimpleCache;
+import io.codeprimate.extensions.spring.ai.document.id.UuidGenerator;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
 import io.packt.spring.ai.examples.app.shazam.model.MediaSource;
-import io.packt.spring.ai.examples.app.shazam.support.UuidGenerator;
 
 import org.springframework.ai.document.Document;
 import org.springframework.util.Assert;
