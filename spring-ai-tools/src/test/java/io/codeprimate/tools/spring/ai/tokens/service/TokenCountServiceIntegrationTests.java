@@ -17,6 +17,8 @@ package io.codeprimate.tools.spring.ai.tokens.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.codeprimate.tools.spring.ai.tokens.TokenMetadataApplication;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.content.Media;
@@ -26,8 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.MimeType;
-
-import io.codeprimate.tools.spring.ai.tokens.TokenMetadataApplication;
 
 /**
  * Integration Tests for {@link TokenCountService}.

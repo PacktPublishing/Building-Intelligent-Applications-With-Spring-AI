@@ -15,6 +15,11 @@
  */
 package io.codeprimate.tools.spring.ai.tokens.web.controller;
 
+import io.codeprimate.tools.spring.ai.tokens.model.Document;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
+import io.codeprimate.tools.spring.ai.tokens.service.WordCountService;
+
 import org.springframework.ai.content.Media;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeType;
@@ -25,11 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.codeprimate.tools.spring.ai.tokens.model.Document;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCostService;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
-import io.codeprimate.tools.spring.ai.tokens.service.WordCountService;
 
 import lombok.AccessLevel;
 import lombok.Getter;

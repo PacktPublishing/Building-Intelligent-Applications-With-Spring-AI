@@ -19,14 +19,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter;
+import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
+import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
+
 import org.springframework.ai.content.Media;
 import org.springframework.ai.content.MediaContent;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
 import org.springframework.stereotype.Service;
-
-import io.codeprimate.extensions.spring.ai.transformer.splitter.AbstractBaseTextSplitter;
-import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
-import io.codeprimate.tools.spring.ai.tokens.service.TokenCountService;
 
 import lombok.AccessLevel;
 import lombok.Getter;
