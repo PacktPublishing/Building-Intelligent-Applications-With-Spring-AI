@@ -21,14 +21,14 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 
 /**
- * Java program used to print the audio file formats currently supported by the Java Sound API.
+ * Java program used to print the audio file formats currently supported by the Java Sound {@link AudioSystem}.
  *
  * @author John Blum
  * @see javax.sound.sampled.AudioFileFormat
  * @see javax.sound.sampled.AudioSystem
  * @since 0.1.0
  */
-public class SupportedAudioFileFormatsApp {
+public class AudioFileFormatsSupportedApp {
 
 	public static void main(String[] args) {
 		Arrays.stream(AudioSystem.getAudioFileTypes())
