@@ -29,14 +29,17 @@ import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
+import org.cp.elements.lang.Assert;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 /**
  * Abstract utility class used to process {@link Audio} using the {@literal javax.sound} API and {@link FFProbe}.
  *
  * @author John Blum
  * @see Audio
+ * @see AudioFormat
+ * @see AudioFileFormat
+ * @see AudioInputStreamSource
  * @see AudioSystem
  * @see FFProbe
  * @since 0.1.0
@@ -66,6 +69,11 @@ public abstract class AudioUtils {
 	public static @NonNull AudioFormat assertAudioFormat(AudioFormat audioFormat) {
 		Assert.notNull(audioFormat, "AudioFormat is required");
 		return audioFormat;
+	}
+
+	public static @NonNull AudioInputStream assertAudioInputStream(AudioInputStream audioInputStream) {
+		Assert.notNull(audioInputStream, "AudioInputStream is required");
+		return audioInputStream;
 	}
 
 	public static boolean isSpecified(int audioValue) {
