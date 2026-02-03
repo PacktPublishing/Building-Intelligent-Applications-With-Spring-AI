@@ -15,18 +15,17 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
-
-import java.io.IOException;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
-import org.springframework.lang.Nullable;
+import org.cp.elements.lang.ObjectUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,23 +43,36 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
-	public static AudioInputStreamBuilder from(Audio audio) {
-		return new AudioInputStreamBuilder(audio);
-	}
-
-	private final Audio audio;
-
+	private final AudioInputStreamSource audioInputStreamSource;
+	private AudioFormat audioFormat;
 	private Long frameLength;
 
-	protected AudioInputStreamBuilder(Audio audio) {
-		this.audio = AudioUtils.assertAudio(audio);
+	protected AudioInputStreamBuilder(AudioInputStreamSource audioInputStreamSource) {
+		Assert.notNull(audioInputStreamSource, "AudioInputStreamSource is required");
+		this.audioInputStreamSource = audioInputStreamSource;
 	}
 
-	protected @Nullable AudioFormat getAudioFormat() {
-		return ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio());
+	public static AudioInputStreamBuilder from(Audio audio) {
+		return new AudioInputStreamBuilder(BuilderAudioInputStreamSource.from(audio));
 	}
 
-	@SuppressWarnings("unused")
+	public static AudioInputStreamBuilder from(AudioInputStream audioInputStream) {
+		return new AudioInputStreamBuilder(AudioInputStreamSource.from(audioInputStream));
+	}
+
+	protected AudioFormat getAudioFormat() {
+		return ObjectUtils.returnValueOrDefaultIfNull(this.audioFormat, getAudioInputStreamSource()::getAudioFormat);
+	}
+
+	protected Long getFrameLength() {
+		return ObjectUtils.returnValueOrDefaultIfNull(this.frameLength, getAudioInputStreamSource()::getFrameLength);
+	}
+
+	public AudioInputStreamBuilder withAudioFormat(AudioFormat audioFormat) {
+		this.audioFormat = audioFormat;
+		return this;
+	}
+
 	public AudioInputStreamBuilder withFrameLength(Long frameLength) {
 		this.frameLength = frameLength;
 		return this;
@@ -68,53 +80,71 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 	public AudioInputStream build() {
 
-		Audio audio = getAudio();
+		AudioInputStreamSource inputStreamSource = getAudioInputStreamSource();
 		AudioFormat audioFormat = getAudioFormat();
 		Long frameLength = getFrameLength();
 
-		return audioFormat != null && isFrameLengthSpecified(frameLength)
-			? newAudioInputStream(audio, audioFormat, frameLength)
-			: buildAudioInputStream(audio);
+		return newAudioInputStream(inputStreamSource, audioFormat, frameLength);
 	}
 
-	private AudioInputStream newAudioInputStream(Audio audio, AudioFormat audioFormat, long frameLength) {
-		return new AudioInputStream(audio.inputStream(), audioFormat, frameLength);
+	private AudioInputStream newAudioInputStream(AudioInputStreamSource inputStreamSource,
+		AudioFormat audioFormat, long frameLength) {
+
+		return new AudioInputStream(inputStreamSource.get(), audioFormat, frameLength);
 	}
 
-	private AudioInputStream buildAudioInputStream(Audio audio) {
+	protected static class BuilderAudioInputStreamSource implements AudioInputStreamSource {
 
-		AudioInputStream audioInputStream = null;
+		private final AtomicReference<AudioFormat> audioFormat = new AtomicReference<>(null);
+		private final AtomicReference<AudioInputStream> audioInputStream = new AtomicReference<>(null);
+		@Getter(AccessLevel.PROTECTED)
+		private final Audio audio;
 
-		try (AudioInputStream in = AudioUtils.openInputStream(audio)) {
-			AudioFormat audioFormat = buildAudioFormat(audio, in);
-			long frameLength = resolveFrameLength(resolveFrameLength(getFrameLength(), in::getFrameLength),
-				() -> computeFrameLength(audio, audioFormat));
-			audioInputStream = newAudioInputStream(audio, audioFormat, frameLength);
-		}
-		catch (IOException ignore) {
-			// IOException thrown when closing intermediate AudioInputStream
+		protected BuilderAudioInputStreamSource(Audio audio) {
+			this.audio = AudioUtils.assertAudio(audio);
 		}
 
-		return audioInputStream;
-	}
+		protected static BuilderAudioInputStreamSource from(Audio audio) {
+			return new BuilderAudioInputStreamSource(audio);
+		}
 
-	private AudioFormat buildAudioFormat(Audio audio, AudioInputStream audioInputStream) {
-		return AudioFormatBuilder.from(audio)
-			.copyAudioFormat(audioInputStream)
-			.build();
-	}
+		@Override
+		public AudioInputStream get() {
+			return this.audioInputStream.updateAndGet(this::resolveAudioInputStream);
+		}
 
-	private boolean isFrameLengthSpecified(Long frameLength) {
-		return frameLength != null && AudioUtils.isSpecified(asInt(frameLength));
-	}
+		@Override
+		public AudioFormat getAudioFormat() {
+			return this.audioFormat.updateAndGet(this::resolveAudioFormat);
+		}
 
-	private long computeFrameLength(Audio audio, AudioFormat audioFormat) {
-		long audioSize = audio.size();
-		long frameSize = audioFormat.getFrameSize();
-		return audioSize / frameSize;
-	}
+		private AudioFormat buildAudioFormat(Audio audio) {
+			return AudioFormatBuilder.from(audio)
+				.copy(AudioInputStreamSource.super.getAudioFormat())
+				.build();
+		}
 
-	private Long resolveFrameLength(Long frameLength, Supplier<Long> defaultFrameLength) {
-		return isFrameLengthSpecified(frameLength) ? frameLength : defaultFrameLength.get();
+		private AudioInputStream newAudioInputStream(Audio audio) {
+			return AudioUtils.openInputStream(audio);
+		}
+
+		private AudioFormat resolveAudioFormat(AudioFormat audioFormat) {
+			return audioFormat != null ? audioFormat : buildAudioFormat(getAudio());
+		}
+
+		private AudioInputStream resolveAudioInputStream(AudioInputStream audioInputStream) {
+			return isValid(audioInputStream) ? audioInputStream : newAudioInputStream(getAudio());
+		}
+
+		private boolean isValid(AudioInputStream audioInputStream) {
+			return audioInputStream != null && safeAvailable(audioInputStream) > 0;
+		}
+
+		private int safeAvailable(AudioInputStream audioInputStream) {
+			return ExceptionThrowingSupplier.getSafely(audioInputStream::available, cause -> {
+				AudioUtils.close(audioInputStream);
+				return 0;
+			});
+		}
 	}
 }
