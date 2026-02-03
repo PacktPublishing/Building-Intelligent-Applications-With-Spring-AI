@@ -21,8 +21,10 @@ import java.util.Map;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioChannels;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
@@ -61,14 +63,14 @@ public class MpegAudioFormatBuilder implements Builder<AudioFormat> {
 	private float frameRate = AudioSystem.NOT_SPECIFIED;
 	private float sampleRate = AudioSystem.NOT_SPECIFIED;
 
-	private int channels = 2; // STEREO
+	private int channels = AudioChannels.STEREO.value();
 	private int frameSize = AudioSystem.NOT_SPECIFIED;
 	private int sampleSize = AudioSystem.NOT_SPECIFIED;
 
 	private final Map<String, Object> properties = new HashMap<>();
 
 	protected MpegAudioFormatBuilder(Audio audio, AudioFormat.Encoding encoding) {
-		Assert.notNull(encoding, "AudioFormat Encoding is required");
+		Assert.notNull(encoding, "AudioFormat.Encoding is required");
 		this.audio = AudioUtils.assertAudio(audio);
 		this.encoding = encoding;
 	}
@@ -84,12 +86,12 @@ public class MpegAudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	public MpegAudioFormatBuilder inMono() {
-		this.channels = 1;
+		this.channels = AudioChannels.MONO.value();
 		return this;
 	}
 
 	public MpegAudioFormatBuilder inStereo() {
-		this.channels = 2;
+		this.channels = AudioChannels.STEREO.value();
 		return this;
 	}
 
@@ -106,6 +108,10 @@ public class MpegAudioFormatBuilder implements Builder<AudioFormat> {
 	public MpegAudioFormatBuilder withSampleRate(float sampleRate) {
 		this.sampleRate = sampleRate;
 		return this;
+	}
+
+	public MpegAudioFormatBuilder withSameRateOf11025() {
+		return withSampleRate(11_025.0f);
 	}
 
 	public MpegAudioFormatBuilder withSampleRateOf22050() {
@@ -132,7 +138,7 @@ public class MpegAudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	private AudioFormat buildAudioFormat() {
-		return new AudioFormat(getEncoding(), getSampleRate(), getSampleSize(), getChannels(),
-			getFrameSize(), getFrameRate(), isBigEndian(), getProperties());
+		return new ShazamAudioFormat(getAudio(), getEncoding(), getChannels(), getSampleRate(), getSampleSize(),
+			getFrameRate(), getFrameSize(), isBigEndian(), getProperties());
 	}
 }
