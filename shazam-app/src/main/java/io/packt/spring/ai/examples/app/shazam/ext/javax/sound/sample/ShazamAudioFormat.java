@@ -75,6 +75,13 @@ public class ShazamAudioFormat extends AudioFormat {
 	}
 
 	@Override
+	public float getFrameRate() {
+		float frameRate = super.getFrameRate();
+		return AudioUtils.isSpecified(asInt(frameRate)) ? frameRate
+			: getSampleRate();
+	}
+
+	@Override
 	public int getFrameSize() {
 		int frameSize = super.getFrameSize();
 		return AudioUtils.isSpecified(frameSize) ? frameSize
