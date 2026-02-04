@@ -39,7 +39,7 @@ import org.springframework.lang.NonNull;
  * @see Audio
  * @see AudioFormat
  * @see AudioFileFormat
- * @see AudioInputStreamSource
+ * @see AudioInputStream
  * @see AudioSystem
  * @see FFProbe
  * @since 0.1.0
