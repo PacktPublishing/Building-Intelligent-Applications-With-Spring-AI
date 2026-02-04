@@ -112,7 +112,7 @@ public class Audio implements AudioSource, MediaSource {
 	}
 
 	public AudioFormat getFormat() {
-		return ObjectUtils.requireState(this.format, "AudioFormat was not configured");
+		return ObjectUtils.requireState(this.format, "AudioFormat not configured");
 	}
 
 	public Media getMedia() {
