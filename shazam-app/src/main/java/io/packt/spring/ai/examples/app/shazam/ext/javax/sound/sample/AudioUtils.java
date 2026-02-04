@@ -15,6 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
+import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -76,8 +78,16 @@ public abstract class AudioUtils {
 		return audioInputStream;
 	}
 
+	public static boolean isSpecified(float audioValue) {
+		return isSpecified(asInt(audioValue));
+	}
+
 	public static boolean isSpecified(int audioValue) {
 		return Math.max(audioValue, AudioSystem.NOT_SPECIFIED) > 0;
+	}
+
+	public static boolean isNotSpecified(float audioValue) {
+		return isNotSpecified(asInt(audioValue));
 	}
 
 	public static boolean isNotSpecified(int audioValue) {
