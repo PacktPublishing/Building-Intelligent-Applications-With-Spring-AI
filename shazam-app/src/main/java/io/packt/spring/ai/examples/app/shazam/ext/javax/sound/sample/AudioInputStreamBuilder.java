@@ -41,16 +41,8 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @Getter(AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
 public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
-
-	private final AudioInputStreamSource audioInputStreamSource;
-	private AudioFormat audioFormat;
-	private Long frameLength;
-
-	protected AudioInputStreamBuilder(AudioInputStreamSource audioInputStreamSource) {
-		Assert.notNull(audioInputStreamSource, "AudioInputStreamSource is required");
-		this.audioInputStreamSource = audioInputStreamSource;
-	}
 
 	public static AudioInputStreamBuilder from(Audio audio) {
 		return new AudioInputStreamBuilder(BuilderAudioInputStreamSource.from(audio));
@@ -58,6 +50,17 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 	public static AudioInputStreamBuilder from(AudioInputStream audioInputStream) {
 		return new AudioInputStreamBuilder(AudioInputStreamSource.from(audioInputStream));
+	}
+
+	private final AudioInputStreamSource audioInputStreamSource;
+
+	private AudioFormat audioFormat;
+
+	private Long frameLength;
+
+	protected AudioInputStreamBuilder(AudioInputStreamSource audioInputStreamSource) {
+		Assert.notNull(audioInputStreamSource, "AudioInputStreamSource is required");
+		this.audioInputStreamSource = audioInputStreamSource;
 	}
 
 	protected AudioFormat getAudioFormat() {
@@ -88,7 +91,7 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	}
 
 	private AudioInputStream newAudioInputStream(AudioInputStreamSource inputStreamSource,
-		AudioFormat audioFormat, long frameLength) {
+			AudioFormat audioFormat, long frameLength) {
 
 		return new AudioInputStream(inputStreamSource.get(), audioFormat, frameLength);
 	}
@@ -96,7 +99,9 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 	protected static class BuilderAudioInputStreamSource implements AudioInputStreamSource {
 
 		private final AtomicReference<AudioFormat> audioFormat = new AtomicReference<>(null);
+
 		private final AtomicReference<AudioInputStream> audioInputStream = new AtomicReference<>(null);
+
 		@Getter(AccessLevel.PROTECTED)
 		private final Audio audio;
 
