@@ -31,9 +31,9 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
 import org.cp.elements.lang.ObjectUtils;
+import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.MapUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
