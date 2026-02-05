@@ -98,6 +98,10 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 	protected static class BuilderAudioInputStreamSource implements AudioInputStreamSource {
 
+		protected static BuilderAudioInputStreamSource from(Audio audio) {
+			return new BuilderAudioInputStreamSource(audio);
+		}
+
 		private final AtomicReference<AudioFormat> audioFormat = new AtomicReference<>(null);
 
 		private final AtomicReference<AudioInputStream> audioInputStream = new AtomicReference<>(null);
@@ -107,10 +111,6 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 		protected BuilderAudioInputStreamSource(Audio audio) {
 			this.audio = AudioUtils.assertAudio(audio);
-		}
-
-		protected static BuilderAudioInputStreamSource from(Audio audio) {
-			return new BuilderAudioInputStreamSource(audio);
 		}
 
 		@Override
