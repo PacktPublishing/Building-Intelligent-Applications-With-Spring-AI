@@ -19,14 +19,19 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PE
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+
+import org.cp.elements.io.IOUtils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,10 +49,41 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public class ShazamAudioFormat extends AudioFormat {
 
+	public static ShazamAudioFormat from(AudioInputStream in) {
+
+		AudioUtils.assertAudioInputStream(in);
+
+		byte[] audioData = ExceptionThrowingSupplier.getSafely(() -> IOUtils.toByteArray(in),
+			cause -> NumberUtils.EMPTY_BYTE_ARRAY);
+
+		Audio audio = Audio.from(audioData);
+		AudioFormat audioFormat = in.getFormat();
+
+		return from(audio, audioFormat);
+	}
+
+	public static ShazamAudioFormat from(Audio audio, AudioFormat audioFormat) {
+
+		AudioUtils.assertAudio(audio);
+		AudioUtils.assertAudioFormat(audioFormat);
+
+		return new ShazamAudioFormat(audio, audioFormat.getEncoding(), audioFormat.getChannels(),
+			audioFormat.getSampleRate(), audioFormat.getSampleSizeInBits(),
+			audioFormat.getFrameRate(), audioFormat.getFrameSize(),
+			audioFormat.isBigEndian());
+	}
+
 	private final AtomicReference<FFProbe.Format> probeFormat = new AtomicReference<>();
 	private final AtomicReference<Integer> sampleSizeInBits = new AtomicReference<>();
 
 	private final Audio audio;
+
+	public ShazamAudioFormat(Audio audio, Encoding encoding, int channels, float sampleRate, int sampleSizeInBits,
+			float frameRate, int frameSize, boolean bigEndian) {
+
+		this(audio, encoding, channels, sampleRate, sampleSizeInBits, frameRate, frameSize, bigEndian,
+			Collections.emptyMap());
+	}
 
 	public ShazamAudioFormat(Audio audio, Encoding encoding, int channels, float sampleRate, int sampleSizeInBits,
 			float frameRate, int frameSize, boolean bigEndian, Map<String, Object> properties) {
