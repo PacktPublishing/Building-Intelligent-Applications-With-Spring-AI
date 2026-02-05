@@ -44,7 +44,7 @@ class FFProbeIntegrationTests extends AbstractShazamIntegrationTests {
 
 	@Test
 	@EnabledIf("matchbox20UnwellResourceExists")
-	void matchbox20UnwellAudioFormatIsCorrect() {
+	void matchbox20UnwellAudioFormat() {
 
 		Audio audio = Audio.from(matchbox20UnwellResource());
 
@@ -70,7 +70,7 @@ class FFProbeIntegrationTests extends AbstractShazamIntegrationTests {
 
 	@Test
 	@EnabledIf("pearlJamNoCodeRedMosquitoResourceExists")
-	void pearlJamNoCodeRedMosquitoAudioFormatIsCorrect() {
+	void pearlJamNoCodeRedMosquitoAudioFormat() {
 
 		Audio audio = Audio.from(pearlJamNoCodeRedMosquitoResource());
 
@@ -96,7 +96,7 @@ class FFProbeIntegrationTests extends AbstractShazamIntegrationTests {
 
 	@Test
 	@EnabledIf("pearlJamTenJeremyResourceExists")
-	void pearlJamTenJeremyAudioFormatIsCorrect() {
+	void pearlJamTenJeremyAudioFormat() {
 
 		Audio audio = Audio.from(pearlJamTenJeremyResource());
 
