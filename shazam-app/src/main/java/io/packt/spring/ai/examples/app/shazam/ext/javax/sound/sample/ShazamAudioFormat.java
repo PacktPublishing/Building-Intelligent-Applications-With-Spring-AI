@@ -83,9 +83,20 @@ public class ShazamAudioFormat extends AudioFormat {
 
 	@Override
 	public int getFrameSize() {
+
 		int frameSize = super.getFrameSize();
-		return AudioUtils.isSpecified(frameSize) ? frameSize
-			: getSampleSizeInBits() / BITS_PER_BYTE * Math.max(getChannels(), AudioChannels.MONO.value());
+
+		if (AudioUtils.isNotSpecified(frameSize)) {
+			int sampleSizeInBits = getSampleSizeInBits();
+			if (AudioUtils.isSpecified(sampleSizeInBits)) {
+				int sampleSizeInBytes = sampleSizeInBits / BITS_PER_BYTE;
+				int numberOfChannels = Math.max(getChannels(), AudioChannels.MONO.value());
+				int computedFrameSize = sampleSizeInBytes * numberOfChannels;
+				frameSize = Math.max(computedFrameSize, 1);
+			}
+		}
+
+		return frameSize;
 	}
 
 	public FFProbe.Format getProbeFormat() {

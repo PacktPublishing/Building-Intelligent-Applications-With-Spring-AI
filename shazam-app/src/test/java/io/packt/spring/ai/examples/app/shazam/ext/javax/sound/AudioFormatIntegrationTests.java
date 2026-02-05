@@ -21,7 +21,6 @@ import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.AbstractShazamIntegrationTests;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.junit.jupiter.api.Test;
@@ -67,7 +66,7 @@ class AudioFormatIntegrationTests extends AbstractShazamIntegrationTests {
 		assertThat(audioFormat.getChannels()).isEqualTo(2);
 		assertThat(audioFormat.getEncoding()).isEqualTo(new AudioFormat.Encoding("MPEG2L3"));
 		assertThat(audioFormat.getFrameRate()).isEqualTo(22_050f);
-		assertThat(audioFormat.getFrameSize()).isEqualTo(AudioUtils.unspecified());
+		assertThat(audioFormat.getFrameSize()).isOne();
 		assertThat(audioFormat.getSampleRate()).isEqualTo(22_050f);
 		assertThat(audioFormat.getSampleSizeInBits()).isEqualTo(3);
 	}
