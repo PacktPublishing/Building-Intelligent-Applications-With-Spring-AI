@@ -54,6 +54,8 @@ public abstract class AudioUtils {
 	public static final AudioFileFormat.Type MP3_AUDIO_FILE_FORMAT = new AudioFileFormat.Type("MP3", "mp3");
 	public static final AudioFileFormat.Type WAV_AUDIO_FILE_FORMAT = AudioFileFormat.Type.WAVE;
 
+	public static final AudioFormat.Encoding MPEG_TWO_LAYER_THREE_ENCODING = new AudioFormat.Encoding("MPEG2L3");
+
 	private static final AtomicReference<FFProbe> ffprobe = new AtomicReference<>();
 
 	private static final Function<Audio, Long> frameLengthFunction = audio -> {
