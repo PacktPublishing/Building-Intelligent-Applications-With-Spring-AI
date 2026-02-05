@@ -18,7 +18,6 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 
-import java.util.Collections;
 import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
@@ -57,7 +56,9 @@ import lombok.extern.slf4j.Slf4j;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractAudioSplitter implements AudioSplitter, InitializingBean {
 
+	public static final String AUDIO_BYTE_OFFSET_KEY = "byteOffset";
 	public static final String AUDIO_CLIP_OVERLAP_KEY = "overlap";
+	public static final String AUDIO_TIMESTAMP_KEY = "timestamp";
 
 	private final AudioProperties audioProperties;
 
@@ -75,8 +76,18 @@ public abstract class AbstractAudioSplitter implements AudioSplitter, Initializi
 		getLogger().info("Using AudioSplitter [{}]", this);
 	}
 
-	protected Document buildDocument(AudioClip audioClip, boolean overlap) {
-		Map<String, Object> audioClipMetadata = Collections.singletonMap(AUDIO_CLIP_OVERLAP_KEY, overlap);
+	protected Document buildDocument(AudioClip audioClip, int byteOffset, boolean overlap) {
+		return buildDocument(audioClip, 0L, byteOffset, overlap);
+	}
+
+	protected Document buildDocument(AudioClip audioClip, long timestamp, int byteOffset, boolean overlap) {
+
+		Map<String, Object> audioClipMetadata = Map.of(
+			AUDIO_BYTE_OFFSET_KEY, byteOffset,
+			AUDIO_CLIP_OVERLAP_KEY, overlap,
+			AUDIO_TIMESTAMP_KEY, timestamp
+		);
+
 		return AbstractDocumentStore.newAudioDocument(audioClip, audioClipMetadata);
 	}
 

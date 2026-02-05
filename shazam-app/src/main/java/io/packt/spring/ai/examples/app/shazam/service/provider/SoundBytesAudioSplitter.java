@@ -89,12 +89,13 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 			int length = Math.min(audioData.length - index, audioBufferSize);
 			byte[] audioBuffer = newAudioBuffer(audioData, index, length);
 			AudioClip audioClip = AudioClip.from(audioBuffer, audioFormat);
-			Document document = buildDocument(audioClip, false);
+			Document document = buildDocument(audioClip, index, false);
 			documents.add(document);
 
 			if (previousAudioClip != null) {
+				int byteOffset = index - (audioBufferSize / 2);
 				AudioClip overlappingAudioClip = previousAudioClip.secondHalf().merge(audioClip.firstHalf());
-				Document overlappingDocument = buildDocument(overlappingAudioClip, true);
+				Document overlappingDocument = buildDocument(overlappingAudioClip, byteOffset, true);
 				documents.add(overlappingDocument);
 			}
 
