@@ -49,13 +49,13 @@ import lombok.Getter;
  * {@link AudioSplitter} implementation using the Java Sound API.
  *
  * @author John Blum
+ * @see AbstractAudioSplitter
  * @see Audio
  * @see AudioChannels
  * @see AudioProperties
- * @see AudioSplitter
  * @see java.time.Duration
  * @see javax.sound.sampled.AudioFormat
- * @see javax.sound.sampled.AudioSystem
+ * @see javax.sound.sampled.AudioInputStream
  * @see org.springframework.ai.document.Document
  * @see org.springframework.stereotype.Service
  * @see <a href="https://www.oracle.com/java/technologies/java-sound-api.html">Java Sound API</a>
@@ -83,22 +83,35 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 				AudioFormat audioFormat = in.getFormat();
 				AudioClip previousAudioClip = null;
 
+				Duration audioClipDuration = getAudioProperties().getClipDuration();
+				Duration timestamp = Duration.ZERO;
+
 				int audioBufferSize = calculateAudioBufferSize(audio, audioFormat);
+				int byteOffset = 0;
+
 				byte[] audioBuffer = new byte[audioBufferSize];
 
 				for (int bytesRead = in.read(audioBuffer); bytesRead > -1; bytesRead = in.read(audioBuffer)) {
 
 					byte[] audioData = copyAudioData(audioBuffer, bytesRead);
 					AudioClip audioClip = AudioClip.from(audioData, audioFormat);
-					Document audioDocument = buildDocument(audioClip, false);
+					Document audioDocument = buildDocument(audioClip, timestamp.toMillis(), byteOffset, false);
 
 					if (previousAudioClip != null) {
+						int audioClipByteOffset = byteOffset - (audioBufferSize / 2);
+						long audioClipTimestamp = timestamp.toMillis() + (audioClipDuration.toMillis() / 2);
+
 						AudioClip overlappingAudioClip = previousAudioClip.secondHalf().merge(audioClip.firstHalf());
-						Document overlappingAudioDocument = buildDocument(overlappingAudioClip, true);
+
+						Document overlappingAudioDocument =
+							buildDocument(overlappingAudioClip, audioClipTimestamp, audioClipByteOffset, true);
+
 						documents.add(overlappingAudioDocument);
 					}
 
+					timestamp = timestamp.plus(audioClipDuration);
 					previousAudioClip = audioClip;
+					byteOffset += bytesRead;
 					documents.add(audioDocument);
 				}
 			}
@@ -142,8 +155,11 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 	@SuppressWarnings("unused")
 	public interface AudioClipCalculator {
 
+		double MILLISECONDS_IN_SECONDS = 1000.0d;
+
 		int DEFAULT_COMPRESSION_RATIO = 1; // measured as ?:1, for example 10:1 (10 to 1); 1:1 is no compression
-		int HUMAN_HEARING_FREQUENCY = 20_000; // 20,000 Hz (20 kHz)
+		int HUMAN_HEARING_HIGH_FREQUENCY = 20_000; // 20,000 Hz (20 kHz)
+		int HUMAN_HEARING_LOW_FREQUENCY = 20; // 20 Hz
 		int NYQUIST_FREQUENCY = 22_050; // 22.05 kHz
 
 		int calculateAudioClipSizeInBytes();
@@ -173,7 +189,7 @@ public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 		protected double getAudioClipDurationInSeconds() {
 			Duration audioClipDuration = getAudioProperties().getClipDuration();
 			long audioClipDurationInMilliseconds = audioClipDuration.toMillis();
-			return audioClipDurationInMilliseconds / 1000.0d;
+			return audioClipDurationInMilliseconds / MILLISECONDS_IN_SECONDS;
 		}
 
 		protected AudioChannels getAudioChannels() {

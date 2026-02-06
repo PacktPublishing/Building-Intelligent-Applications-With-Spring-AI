@@ -17,7 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Fail.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,13 +32,11 @@ import javax.sound.sampled.AudioSystem;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.AbstractShazamIntegrationTests;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioChannels;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioInputStreamBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.DocumentAudioInputStreamSource;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
@@ -50,6 +48,7 @@ import org.cp.elements.io.FileSystemUtils;
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,16 +65,24 @@ import org.springframework.context.annotation.Bean;
  * @since 0.1.0
  */
 @SpringBootTest(properties = "shazam.audio.clip.duration=1s")
-@SuppressWarnings("unused")
 class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTests {
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
+	// bytes per second = frame size (bytes) * frame rate
+	// bytes per second = sample size (bits) / bits per byte * sample rate * channels
+	// frame rate is the number of frames per second (same as samples per second; 44,100)
+	// frame size is sample size (16 bits; 2 bytes) * number of channels per sample (1 = Mono, 2 = Stereo)
+	// a frame is effectively all the data for a logical sample in both channels
+	// frame rate / sample rate (44,100) * frame size (sample size (16 bits; 2 bytes) * channels (2 Stereo)
 	private static final int EXPECTED_AUDIO_CLIP_SIZE = 176_400; // bytes
 	private static final int NUMBER_OF_AUDIO_CLIPS = 2;
 
 	private static final String AUDIO_FILENAME_TEMPLATE = "PearlJam-Ten-Jeremy-%d.wav";
 	private static final String RESOURCE_PATH = "PearlJam-Ten-Jeremy.wav";
+
+	@Value("${shazam.audio.clip.duration:10s}")
+	private Duration audioClipDuration;
 
 	@Autowired
 	private JavaSoundAudioSplitter audioSplitter;
@@ -104,52 +111,59 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		Audio audio = Audio.from(resource());
 		List<Document> documents = this.audioSplitter.split(audio);
 
-		saveAudioClip(audio, Duration.ofSeconds(10));
+		assertDocuments(audio, documents);
+		saveAudioClip(audio, Duration.ofSeconds(5));
 
-		assertThat(documents).isNotNull();
-		assertThat(documents).hasSize(expectedNumberOfDocuments(audio));
-
+		int byteOffset = 0;
+		long audioTimestamp = 0L;
 		long documentsAudioSize = AudioUtils.PCM_WAV_FILE_HEADER_SIZE;
 		long documentsDataSize = 0;
 
 		for (Document document : documents) {
 			byte[] data = resolveData(document);
 			assertThat(data).hasSizeGreaterThan(0).hasSizeLessThanOrEqualTo(EXPECTED_AUDIO_CLIP_SIZE);
-			documentsAudioSize += isNonOverlappingDocument(document) ? data.length : 0;
 			documentsDataSize += data.length;
+			if (isNonOverlappingDocument(document)) {
+				assertThat(resolveAudioByteOffset(document)).isEqualTo(byteOffset);
+				assertThat(resolveAudioTimestamp(document)).isEqualTo(audioTimestamp);
+				audioTimestamp += audioClipDuration.toMillis();
+				documentsAudioSize += data.length;
+				byteOffset += data.length;
+			}
 		}
 
-		// The size of the Documents (audio clips) in bytes should be greater than
-		// the size of the Audio in bytes given the overlap
+		// The size of non-overlapping Documents (audio clips) in bytes should be equal to the size of the Audio in bytes
 		assertThat(documentsAudioSize).isEqualTo(audio.size());
+
+		// The size of all Documents (audio clips) in bytes should be greater than the size of the Audio in bytes given overlap
 		assertThat(documentsDataSize).isGreaterThan(audio.size());
 
 		assertAudioClip(audio, documents);
 	}
 
+	// expected documents size is x2 for overlap and +1 for overflow
 	private void assertAudioClip(Audio audio, List<Document> documents) {
 
 		Document document = selectDocument(documents);
 
 		try (AudioInputStream in = openInputStream(audio, document)) {
+			int readLimit = Math.max(resolveData(document).length, in.available());
+			in.mark(readLimit);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			AudioSystem.write(in, AudioUtils.WAV_AUDIO_FILE_FORMAT, out);
 			byte[] audioClipData = out.toByteArray();
 			assertThat(audioClipData).hasSizeGreaterThanOrEqualTo(resolveData(document).length);
-			saveToFile(in);
+			in.reset();
+			saveAudioStream(in);
 		}
 		catch (IOException cause) {
 			fail("Failed to write audio", cause);
 		}
 	}
 
-	private static int expectedNumberOfDocuments(Audio audio) {
-		// divisor == frame rate * frame size + 1
-		// frame rate is the number of frames per second
-		// frame size is sample size (16 bits) * number of channels per sample
-		// a frame is effectively all the data for a logical sample in both channels
-		int documentSize = EXPECTED_AUDIO_CLIP_SIZE * AudioChannels.STEREO.value() + 1;
-		return asInt(audio.size() / documentSize);
+	private void assertDocuments(Audio audio, List<Document> documents) {
+		assertThat(documents).isNotNull();
+		assertThat(documents).hasSize(asInt(audio.size() / EXPECTED_AUDIO_CLIP_SIZE) * 2 + 1);
 	}
 
 	private Document selectDocument(List<Document> documents) {
@@ -163,38 +177,33 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		return nonOverlappingDocuments.get(index);
 	}
 
+	private AudioInputStream openInputStream(Audio audio, Document document) {
+		return DocumentAudioInputStreamSource.builder(audio).using(document).build().get();
+	}
+
+	private AudioInputStream openInputStream(AudioInputStream in, long frameLength) {
+		return AudioInputStreamBuilder.from(in).withFrameLength(frameLength).build();
+	}
+
 	private boolean isNonOverlappingDocument(Document document) {
 		Object value = document.getMetadata().get(JavaSoundAudioSplitter.AUDIO_CLIP_OVERLAP_KEY);
 		return !Boolean.TRUE.equals(value);
 	}
 
-	private AudioInputStream openInputStream(Audio audio, Document document) {
-
-		AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
-		Audio audioClip = resolveAudio(document).in(audioFormat);
-		long frameLength = resolveFrameLength(audioClip);
-
-		return AudioInputStreamBuilder.from(audioClip)
-			.withFrameLength(frameLength)
-			.build();
+	private int resolveAudioByteOffset(Document document) {
+		return (int) document.getMetadata().get(JavaSoundAudioSplitter.AUDIO_BYTE_OFFSET_KEY);
 	}
 
-	private Audio resolveAudio(Document document) {
-		return document instanceof AbstractDocumentStore.AudioDocument audioDocument ? audioDocument.getAudio()
-			: Audio.from(resolveData(document));
+	private long resolveAudioTimestamp(Document document) {
+		return (long) document.getMetadata().get(JavaSoundAudioSplitter.AUDIO_TIMESTAMP_KEY);
 	}
 
 	@SuppressWarnings("all")
 	private byte[] resolveData(Document document) {
-		return ExceptionThrowingSupplier.getSafely(document.getMedia()::getDataAsByteArray, cause -> {
+		return ExceptionThrowingSupplier.getSafely(() -> document.getMedia().getDataAsByteArray(), cause -> {
 			String message = "Failed to get Audio from Document [%s]".formatted(document.getId());
 			throw AudioAccessException.because(message, cause);
 		});
-	}
-
-	private long resolveFrameLength(Audio audio) {
-		return audio.getFormat() instanceof ShazamAudioFormat shazamAudioFormat ? shazamAudioFormat.getFrameLength()
-			: AudioUtils.calculateFrameLength(audio);
 	}
 
 	@Override
@@ -215,17 +224,14 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 			audio.in(audioFormat);
 
 			int frameRate = Math.round(audioFormat.getFrameRate());
-			int frameSize = audioFormat.getFrameSize();
-			int bytesPerSecond = frameRate * frameSize;
 
 			long durationInSeconds = duration.toSeconds();
 			long frameLength = durationInSeconds * frameRate;
 
 			try (AudioInputStream in = AudioInputStreamBuilder.from(audio).build()) {
 				for (int index = 0; index < NUMBER_OF_AUDIO_CLIPS; index++) {
-					Assert.state(in.available() > 0, "Audio InputStream has no more data");
-					log("AUDIO AVAILABLE [%d]%n", in.available());
-					try (AudioInputStream audioClipInputStream = AudioInputStreamBuilder.from(in).withFrameLength(frameLength).build()) {
+					Assert.state(in.available() > 0, "AudioInputStream has no more data");
+					try (AudioInputStream audioClipInputStream = openInputStream(in, frameLength)) {
 						File audioFile = toAudioFile(index + 1);
 						AudioSystem.write(audioClipInputStream, AudioUtils.WAV_AUDIO_FILE_FORMAT, audioFile);
 					}
@@ -238,10 +244,9 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		}
 	}
 
-	private void saveToFile(AudioInputStream in) throws IOException {
+	private void saveAudioStream(AudioInputStream in) throws IOException {
 
 		if (isDebug()) {
-			in.reset();
 			File audioFile = toAudioFile(0);
 			AudioSystem.write(in, AudioUtils.WAV_AUDIO_FILE_FORMAT, audioFile);
 		}
