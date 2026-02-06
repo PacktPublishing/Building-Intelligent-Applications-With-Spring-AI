@@ -19,8 +19,10 @@ import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -147,13 +149,14 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		Document document = selectDocument(documents);
 
 		try (AudioInputStream in = openInputStream(audio, document)) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			int readLimit = Math.max(resolveData(document).length, in.available());
 			in.mark(readLimit);
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			AudioSystem.write(in, AudioUtils.WAV_AUDIO_FILE_FORMAT, out);
 			byte[] audioClipData = out.toByteArray();
-			assertThat(audioClipData).hasSizeGreaterThanOrEqualTo(resolveData(document).length);
 			in.reset();
+			assertThat(audioClipData).hasSizeGreaterThanOrEqualTo(resolveData(document).length);
+			saveAudioBytes(audioClipData);
 			saveAudioStream(in);
 		}
 		catch (IOException cause) {
@@ -214,6 +217,20 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 	@Override
 	protected String resourcePath() {
 		return RESOURCE_PATH;
+	}
+
+	private void saveAudioBytes(byte[] audioData) {
+
+		if (isDebug()) {
+			File audioFile = toAudioFile(100);
+			try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(audioFile))) {
+				out.write(audioData);
+				out.flush();
+			}
+			catch (IOException cause) {
+				throw AudioAccessException.because("Failed to save audio data [%d] to file", cause);
+			}
+		}
 	}
 
 	private void saveAudioClip(Audio audio, Duration duration) {
