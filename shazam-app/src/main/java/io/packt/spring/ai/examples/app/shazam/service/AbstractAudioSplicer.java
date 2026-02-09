@@ -64,4 +64,9 @@ public abstract class AbstractAudioSplicer implements AudioSplicer {
 			.reduce(this::spliceAudioClips)
 			.orElse(NumberUtils.EMPTY_BYTE_ARRAY);
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getName();
+	}
 }
