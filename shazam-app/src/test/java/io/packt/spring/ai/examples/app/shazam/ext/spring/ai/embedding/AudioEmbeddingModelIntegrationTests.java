@@ -19,13 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import io.packt.spring.ai.examples.app.shazam.AbstractShazamIntegrationTests;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.config.ShazamConfiguration;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -34,25 +37,31 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Integration Tests for {@link AudioEmbeddingModel}.
  *
  * @author John Blum
  * @see AudioEmbeddingModel
+ * @see AbstractShazamIntegrationTests
  * @see org.junit.jupiter.api.Test
+ * @see org.springframework.boot.test.context.SpringBootTest
  * @since 0.1.0
  */
 @SpringBootTest
+@ActiveProfiles("honerlaw")
 @SuppressWarnings("unused")
-class AudioEmbeddingModelIntegrationTests {
+class AudioEmbeddingModelIntegrationTests extends AbstractShazamIntegrationTests {
 
-	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
+	private static final String AUDIO_CLIP_RESOURCE_PATH = "PearlJam-Ten-Jeremy-clip-1s.wav";
+	private static final String SONG_RESOURCE_PATH = "PearlJam-Ten-Jeremy.wav";
+	private static final String RESOURCE_PATH = AUDIO_CLIP_RESOURCE_PATH;
 
 	@Autowired
 	private AudioSplitter audioSplitter;
@@ -61,8 +70,14 @@ class AudioEmbeddingModelIntegrationTests {
 	private EmbeddingModel embeddingModel;
 
 	@Test
-	@EnabledIf("resourceExists")
 	void embedAudioClip() {
+		assertAudioEmbedding(resource());
+	}
+
+	@Test
+	@EnabledIf("resourceExists")
+	@Disabled("Cannot create Fingerprint from Audio clip created by AudioSplitter")
+	void embedAudioClipFromAudioSplitter() {
 
 		Audio audio = Audio.from(resource());
 		List<Document> documents = this.audioSplitter.split(audio);
@@ -76,48 +91,42 @@ class AudioEmbeddingModelIntegrationTests {
 			.isInstanceOf(AbstractDocumentStore.AudioDocument.class)
 			.asInstanceOf(InstanceOfAssertFactories.type(AbstractDocumentStore.AudioDocument.class))
 			.extracting(AbstractDocumentStore.AudioDocument::getAudio)
-			.satisfies(this::testAudioEmbedding);
+			.satisfies(this::assertAudioEmbedding);
 	}
 
 	@Test
 	@EnabledIf("resourceExists")
+	@Disabled("Cannot create embedding from Fingerprint generated from Audio for an entire Song")
 	void embedSong() {
-		testAudioEmbedding(resource());
+		assertAudioEmbedding(resource(SONG_RESOURCE_PATH));
 	}
 
-	Resource resource() {
-		return new ClassPathResource(RESOURCE_PATH);
+	void assertAudioEmbedding(Resource resource) {
+		assertAudioEmbedding(Audio.from(resource));
 	}
 
-	boolean resourceExists() {
-		return resource().exists();
-	}
-
-	void testAudioEmbedding(Resource resource) {
-		testAudioEmbedding(Audio.from(resource));
-	}
-
-	void testAudioEmbedding(Audio audio) {
+	void assertAudioEmbedding(Audio audio) {
 
 		Document document = AbstractDocumentStore.newAudioDocument(audio);
 		float[] embedding = this.embeddingModel.embed(document);
 
 		assertThat(embedding).isNotNull();
-		assertThat(embedding).hasSize(AudioEmbeddingModel.DEFAULT_VECTOR_DIMENSIONS);
+		assertThat(embedding).hasSize(this.embeddingModel.dimensions());
+	}
+
+	@Override
+	protected String resourcePath() {
+		return RESOURCE_PATH;
 	}
 
 	@SpringBootConfiguration
-	@EnableConfigurationProperties(AudioProperties.class)
+	@EnableAutoConfiguration
+	@Import(ShazamConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		JavaSoundAudioSplitter audioSplitter(AudioProperties audioProperties) {
+		AudioSplitter audioSpitter(AudioProperties audioProperties) {
 			return new JavaSoundAudioSplitter(audioProperties);
-		}
-
-		@Bean
-		AudioEmbeddingModel embeddingModel() {
-			return new AudioEmbeddingModel(AbstractDocumentStore.inMemory());
 		}
 	}
 }

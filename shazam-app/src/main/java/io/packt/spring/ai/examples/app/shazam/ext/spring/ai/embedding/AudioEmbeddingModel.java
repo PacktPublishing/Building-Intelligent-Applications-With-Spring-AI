@@ -17,24 +17,22 @@ package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding;
 
 import java.util.List;
 
+import io.codeprimate.extensions.spring.ai.embedding.AbstractEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
-import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.MfccAudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 
-import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.embedding.EmbeddingRequest;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.embedding.EmbeddingResponseMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
-import be.tarsos.dsp.AudioDispatcher;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -43,8 +41,8 @@ import lombok.Getter;
  * used to embed {@link Audio}.
  *
  * @author John Blum
+ * @see AbstractEmbeddingModel
  * @see Audio
- * @see AudioDispatcher
  * @see AudioFingerprintFunction
  * @see Document
  * @see DocumentStore
@@ -55,26 +53,24 @@ import lombok.Getter;
  */
 @Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class AudioEmbeddingModel implements EmbeddingModel {
+public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 
-	public static final int DEFAULT_VECTOR_DIMENSIONS = 37;
-	private static final int DEFAULT_INDEX = 0;
-
-	private static final String EMPTY_STRING = "";
-
-	private final AudioFingerprintFunction audioFingerprintFunction;
+	private final AudioFingerprintFunction<?> audioFingerprintFunction;
 
 	private final DocumentStore documentStore;
 
-	AudioEmbeddingModel(DocumentStore documentStore) {
-		this(new MfccAudioFingerprintFunction(DEFAULT_VECTOR_DIMENSIONS), documentStore);
-	}
+	private final EmbeddingModel embeddingModel;
 
-	public AudioEmbeddingModel(AudioFingerprintFunction audioFingerprintFunction, DocumentStore documentStore) {
+	public AudioEmbeddingModel(AudioFingerprintFunction<?> audioFingerprintFunction,
+			DocumentStore documentStore, EmbeddingModel embeddingModel) {
+
 		Assert.notNull(audioFingerprintFunction, "AudioFingerprintFunction is required");
 		Assert.notNull(documentStore, "DocumentStore is required");
+		Assert.notNull(embeddingModel, "EmbeddingModel is required");
+
 		this.audioFingerprintFunction = audioFingerprintFunction;
 		this.documentStore = documentStore;
+		this.embeddingModel = embeddingModel;
 	}
 
 	@Override
@@ -92,51 +88,48 @@ public class AudioEmbeddingModel implements EmbeddingModel {
 
 	@Override
 	public int dimensions() {
-		return DEFAULT_VECTOR_DIMENSIONS;
+		return getEmbeddingModel().dimensions();
 	}
 
 	@Override
 	public @NonNull float[] embed(@NonNull Document document) {
 		Audio audio = toAudio(document);
-		return getAudioFingerprintFunction().compute(audio);
+		Fingerprint<?> audioFingerprint = getAudioFingerprintFunction().compute(audio);
+		String hexAudioFingerprint = audioFingerprint.toHexString();
+		return getEmbeddingModel().embed(hexAudioFingerprint);
 	}
 
-	private Audio toAudio(Document document) {
-
+	private @NonNull Document assertDocument(Document document) {
 		Assert.notNull(document, "Document is required");
+		return document;
+	}
+
+	private @NonNull Media asssertMedia(Media media) {
+		Assert.notNull(media, "Media is required");
+		return media;
+	}
+
+	protected Audio toAudio(Document document) {
+
+		assertDocument(document);
 
 		if (document instanceof AbstractDocumentStore.AudioDocument audioDocument) {
 			return audioDocument.getAudio();
 		}
 		else {
-			Media media = document.getMedia();
+			Media media = asssertMedia(document.getMedia());
 			byte[] data = media.getDataAsByteArray();
 			return Audio.from(data);
 		}
 	}
 
-	private List<Document> toDocuments(EmbeddingRequest request) {
+	@Override
+	protected List<Document> toDocuments(EmbeddingRequest request) {
 
 		List<String> instructions = request.getInstructions();
 
 		return instructions.stream()
 			.map(getDocumentStore()::get)
 			.toList();
-	}
-
-	private Embedding toEmbedding(float[] vector) {
-		return toEmbedding(vector, DEFAULT_INDEX);
-	}
-
-	private Embedding toEmbedding(float[] vector, int index) {
-		return new Embedding(vector, index);
-	}
-
-	private EmbeddingResponse toEmbeddingResponse(List<Embedding> embeddings) {
-		return new EmbeddingResponse(embeddings, withEmbeddingResponseMetadata());
-	}
-
-	private EmbeddingResponseMetadata withEmbeddingResponseMetadata() {
-		return new EmbeddingResponseMetadata(getAudioFingerprintFunction().getName(), new EmptyUsage());
 	}
 }
