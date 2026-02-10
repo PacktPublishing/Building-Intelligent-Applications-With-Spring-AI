@@ -76,7 +76,6 @@ class AudioEmbeddingModelIntegrationTests extends AbstractShazamIntegrationTests
 
 	@Test
 	@EnabledIf("resourceExists")
-	@Disabled("Cannot create Fingerprint from Audio clip created by AudioSplitter")
 	void embedAudioClipFromAudioSplitter() {
 
 		Audio audio = Audio.from(resource());
@@ -96,7 +95,7 @@ class AudioEmbeddingModelIntegrationTests extends AbstractShazamIntegrationTests
 
 	@Test
 	@EnabledIf("resourceExists")
-	@Disabled("Cannot create embedding from Fingerprint generated from Audio for an entire Song")
+	@Disabled("Creating embedding from Fingerprint generated from Audio for an entire Song is not efficient")
 	void embedSong() {
 		assertAudioEmbedding(resource(SONG_RESOURCE_PATH));
 	}

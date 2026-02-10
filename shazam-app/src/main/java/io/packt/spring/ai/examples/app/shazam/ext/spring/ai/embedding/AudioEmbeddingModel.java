@@ -37,7 +37,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * {@link EmbeddingModel} implementation based on a {@link AudioFingerprintFunction} algorithm
+ * Spring AI {@link EmbeddingModel} implementation based on a {@link AudioFingerprintFunction} algorithm
  * used to embed {@link Audio}.
  *
  * @author John Blum
