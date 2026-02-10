@@ -24,6 +24,7 @@ import java.util.List;
 import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioChannels;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
@@ -43,7 +44,6 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see Audio
- * @see AudioProperties
  * @see AbstractAudioSplitter
  * @see org.springframework.ai.document.Document
  * @see org.springframework.stereotype.Service
@@ -88,14 +88,17 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		for (int index = 0; index < audioData.length; index += audioBufferSize) {
 			int length = Math.min(audioData.length - index, audioBufferSize);
 			byte[] audioBuffer = newAudioBuffer(audioData, index, length);
-			AudioClip audioClip = AudioClip.from(audioBuffer, audioFormat);
-			Document document = buildDocument(audioClip, index, false);
+			AudioClip audioClip = AudioClip.from(audioBuffer, audioFormat).fromByteOffset(index);
+			Document document = buildDocument(audioClip);
+
 			documents.add(document);
 
 			if (previousAudioClip != null) {
 				int byteOffset = index - (audioBufferSize / 2);
-				AudioClip overlappingAudioClip = previousAudioClip.secondHalf().merge(audioClip.firstHalf());
-				Document overlappingDocument = buildDocument(overlappingAudioClip, byteOffset, true);
+				AudioClip overlappingAudioClip = previousAudioClip.secondHalf()
+					.merge(audioClip.firstHalf())
+					.fromByteOffset(byteOffset);
+				Document overlappingDocument = buildDocument(overlappingAudioClip, true);
 				documents.add(overlappingDocument);
 			}
 
@@ -121,8 +124,7 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 		private final AudioProperties audioProperties;
 
 		protected AbstractSoundBytesCalculator(AudioProperties audioProperties) {
-			Assert.notNull(audioProperties, "AudioProperties are required");
-			this.audioProperties = audioProperties;
+			this.audioProperties = AudioProperties. nullSafe(audioProperties);
 		}
 
 		@SuppressWarnings("all")
@@ -130,11 +132,11 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 
 			Duration audioClipLength = getAudioProperties().getClipDuration();
 
-			int audioClipLengthInSeconds = asInt(audioClipLength.toSeconds());
-			int bitsPerAudioClipLengthInSeconds = bitRate * audioClipLengthInSeconds;
-			int bytesPerAudioClipLengthInSeconds = bitsPerAudioClipLengthInSeconds / NumberUtils.BITS_PER_BYTE;
+			int audioClipDurationInSeconds = asInt(audioClipLength.toSeconds());
+			int bitsPerAudioClipDurationInSeconds = bitRate * audioClipDurationInSeconds;
+			int bytesPerAudioClipDurationInSeconds = bitsPerAudioClipDurationInSeconds / NumberUtils.BITS_PER_BYTE;
 
-			return bytesPerAudioClipLengthInSeconds;
+			return bytesPerAudioClipDurationInSeconds;
 		}
 	}
 
@@ -142,7 +144,7 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 	@Profile("CD")
 	public static class CompactDiscSoundBytesCalculator extends AbstractSoundBytesCalculator implements CompactDiscMetadata {
 
-		protected static final int CD_CHANNELS = 2; // Stereo
+		protected static final int CD_CHANNELS = AudioChannels.STEREO.value();
 		protected static final int CD_BIT_RATE = CD_SAMPLE_RATE * CD_SAMPLE_SIZE_IN_BITS * CD_CHANNELS;
 
 		public CompactDiscSoundBytesCalculator(AudioProperties audioProperties) {
@@ -191,18 +193,12 @@ public class SoundBytesAudioSplitter extends AbstractAudioSplitter {
 
 		@Override
 		public int calculate(Audio audio) {
-
-			int audioSizeInBytes = audio.getData().length;
-			int configuredBufferDivisor = getAudioProperties().getBufferDivisor();
-			int configuredBufferSize = getAudioProperties().getBufferSize();
-			int calculatedBufferSize = audioSizeInBytes / configuredBufferDivisor;
-
-			return Math.max(calculatedBufferSize, configuredBufferSize);
+			return getAudioProperties().getBufferSize();
 		}
 
 		@Override
 		public String toString() {
-			return "SoundByteCalculator by Space";
+			return "SoundBytesCalculator by Space";
 		}
 	}
 }

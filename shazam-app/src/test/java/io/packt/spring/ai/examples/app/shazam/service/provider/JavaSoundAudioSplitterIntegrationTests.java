@@ -71,13 +71,13 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 
 	private static final boolean DEBUG = false;
 
-	// bytes per second = frame size (bytes) * frame rate
-	// bytes per second = sample size (bits) / bits per byte * sample rate * channels
+	// a frame is effectively all the data for a sample in both channels
 	// frame rate is the number of frames per second (same as samples per second; 44,100)
 	// frame size is sample size (16 bits; 2 bytes) * number of channels per sample (1 = Mono, 2 = Stereo)
-	// a frame is effectively all the data for a logical sample in both channels
-	// frame rate / sample rate (44,100) * frame size (sample size (16 bits; 2 bytes) * channels (2 Stereo)
-	private static final int EXPECTED_AUDIO_CLIP_SIZE = 176_400; // bytes
+	// frame rate | sample rate (44,100) * frame size (4 bytes = sample size (16 bits; 2 bytes) * channels (2 Stereo))
+	// bytes per second = frame size (bytes) * frame rate = sample size (bits) / bits per byte * sample rate * channels
+	private static final int EXPECTED_AUDIO_CLIP_DATA_SIZE = 44_100 * 4; // frame rate * frame size = 176,400 bytes
+	private static final int EXPECTED_AUDIO_CLIP_SIZE = EXPECTED_AUDIO_CLIP_DATA_SIZE + AudioUtils.PCM_WAV_FILE_HEADER_SIZE; // bytes
 	private static final int NUMBER_OF_AUDIO_CLIPS = 2;
 
 	private static final String AUDIO_FILENAME_TEMPLATE = "PearlJam-Ten-Jeremy-%d.wav";
@@ -89,23 +89,6 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 	@Autowired
 	private JavaSoundAudioSplitter audioSplitter;
 
-	/*
-	 * Matchbox20-Unwell.mp3 METADATA
-	 *
-	 * 3:49 minutes & seconds of audio / 229 seconds of audio
-	 * ~2.3 MB of audio / 2,287,671 bytes of audio / 18,301,368 bits of audio
-	 * 22.05 kHz (22,050 Hz) == samples per second
-	 * 22.05 kHz * 229 seconds == 5,049,450 samples
-	 * How many bits per sample? (MP3 compression skews the calculation)
-	 *
-	 * 18,301,368 bits / 229 seconds == ~79,919 bits per second (bit rate)
-	 * ~79,919 bits per second / 22,050 samples per second ==  ~3.62 bits / sample
-	 *
-	 * 18,301,368 bits / 320,000 bps = ~57 seconds
-	 * 18,301,368 bits / 128,000 bps = ~143 seconds
-	 * 18,301,368 bits / 64,000 bps = ~286 seconds
-	 * 18,301,368 bits / (128k + 64k = 192k / 2 = 96 kbps) = ~191 seconds
-	 */
 	@Test
 	@EnabledIf("resourceExists")
 	void splitsAudio() {
@@ -116,28 +99,40 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		assertDocuments(audio, documents);
 		saveAudioClip(audio, Duration.ofSeconds(5));
 
-		int byteOffset = 0;
+		int audioByteOffset = 0;
+		int documentCount = 0;
 		long audioTimestamp = 0L;
 		long documentsAudioSize = AudioUtils.PCM_WAV_FILE_HEADER_SIZE;
 		long documentsDataSize = 0;
 
 		for (Document document : documents) {
+
 			byte[] data = resolveData(document);
-			assertThat(data).hasSizeGreaterThan(0).hasSizeLessThanOrEqualTo(EXPECTED_AUDIO_CLIP_SIZE);
+
+			if (++documentCount < documents.size()) {
+				assertThat(data).hasSize(EXPECTED_AUDIO_CLIP_SIZE);
+			}
+			else {
+				assertThat(data).hasSizeGreaterThan(0).hasSizeLessThanOrEqualTo(EXPECTED_AUDIO_CLIP_SIZE);
+			}
+
 			documentsDataSize += data.length;
+
 			if (isNonOverlappingDocument(document)) {
-				assertThat(resolveAudioByteOffset(document)).isEqualTo(byteOffset);
+				assertThat(resolveAudioByteOffset(document)).isEqualTo(audioByteOffset);
 				assertThat(resolveAudioTimestamp(document)).isEqualTo(audioTimestamp);
-				audioTimestamp += audioClipDuration.toMillis();
-				documentsAudioSize += data.length;
-				byteOffset += data.length;
+				int audioDataSize = data.length - AudioUtils.PCM_WAV_FILE_HEADER_SIZE;
+				audioTimestamp += this.audioClipDuration.toMillis();
+				audioByteOffset += audioDataSize;
+				documentsAudioSize += audioDataSize;
 			}
 		}
 
 		// The size of non-overlapping Documents (audio clips) in bytes should be equal to the size of the Audio in bytes
 		assertThat(documentsAudioSize).isEqualTo(audio.size());
 
-		// The size of all Documents (audio clips) in bytes should be greater than the size of the Audio in bytes given overlap
+		// The size of all Documents (audio clips) in bytes should be greater than the size of the Audio in bytes
+		// given overlap and audio file header size
 		assertThat(documentsDataSize).isGreaterThan(audio.size());
 
 		assertAudioClip(audio, documents);
@@ -166,7 +161,7 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 
 	private void assertDocuments(Audio audio, List<Document> documents) {
 		assertThat(documents).isNotNull();
-		assertThat(documents).hasSize(asInt(audio.size() / EXPECTED_AUDIO_CLIP_SIZE) * 2 + 1);
+		assertThat(documents).hasSize(asInt(audio.size() / EXPECTED_AUDIO_CLIP_DATA_SIZE) + 1);
 	}
 
 	private Document selectDocument(List<Document> documents) {

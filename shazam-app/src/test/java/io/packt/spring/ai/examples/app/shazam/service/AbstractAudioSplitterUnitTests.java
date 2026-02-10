@@ -58,27 +58,27 @@ public class AbstractAudioSplitterUnitTests {
 			AbstractAudioSplitter.AudioClip.from(audioData, this.mockAudioFormat);
 
 		assertThat(audioClip).isNotNull();
-		assertThat(audioClip.data()).hasSameSizeAs(audioData);
+		assertThat(audioClip.getData()).hasSameSizeAs(audioData);
 
 		AbstractAudioSplitter.AudioClip firstHalf = audioClip.firstHalf();
 
 		assertThat(firstHalf).isNotNull();
 		assertThat(firstHalf).isNotSameAs(audioClip);
 		assertThat(firstHalf.size()).isEqualTo(4);
-		assertThat(firstHalf.data()).containsExactly(asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE));
+		assertThat(firstHalf.getData()).containsExactly(asByte(0xC), asByte(0xA), asByte(0xF), asByte(0xE));
 
 		AbstractAudioSplitter.AudioClip secondHalf = audioClip.secondHalf();
 
 		assertThat(secondHalf).isNotNull();
 		assertThat(secondHalf).isNotSameAs(audioClip).isNotSameAs(firstHalf);
 		assertThat(secondHalf.size()).isEqualTo(4);
-		assertThat(secondHalf.data()).containsExactly(asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE));
+		assertThat(secondHalf.getData()).containsExactly(asByte(0xB), asByte(0xA), asByte(0xB), asByte(0xE));
 
 		AbstractAudioSplitter.AudioClip bothHalves = firstHalf.merge(secondHalf);
 
 		assertThat(bothHalves).isNotNull();
 		assertThat(bothHalves).isNotSameAs(audioClip).isNotSameAs(firstHalf).isNotSameAs(secondHalf);
-		assertThat(bothHalves.data()).hasSameSizeAs(audioData);
+		assertThat(bothHalves.getData()).hasSameSizeAs(audioData);
 		assertThat(Arrays.equals(bothHalves.getAudio().getData(), audioData)).isTrue();
 	}
 
@@ -93,27 +93,27 @@ public class AbstractAudioSplitterUnitTests {
 			AbstractAudioSplitter.AudioClip.from(audioData, this.mockAudioFormat);
 
 		assertThat(audioClip).isNotNull();
-		assertThat(audioClip.data()).hasSameSizeAs(audioData);
+		assertThat(audioClip.getData()).hasSameSizeAs(audioData);
 
 		AbstractAudioSplitter.AudioClip firstHalf = audioClip.firstHalf();
 
 		assertThat(firstHalf).isNotNull();
 		assertThat(firstHalf).isNotSameAs(audioClip);
 		assertThat(firstHalf.size()).isEqualTo(2);
-		assertThat(firstHalf.data()).containsExactly(asByte(0xD), asByte(0xE));
+		assertThat(firstHalf.getData()).containsExactly(asByte(0xD), asByte(0xE));
 
 		AbstractAudioSplitter.AudioClip secondHalf = audioClip.secondHalf();
 
 		assertThat(secondHalf).isNotNull();
 		assertThat(secondHalf).isNotSameAs(audioClip).isNotSameAs(firstHalf);
 		assertThat(secondHalf.size()).isEqualTo(3);
-		assertThat(secondHalf.data()).containsExactly(asByte(0xC), asByte(0xA), asByte(0xF));
+		assertThat(secondHalf.getData()).containsExactly(asByte(0xC), asByte(0xA), asByte(0xF));
 
 		AbstractAudioSplitter.AudioClip bothHalves = firstHalf.merge(secondHalf);
 
 		assertThat(bothHalves).isNotNull();
 		assertThat(bothHalves).isNotSameAs(audioClip).isNotSameAs(firstHalf).isNotSameAs(secondHalf);
-		assertThat(bothHalves.data()).hasSameSizeAs(audioData);
+		assertThat(bothHalves.getData()).hasSameSizeAs(audioData);
 		assertThat(Arrays.equals(bothHalves.getAudio().getData(), audioData)).isTrue();
 	}
 }
