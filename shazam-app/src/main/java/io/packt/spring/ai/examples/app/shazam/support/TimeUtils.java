@@ -17,6 +17,8 @@ package io.packt.spring.ai.examples.app.shazam.support;
 
 import java.time.Duration;
 
+import org.cp.elements.time.DateTimeUtils;
+
 /**
  * Abstract utility class encapsulating common functions for time.
  *
@@ -24,6 +26,8 @@ import java.time.Duration;
  * @since 0.1.0
  */
 public abstract class TimeUtils {
+
+	public static final int MILLISECONDS_PER_SECOND = DateTimeUtils.MILLISECONDS_IN_SECOND;
 
 	public static boolean isZero(Duration duration) {
 		return nullSafeDuration(duration).isZero();
