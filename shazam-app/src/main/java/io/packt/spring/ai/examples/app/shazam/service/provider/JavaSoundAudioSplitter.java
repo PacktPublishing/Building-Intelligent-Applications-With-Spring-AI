@@ -40,8 +40,6 @@ import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.springframework.ai.document.Document;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -59,12 +57,9 @@ import lombok.Getter;
  * @see javax.sound.sampled.AudioInputStream
  * @see javax.sound.sampled.AudioSystem
  * @see org.springframework.ai.document.Document
- * @see org.springframework.stereotype.Service
  * @see <a href="https://www.oracle.com/java/technologies/java-sound-api.html">Java Sound API</a>
  * @since 0.1.0
  */
-@Service
-@Profile("AudioTime")
 @Getter(AccessLevel.PROTECTED)
 public class JavaSoundAudioSplitter extends AbstractAudioSplitter {
 

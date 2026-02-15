@@ -21,7 +21,11 @@ import io.packt.spring.ai.examples.app.shazam.ext.honerlaw.HonerlawAudioFingerpr
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
+import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
+import io.packt.spring.ai.examples.app.shazam.service.provider.DefaultAudioSplicer;
+import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.boot.SpringBootConfiguration;
@@ -63,6 +67,17 @@ public class ShazamConfiguration {
 	@Profile("honerlaw")
 	AudioFingerprintFunction<?> honerlawAudioFingerprintFunction() {
 		return new HonerlawAudioFingerprintFunction();
+	}
+
+	@Bean
+	AudioSplicer audioSplicer() {
+		return new DefaultAudioSplicer();
+	}
+
+	@Bean
+	@Profile("AudioTime")
+	AudioSplitter audioSplitter(AudioProperties audioProperties) {
+		return new JavaSoundAudioSplitter(audioProperties);
 	}
 
 	@Bean

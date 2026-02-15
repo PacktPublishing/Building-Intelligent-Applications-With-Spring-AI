@@ -24,7 +24,6 @@ import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
 
 import org.springframework.ai.document.Document;
-import org.springframework.stereotype.Service;
 
 /**
  * Default implementation of the {@link AudioSplicer}
@@ -33,10 +32,8 @@ import org.springframework.stereotype.Service;
  * @see Audio
  * @see AbstractAudioSplicer
  * @see org.springframework.ai.document.Document
- * @see org.springframework.stereotype.Service
  * @since 0.1.0
  */
-@Service
 public class DefaultAudioSplicer extends AbstractAudioSplicer {
 
 	@Override
