@@ -46,6 +46,7 @@ import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.cp.elements.io.FileSystemUtils;
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
@@ -62,6 +63,7 @@ import org.springframework.context.annotation.Bean;
  * @author John Blum
  * @see JavaSoundAudioSplitter
  * @see AbstractShazamIntegrationTests
+ * @see javax.sound.sampled.AudioSystem
  * @see org.junit.jupiter.api.Test
  * @see org.springframework.boot.test.context.SpringBootTest
  * @since 0.1.0
@@ -80,7 +82,6 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 	private static final int EXPECTED_AUDIO_CLIP_SIZE = EXPECTED_AUDIO_CLIP_DATA_SIZE + AudioUtils.PCM_WAV_FILE_HEADER_SIZE; // bytes
 	private static final int NUMBER_OF_AUDIO_CLIPS = 2;
 
-	private static final String AUDIO_FILENAME_TEMPLATE = "PearlJam-Ten-Jeremy-%d.wav";
 	private static final String RESOURCE_PATH = "PearlJam-Ten-Jeremy.wav";
 
 	@Value("${shazam.audio.clip.duration:10s}")
@@ -206,12 +207,12 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 
 	@Override
 	protected boolean isDebug() {
-		return DEBUG;
+		return Boolean.parseBoolean(System.getProperty("shazam.debug", String.valueOf(DEBUG)));
 	}
 
 	@Override
 	protected String resourcePath() {
-		return RESOURCE_PATH;
+		return System.getProperty("shazam.tests.audio.resource-path", RESOURCE_PATH);
 	}
 
 	private void saveAudioBytes(byte[] audioData) {
@@ -223,7 +224,8 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 				out.flush();
 			}
 			catch (IOException cause) {
-				throw AudioAccessException.because("Failed to save audio data [%d] to file", cause);
+				String message = "Failed to save audio data to file [%s]".formatted(audioFile);
+				throw AudioAccessException.because(message, cause);
 			}
 		}
 	}
@@ -233,7 +235,7 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		if (isDebug()) {
 			AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
 
-			audio.in(audioFormat);
+			audio = audio.in(audioFormat);
 
 			int frameRate = Math.round(audioFormat.getFrameRate());
 
@@ -265,8 +267,16 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 	}
 
 	private File toAudioFile(int fileNumber) {
-		String audioFilename = AUDIO_FILENAME_TEMPLATE.formatted(fileNumber);
+		String audioFilename = toAudioFilename(resourcePath(), fileNumber);
 		return new File(FileSystemUtils.WORKING_DIRECTORY, audioFilename);
+	}
+
+	private @NonNull String toAudioFilename(String filename, int fileNumber) {
+		int index = filename.indexOf(".");
+		String audioFilename = filename.substring(0, index);
+		String audioExtension = filename.substring(index);
+		audioFilename = audioFilename.concat("-clip-%d".formatted(fileNumber)).concat(audioExtension);
+		return audioFilename;
 	}
 
 	@SpringBootConfiguration
