@@ -33,6 +33,7 @@ import io.packt.spring.ai.examples.app.shazam.repo.SongRepository;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
+import io.packt.spring.ai.examples.app.shazam.service.SongProcessor;
 import io.packt.spring.ai.examples.app.shazam.support.NonUniqueSongException;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
 
@@ -171,23 +172,27 @@ public class SmartMusicService implements MusicService {
 	public void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor) {
 
 		Assert.notNull(song, "Song is required");
-		Assert.notNull(songProcessor, "Song processor is required");
 
-		List<Document> documents = getAudioSplitter().split(song);
-		List<Document> identifiedDocuments = identify(documents, song);
-
-		identifiedDocuments = songProcessor.apply(song, identifiedDocuments);
+		List<Document> documents = resolveSongProcessor(songProcessor).process(song);
 
 		try {
-			getVectorStore().accept(identifiedDocuments);
+			getVectorStore().accept(documents);
 			getSongRepository().save(song);
 		}
 		finally {
-			identifiedDocuments.forEach(getDocumentStore()::remove);
+			documents.forEach(getDocumentStore()::remove);
 		}
 	}
 
-	private List<Document> identify(List<Document> documents, Song song) {
+	protected SongProcessor resolveSongProcessor(BiFunction<Song, List<Document>, List<Document>> songProcessor) {
+
+		SongProcessor resolvedSongProcessor = (song, documents) -> getAudioSplitter().split(song);
+
+		return resolvedSongProcessor.andThen(this::identify)
+			.andThen(songProcessor);
+	}
+
+	private List<Document> identify(Song song, List<Document> documents) {
 
 		return documents.stream()
 			.map(document -> associateSong(document, song))
