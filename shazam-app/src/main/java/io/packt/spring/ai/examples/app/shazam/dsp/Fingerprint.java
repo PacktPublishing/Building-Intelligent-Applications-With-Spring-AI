@@ -16,7 +16,7 @@
 package io.packt.spring.ai.examples.app.shazam.dsp;
 
 /**
- * Abstract Data Type (ADT) modeling a {@literal digit fingerprint}.
+ * Abstract Data Type (ADT) modeling a {@literal digital fingerprint}, such as for audio data.
  *
  * @author John Blum
  * @param <T> {@link Class Data type} of the {@literal fingerprint}.
