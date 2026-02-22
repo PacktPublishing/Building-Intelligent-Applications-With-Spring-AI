@@ -15,32 +15,37 @@
  */
 package io.packt.spring.ai.examples.app.shazam.support;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
-
-import javax.sound.sampled.AudioFormat;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.SpectrogramAudioFingerprintFunction;
-import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.util.PropertiesAdapter;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Java program using {@literal Cosine Similarity} to compare {@literal Vectors}.
@@ -51,6 +56,7 @@ import lombok.Getter;
  * @see java.lang.Runnable
  * @since 0.1.0
  */
+@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public class VectorCosineSimilarityApp implements Runnable {
 
@@ -65,80 +71,94 @@ public class VectorCosineSimilarityApp implements Runnable {
 		new VectorCosineSimilarityApp(args).run();
 	}
 
+	private final ApplicationArguments applicationArguments;
+
 	private final AudioSplitter audioSplitter;
+
 	private final EmbeddingModel embeddingModel;
-	private final String[] arguments;
+
+	private final PropertiesAdapter applicationProperties;
 
 	public VectorCosineSimilarityApp(String[] args) {
-		this.arguments = args;
-		this.audioSplitter = newAudioSplitter();
-		this.embeddingModel = newEmbeddingModel();
-	}
-
-	protected AudioSplitter newAudioSplitter() {
-		return new JavaSoundAudioSplitter(AudioProperties.defaultAudioProperties());
-	}
-
-	protected EmbeddingModel newEmbeddingModel() {
-		return new AudioEmbeddingModel(newAudioFingerprintFunction(), AbstractDocumentStore.inMemory());
-	}
-
-	private AudioFingerprintFunction newAudioFingerprintFunction() {
-		//return new MfccAudioFingerprintFunction();
-		return new SpectrogramAudioFingerprintFunction();
-	}
-
-	protected String getAudioClipArgument() {
-		return getArguments()[1];
-	}
-
-	protected String getSongArgument() {
-		return getArguments()[0];
+		this.applicationArguments = Factory.newApplicationArguments(args);
+		this.applicationProperties = Factory.loadApplicationProperties();
+		this.audioSplitter = Factory.newAudioSplitter();
+		this.embeddingModel = Factory.newEmbeddingModel(Factory.olllamEmbeddingModel());
 	}
 
 	@Override
 	public void run() {
 
-		Audio song = Audio.from(newResource(getSongArgument()));
-		Audio audioClip = Audio.from(newResource(getAudioClipArgument()));
-
-		AudioFormat audioFormat = AudioFormatBuilder.from(audioClip)
-			.defaultAudioFormat(() -> MpegAudioFormatBuilder.mpegOneLayerThree(audioClip)
-				//.withSampleRateOf44100()
-				.withSampleRateOf22050()
-				.build())
-			.build();
-
-		audioClip.in(audioFormat);
+		Audio song = Audio.from(Factory.newResource(getApplicationArguments().getSourceArgs()[0]));
+		Audio audioClip = Audio.from(Factory.newResource(getApplicationArguments().getSourceArgs()[1]));
 
 		Document audioClipDocument = AbstractDocumentStore.newAudioDocument(audioClip);
 
+		double similarityThreshold =
+			getApplicationProperties().getAsType("shazam.song.search.similarity-threshold", Double.class);
+
 		float[] audioClipVector = getEmbeddingModel().embed(audioClipDocument);
 
-		int count = 0;
+		int matchCount = 0;
 		int uniqueVectorCount = 0;
 
 		Set<Integer> vectorHashCodes = new HashSet<>();
 
-		System.out.printf("%n%nVector for audio clip [%s] is (%s)%n%n",
-			getAudioClipArgument(), Arrays.toString(audioClipVector));
-
-		System.out.printf("Vectors for song [%s] are:%n%n", getSongArgument());
-
 		for (Document songDocument : getAudioSplitter().split(song)) {
 			float[] songVector = getEmbeddingModel().embed(songDocument);
 			double cosineSimilarity = SimpleVectorStore.EmbeddingMath.cosineSimilarity(audioClipVector, songVector);
+			matchCount += cosineSimilarity > similarityThreshold ? 1 : 0;
 			uniqueVectorCount += vectorHashCodes.add(Arrays.hashCode(songVector)) ? 1 : 0;
-			System.out.printf("%d - Vector (%s)%n", ++count, Arrays.toString(songVector));
 			System.out.printf("Similarity = %s%n%n", cosineSimilarity);
 		}
 
 		System.out.printf("Unique Song Vector Count [%d]%n", uniqueVectorCount);
+		System.out.printf("Number of Matches [%d]", matchCount);
 	}
 
-	private Resource newResource(String resourcePath) {
-		Resource resource = new FileSystemResource(resourcePath);
-		Assert.isTrue(resource.exists(), "Resource [%s] not found");
-		return resource;
+	static class Factory {
+
+		static final String APPLICATION_PROPERTIES = "application.properties";
+
+		static PropertiesAdapter loadApplicationProperties() {
+
+			Properties applicationProperties = new Properties();
+
+			try (InputStream in = Factory.class.getResourceAsStream(APPLICATION_PROPERTIES)) {
+				applicationProperties.load(in);
+			}
+			catch (IOException cause) {
+				log.warn("IO error occurred while loading application.properties", cause);
+			}
+
+			return PropertiesAdapter.from(applicationProperties);
+		}
+
+		static ApplicationArguments newApplicationArguments(String[] args) {
+			return new DefaultApplicationArguments(args);
+		}
+
+		static AudioFingerprintFunction<?> newAudioFingerprintFunction() {
+			return new SpectrogramAudioFingerprintFunction();
+		}
+
+		static AudioSplitter newAudioSplitter() {
+			return new JavaSoundAudioSplitter(AudioProperties.defaultAudioProperties());
+		}
+
+		static EmbeddingModel newEmbeddingModel(EmbeddingModel embeddingModel) {
+			return new AudioEmbeddingModel(newAudioFingerprintFunction(), AbstractDocumentStore.inMemory(), embeddingModel);
+		}
+
+		static EmbeddingModel olllamEmbeddingModel() {
+			return OllamaEmbeddingModel.builder().build();
+		}
+
+		static Resource newResource(String resourcePath) {
+			Resource resource = new ClassPathResource(resourcePath);
+			resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
+			Assert.isTrue(resource.exists(), "Resource [%s] not found");
+			return resource;
+		}
 	}
 }
