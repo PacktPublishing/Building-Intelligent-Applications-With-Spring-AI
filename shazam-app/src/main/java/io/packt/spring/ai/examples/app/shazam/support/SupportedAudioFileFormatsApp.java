@@ -28,7 +28,7 @@ import javax.sound.sampled.AudioSystem;
  * @see javax.sound.sampled.AudioSystem
  * @since 0.1.0
  */
-public class AudioFileFormatsSupportedApp {
+public class SupportedAudioFileFormatsApp {
 
 	public static void main(String[] args) {
 		Arrays.stream(AudioSystem.getAudioFileTypes())
