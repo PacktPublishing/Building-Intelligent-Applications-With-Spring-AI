@@ -17,7 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.vectorstore;
 
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.content.Media;

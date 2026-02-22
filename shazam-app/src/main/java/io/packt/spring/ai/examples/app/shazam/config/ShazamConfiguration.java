@@ -20,10 +20,10 @@ import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.honerlaw.HonerlawAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.provider.DefaultAudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 

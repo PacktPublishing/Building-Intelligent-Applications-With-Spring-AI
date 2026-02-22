@@ -35,6 +35,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudio
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.AudioSource;
 import io.packt.spring.ai.examples.app.shazam.model.MediaSource;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
 
 import org.slf4j.Logger;

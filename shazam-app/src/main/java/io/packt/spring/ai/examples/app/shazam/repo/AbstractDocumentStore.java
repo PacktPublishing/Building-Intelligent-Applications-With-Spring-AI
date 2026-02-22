@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.packt.spring.ai.examples.app.shazam.service;
+package io.packt.spring.ai.examples.app.shazam.repo;
 
 import java.util.HashMap;
 import java.util.Iterator;

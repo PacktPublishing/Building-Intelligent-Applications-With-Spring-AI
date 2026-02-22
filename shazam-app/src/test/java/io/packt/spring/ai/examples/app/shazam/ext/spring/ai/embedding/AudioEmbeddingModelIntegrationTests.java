@@ -23,7 +23,7 @@ import io.packt.spring.ai.examples.app.shazam.AbstractShazamIntegrationTests;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.config.ShazamConfiguration;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;

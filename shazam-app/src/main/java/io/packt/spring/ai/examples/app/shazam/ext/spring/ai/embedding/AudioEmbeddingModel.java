@@ -21,8 +21,8 @@ import io.codeprimate.extensions.spring.ai.embedding.AbstractEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
-import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.DocumentStore;
 
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;

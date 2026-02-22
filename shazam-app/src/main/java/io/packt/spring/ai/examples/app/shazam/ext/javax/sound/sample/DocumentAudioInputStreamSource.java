@@ -25,7 +25,7 @@ import javax.sound.sampled.AudioInputStream;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.service.AbstractDocumentStore;
+import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
 
 import org.cp.elements.lang.Assert;
