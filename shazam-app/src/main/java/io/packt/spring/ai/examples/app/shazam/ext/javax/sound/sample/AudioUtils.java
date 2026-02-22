@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;

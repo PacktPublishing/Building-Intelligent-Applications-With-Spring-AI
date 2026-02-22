@@ -39,8 +39,8 @@ import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuild
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.cp.elements.io.FileUtils;
 import org.cp.elements.lang.Assert;

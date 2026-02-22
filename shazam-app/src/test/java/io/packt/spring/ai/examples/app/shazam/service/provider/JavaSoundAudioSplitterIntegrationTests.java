@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
@@ -41,7 +41,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.DocumentAud
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;

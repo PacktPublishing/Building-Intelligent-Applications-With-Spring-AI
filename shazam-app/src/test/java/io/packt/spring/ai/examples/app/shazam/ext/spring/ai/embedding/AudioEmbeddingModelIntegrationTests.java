@@ -26,7 +26,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

@@ -31,7 +31,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuild
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;

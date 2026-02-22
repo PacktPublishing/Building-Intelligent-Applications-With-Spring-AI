@@ -20,7 +20,7 @@ import java.util.List;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.SpectralPeakProcessor;

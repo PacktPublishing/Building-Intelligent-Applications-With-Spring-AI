@@ -18,7 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import java.util.List;
 import java.util.function.Predicate;
 
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.springframework.ai.document.Document;
 

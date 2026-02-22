@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asLong;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asLong;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -29,7 +29,7 @@ import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintException;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.cp.elements.lang.Assert;
 

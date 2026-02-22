@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.BITS_PER_BYTE;
 
 import java.util.HashMap;
 import java.util.Map;

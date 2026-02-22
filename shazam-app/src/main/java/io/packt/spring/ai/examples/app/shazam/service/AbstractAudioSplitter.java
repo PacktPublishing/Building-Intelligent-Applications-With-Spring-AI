@@ -15,9 +15,9 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asFloat;
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.BITS_PER_BYTE;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asFloat;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 
 import java.io.IOException;
 import java.time.Duration;

@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormat
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.springframework.ai.document.Document;
 import org.springframework.context.annotation.Profile;

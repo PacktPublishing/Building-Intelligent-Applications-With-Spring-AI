@@ -15,7 +15,7 @@
  */
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

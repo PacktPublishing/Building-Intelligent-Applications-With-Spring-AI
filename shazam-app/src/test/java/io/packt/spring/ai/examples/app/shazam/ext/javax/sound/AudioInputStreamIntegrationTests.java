@@ -15,8 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asLong;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asLong;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;

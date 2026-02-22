@@ -15,8 +15,8 @@
  */
 package io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample;
 
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.BITS_PER_BYTE;
-import static io.packt.spring.ai.examples.app.shazam.support.NumberUtils.asInt;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.BITS_PER_BYTE;
+import static io.packt.spring.ai.examples.app.shazam.util.NumberUtils.asInt;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -29,7 +29,7 @@ import javax.sound.sampled.AudioInputStream;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.ext.ffmpeg.FFProbe;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.cp.elements.io.IOUtils;
 

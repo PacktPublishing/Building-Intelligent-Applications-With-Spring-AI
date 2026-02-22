@@ -28,7 +28,7 @@ import java.util.Set;
 
 import javax.sound.sampled.AudioFormat;
 
-import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
+import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.content.Media;
