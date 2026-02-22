@@ -81,14 +81,14 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 	}
 
 	public AudioFormatBuilder copy(AudioFormat audioFormat) {
-		Assert.notNull(audioFormat, "AudioFormat to copy is required");
+		AudioUtils.assertAudioFormat(audioFormat);
 		this.audioFormat.set(audioFormat);
 		this.audioProperties.putAll(audioFormat.properties());
 		return this;
 	}
 
 	public AudioFormatBuilder copyAudioFormat(AudioInputStream audioInputStream) {
-		Assert.notNull(audioInputStream, "AudioInputStream is required");
+		AudioUtils.assertAudioInputStream(audioInputStream);
 		return copy(audioInputStream.getFormat());
 	}
 
