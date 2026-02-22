@@ -26,7 +26,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +35,6 @@ import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.config.SongLoaderProperties;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
@@ -45,6 +43,7 @@ import io.packt.spring.ai.examples.app.shazam.support.NumberUtils;
 import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
 
 import org.cp.elements.io.FileUtils;
+import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.Builder;
 import org.cp.elements.util.ArrayUtils;
 import org.springframework.ai.document.Document;
@@ -56,9 +55,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.Assert;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -71,8 +70,8 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author John Blum
  * @see SpringBootApplication
- * @see ApplicationRunner
  * @see AbstractSpringBootApplication
+ * @see ApplicationRunner
  * @see MusicService
  * @see Song
  * @since 0.1.0
@@ -88,11 +87,12 @@ public class SongLoader extends AbstractSpringBootApplication {
 	private static final String SONG_DATABASE_DATA_LOCATION = "/database/data";
 
 	public static void main(String[] args) {
+		runSpringApplication(SongLoader.class, asStringArray(SONG_LOADER_PROFILE), applicationBuilderFunction(), args);
+	}
 
-		Function<SpringApplicationBuilder, SpringApplicationBuilder> applicationBuilder = springApplicationBuilder ->
+	private static Function<SpringApplicationBuilder, SpringApplicationBuilder> applicationBuilderFunction() {
+		return springApplicationBuilder ->
 			springApplicationBuilder.properties(Collections.singletonMap("spring.docker.compose.enabled", "false"));
-
-		runSpringApplication(SongLoader.class, asStringArray(SONG_LOADER_PROFILE), applicationBuilder, args);
 	}
 
 	@SpringBootConfiguration
@@ -101,24 +101,32 @@ public class SongLoader extends AbstractSpringBootApplication {
 	static class SongLoaderConfiguration {
 
 		@Bean
-		SongLoaderService songLoaderService(MusicService musicService, ObjectMapper objectMapper, ResourceLoader resourceLoader) {
-			return SongLoaderService.from(musicService, objectMapper, resourceLoader);
+		SongLoaderContext songLoaderContext(
+			MusicService musicService,
+			ObjectMapper objectMapper,
+			ResourceLoader resourceLoader,
+			SongLoaderProperties songLoaderProperties
+		) {
+			return SongLoaderContext.from(musicService, objectMapper, resourceLoader, songLoaderProperties);
+		}
+
+		@Bean
+		SongLoaderService songLoaderService(SongLoaderContext songLoaderContext) {
+			return SongLoaderService.from(songLoaderContext);
 		}
 	}
 
 	@Bean
-	ApplicationRunner programRunner(SongLoaderProperties songLoaderProperties, SongLoaderService songLoaderService) {
+	ApplicationRunner programRunner(SongLoaderContext songLoaderContext, SongLoaderService songLoaderService) {
 
 		return args -> {
 
 			log.info("Shazam Song Loader");
 
-			Resource resource = newResource(SONG_DATABASE_DATA_LOCATION);
+			Resource resourceLocation = newResource(SONG_DATABASE_DATA_LOCATION);
 
-			Assert.state(resource.exists(), () -> "Resource location [%s] for song data not found"
-				.formatted(SONG_DATABASE_DATA_LOCATION));
+			File directory = resourceLocation.getFile();
 
-			File directory = resource.getFile();
 			File[] songMetadataFiles = ArrayUtils.nullSafeArray(directory.listFiles(songMetadataFileFilter()));
 
 			for (File songMetadataFile : songMetadataFiles) {
@@ -128,12 +136,10 @@ public class SongLoader extends AbstractSpringBootApplication {
 				SongMetadata songMetadata = songLoaderService.loadSongMetadata(songMetadataFile);
 				Song song = songLoaderService.loadSong(songMetadata);
 
-				songMetadata.from(songMetadataFile);
-
 				log.info("Loading song [{}] by artist [{}]...", song.getTitle(), song.getArtist());
 
 				ExceptionThrowingRunnable.runSafely(
-					() -> songLoaderService.store(song, randomAudioClipWriter(songLoaderProperties)),
+					() -> songLoaderService.store(song, randomAudioClipWriter(songLoaderContext)),
 					cause -> logWarn(cause.getMessage())
 				);
 			}
@@ -141,16 +147,18 @@ public class SongLoader extends AbstractSpringBootApplication {
 	}
 
 	private Resource newResource(String resourcePath) {
-		return new ClassPathResource(resourcePath);
+		Resource resource = new ClassPathResource(resourcePath);
+		resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
+		Assert.notNull(resource.exists(), "Resource [%s] not found", resourcePath);
+		return resource;
 	}
 
-	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(
-			SongLoaderProperties songLoaderProperties
-	) {
+	@SuppressWarnings("all")
+	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(SongLoaderContext songLoaderContext) {
 
 		return (song, audioDocuments) -> {
 
-			if (songLoaderProperties.isAudioClipSavingEnabled()) {
+			if (songLoaderContext.isSaveAudioClip()) {
 
 				int index = NumberUtils.randomInt(audioDocuments.size());
 
@@ -176,7 +184,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 				}
 			}
 
-			if (songLoaderProperties.isSongLoadingDisabled()) {
+			if (songLoaderContext.isNotLoadSong()) {
 				String message = "Loading Song [%s] has been short-circuited".formatted(song);
 				throw SongLoadException.because(message);
 			}
@@ -220,21 +228,11 @@ public class SongLoader extends AbstractSpringBootApplication {
 		}
 
 		private AudioFormat resolveAudioFormat(Audio audio) {
-
-			try {
-				try (AudioInputStream audioInputStream = AudioUtils.openInputStream(audio)) {
-					return AudioFormatBuilder.from(audio)
-						.copyAudioFormat(audioInputStream)
-						.build();
-				}
-			}
-			catch (Exception ignore) {
-				return buildAudioFormat(audio);
-			}
+			return ExceptionThrowingSupplier.getSafely(AudioFormatBuilder.from(audio)::build, cause ->
+				buildAudioFormat(audio));
 		}
 
 		private AudioFormat buildAudioFormat(Audio audio) {
-
 			return MpegAudioFormatBuilder.mpegOneLayerThree(audio)
 				.withSampleRateOf44100()
 				.build();
@@ -276,15 +274,21 @@ public class SongLoader extends AbstractSpringBootApplication {
 		}
 	}
 
-	interface SongLoaderService {
+	interface SongLoaderContext {
 
-		static SongLoaderService from(MusicService musicService, ObjectMapper objectMapper, ResourceLoader resourceLoader) {
+		static SongLoaderContext from(
+			MusicService musicService,
+			ObjectMapper objectMapper,
+			ResourceLoader resourceLoader,
+			SongLoaderProperties songLoaderProperties
+		) {
 
 			Assert.notNull(musicService, "MusicService is required");
 			Assert.notNull(objectMapper, "JSON ObjectMapper is required");
 			Assert.notNull(resourceLoader, "ResourceLoader is required");
+			Assert.notNull(songLoaderProperties, "SongLoaderProperties are required");
 
-			return new SongLoaderService() {
+			return new SongLoaderContext() {
 
 				@Override
 				public MusicService getMusicService() {
@@ -300,6 +304,11 @@ public class SongLoader extends AbstractSpringBootApplication {
 				public ResourceLoader getResourceLoader() {
 					return resourceLoader;
 				}
+
+				@Override
+				public SongLoaderProperties getSongLoaderProperties() {
+					return songLoaderProperties;
+				}
 			};
 		}
 
@@ -309,13 +318,52 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 		ResourceLoader getResourceLoader();
 
+		SongLoaderProperties getSongLoaderProperties();
+
+		default boolean isSaveAudioClip() {
+			return getSongLoaderProperties().isAudioClipSavingEnabled();
+		}
+
+		default boolean isNotLoadSong() {
+			return getSongLoaderProperties().isSongLoadingDisabled();
+		}
+	}
+
+	interface SongLoaderService {
+
+		static SongLoaderService from(SongLoaderContext context) {
+			Assert.notNull(context, "SongLoaderContext is required");
+			return () -> context;
+		}
+
+		SongLoaderContext getContext();
+
+		default MusicService getMusicService() {
+			return getContext().getMusicService();
+		}
+
+		default ResourceLoader getResourceLoader() {
+			return getContext().getResourceLoader();
+		}
+
 		default Song loadSong(SongMetadata songMetadata) {
 			return songMetadata.toSong(getResourceLoader());
 		}
 
 		default SongMetadata loadSongMetadata(File songMetadataFile) {
-			return ExceptionThrowingSupplier.getSafely(() -> getObjectMapper().readValue(songMetadataFile, SongMetadata.class),
-				cause -> { throw SongLoadException.from(songMetadataFile, cause); });
+
+			ObjectMapper objectMapper = getContext().getObjectMapper();
+
+			SongMetadata songMetadata = ExceptionThrowingSupplier.getSafely(
+				() -> objectMapper.readValue(songMetadataFile, SongMetadata.class),
+				cause -> {
+					throw SongLoadException.from(songMetadataFile, cause);
+				}
+			);
+
+			songMetadata.from(songMetadataFile);
+
+			return songMetadata;
 		}
 
 		default void store(Song song) {
