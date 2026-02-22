@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.packt.spring.ai.examples.app.shazam.support;
+package io.packt.spring.ai.examples.app.shazam.util;
 
 import java.time.Duration;
 

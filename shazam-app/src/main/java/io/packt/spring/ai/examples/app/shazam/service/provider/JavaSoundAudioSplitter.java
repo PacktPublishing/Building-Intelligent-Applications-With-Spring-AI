@@ -37,7 +37,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AbstractAudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.AudioAccessException;
-import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
+import io.packt.spring.ai.examples.app.shazam.util.TimeUtils;
 
 import org.springframework.ai.document.Document;
 

@@ -17,7 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.config;
 
 import java.time.Duration;
 
-import io.packt.spring.ai.examples.app.shazam.support.TimeUtils;
+import io.packt.spring.ai.examples.app.shazam.util.TimeUtils;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
