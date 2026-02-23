@@ -16,7 +16,9 @@
 package io.packt.spring.ai.examples.app.shazam.config;
 
 import io.codeprimate.extensions.spring.boot.web.contoller.AdminController;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.dsp.DefaultAudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.honerlaw.HonerlawAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
@@ -58,6 +60,11 @@ public class ShazamConfiguration {
 	}
 
 	@Bean
+	AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction() {
+		return new DefaultAudioFingerprintEmbeddingFunction();
+	}
+
+	@Bean
 	@Profile("chromaprint")
 	AudioFingerprintFunction<?> chromaprintAudioFingerprintFunction() {
 		throw new IllegalStateException("Not Implemented");
@@ -75,7 +82,6 @@ public class ShazamConfiguration {
 	}
 
 	@Bean
-	@Profile("AudioTime")
 	AudioSplitter audioSplitter(AudioProperties audioProperties) {
 		return new JavaSoundAudioSplitter(audioProperties);
 	}
