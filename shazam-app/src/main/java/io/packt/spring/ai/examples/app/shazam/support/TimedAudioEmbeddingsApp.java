@@ -16,17 +16,18 @@
 package io.packt.spring.ai.examples.app.shazam.support;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.util.AbstractTimer;
+import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.codeprimate.extensions.util.Timer;
-import io.honerlaw.audio.fingerprint.hash.peak.HashedPeak;
 import io.packt.spring.ai.examples.app.shazam.config.ShazamConfiguration;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
@@ -34,11 +35,8 @@ import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.util.DocumentUtils;
 
 import org.cp.elements.lang.Assert;
-import org.cp.elements.lang.ClassUtils;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.Embedding;
-import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -61,9 +59,10 @@ import lombok.extern.slf4j.Slf4j;
  * @see SpringBootApplication
  * @see SpringBootConfiguration
  * @see AbstractSpringBootApplication
- * @see org.springframework.boot.ApplicationRunner
+ * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.Embedding
- * @see org.springframework.ai.embedding.EmbeddingModel
+ * @see org.springframework.boot.ApplicationRunner
+ * @see org.springframework.core.io.Resource
  * @since 1.0.0
  */
 @SpringBootApplication
@@ -90,10 +89,10 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 		@Bean
 		AudioEmbeddingContext audioEmbeddingContext(
 			AudioSplitter audioSplitter,
-			AudioFingerprintFunction<Object> function,
-			OllamaEmbeddingModel embeddingModel
+			AudioFingerprintFunction<Object> audioFingerprintFunction,
+			AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction
 		) {
-			return AudioEmbeddingContext.from(audioSplitter, function, embeddingModel);
+			return AudioEmbeddingContext.from(audioSplitter, audioFingerprintFunction, audioFingerprintEmbeddingFunction);
 		}
 
 		@Bean
@@ -139,12 +138,12 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 		static AudioEmbeddingContext from(
 			AudioSplitter audioSplitter,
 			AudioFingerprintFunction<Object> audioFingerprintFunction,
-			EmbeddingModel embeddingModel
+			AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction
 		) {
 
 			Assert.notNull(audioSplitter, "AudioSplitter is required");
 			Assert.notNull(audioFingerprintFunction, "AudioFingerprintFunction is required");
-			Assert.notNull(embeddingModel, "EmbeddingModel is required");
+			Assert.notNull(audioFingerprintEmbeddingFunction, "AudioFingerprintEmbeddingFunction is required");
 
 			return new AudioEmbeddingContext() {
 
@@ -159,8 +158,8 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 				}
 
 				@Override
-				public EmbeddingModel getEmbeddingModel() {
-					return embeddingModel;
+				public AudioFingerprintEmbeddingFunction getAudioFingerprintEmbeddingFunction() {
+					return audioFingerprintEmbeddingFunction;
 				}
 			};
 		}
@@ -169,7 +168,7 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 
 		AudioFingerprintFunction<Object> getAudioFingerprintFunction();
 
-		EmbeddingModel getEmbeddingModel();
+		AudioFingerprintEmbeddingFunction getAudioFingerprintEmbeddingFunction();
 
 	}
 
@@ -194,21 +193,21 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 			return getContext().getAudioFingerprintFunction();
 		}
 
+		AudioFingerprintEmbeddingFunction getAudioFingerprintEmbeddingFunction() {
+			return getContext().getAudioFingerprintEmbeddingFunction();
+		}
+
 		AudioSplitter getAudioSplitter() {
 			return getContext().getAudioSplitter();
 		}
 
-		EmbeddingModel getEmbeddingModel() {
-			return getContext().getEmbeddingModel();
-		}
-
-		Embedding embed(Document document) {
-			float[] vector = getEmbeddingModel().embed(document);
-			return new Embedding(vector, 0);
+		Embedding embed(Fingerprint<?> audioFingerprint) {
+			return getAudioFingerprintEmbeddingFunction().embed(audioFingerprint);
 		}
 
 		Fingerprint<Object> fingerprint(Audio audio) {
-			return getAudioFingerprintFunction().compute(audio);
+			return ExceptionThrowingSupplier.getSafely(() ->
+				getAudioFingerprintFunction().compute(audio), cause -> null);
 		}
 
 		List<Document> split(Audio audio) {
@@ -231,47 +230,24 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 
 				log.info("[{}] Audio Clip(s)", audioDocuments.size());
 
-				List<Fingerprint<Object>> fingerprints = audioDocuments.stream()
+				List<Fingerprint<Object>> audioFingerprints = audioDocuments.stream()
 					.map(DocumentUtils::toAudio)
 					.filter(Audio::isNotEmpty)
 					.map(this::fingerprint)
+					.filter(Objects::nonNull)
 					.toList();
 
-				log.info("[{}] Audio Fingerprints", fingerprints.size());
-
-				List<Document> fingerprintDocuments = new ArrayList<>();
-
-				for (Fingerprint<Object> fingerprint : fingerprints) {
-
-					List<String> hashes = new ArrayList<>();
-
-					fingerprint.forEach(hash -> {
-
-						if (hash instanceof HashedPeak hashedPeak) {
-							hashes.add(hashedPeak.getHashAsHex());
-							return;
-						}
-
-						throw new IllegalStateException("Hash [%s] was not a HashedPeak"
-							.formatted(ClassUtils.getClassName(hash)));
-					});
-
-					hashes.stream()
-						.map(hash -> Document.builder().text(hash).build())
-						.forEach(fingerprintDocuments::add);
-				}
-
-				log.info("[{}] Audio Embeddings", fingerprintDocuments.size());
+				log.info("[{}] Audio Fingerprints", audioFingerprints.size());
 
 				AtomicLong counter = new AtomicLong(0L);
-				long startTime = System.currentTimeMillis();
 
-				fingerprintDocuments.forEach(document -> {
-					embed(document);
-					if (counter.incrementAndGet() % 100 == 0) {
-						log.info("Embedded [{}] Documents in [{}]", counter.get(),
-							TimedAudioEmbeddingsApp.toString(Duration.ofMillis(System.currentTimeMillis() - startTime)));
-					}
+				audioFingerprints.forEach(audioFingerprint -> {
+					long startTime = System.currentTimeMillis();
+					Embedding embedding = embed(audioFingerprint);
+					Duration duration = Duration.ofMillis(System.currentTimeMillis() - startTime);
+					String timestamp = TimedAudioEmbeddingsApp.toString(duration);
+					log.info("Audio Embedding [{}] with size [{}] computed in [{}]", counter.incrementAndGet(),
+						embedding.getOutput().length, timestamp);
 				});
 			});
 		}

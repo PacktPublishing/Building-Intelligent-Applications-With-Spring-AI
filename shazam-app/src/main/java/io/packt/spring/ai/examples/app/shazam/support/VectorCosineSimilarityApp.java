@@ -23,7 +23,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.dsp.DefaultAudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding.AudioEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.ext.tarsos.dsp.SpectrogramAudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
@@ -35,7 +37,6 @@ import org.cp.elements.lang.Assert;
 import org.cp.elements.util.PropertiesAdapter;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -83,7 +84,7 @@ public class VectorCosineSimilarityApp implements Runnable {
 		this.applicationArguments = Factory.newApplicationArguments(args);
 		this.applicationProperties = Factory.loadApplicationProperties();
 		this.audioSplitter = Factory.newAudioSplitter();
-		this.embeddingModel = Factory.newEmbeddingModel(Factory.olllamEmbeddingModel());
+		this.embeddingModel = Factory.newEmbeddingModel();
 	}
 
 	@Override
@@ -142,16 +143,17 @@ public class VectorCosineSimilarityApp implements Runnable {
 			return new SpectrogramAudioFingerprintFunction();
 		}
 
+		static AudioFingerprintEmbeddingFunction newAudioFingerprintEmbeddingFunction() {
+			return new DefaultAudioFingerprintEmbeddingFunction();
+		}
+
 		static AudioSplitter newAudioSplitter() {
 			return new JavaSoundAudioSplitter(AudioProperties.defaultAudioProperties());
 		}
 
-		static EmbeddingModel newEmbeddingModel(EmbeddingModel embeddingModel) {
-			return new AudioEmbeddingModel(newAudioFingerprintFunction(), AbstractDocumentStore.inMemory(), embeddingModel);
-		}
-
-		static EmbeddingModel olllamEmbeddingModel() {
-			return OllamaEmbeddingModel.builder().build();
+		static EmbeddingModel newEmbeddingModel() {
+			return new AudioEmbeddingModel(newAudioFingerprintFunction(), newAudioFingerprintEmbeddingFunction(),
+				AbstractDocumentStore.inMemory());
 		}
 
 		static Resource newResource(String resourcePath) {

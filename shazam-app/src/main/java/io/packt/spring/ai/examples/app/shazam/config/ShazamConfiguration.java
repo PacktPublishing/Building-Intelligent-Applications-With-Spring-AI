@@ -94,8 +94,8 @@ public class ShazamConfiguration {
 	@Bean
 	@Primary
 	EmbeddingModel embeddingModel(AudioFingerprintFunction<?> audioFingerprintFunction,
-			DocumentStore documentStore, EmbeddingModel embeddingModel) {
+			AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction, DocumentStore documentStore) {
 
-		return new AudioEmbeddingModel(audioFingerprintFunction, documentStore, embeddingModel);
+		return new AudioEmbeddingModel(audioFingerprintFunction, audioFingerprintEmbeddingFunction, documentStore);
 	}
 }

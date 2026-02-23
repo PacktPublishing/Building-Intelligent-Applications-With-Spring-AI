@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.ext.spring.ai.embedding;
 import java.util.List;
 
 import io.codeprimate.extensions.spring.ai.embedding.AbstractEmbeddingModel;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
@@ -57,20 +58,23 @@ public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 
 	private final AudioFingerprintFunction<?> audioFingerprintFunction;
 
+	private final AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction;
+
 	private final DocumentStore documentStore;
 
-	private final EmbeddingModel embeddingModel;
-
-	public AudioEmbeddingModel(AudioFingerprintFunction<?> audioFingerprintFunction,
-			DocumentStore documentStore, EmbeddingModel embeddingModel) {
+	public AudioEmbeddingModel(
+		AudioFingerprintFunction<?> audioFingerprintFunction,
+		AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction,
+		DocumentStore documentStore
+	) {
 
 		Assert.notNull(audioFingerprintFunction, "AudioFingerprintFunction is required");
+		Assert.notNull(audioFingerprintEmbeddingFunction, "AudioFingerprintEmbeddingFunction is required");
 		Assert.notNull(documentStore, "DocumentStore is required");
-		Assert.notNull(embeddingModel, "EmbeddingModel is required");
 
 		this.audioFingerprintFunction = audioFingerprintFunction;
+		this.audioFingerprintEmbeddingFunction = audioFingerprintEmbeddingFunction;
 		this.documentStore = documentStore;
-		this.embeddingModel = embeddingModel;
 	}
 
 	@Override
@@ -87,16 +91,11 @@ public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 	}
 
 	@Override
-	public int dimensions() {
-		return getEmbeddingModel().dimensions();
-	}
-
-	@Override
 	public @NonNull float[] embed(@NonNull Document document) {
 		Audio audio = DocumentUtils.toAudio(document);
 		Fingerprint<?> audioFingerprint = getAudioFingerprintFunction().compute(audio);
-		String hexAudioFingerprint = audioFingerprint.toHexString();
-		return getEmbeddingModel().embed(hexAudioFingerprint);
+		Embedding embedding = getAudioFingerprintEmbeddingFunction().embed(audioFingerprint);
+		return embedding.getOutput();
 	}
 
 	@Override
