@@ -21,8 +21,8 @@ import io.codeprimate.extensions.spring.ai.embedding.AbstractEmbeddingModel;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.Fingerprint;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
-import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.repo.DocumentStore;
+import io.packt.spring.ai.examples.app.shazam.util.DocumentUtils;
 
 import org.springframework.ai.content.Media;
 import org.springframework.ai.document.Document;
@@ -93,34 +93,10 @@ public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 
 	@Override
 	public @NonNull float[] embed(@NonNull Document document) {
-		Audio audio = toAudio(document);
+		Audio audio = DocumentUtils.toAudio(document);
 		Fingerprint<?> audioFingerprint = getAudioFingerprintFunction().compute(audio);
 		String hexAudioFingerprint = audioFingerprint.toHexString();
 		return getEmbeddingModel().embed(hexAudioFingerprint);
-	}
-
-	private @NonNull Document assertDocument(Document document) {
-		Assert.notNull(document, "Document is required");
-		return document;
-	}
-
-	private @NonNull Media asssertMedia(Media media) {
-		Assert.notNull(media, "Media is required");
-		return media;
-	}
-
-	protected Audio toAudio(Document document) {
-
-		assertDocument(document);
-
-		if (document instanceof AbstractDocumentStore.AudioDocument audioDocument) {
-			return audioDocument.getAudio();
-		}
-		else {
-			Media media = asssertMedia(document.getMedia());
-			byte[] data = media.getDataAsByteArray();
-			return Audio.from(data);
-		}
 	}
 
 	@Override
