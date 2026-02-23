@@ -15,11 +15,14 @@
  */
 package io.packt.spring.ai.examples.app.shazam.dsp;
 
+import java.util.function.Consumer;
+
 /**
- * Abstract Data Type (ADT) modeling a {@literal digital fingerprint}, such as for audio data.
+ * Abstract Data Type (ADT) modeling a {@literal digital fingerprint},
+ * such as {@literal fingerprint} computed for audio data.
  *
  * @author John Blum
- * @param <T> {@link Class Data type} of the {@literal fingerprint}.
+ * @param <T> {@link Class Type} of the {@literal fingerprint} {@literal data}.
  * @see FunctionalInterface
  * @since 0.1.0
  */
@@ -27,12 +30,38 @@ package io.packt.spring.ai.examples.app.shazam.dsp;
 @SuppressWarnings("unused")
 public interface Fingerprint<T> {
 
+	/**
+	 * Gets the underlying typed {@link T data} constituting this digital {@link Fingerprint}.
+	 *
+	 * @return the underlying {@link T data} constituting this {@link Fingerprint}.
+	 * @see #getData()
+	 */
 	T get();
 
+	/**
+	 * Gets the binary data constituting this digital {@link Fingerprint}.
+	 * <p>
+	 * The digital {@link Fingerprint} may be a {@literal hash} or sequence of {@literal hashes}.
+	 *
+	 * @return the binary data constituting this digital {@link Fingerprint}.
+	 * @throws UnsupportedOperationException by default; the binary representation is type dependent.
+	 * @see #get()
+	 */
 	default byte[] getData() {
 		throw new UnsupportedOperationException("Getting a byte array from the fingerprint is not supported");
 	}
 
+	default void forEach(Consumer<Object> consumer) {
+
+	}
+
+	/**
+	 * Returns a {@literal hexidecimal repesentation} of this digital {@link Fingerprint}.
+	 *
+	 * @return a {@literal hexidecimal repesentation} of this digital {@link Fingerprint}.
+	 * @throws UnsupportedOperationException if this digital {@link Fingerprint} does not have a binary form.
+	 * @see #getData()
+	 */
 	default String toHexString() {
 
 		StringBuilder stringBuilder = new StringBuilder();
