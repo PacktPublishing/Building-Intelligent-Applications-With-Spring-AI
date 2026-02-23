@@ -74,7 +74,7 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 	static final String AUDIO_EMBEDDING_APP_PROFILE = "audio-embeddings-app";
 
 	public static void main(String[] args) {
-		String[] activeProfiles = asStringArray(AUDIO_EMBEDDING_APP_PROFILE, "AudioTime", "honerlaw");
+		String[] activeProfiles = asStringArray(AUDIO_EMBEDDING_APP_PROFILE, "honerlaw");
 		runSpringApplication(TimedAudioEmbeddingsApp.class, activeProfiles, applicationBuilderFunction(), args);
 	}
 
