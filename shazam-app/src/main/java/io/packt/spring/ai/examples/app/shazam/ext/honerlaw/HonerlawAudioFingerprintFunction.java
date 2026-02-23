@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import io.honerlaw.audio.fingerprint.AudioFile;
 import io.honerlaw.audio.fingerprint.hash.FingerPrint;
@@ -104,6 +105,11 @@ public class HonerlawAudioFingerprintFunction implements AudioFingerprintFunctio
 			}
 
 			return data;
+		}
+
+		@Override
+		public void forEach(Consumer<Object> consumer) {
+			get().forEach(consumer);
 		}
 	}
 }
