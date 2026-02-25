@@ -17,13 +17,12 @@ package io.packt.spring.ai.examples.app.shazam.support;
 
 import javax.sound.sampled.AudioFormat;
 
+import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.cp.elements.lang.Assert;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +72,7 @@ public class AudioFormatResolverApp implements Runnable {
 	public void run() {
 
 		String resourcePath = getFirstArgument();
-		Resource resource = newResource(resourcePath);
+		Resource resource = ResourceUtils.newResource(resourcePath);
 		Audio audio = newAudio(resource);
 		AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
 
@@ -86,18 +85,5 @@ public class AudioFormatResolverApp implements Runnable {
 	private Audio newAudio(Resource resource) {
 		Assert.notNull(resource, "Resource is required");
 		return Audio.from(resource);
-	}
-
-	private Resource newResource(String resourcePath) {
-		Assert.hasText(resourcePath, "Resource path [%s] is required", resourcePath);
-		Resource resource = new ClassPathResource(resourcePath);
-		return resource.exists() ? resource : newFileResource(resourcePath);
-	}
-
-	private Resource newFileResource(String resourcePath) {
-		Assert.hasText(resourcePath, "Resource path [%s] is required", resourcePath);
-		Resource resource = new FileSystemResource(resourcePath);
-		Assert.isTrue(resource.exists(), "Resource path [%s] not found", resourcePath);
-		return resource;
 	}
 }

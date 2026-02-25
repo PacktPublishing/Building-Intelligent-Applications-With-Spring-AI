@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
+import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.codeprimate.extensions.util.AbstractTimer;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.codeprimate.extensions.util.Timer;
@@ -44,8 +45,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -107,7 +106,7 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 		return args -> {
 
 			String resourcePath  = args.getSourceArgs()[0];
-			Resource audioResource = newResource(resourcePath);
+			Resource audioResource = ResourceUtils.newResource(resourcePath);
 			Audio audio = Audio.from(audioResource);
 
 			print("Timing the generation of embeddings for audio [%s]...%n", resourcePath);
@@ -116,14 +115,6 @@ public class TimedAudioEmbeddingsApp extends AbstractSpringBootApplication {
 
 			print("Audio Embeddings generated in [%s]%n", toString(duration));
 		};
-	}
-
-	static Resource newResource(String resourcePath) {
-		Assert.hasText(resourcePath, "Resource path [%s] is required", resourcePath);
-		Resource resource = new ClassPathResource(resourcePath);
-		resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
-		Assert.isTrue(resource.exists(), "Resource [%s] not found", resourcePath);
-		return resource;
 	}
 
 	static String toString(Duration duration) {

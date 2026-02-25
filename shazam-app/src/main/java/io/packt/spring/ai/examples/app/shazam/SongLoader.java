@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
+import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.config.SongLoaderProperties;
@@ -54,8 +55,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
@@ -123,7 +122,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 
 			log.info("Shazam Song Loader");
 
-			Resource resourceLocation = newResource(SONG_DATABASE_DATA_LOCATION);
+			Resource resourceLocation = ResourceUtils.newResource(SONG_DATABASE_DATA_LOCATION);
 
 			File directory = resourceLocation.getFile();
 
@@ -144,13 +143,6 @@ public class SongLoader extends AbstractSpringBootApplication {
 				);
 			}
 		};
-	}
-
-	private Resource newResource(String resourcePath) {
-		Resource resource = new ClassPathResource(resourcePath);
-		resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
-		Assert.notNull(resource.exists(), "Resource [%s] not found", resourcePath);
-		return resource;
 	}
 
 	@SuppressWarnings("all")

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintEmbeddingFunction;
 import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
@@ -33,16 +34,12 @@ import io.packt.spring.ai.examples.app.shazam.repo.AbstractDocumentStore;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSplitter;
 
-import org.cp.elements.lang.Assert;
 import org.cp.elements.util.PropertiesAdapter;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -90,8 +87,8 @@ public class VectorCosineSimilarityApp implements Runnable {
 	@Override
 	public void run() {
 
-		Audio song = Audio.from(Factory.newResource(getApplicationArguments().getSourceArgs()[0]));
-		Audio audioClip = Audio.from(Factory.newResource(getApplicationArguments().getSourceArgs()[1]));
+		Audio song = Audio.from(ResourceUtils.newResource(getApplicationArguments().getSourceArgs()[0]));
+		Audio audioClip = Audio.from(ResourceUtils.newResource(getApplicationArguments().getSourceArgs()[1]));
 
 		Document audioClipDocument = AbstractDocumentStore.newAudioDocument(audioClip);
 
@@ -154,13 +151,6 @@ public class VectorCosineSimilarityApp implements Runnable {
 		static EmbeddingModel newEmbeddingModel() {
 			return new AudioEmbeddingModel(newAudioFingerprintFunction(), newAudioFingerprintEmbeddingFunction(),
 				AbstractDocumentStore.inMemory());
-		}
-
-		static Resource newResource(String resourcePath) {
-			Resource resource = new ClassPathResource(resourcePath);
-			resource = resource.exists() ? resource : new FileSystemResource(resourcePath);
-			Assert.isTrue(resource.exists(), "Resource [%s] not found");
-			return resource;
 		}
 	}
 }
