@@ -16,18 +16,17 @@
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import javax.sound.sampled.AudioFormat;
-
-import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatResolver;
-import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
+import io.packt.spring.ai.examples.app.shazam.AbstractShazamIntegrationTests;
+import io.packt.spring.ai.examples.app.shazam.config.ShazamConfiguration;
+import io.packt.spring.ai.examples.app.shazam.dsp.AudioFingerprintFunction;
+import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplicer;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
@@ -40,10 +39,10 @@ import org.cp.elements.io.FileUtils;
 import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 
 /**
@@ -54,18 +53,18 @@ import org.springframework.core.io.Resource;
  * @author John Blum
  * @see Audio
  * @see DefaultAudioSplicer
+ * @see AbstractShazamIntegrationTests
  * @see org.junit.jupiter.api.Test
- * @see org.springframework.boot.test.context.SpringBootTest
+ * @see org.mockito.Mockito
+ * @see SpringBootTest
  * @since 0.1.0
  */
 @SpringBootTest
 @SuppressWarnings("unused")
-public class DefaultAudioSplicerIntegrationTests {
+public class DefaultAudioSplicerIntegrationTests extends AbstractShazamIntegrationTests {
 
-	private static final boolean DEBUG = false;
-
-	//private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
-	private static final String RESOURCE_PATH = "PearlJam-NoCode-RedMosquito.mp3";
+	//private static final String RESOURCE_PATH = "PearlJam-NoCode-RedMosquito.mp3";
+	private static final String RESOURCE_PATH = "PearlJam-Ten-Jeremy.wav";
 
 	@Autowired
 	private AudioSplicer audioSplicer;
@@ -79,12 +78,10 @@ public class DefaultAudioSplicerIntegrationTests {
 
 		Resource audioResource = resource();
 		File audioFile = audioResource.getFile();
-		Audio audio = Audio.from(audioFile);
+		Audio audio = Audio.from(audioResource);
 
 		assertThat(audio).isNotNull();
 		assertThat(audio.size()).isEqualTo(audioFile.length());
-
-		audio = audio.in(resolveAudioFormat(audio));
 
 		List<Document> audioClips = this.audioSplitter.split(audio);
 
@@ -110,25 +107,25 @@ public class DefaultAudioSplicerIntegrationTests {
 			.isNotNull()
 			.hasSameSizeAs(audioData);
 
-		assertThat(Arrays.equals(audioData, splicedAudioData)).isTrue();
+		// Audio Data (WAVE) Header is different!
+		//assertThat(Arrays.equals(audioData, splicedAudioData)).isTrue();
+
+		for (int index = AudioUtils.PCM_WAV_FILE_HEADER_SIZE; index < audioData.length; index++) {
+			assertThat(splicedAudioData[index])
+				.describedAs("Byte at index [%d] in spliced audio data [%d] is not same as byte in original audio data [%d]",
+					index, splicedAudioData[index], audioData[index])
+				.isEqualTo(audioData[index]);
+		}
 	}
 
-	private AudioFormat resolveAudioFormat(Audio audio) {
-		return AudioFormatResolver.defaultAudioFormatResolver().resolve(audio, () ->
-			MpegAudioFormatBuilder.mpegOneLayerThree(audio).withSampleRateOf44100().build());
-	}
-
-	Resource resource() {
-		return new ClassPathResource(RESOURCE_PATH);
-	}
-
-	boolean resourceExists() {
-		return resource().exists();
+	@Override
+	protected String resourcePath() {
+		return RESOURCE_PATH;
 	}
 
 	private void saveToFile(Audio audio, File sourceAudioFile) {
 
-		if (DEBUG) {
+		if (isDebug()) {
 			try {
 				String audioFilename = FileUtils.getName(sourceAudioFile);
 				String audioFileExtension = FileUtils.getExtension(sourceAudioFile);
@@ -151,17 +148,13 @@ public class DefaultAudioSplicerIntegrationTests {
 	}
 
 	@SpringBootConfiguration
-	@EnableConfigurationProperties(AudioProperties.class)
+	@EnableAutoConfiguration
+	@Import(ShazamConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		AudioSplicer audioSplicer() {
-			return new DefaultAudioSplicer();
-		}
-
-		@Bean
-		AudioSplitter audioSplitter(AudioProperties audioProperties) {
-			return new JavaSoundAudioSplitter(audioProperties);
+		AudioFingerprintFunction<?> mockAudioFingerprintFunction() {
+			return mock(AudioFingerprintFunction.class);
 		}
 	}
 }

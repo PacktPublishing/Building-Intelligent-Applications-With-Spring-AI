@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import java.util.List;
 import java.util.function.Predicate;
 
+import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.util.DocumentUtils;
 import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
@@ -37,11 +38,11 @@ public abstract class AbstractAudioSplicer implements AudioSplicer {
 		return document -> true;
 	}
 
-	protected byte[] extractAudioClip(Document document) {
-		return DocumentUtils.toAudio(document).getData();
+	protected Audio extractAudioClip(Document document) {
+		return DocumentUtils.toAudio(document);
 	}
 
-	protected List<byte[]> extractAudioClips(List<Document> audioDocuments) {
+	protected List<Audio> extractAudioClips(List<Document> audioDocuments) {
 
 		return audioDocuments.stream()
 			.filter(audioClipFilter())
@@ -49,20 +50,32 @@ public abstract class AbstractAudioSplicer implements AudioSplicer {
 			.toList();
 	}
 
-	protected byte[] spliceAudioClips(byte[] audioClipOne, byte[] audioClipTwo) {
+	protected byte[] extractAudioClipData(Document document) {
+		return extractAudioClip(document).getData();
+	}
 
-		byte[] audioData = new byte[audioClipOne.length + audioClipTwo.length];
+	protected List<byte[]> extractAudioClipsData(List<Document> audioDocuments) {
 
-		System.arraycopy(audioClipOne, 0, audioData, 0, audioClipOne.length);
-		System.arraycopy(audioClipTwo, 0, audioData, audioClipOne.length, audioClipTwo.length);
+		return audioDocuments.stream()
+			.filter(audioClipFilter())
+			.map(this::extractAudioClipData)
+			.toList();
+	}
+
+	protected byte[] spliceAudioClipsData(byte[] audioClipDataOne, byte[] audioClipDataTwo) {
+
+		byte[] audioData = new byte[audioClipDataOne.length + audioClipDataTwo.length];
+
+		System.arraycopy(audioClipDataOne, 0, audioData, 0, audioClipDataOne.length);
+		System.arraycopy(audioClipDataTwo, 0, audioData, audioClipDataOne.length, audioClipDataTwo.length);
 
 		return audioData;
 	}
 
-	protected byte[] spliceAudioClips(List<byte[]> audioClips) {
+	protected byte[] spliceAudioClipsData(List<byte[]> audioClipsData) {
 
-		return audioClips.stream()
-			.reduce(this::spliceAudioClips)
+		return audioClipsData.stream()
+			.reduce(this::spliceAudioClipsData)
 			.orElse(NumberUtils.EMPTY_BYTE_ARRAY);
 	}
 
