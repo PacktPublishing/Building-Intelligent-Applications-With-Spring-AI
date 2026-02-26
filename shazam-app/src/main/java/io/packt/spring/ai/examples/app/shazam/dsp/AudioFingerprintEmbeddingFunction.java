@@ -17,6 +17,7 @@ package io.packt.spring.ai.examples.app.shazam.dsp;
 
 import java.util.function.Function;
 
+import io.codeprimate.extensions.spring.ai.embedding.Vector;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
 import org.springframework.ai.embedding.Embedding;
@@ -28,6 +29,7 @@ import org.springframework.ai.embedding.Embedding;
  * @see Audio
  * @see Fingerprint
  * @see java.util.function.Function
+ * @see io.codeprimate.extensions.spring.ai.embedding.Vector
  * @see org.springframework.ai.embedding.Embedding
  * @since 0.1.0
  */
@@ -42,4 +44,7 @@ public interface AudioFingerprintEmbeddingFunction extends Function<Fingerprint<
 
 	Embedding embed(Fingerprint<?> audioFingerprint);
 
+	default Vector vectorize(Fingerprint<?> audioFingerprint) {
+		return Vector.from(embed(audioFingerprint));
+	}
 }
