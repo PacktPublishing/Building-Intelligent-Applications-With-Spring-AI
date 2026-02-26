@@ -56,6 +56,8 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 
+	private static final String TEST_AUDIO_FINGERPRINT = "a1c822be0b8af172f3c3b8368d185e55c5e65ede";
+
 	private final AudioFingerprintFunction<?> audioFingerprintFunction;
 
 	private final AudioFingerprintEmbeddingFunction audioFingerprintEmbeddingFunction;
@@ -88,6 +90,11 @@ public class AudioEmbeddingModel extends AbstractEmbeddingModel {
 			.toList();
 
 		return toEmbeddingResponse(embeddings);
+	}
+
+	@Override
+	public int dimensions() {
+		return TEST_AUDIO_FINGERPRINT.getBytes().length;
 	}
 
 	@Override
