@@ -106,6 +106,8 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 
 		private final AtomicReference<AudioInputStream> audioInputStream = new AtomicReference<>(null);
 
+		private final AtomicReference<Long> frameLength = new AtomicReference<>(null);
+
 		@Getter(AccessLevel.PROTECTED)
 		private final Audio audio;
 
@@ -123,10 +125,27 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 			return this.audioFormat.updateAndGet(this::resolveAudioFormat);
 		}
 
+		@Override
+		public long getFrameLength() {
+			return this.frameLength.updateAndGet(this::resolveFrameLength);
+		}
+
 		private AudioFormat buildAudioFormat(Audio audio) {
 			return AudioFormatBuilder.from(audio)
 				.copy(AudioInputStreamSource.super.getAudioFormat())
 				.build();
+		}
+
+		private Long computeFrameLength(Audio audio) {
+
+			try {
+				long audioSize = audio.size();
+				long frameSize = getAudioFormat().getFrameSize();
+				return audioSize / frameSize;
+			}
+			catch (Exception ignore) {
+				return AudioInputStreamSource.super.getFrameLength();
+			}
 		}
 
 		private AudioInputStream newAudioInputStream(Audio audio) {
@@ -134,7 +153,8 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 		}
 
 		private AudioFormat resolveAudioFormat(AudioFormat audioFormat) {
-			return audioFormat != null ? audioFormat : buildAudioFormat(getAudio());
+			return audioFormat != null ? audioFormat
+				: ConfiguredAudioFormatResolver.INSTANCE.resolve(getAudio(), () -> buildAudioFormat(getAudio()));
 		}
 
 		private AudioInputStream resolveAudioInputStream(AudioInputStream audioInputStream) {
@@ -150,6 +170,10 @@ public class AudioInputStreamBuilder implements Builder<AudioInputStream> {
 				AudioUtils.close(audioInputStream);
 				return 0;
 			});
+		}
+
+		private long resolveFrameLength(Long framweLength) {
+			return framweLength != null ? framweLength : computeFrameLength(getAudio());
 		}
 	}
 }
