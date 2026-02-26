@@ -18,6 +18,7 @@ package io.packt.spring.ai.examples.app.shazam.service;
 import java.util.List;
 import java.util.function.Predicate;
 
+import io.packt.spring.ai.examples.app.shazam.util.DocumentUtils;
 import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
 import org.springframework.ai.document.Document;
@@ -37,7 +38,7 @@ public abstract class AbstractAudioSplicer implements AudioSplicer {
 	}
 
 	protected byte[] extractAudioClip(Document document) {
-		return document.getMedia().getDataAsByteArray();
+		return DocumentUtils.toAudio(document).getData();
 	}
 
 	protected List<byte[]> extractAudioClips(List<Document> audioDocuments) {
