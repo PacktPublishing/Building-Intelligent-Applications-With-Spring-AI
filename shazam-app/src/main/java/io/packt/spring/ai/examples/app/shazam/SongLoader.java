@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Year;
 import java.util.Collections;
-import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.sound.sampled.AudioFormat;
@@ -40,6 +38,7 @@ import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuild
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
+import io.packt.spring.ai.examples.app.shazam.service.SongProcessor;
 import io.packt.spring.ai.examples.app.shazam.support.SongLoadException;
 import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 
@@ -146,7 +145,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 	}
 
 	@SuppressWarnings("all")
-	private BiFunction<Song, List<Document>, List<Document>> randomAudioClipWriter(SongLoaderContext songLoaderContext) {
+	private SongProcessor randomAudioClipWriter(SongLoaderContext songLoaderContext) {
 
 		return (song, audioDocuments) -> {
 
@@ -362,7 +361,7 @@ public class SongLoader extends AbstractSpringBootApplication {
 			getMusicService().store(song);
 		}
 
-		default void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor) {
+		default void store(Song song, SongProcessor songProcessor) {
 			getMusicService().store(song, songProcessor);
 		}
 	}

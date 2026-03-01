@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import io.codeprimate.extensions.spring.ai.document.id.UuidGenerator;
@@ -169,7 +168,7 @@ public class SmartMusicService implements MusicService {
 	}
 
 	@Override
-	public void store(Song song, BiFunction<Song, List<Document>, List<Document>> songProcessor) {
+	public void store(Song song, SongProcessor songProcessor) {
 
 		Assert.notNull(song, "Song is required");
 
@@ -184,9 +183,10 @@ public class SmartMusicService implements MusicService {
 		}
 	}
 
-	protected SongProcessor resolveSongProcessor(BiFunction<Song, List<Document>, List<Document>> songProcessor) {
+	protected SongProcessor resolveSongProcessor(SongProcessor songProcessor) {
 
-		SongProcessor resolvedSongProcessor = (song, documents) -> getAudioSplitter().split(song);
+		SongProcessor resolvedSongProcessor =
+			(song, documents) -> getAudioSplitter().split(song);
 
 		return resolvedSongProcessor.andThen(this::identify)
 			.andThen(songProcessor);
