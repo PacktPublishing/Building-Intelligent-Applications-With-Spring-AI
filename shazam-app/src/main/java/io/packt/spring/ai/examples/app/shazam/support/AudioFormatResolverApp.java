@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AudioFormatResolverApp implements Runnable {
 
 	private static final String USAGE_MESSAGE = "$ java -cp <classpath> %s </path/to/audio/file[.mp3]>%n";
+	private static final String USE_RAW_AUDIO_FORMAT_OPTION = "--use-raw-audio-format";
 
 	public static void main(String[] args) {
 		new AudioFormatResolverApp(validateArguments(args)).run();
@@ -71,6 +72,10 @@ public class AudioFormatResolverApp implements Runnable {
 		return this.arguments[0];
 	}
 
+	protected boolean isUseRawAudioFormat() {
+		return this.arguments.length > 1 && USE_RAW_AUDIO_FORMAT_OPTION.equalsIgnoreCase(this.arguments[1]);
+	}
+
 	@Override
 	public void run() {
 
@@ -82,7 +87,11 @@ public class AudioFormatResolverApp implements Runnable {
 			.map(AudioFileFormat.Type::getExtension)
 			.toList());
 
-		AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
+		AudioFormat shazamAudioFormat = AudioFormatBuilder.from(audio).build();
+
+		AudioFormat audioFormat = isUseRawAudioFormat()
+			? ((ShazamAudioFormat) shazamAudioFormat).getRawAudioFormat()
+			: shazamAudioFormat;
 
 		log.info("**AudioFormat Resolver Application**");
 		log.info("Audio resource [{}]", resource);
@@ -94,6 +103,6 @@ public class AudioFormatResolverApp implements Runnable {
 		log.info("--> Audio frame size [{}]", audioFormat.getFrameSize());
 		log.info("--> Audio sample rate [{}]", audioFormat.getSampleRate());
 		log.info("--> Audio sample size [{}]", audioFormat.getSampleSizeInBits());
-		log.info("Audio duration [{}]", ((ShazamAudioFormat) audioFormat).getDuration());
+		log.info("Audio duration [{}]", ((ShazamAudioFormat) shazamAudioFormat).getDuration());
 	}
 }
