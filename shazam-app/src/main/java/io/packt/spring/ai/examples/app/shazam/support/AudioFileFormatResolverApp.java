@@ -24,7 +24,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
-import org.cp.elements.lang.Assert;
 import org.springframework.core.io.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,18 +64,18 @@ public class AudioFileFormatResolverApp implements Runnable {
 		this.arguments = args;
 	}
 
-	protected String getFirstArgument() {
+	protected String getResourcePathArgument() {
 		return this.arguments[0];
 	}
 
 	@Override
 	public void run() {
 
-		String resourcePath = getFirstArgument();
+		String resourcePath = getResourcePathArgument();
 
 		try {
 			Resource resource = ResourceUtils.newResource(resourcePath);
-			Audio audio = newAudio(resource);
+			Audio audio = Audio.from(resource);
 			AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(audio.inputStream());
 
 			log.info("**AudioFileFormat Resolver Application**");
@@ -91,10 +90,5 @@ public class AudioFileFormatResolverApp implements Runnable {
 			String message = "Failed to read file format for audio [%s]".formatted(resourcePath);
 			throw AudioAccessException.because(message, cause);
 		}
-	}
-
-	private Audio newAudio(Resource resource) {
-		Assert.notNull(resource, "Resource is required");
-		return Audio.from(resource);
 	}
 }
