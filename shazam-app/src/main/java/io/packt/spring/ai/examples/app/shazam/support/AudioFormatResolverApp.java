@@ -87,6 +87,13 @@ public class AudioFormatResolverApp implements Runnable {
 		log.info("**AudioFormat Resolver Application**");
 		log.info("Audio resource [{}]", resource);
 		log.info("Audio format [{}]", audioFormat);
+		log.info("--> Audio big endian [{}]", audioFormat.isBigEndian());
+		log.info("--> Audio channels [{}]", audioFormat.getChannels());
+		log.info("--> Audio encoding [{}]", audioFormat.getEncoding());
+		log.info("--> Audio frame rate [{}]", audioFormat.getFrameRate());
+		log.info("--> Audio frame size [{}]", audioFormat.getFrameSize());
+		log.info("--> Audio sample rate [{}]", audioFormat.getSampleRate());
+		log.info("--> Audio sample size [{}]", audioFormat.getSampleSizeInBits());
 		log.info("Audio duration [{}]", ((ShazamAudioFormat) audioFormat).getDuration());
 	}
 }
