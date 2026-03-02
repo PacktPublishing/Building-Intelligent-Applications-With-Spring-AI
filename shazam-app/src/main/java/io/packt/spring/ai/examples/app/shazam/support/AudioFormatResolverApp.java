@@ -15,14 +15,17 @@
  */
 package io.packt.spring.ai.examples.app.shazam.support;
 
+import java.util.Arrays;
+
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
 
 import io.codeprimate.extensions.spring.core.io.ResourceUtils;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.ShazamAudioFormat;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 
-import org.cp.elements.lang.Assert;
 import org.springframework.core.io.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,26 +67,26 @@ public class AudioFormatResolverApp implements Runnable {
 		this.arguments = args;
 	}
 
-	protected String getFirstArgument() {
+	protected String getResourcePathArgument() {
 		return this.arguments[0];
 	}
 
 	@Override
 	public void run() {
 
-		String resourcePath = getFirstArgument();
+		String resourcePath = getResourcePathArgument();
 		Resource resource = ResourceUtils.newResource(resourcePath);
-		Audio audio = newAudio(resource);
+		Audio audio = Audio.from(resource);
+
+		log.info("Supported AudioFileFormats [{}]", Arrays.stream(AudioSystem.getAudioFileTypes())
+			.map(AudioFileFormat.Type::getExtension)
+			.toList());
+
 		AudioFormat audioFormat = AudioFormatBuilder.from(audio).build();
 
 		log.info("**AudioFormat Resolver Application**");
 		log.info("Audio resource [{}]", resource);
 		log.info("Audio format [{}]", audioFormat);
 		log.info("Audio duration [{}]", ((ShazamAudioFormat) audioFormat).getDuration());
-	}
-
-	private Audio newAudio(Resource resource) {
-		Assert.notNull(resource, "Resource is required");
-		return Audio.from(resource);
 	}
 }
