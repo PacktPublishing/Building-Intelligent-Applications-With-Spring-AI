@@ -28,11 +28,6 @@
 
 	<repositories>
 		<repository>
-			<id>jcenter</id>
-			<name>JCenter</name>
-			<url>https://jcenter.bintray.com/</url>
-		</repository>
-		<repository>
 			<id>jitpack-io</id>
 			<name>JitPack IO Repository</name>
 			<url>https://jitpack.io</url>
