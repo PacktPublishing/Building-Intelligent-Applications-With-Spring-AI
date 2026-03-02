@@ -205,11 +205,17 @@ public class AudioFormatBuilder implements Builder<AudioFormat> {
 		AudioFormat audioFormat = getAudioFormat();
 
 		return audioFormat instanceof ShazamAudioFormat shazamAudioFormat ? shazamAudioFormat
-			: newAudioFormat();
+			: newAudioFormat(getFormat());
 	}
 
-	private ShazamAudioFormat newAudioFormat() {
-		return new ShazamAudioFormat(getAudio(), getEncoding(), getChannels(), getSampleRate(), getSampleSizeInBits(),
-			getFrameRate(), getFrameSize(), isBigEndian(), getAudioProperties());
+	private ShazamAudioFormat newAudioFormat(AudioFormat rawAudioFormat) {
+
+		ShazamAudioFormat shazamAudioFormat = new ShazamAudioFormat(getAudio(), getEncoding(), getChannels(),
+			getSampleRate(), getSampleSizeInBits(), getFrameRate(), getFrameSize(), isBigEndian(),
+			getAudioProperties());
+
+		shazamAudioFormat.with(rawAudioFormat);
+
+		return shazamAudioFormat;
 	}
 }
