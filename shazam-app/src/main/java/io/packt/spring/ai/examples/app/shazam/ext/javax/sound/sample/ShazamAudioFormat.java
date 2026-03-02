@@ -70,13 +70,17 @@ public class ShazamAudioFormat extends AudioFormat {
 		return new ShazamAudioFormat(audio, audioFormat.getEncoding(), audioFormat.getChannels(),
 			audioFormat.getSampleRate(), audioFormat.getSampleSizeInBits(),
 			audioFormat.getFrameRate(), audioFormat.getFrameSize(),
-			audioFormat.isBigEndian());
+			audioFormat.isBigEndian())
+			.with(audioFormat);
 	}
 
 	private final AtomicReference<FFProbe.Format> probeFormat = new AtomicReference<>();
 	private final AtomicReference<Integer> sampleSizeInBits = new AtomicReference<>();
 
 	private final Audio audio;
+
+	@Getter(AccessLevel.PUBLIC)
+	private volatile AudioFormat rawAudioFormat;
 
 	public ShazamAudioFormat(Audio audio, Encoding encoding, int channels, float sampleRate, int sampleSizeInBits,
 			float frameRate, int frameSize, boolean bigEndian) {
@@ -176,5 +180,10 @@ public class ShazamAudioFormat extends AudioFormat {
 	public Integer getSize() {
 		int size = NumberUtils.asInt(getAudioSize());
 		return AudioUtils.isSpecified(size) ? size : getProbeFormatSize();
+	}
+
+	public ShazamAudioFormat with(AudioFormat rawAudioFormat) {
+		this.rawAudioFormat = rawAudioFormat;
+		return this;
 	}
 }
