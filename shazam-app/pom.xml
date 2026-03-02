@@ -20,6 +20,9 @@
 	<url/>
 
 	<properties>
+		<commandLineArguments>/database/data/Matchbox20-Unwell.mp3</commandLineArguments>
+		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
+		<mainClass>io.packt.spring.ai.examples.app.shazam.support.SupportedAudioFileFormatsApp</mainClass>
 		<tarsosdsp.version>2.5</tarsosdsp.version>
 	</properties>
 
@@ -103,6 +106,22 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<configuration>
+					<arguments>
+						<argument>${commandLineArguments}</argument>
+					</arguments>
+					<mainClass>${mainClass}</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<profiles>
 		<profile>
