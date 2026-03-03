@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.packt.spring.ai.examples.app.shazam.ext.tritonous;
+package io.packt.spring.ai.examples.app.shazam.ext.tritonus;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -34,7 +34,7 @@ import io.codeprimate.extensions.util.ExceptionThrowingRunnable;
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.config.SongLoaderProperties;
 import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
-import io.packt.spring.ai.examples.app.shazam.ext.tritonous.MpegAudioFormatBuilder;
+import io.packt.spring.ai.examples.app.shazam.ext.tritonus.MpegAudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
