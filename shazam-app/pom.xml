@@ -22,7 +22,8 @@
 	<properties>
 		<commandLineArguments>/database/data/Matchbox20-Unwell.mp3</commandLineArguments>
 		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
-		<mainClass>io.packt.spring.ai.examples.app.shazam.support.SupportedAudioFileFormatsApp</mainClass>
+		<exec-mainClass>io.packt.spring.ai.examples.app.shazam.support.SupportedAudioFileFormatsApp</exec-mainClass>
+		<spring-boot-mainClass>io.packt.spring.ai.examples.app.shazam.ShazamApplication</spring-boot-mainClass>
 		<tarsosdsp.version>2.5</tarsosdsp.version>
 	</properties>
 
@@ -105,6 +106,13 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${spring-boot-mainClass}</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>${exec-maven-plugin.version}</version>
@@ -112,7 +120,7 @@
 					<arguments>
 						<argument>${commandLineArguments}</argument>
 					</arguments>
-					<mainClass>${mainClass}</mainClass>
+					<mainClass>${exec-mainClass}</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
