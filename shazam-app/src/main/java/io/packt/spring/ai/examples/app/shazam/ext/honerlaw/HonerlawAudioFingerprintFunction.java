@@ -101,15 +101,15 @@ public class HonerlawAudioFingerprintFunction implements AudioFingerprintFunctio
 				data = out.toByteArray();
 			}
 			catch (IOException ignore) {
-				// IOException thrown on ByteArrayOutputStream.close()
+				// IOException thrown by ByteArrayOutputStream.close()
 			}
 
 			return data;
 		}
 
 		@Override
-		public void forEach(Consumer<Object> consumer) {
-			get().forEach(consumer);
+		public void consume(Consumer<List<HashedPeak>> consumer) {
+			consumer.accept(get());
 		}
 	}
 }

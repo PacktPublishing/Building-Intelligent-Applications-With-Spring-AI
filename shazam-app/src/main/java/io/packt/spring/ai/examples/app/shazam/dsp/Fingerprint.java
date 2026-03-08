@@ -48,10 +48,16 @@ public interface Fingerprint<T> {
 	 * @see #get()
 	 */
 	default byte[] getData() {
-		throw new UnsupportedOperationException("Getting a byte array from the fingerprint is not supported");
+		throw new UnsupportedOperationException("Getting a byte array from the digital fingerprint is not supported");
 	}
 
-	default void forEach(Consumer<Object> consumer) {
+	/**
+	 * Function accepting a {@link Consumer} to process the raw {@literal digital fingerprint data}.
+	 *
+	 * @param consumer {@link Consumer} used to process the raw {@literal digital fingerprint data}.
+	 * @see java.util.function.Consumer
+	 */
+	default void consume(Consumer<T> consumer) {
 
 	}
 
