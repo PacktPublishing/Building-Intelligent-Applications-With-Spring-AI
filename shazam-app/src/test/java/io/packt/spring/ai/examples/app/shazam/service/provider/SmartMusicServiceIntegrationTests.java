@@ -16,6 +16,7 @@
 package io.packt.spring.ai.examples.app.shazam.service.provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -23,18 +24,15 @@ import static org.mockito.Mockito.mock;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.sound.sampled.AudioFormat;
-
 import io.codeprimate.extensions.data.caching.SimpleCache;
-import io.packt.spring.ai.examples.app.shazam.config.AudioProperties;
 import io.packt.spring.ai.examples.app.shazam.config.ShazamConfiguration;
 import io.packt.spring.ai.examples.app.shazam.config.SongSearchProperties;
-import io.packt.spring.ai.examples.app.shazam.ext.javax.sound.sample.AudioFormatBuilder;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
 import io.packt.spring.ai.examples.app.shazam.model.Song;
+import io.packt.spring.ai.examples.app.shazam.repo.DocumentStore;
 import io.packt.spring.ai.examples.app.shazam.repo.SongRepository;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
-import io.packt.spring.ai.examples.app.shazam.service.DocumentStore;
+import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
 
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -45,14 +43,16 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Integration Tests for {@link SmartMusicService}.
@@ -65,24 +65,30 @@ import org.springframework.core.io.Resource;
  * @since 0.1.0
  */
 @SpringBootTest
-@SuppressWarnings("unused")
+@ActiveProfiles({ "honerlaw" })
 @EnabledIf("resourceExists")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@SuppressWarnings("unused")
 public class SmartMusicServiceIntegrationTests {
 
-	private static final String RESOURCE_PATH = "Matchbox20-Unwell.mp3";
-	private static final String CLIP_RESOURCE_PATH = "Matchbox20-Unwell-clip-1.mp3";
+	private static final String NIRVANA_NEVERMIND_COME_AS_YOU_ARE_AUDIO_CLIP_RESOURCE_PATH = "Nirvana-Nevermind-ComeAsYouAre-clip-1s.wav";
+	private static final String PEARL_JAM_NO_CODE_JEREMY_AUDIO_CLIP_RESOURCE_PATH = "PearlJam-Ten-Jeremy-clip-1s.wav";
+	private static final String PEARL_JAM_NO_CODE_JEREMY_SONG_RESOURCE_PATH = "PearlJam-Ten-Jeremy.wav";
 
-	static Resource audioClipResource() {
-		return new ClassPathResource(CLIP_RESOURCE_PATH);
+	static Resource nirvanaNevermindComeAsYouAreAudioClipResource() {
+		return new ClassPathResource(NIRVANA_NEVERMIND_COME_AS_YOU_ARE_AUDIO_CLIP_RESOURCE_PATH);
+	}
+
+	static Resource pearlJamTenJeremyAudioClipResource() {
+		return new ClassPathResource(PEARL_JAM_NO_CODE_JEREMY_AUDIO_CLIP_RESOURCE_PATH);
+	}
+
+	static Resource pearlJamTenJeremySongResource() {
+		return new ClassPathResource(PEARL_JAM_NO_CODE_JEREMY_SONG_RESOURCE_PATH);
 	}
 
 	static boolean resourceExists() {
-		return songResource().exists() && audioClipResource().exists();
-	}
-
-	static Resource songResource() {
-		return new ClassPathResource(RESOURCE_PATH);
+		return pearlJamTenJeremySongResource().exists() && pearlJamTenJeremyAudioClipResource().exists();
 	}
 
 	@Autowired
@@ -95,11 +101,12 @@ public class SmartMusicServiceIntegrationTests {
 	@Order(1)
 	void store() {
 
-		Audio audio = Audio.from(songResource());
+ 		Audio audio = Audio.from(pearlJamTenJeremySongResource());
 
 		Song song = Song.builder()
-			.by("Matchbox20")
-			.with("Unwell")
+			.by("Pearl Jam")
+			.from("Ten")
+			.with("Jeremy")
 			.having(audio)
 			.build();
 
@@ -110,23 +117,34 @@ public class SmartMusicServiceIntegrationTests {
 
 	@Test
 	@Order(2)
-	@EnabledIf("resourceExists")
 	void search() {
 
-		Audio songAudio = Audio.from(songResource());
-		AudioFormat songAudioFormat = AudioFormatBuilder.from(songAudio).build();
-		Audio audioClip = Audio.from(audioClipResource()).in(songAudioFormat);
-
+		Audio audioClip = Audio.from(pearlJamTenJeremyAudioClipResource());
 		Song song = this.musicService.search(audioClip);
 
 		assertThat(song).isNotNull();
-		assertThat(song.getArtist()).isEqualTo("Matchbox20");
-		assertThat(song.getTitle()).isEqualTo("Unwell");
+		assertThat(song.getArtist()).isEqualTo("Pearl Jam");
+		assertThat(song.getAlbum()).isEqualTo("Ten");
+		assertThat(song.getTitle()).isEqualTo("Jeremy");
+	}
+
+	@Test
+	@Order(3)
+	void searchDoesNotMatchSong() {
+
+		Audio audioClip = Audio.from(nirvanaNevermindComeAsYouAreAudioClipResource());
+
+		assertThatExceptionOfType(SongNotFoundException.class)
+			.isThrownBy(() -> {
+				Song song = this.musicService.search(audioClip);
+				System.err.printf("Expected SongNotFoundException but found Song [%s]%n", song);
+			})
+			.withNoCause();
 	}
 
 	@SpringBootConfiguration
-	@EnableConfigurationProperties({ AudioProperties.class, SongSearchProperties.class })
 	@Import(ShazamConfiguration.class)
+	@EnableAutoConfiguration(exclude = PgVectorStoreAutoConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
@@ -138,11 +156,6 @@ public class SmartMusicServiceIntegrationTests {
 			VectorStore vectorStore
 		) {
 			return new SmartMusicService(audioSplitter, documentStore, songRepository, songSearchProperties, vectorStore);
-		}
-
-		@Bean
-		AudioSplitter audioSplitter(AudioProperties audioProperties) {
-			return new JavaSoundAudioSplitter(audioProperties);
 		}
 
 		@Bean
