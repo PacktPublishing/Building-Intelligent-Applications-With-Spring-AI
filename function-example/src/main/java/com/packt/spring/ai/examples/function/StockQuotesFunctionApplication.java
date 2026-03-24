@@ -15,6 +15,7 @@
  */
 package com.packt.spring.ai.examples.function;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -26,32 +27,37 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Description;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
 import lombok.Getter;
 
 /**
- * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Function
- * Tool Calling in order to return a {@link StockQuote} given a stock (exchange) symbol, for examples: {@literal AAPL}.
+ * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Tool Calling
+ * (Function Calling) in order to return a {@link StockQuote} given a stock (exchange) symbol,
+ * for examples: {@literal AAPL}.
  * <p/>
  * Uses Polygon.io's REST API to fetch realtime stock market data, such as stock quotes.
  *
@@ -72,6 +78,7 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class StockQuotesFunctionApplication {
 
+	private static final String DEBUG_PROFILE = "debug";
 	private static final String EXIT = "exit";
 	private static final String STOCK_PRICE_FUNCTION_NAME = "StockPriceFunction";
 	private static final String USER_PROFILE = "user";
@@ -97,13 +104,27 @@ public class StockQuotesFunctionApplication {
 
 		Consumer<HttpHeaders> defaultHttpHeaders = httpHeaders -> {
 			String polygonApiKey = environment.getRequiredProperty("examples.app.stock-quotes.polygon.api.key");
-			httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(polygonApiKey));
+			httpHeaders.setBearerAuth(polygonApiKey);
 		};
 
 		return RestClient.builder()
 			.baseUrl(baseUrl)
 			.defaultHeaders(defaultHttpHeaders)
 			.build();
+	}
+
+	@Bean
+	@Profile(DEBUG_PROFILE)
+	RestClientCustomizer springBootRestClientCustomizer(ObjectMapper objectMapper) {
+
+		return restClientBuilder -> restClientBuilder.requestInterceptor((request, requestBody, execution) -> {
+			ClientHttpResponse response = execution.execute(request, requestBody);
+			InputStream responseBody = response.getBody();
+			String json = objectMapper.writerWithDefaultPrettyPrinter()
+				.writeValueAsString(objectMapper.readTree(StreamUtils.nonClosing(responseBody)));
+			print("AI Model Response in JSON [%s]%n", json);
+			return response;
+		});
 	}
 
 	@Bean(STOCK_PRICE_FUNCTION_NAME)
@@ -147,16 +168,15 @@ public class StockQuotesFunctionApplication {
 			while (isNotExit(stockSymbol = scanner.nextLine())) {
 				if (StringUtils.hasText(stockSymbol)) {
 
-					ChatOptions ollamaChatOptions = OllamaOptions.builder()
+					ToolCallingChatOptions chatOptions = ToolCallingChatOptions.builder()
 						.toolNames(STOCK_PRICE_FUNCTION_NAME)
 						.build();
 
-					Map<String, Object> promptArguments = Map.of("stock", stockSymbol);
-
 					String template = "What is the current price for {stock}?";
 
-					Prompt prompt = new PromptTemplate(template)
-						.create(promptArguments, ollamaChatOptions);
+					Map<String, Object> promptArguments = Map.of("stock", stockSymbol);
+
+					Prompt prompt = new PromptTemplate(template).create(promptArguments, chatOptions);
 
 					String stockPrice = chatClient.prompt(prompt).call().content();
 
@@ -178,7 +198,7 @@ public class StockQuotesFunctionApplication {
 	}
 
 	@Getter
-	static class StockQuote {
+	public static class StockQuote {
 
 		private Boolean adjusted;
 
@@ -211,11 +231,11 @@ public class StockQuotesFunctionApplication {
 			return getTicker();
 		}
 
-		record Request(String exchangeSymbol) {
+		public record Request(String exchangeSymbol) {
 
 		}
 
-		record Response(BigDecimal price) {
+		public record Response(BigDecimal price) {
 
 		}
 
