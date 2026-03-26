@@ -88,7 +88,7 @@ public class CurrentTimeApplication {
 			Scanner scanner = new Scanner(System.in);
 			String location;
 
-			System.out.print("Enter Location: ");
+			print("Enter Location: ");
 
 			while (isNotExit(location = scanner.nextLine())) {
 
@@ -114,8 +114,8 @@ public class CurrentTimeApplication {
 					.call()
 					.entity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE);
 
-				System.out.printf("%s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
-				System.out.print("Enter Location: ");
+				print("%s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+				print("Enter Location: ");
 			}
 		};
 	}
@@ -131,7 +131,7 @@ public class CurrentTimeApplication {
 			Scanner scanner = new Scanner(System.in);
 			String location;
 
-			System.out.print("Enter Location: ");
+			print("Enter Location: ");
 
 			while (isNotExit(location = scanner.nextLine())) {
 
@@ -149,18 +149,21 @@ public class CurrentTimeApplication {
 				promptTemplate.add("format", format);
 				promptTemplate.add("location", location);
 
-				ZonedDateTime locationDateTime = chatClient.prompt()
-					.messages(promptTemplate.createMessage())
-					.call()
+				ZonedDateTime locationDateTime = chatClient.prompt(promptTemplate.create()).call()
 					.entity(Rfc1123DateTimeStructuredOutputConverter.INSTANCE);
 
-				System.out.printf("> %s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
-				System.out.print("Enter Location: ");
+				print("> %s%n%n", locationDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+				print("Enter Location: ");
 			}
 		};
 	}
 
 	private boolean isNotExit(String input) {
 		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input.trim());
+	}
+
+	private void print(String message, Object... arguments) {
+		System.out.printf(message, arguments);
+		System.out.flush();
 	}
 }
