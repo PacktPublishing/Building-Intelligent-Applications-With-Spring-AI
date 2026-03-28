@@ -27,8 +27,9 @@ import io.codeprimate.extensions.util.Utils;
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.vectorstore.AbstractSimpleVectorStore;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
-import org.springframework.ai.vectorstore.SimpleVectorStoreContent;
+import org.springframework.ai.vectorstore.VectorStoreContent;
 import org.springframework.ai.vectorstore.observation.VectorStoreObservationConvention;
 import org.springframework.lang.NonNull;
 
@@ -37,6 +38,7 @@ import org.springframework.lang.NonNull;
  * without re-computing the embedding.
  *
  * @author John Blum
+ * @see AbstractSimpleVectorStore
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.vectorstore.SimpleVectorStore
@@ -46,7 +48,7 @@ import org.springframework.lang.NonNull;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public class DecoratedSimpleVectorStore extends SimpleVectorStore {
+public class DecoratedSimpleVectorStore extends AbstractSimpleVectorStore {
 
 	protected static final double SCORE = 0.0d;
 
@@ -78,7 +80,7 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	@SuppressWarnings("all")
 	public EmbeddedDocument get(String documentId) {
 
-		SimpleVectorStoreContent vectorStoreContent = this.store.get(documentId);
+		VectorStoreContent vectorStoreContent = getContent(documentId);
 
 		Assert.state(vectorStoreContent != null, DocumentNotFoundException.forDocumentId(documentId));
 
@@ -104,13 +106,8 @@ public class DecoratedSimpleVectorStore extends SimpleVectorStore {
 	}
 
 	private Document store(EmbeddedDocument document) {
-		this.store.put(document.getId(), simpleVectorStoreContent(document));
+		store(document, document.getEmbedding());
 		return document;
-	}
-
-	private SimpleVectorStoreContent simpleVectorStoreContent(EmbeddedDocument document) {
-		return new SimpleVectorStoreContent(document.getId(), document.getText(), document.getMetadata(),
-			document.getEmbedding());
 	}
 
 	protected static class SimpleVectorStoreBuilderSupport {
