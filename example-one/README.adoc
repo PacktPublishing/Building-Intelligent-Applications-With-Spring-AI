@@ -15,13 +15,15 @@ RUN:
 
 This example can be run from the project base directory with `mvnw` command:
 
-```sh
+[source,shell]
+----
 $ mvnw --projects example-one spring-boot:run
-```
+----
 
 The program will output content similar to the following:
 
-```txt
+[source,text]
+----
 $ mvnw -projects example-one spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
@@ -73,7 +75,7 @@ AI> 42
 [INFO] Total time:  4.216 s
 [INFO] Finished at: 2025-05-28T10:49:09-07:00
 [INFO] ------------------------------------------------------------------------
-```
+----
 
 This example currently supports 3 different AI models: [ OpenAI, Google Vertex AI Gemini, Ollama ].
 
@@ -85,8 +87,9 @@ Use the following Maven Profile IDs:
 
 To activate another AI provider model, such as Ollama (running locally), simply execute:
 
-```sh
+[source,shell]
+----
 $ mvnw --projects example-one -P ollama spring-boot:run
-```
+----
 
 > NOTE: You must have installed Ollama locally (see https://ollama.com/download[download]) to run Ollama https://ollama.com/search[models], such as https://ollama.com/library/llama3.2[llama3.2]. You must run (automatically install) different AI models locally (e.g. `$ ollama run llama3.2`) before running Spring AI applications that use the model.
