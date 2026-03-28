@@ -19,23 +19,27 @@ and the https://docs.spring.io/spring-boot/maven-plugin/index.html[Spring Boot M
 
 You can build the entire project in the root directory with the `mvnw` command:
 
-```sh
+[source,shell]
+----
 $ mvnw clean package
-```
+----
 
 This will compile the source and run the tests.
 
 Examples can be run by running the `mvnw` command targeted at a Maven module example:
 
-```sh
+[source,shell]
+----
 $ mvnw --projects <example> spring-boot:run
-```
+----
 
 For example:
 
-```sh
+[source,shell]
+----
 $ mvnw --projects example-one spring-boot:run
-```
+[source,shell]
+----
 
 For a few examples, the example may use an AI provider model, such as OpenAI. It is recommended that you add an
 `application-user.properties` file to the `resources/` directory of the example Spring Boot, Spring AI application.
@@ -47,20 +51,22 @@ As discussed in the book, alternatively, you can switch AI providers by changing
 
 For example, to switch from OpenAI to Google Gemini, change the starter from:
 
-```xml
+[source,xml]
+----
 <dependency>
     <groupId>org.springframework.ai</groupId>
     <artifactId>spring-ai-starter-model-openai</artifactId>
 </dependency>
-```
+----
 
 To:
 
-```xml
+[source,xml]
+----
 <dependency>
     <groupId>org.springframework.ai</groupId>
     <artifactId>spring-ai-starter-model-vertex-ai-gemini</artifactId>
 </dependency>
-```
+----
 
 Refer to the README of individual examples for more details on building and running the example.
