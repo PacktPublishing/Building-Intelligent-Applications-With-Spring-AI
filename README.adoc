@@ -1,15 +1,18 @@
 [[building-intelligent-applications-with-spring-ai]]
 = Building Intelligent Applications with Spring AI
 
+Welcome to this example repository for Spring AI.
+
 This repository contains all the examples cited in the book, *Building Intelligent Applications with Spring AI*,
 published by https://www.packtpub.com/en-us[Packt], authored by https://github.com/jxblum[John Blum].
 
 The examples focus on demonstrating how to use Spring AI's features and functionality in a simple and comprehensive way.
-The examples are meant to help you instantly become familiar with Spring AI's capabilities so you can be immediately
-productive out-of-the-box, leveraging AI to build intelligent applications with Spring.
+The examples are meant to help you instantly become familiar with Spring AI's APIs and capabilities so you can be
+immediately productive out-of-the-box, leveraging AI to build intelligent applications with Spring
+using any JVM language: Java, Kotlin, Groovy, etc. All examples were written in Java.
 
-All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot]
-and https://spring.io/projects/spring-ai[Spring AI], with *Java 17*.
+All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot] `3.5.x`,
+https://spring.io/projects/spring-ai[Spring AI] `1.0.x`, and *Java 17*.
 
 [[build-and-run]]
 == Build & Run
