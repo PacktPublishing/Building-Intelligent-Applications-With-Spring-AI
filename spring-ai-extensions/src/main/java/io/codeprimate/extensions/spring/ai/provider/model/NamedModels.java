@@ -18,24 +18,20 @@ package io.codeprimate.extensions.spring.ai.provider.model;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
+import io.codeprimate.extensions.data.struct.Collectable;
 import io.codeprimate.extensions.util.Utils;
-
-import org.cp.elements.util.stream.Streamable;
 
 /**
  * {@link Iterable Collection} of {@link NamedModel Named Models}
  *
  * @author John Blum
- * @see java.lang.Iterable
- * @see io.codeprimate.extensions.spring.ai.provider.model.NamedModel
- * @see org.cp.elements.util.stream.Streamable
+ * @see Collectable
+ * @see NamedModel
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public interface NamedModels extends Iterable<NamedModel>, Streamable<NamedModel> {
+public interface NamedModels extends Collectable<NamedModel> {
 
 	static NamedModels empty() {
 		return Collections::emptyIterator;
@@ -49,20 +45,7 @@ public interface NamedModels extends Iterable<NamedModel>, Streamable<NamedModel
 		return Utils.nullSafeIterable(namedModels)::iterator;
 	}
 
-	default Optional<NamedModel> findBy(Predicate<NamedModel> predicate) {
-		return stream().filter(predicate).findFirst();
-	}
-
 	default Optional<NamedModel> findByName(String modelName) {
 		return findBy(namedModel -> namedModel.getName().equalsIgnoreCase(modelName));
-	}
-
-	default int size() {
-		return Long.valueOf(stream().count()).intValue();
-	}
-
-	@Override
-	default Stream<NamedModel> stream() {
-		return Utils.stream(this);
 	}
 }

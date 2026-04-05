@@ -18,26 +18,21 @@ package io.codeprimate.extensions.spring.ai.provider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
+import io.codeprimate.extensions.data.struct.Collectable;
 import io.codeprimate.extensions.util.Utils;
-
-import org.cp.elements.util.stream.Streamable;
 
 /**
  * {@link Iterable Collection} of {@link AiProvider AiProviders}.
  *
  * @author John Blum
  * @see java.lang.FunctionalInterface
- * @see java.lang.Iterable
- * @see io.codeprimate.extensions.spring.ai.provider.AiProvider
- * @see org.cp.elements.util.stream.Streamable
+ * @see AiProvider
  * @since 0.1.0
  */
 @FunctionalInterface
 @SuppressWarnings("unused")
-public interface AiProviders extends Iterable<AiProvider>, Streamable<AiProvider> {
+public interface AiProviders extends Collectable<AiProvider> {
 
 	static AiProviders empty() {
 		return Collections::emptyIterator;
@@ -51,28 +46,7 @@ public interface AiProviders extends Iterable<AiProvider>, Streamable<AiProvider
 		return Utils.nullSafeIterable(aiProviders)::iterator;
 	}
 
-	default Optional<AiProvider> findBy(Predicate<AiProvider> predicate) {
-		return stream().filter(predicate).findFirst();
-	}
-
 	default Optional<AiProvider> findByName(String aiProviderName) {
 		return findBy(aiProvider -> aiProvider.getName().equalsIgnoreCase(aiProviderName));
-	}
-
-	default boolean isEmpty() {
-		return size() == 0;
-	}
-
-	default boolean isNotEmpty() {
-		return !isEmpty();
-	}
-
-	default int size() {
-		return Long.valueOf(stream().count()).intValue();
-	}
-
-	@Override
-	default Stream<AiProvider> stream() {
-		return Utils.stream(this);
 	}
 }
