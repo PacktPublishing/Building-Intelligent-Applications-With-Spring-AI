@@ -35,7 +35,7 @@ import com.packt.spring.ai.examples.agent.model.VehicleReservation;
 @SuppressWarnings("unused")
 public interface TravelService {
 
-	List<FlightReservation> searchFlights();
+	List<FlightReservation> searchForFlights();
 
 	List<HotelReservation> findHotels();
 
