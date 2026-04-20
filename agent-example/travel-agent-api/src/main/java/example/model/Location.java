@@ -23,11 +23,12 @@ import java.util.Locale;
  * @author John Blum
  * @param cityName {@link String name} of the city, e.g. {@literal Portland, OR}.
  * @param locale {@link Locale} of this location.
+ * @see GeographicCoordinates
  * @see Locale
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Location(String cityName, Locale locale) {
+public record Location(String cityName, Locale locale, GeographicCoordinates coordinates) {
 
 	public String getCountry() {
 		return locale().getCountry();
