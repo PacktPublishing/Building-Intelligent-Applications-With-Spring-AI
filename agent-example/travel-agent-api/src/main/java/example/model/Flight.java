@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.lang.StringUtils;
 
 import lombok.AccessLevel;
@@ -30,28 +31,29 @@ import lombok.Getter;
  *
  * @author John Blum
  * @param number {@link String flight number}.
+ * @param departure {@link Departure} {@link ZonedDateTime when} the flight leaves from the {@link Location origin}.
+ * @param arrival {@link ZonedDateTime} {@link ZonedDateTime when} the flight arrives at the {@link Location destination}.
  * @param aircraft make and model of {@link Aircraft} used for the flight.
- * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
- * @param departure {@link ZonedDateTime} when the flight leaves.
- * @param arrival {@link ZonedDateTime} when the flight is expected to arrive (land).
  * @param seat {@link Aircraft.Seat} assignment on the flight.
+ * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
  * @param price {@link BigDecimal Cose} of the flight.
  * @see Aircraft
  * @see Airline
+ * @see Arrival
+ * @see Departure
  * @see Location
+ * @see BigDecimal
  * @see ZonedDateTime
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
 public record Flight(
 	String number,
+	Departure departure,
+	Arrival arrival,
 	Aircraft aircraft,
-	Airline airline,
-	Location origin,
-	Location destination,
-	ZonedDateTime departure,
-	ZonedDateTime arrival,
 	Aircraft.Seat seat,
+	Airline airline,
 	BigDecimal price
 ) {
 
@@ -59,43 +61,85 @@ public record Flight(
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+	public static Flight.Builder builder(String flightNumber) {
+		return new Flight.Builder(flightNumber);
+	}
+
 	public Flight {
 		Assert.hasText(number, "Flight number is required");
 		Assert.notNull(aircraft, "Aircraft is required");
 		Assert.notNull(airline, "Airline is required");
 		Assert.notNull(price, "Price is required");
-		assertOriginDestination(origin, destination);
 		assertDeparture(departure);
 		assertArrival(arrival, departure);
 	}
 
-	private void assertArrival(ZonedDateTime arrival, ZonedDateTime departure) {
+	private void assertArrival(Arrival arrival, Departure departure) {
 
-		Assert.notNull(arrival, "Arrival time is required");
+		Assert.notNull(arrival, "Arrival is required");
 
-		Assert.isTrue(arrival.isAfter(departure), () -> "Arrival [%s] must be after departure [%s]"
-			.formatted(arrival.format(DATE_TIME_FORMATTER), departure.format(DATE_TIME_FORMATTER)));
+		ZonedDateTime arrivalDateTime = arrival.dateTime();
+		ZonedDateTime departureDateTime = departure.dateTime();
+
+		Assert.isTrue(arrivalDateTime.isAfter(departureDateTime), () -> "Arrival [%s] must be after departure [%s]"
+			.formatted(arrivalDateTime.format(DATE_TIME_FORMATTER), departureDateTime.format(DATE_TIME_FORMATTER)));
+
+		Assert.isFalse(arrival.arrivingAt().equals(departure.origin()),
+			() -> "Destination [%s] must be different than the origin [%s]"
+				.formatted(arrival().arrivingAt(), departure.origin()));
 	}
 
-	private void assertDeparture(ZonedDateTime departure) {
+	private void assertDeparture(Departure departure) {
 
-		Assert.notNull(departure, "Departure time is required");
+		Assert.notNull(departure, "Departure is required");
 
-		Assert.isTrue(departure.isAfter(ZonedDateTime.now(departure.getZone())),
-			() -> "Departure [%s] must be after [%s]".formatted(departure.format(DATE_TIME_FORMATTER),
-				ZonedDateTime.now(departure.getZone()).format(DATE_TIME_FORMATTER)));
+		ZonedDateTime departureDateTime = departure.dateTime();
+		ZonedDateTime now = ZonedDateTime.now(departureDateTime.getZone());
+
+		Assert.isTrue(departureDateTime.isAfter(now), () -> "Departure [%s] must be after [%s]"
+				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
 	}
 
-	private void assertOriginDestination(Location origin, Location destination) {
+	public record Arrival(Location arrivingAt, ZonedDateTime dateTime) {
 
-		Assert.notNull(origin, "Origin is required");
-		Assert.notNull(destination, "Destination is required");
-		Assert.isFalse(origin.equals(destination), () -> "Origin [%s] cannot be the same as the destination [%s]"
-			.formatted(origin, destination));
+		public static Arrival.Builder arrivingAt(Location destination) {
+			return new Arrival.Builder(destination);
+		}
+
+		public static class Builder {
+
+			private final Location destination;
+
+			protected Builder(Location destination) {
+				this.destination = ObjectUtils.requireObject(destination, "Destination is required");
+			}
+
+			public Arrival on(ZonedDateTime dateTime) {
+				Assert.notNull(dateTime, "Arrival date/time is required");
+				return new Arrival(this.destination, dateTime);
+			}
+		}
 	}
 
-	public static Flight.Builder builder(String flightNumber) {
-		return new Flight.Builder(flightNumber);
+	public record Departure(Location origin, ZonedDateTime dateTime) {
+
+		public static Departure.Builder departingFrom(Location origin) {
+			return new Departure.Builder(origin);
+		}
+
+		public static class Builder {
+
+			private final Location origin;
+
+			protected Builder(Location origin) {
+				this.origin = ObjectUtils.requireObject(origin, "Origin is required");
+			}
+
+			public Departure on(ZonedDateTime dateTime) {
+				Assert.notNull(dateTime, "Departure date/time is required");
+				return new Departure(this.origin, dateTime);
+			}
+		}
 	}
 
 	@Getter(AccessLevel.PROTECTED)
@@ -109,27 +153,27 @@ public record Flight(
 
 		private Aircraft.Seat seat;
 
-		private Location origin;
-		private Location destination;
+		private Location fromOrigin;
+		private Location toDestination;
 
 		private final String flightNumber;
 
-		private ZonedDateTime arrival;
-		private ZonedDateTime departure;
+		private ZonedDateTime arrivalDateTime;
+		private ZonedDateTime departureDateTime;
 
 		protected Builder(String flightNumber) {
 			this.flightNumber = StringUtils.requireText(flightNumber, "Flight number is required");
 		}
 
-		public Builder arriving(ZonedDateTime arrival) {
+		public Builder arrivingAt(ZonedDateTime arrival) {
 			Assert.notNull(arrival, "Arrival time is required");
-			this.arrival = arrival;
+			this.arrivalDateTime = arrival;
 			return this;
 		}
 
-		public Builder departing(ZonedDateTime departure) {
+		public Builder departingAt(ZonedDateTime departure) {
 			Assert.notNull(departure, "Departure time is required");
-			this.departure = departure;
+			this.departureDateTime = departure;
 			return this;
 		}
 
@@ -146,7 +190,7 @@ public record Flight(
 
 		public Builder from(Location origin) {
 			Assert.notNull(origin, "Origin is required");
-			this.origin = origin;
+			this.fromOrigin = origin;
 			return this;
 		}
 
@@ -163,13 +207,16 @@ public record Flight(
 
 		public Builder to(Location destination) {
 			Assert.notNull(destination, "Destination is required");
-			this.destination = destination;
+			this.toDestination = destination;
 			return this;
 		}
 
 		public Flight build() {
-			return new Flight(getFlightNumber(), getAircraft(), getAirline(), getOrigin(), getDestination(),
-				getDeparture(), getArrival(), getSeat(), getPrice());
+
+			Departure departure = Departure.departingFrom(getFromOrigin()).on(getDepartureDateTime());
+			Arrival arrival = Arrival.arrivingAt(getToDestination()).on(getArrivalDateTime());
+
+			return new Flight(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
 		}
 	}
 }
