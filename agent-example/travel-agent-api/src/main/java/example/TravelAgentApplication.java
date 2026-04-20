@@ -45,6 +45,8 @@ public class TravelAgentApplication extends AbstractSpringBootApplication {
 
 		return arguments -> {
 			getLogger().info("Example Spring Boot, Spring AI Travel Agent application");
+			getLogger().info("Open OpenAI ChatGPT, Claude Desktop or similar AI app to access the Spring Boot,"
+				+ " Spring AI Travel Agent application as an MCP Server");
 		};
 	}
 }
