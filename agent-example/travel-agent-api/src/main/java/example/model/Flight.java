@@ -36,6 +36,9 @@ import lombok.Getter;
  * @param arrival {@link ZonedDateTime} when the flight is expected to arrive (land).
  * @param seat {@link Aircraft.Seat} assignment on the flight.
  * @param price {@link BigDecimal Cose} of the flight.
+ * @see Aircraft
+ * @see Airline
+ * @see Location
  * @see ZonedDateTime
  * @since 0.1.0
  */
@@ -44,6 +47,8 @@ public record Flight(
 	String number,
 	Aircraft aircraft,
 	Airline airline,
+	Location origin,
+	Location destination,
 	ZonedDateTime departure,
 	ZonedDateTime arrival,
 	Aircraft.Seat seat,
@@ -59,6 +64,7 @@ public record Flight(
 		Assert.notNull(aircraft, "Aircraft is required");
 		Assert.notNull(airline, "Airline is required");
 		Assert.notNull(price, "Price is required");
+		assertOriginDestination(origin, destination);
 		assertDeparture(departure);
 		assertArrival(arrival, departure);
 	}
@@ -80,6 +86,14 @@ public record Flight(
 				ZonedDateTime.now(departure.getZone()).format(DATE_TIME_FORMATTER)));
 	}
 
+	private void assertOriginDestination(Location origin, Location destination) {
+
+		Assert.notNull(origin, "Origin is required");
+		Assert.notNull(destination, "Destination is required");
+		Assert.isFalse(origin.equals(destination), () -> "Origin [%s] cannot be the same as the destination [%s]"
+			.formatted(origin, destination));
+	}
+
 	public static Flight.Builder builder(String flightNumber) {
 		return new Flight.Builder(flightNumber);
 	}
@@ -94,6 +108,9 @@ public record Flight(
 		private BigDecimal price;
 
 		private Aircraft.Seat seat;
+
+		private Location origin;
+		private Location destination;
 
 		private final String flightNumber;
 
@@ -127,6 +144,12 @@ public record Flight(
 			return this;
 		}
 
+		public Builder from(Location origin) {
+			Assert.notNull(origin, "Origin is required");
+			this.origin = origin;
+			return this;
+		}
+
 		public Builder price(BigDecimal price) {
 			Assert.notNull(price, "Price is required");
 			this.price = price;
@@ -138,9 +161,15 @@ public record Flight(
 			return this;
 		}
 
+		public Builder to(Location destination) {
+			Assert.notNull(destination, "Destination is required");
+			this.destination = destination;
+			return this;
+		}
+
 		public Flight build() {
-			return new Flight(getFlightNumber(), getAircraft(), getAirline(), getDeparture(), getArrival(),
-				getSeat(), getPrice());
+			return new Flight(getFlightNumber(), getAircraft(), getAirline(), getOrigin(), getDestination(),
+				getDeparture(), getArrival(), getSeat(), getPrice());
 		}
 	}
 }
