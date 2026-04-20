@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.service;
+package com.packt.spring.ai.examples.agent.service;
 
 import java.util.List;
 
-import example.model.Flight;
-import example.model.Hotel;
-import example.model.Vehicle;
+import com.packt.spring.ai.examples.agent.model.Flight;
+import com.packt.spring.ai.examples.agent.model.Hotel;
+import com.packt.spring.ai.examples.agent.model.Vehicle;
 
 /**
  * Service interface defining a contract for making travel arrangements.

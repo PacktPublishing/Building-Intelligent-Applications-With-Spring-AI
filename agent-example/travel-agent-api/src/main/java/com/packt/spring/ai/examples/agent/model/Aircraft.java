@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
+package com.packt.spring.ai.examples.agent.model;
 
 /**
  * Abstract Data Type (ADT) and Java record modeling an {@literal aircraft}, such as an {@literal airplane}.

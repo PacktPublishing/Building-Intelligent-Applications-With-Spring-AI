@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
-
-import java.util.Locale;
+package com.packt.spring.ai.examples.agent.model;
 
 /**
- * Abstract Data Type (ADT) and Java record modeling a location as city and country.
+ * Abstract Data Type (ADT) modeling {@literal latitude} and {@literal longitude}.
  *
  * @author John Blum
- * @param cityName {@link String name} of the city, e.g. {@literal Portland, OR}.
- * @param locale {@link Locale} of this location.
- * @see GeographicCoordinates
- * @see Locale
+ * @param latitude {@link Long#TYPE value} for {@literal longitude}.
+ * @param longitude {@link Long#TYPE value} for {@literal latitude}.
  * @since 0.1.0
  */
-@SuppressWarnings("unused")
-public record Location(String cityName, Locale locale, GeographicCoordinates coordinates) {
+public record GeographicCoordinates(long latitude, long longitude) {
 
-	public String getCountry() {
-		return locale().getCountry();
-	}
 }

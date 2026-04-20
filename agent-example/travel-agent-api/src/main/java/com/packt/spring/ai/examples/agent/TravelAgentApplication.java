@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example;
+package com.packt.spring.ai.examples.agent;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 

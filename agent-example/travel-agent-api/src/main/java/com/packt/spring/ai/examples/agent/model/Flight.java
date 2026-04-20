@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
+package com.packt.spring.ai.examples.agent.model;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

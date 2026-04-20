@@ -13,31 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
+package com.packt.spring.ai.examples.agent.model;
 
-import org.cp.elements.lang.Nameable;
+import org.cp.elements.lang.StringUtils;
 
 /**
- * Abstract Data Type (ADT) modeling a {@literal hotel}.
+ * {@link Enum Enumeration} of {@link Hotel Hotels}.
  *
  * @author John Blum
- * @see org.cp.elements.lang.Nameable
+ * @see Enum
+ * @see Hotel
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public interface Hotel extends Nameable<String> {
+public enum Hotels implements Hotel {
 
-	default String getProviderName() {
-		return getName();
+	HILTON,
+	HYATT,
+	IHG("InterContinental Hotels Group"),
+	MARRIOTT,
+	WYNDHAM;
+
+	private final String name;
+
+	Hotels() {
+		this(null);
 	}
 
-	/**
-	 * Abstract Data Type (ADT) modeling a {@literal room} at a {@link Hotel}.
-	 *
-	 * @param number {@link String room number}
-	 * @param bedDescription {@link String description} of the number of beds; e.g. 1 king or 2 queens.
-	 */
-	record Room(int floor, String number, String bedDescription) {
+	Hotels(String name) {
+		this.name = name;
+	}
 
+	@Override
+	public String getName() {
+		String resolvedName = StringUtils.hasText(this.name) ? this.name : name();
+		return StringUtils.capitalize(resolvedName);
 	}
 }

@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
+package com.packt.spring.ai.examples.agent.model;
+
+import org.cp.elements.lang.Nameable;
 
 /**
- * Abstract Data Type (ADT) modeling {@literal latitude} and {@literal longitude}.
+ * Abstract Data Type (ADT) modeling a {@literal hotel}.
  *
  * @author John Blum
- * @param latitude {@link Long#TYPE value} for {@literal longitude}.
- * @param longitude {@link Long#TYPE value} for {@literal latitude}.
+ * @see org.cp.elements.lang.Nameable
  * @since 0.1.0
  */
-public record GeographicCoordinates(long latitude, long longitude) {
+@SuppressWarnings("unused")
+public interface Hotel extends Nameable<String> {
 
+	default String getProviderName() {
+		return getName();
+	}
+
+	/**
+	 * Abstract Data Type (ADT) modeling a {@literal room} at a {@link Hotel}.
+	 *
+	 * @param number {@link String room number}
+	 * @param bedDescription {@link String description} of the number of beds; e.g. 1 king or 2 queens.
+	 */
+	record Room(int floor, String number, String bedDescription) {
+
+	}
 }

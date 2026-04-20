@@ -13,40 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.model;
+package com.packt.spring.ai.examples.agent.model;
 
-import org.cp.elements.lang.StringUtils;
+import java.util.Locale;
 
 /**
- * {@link Enum Enumeration} of {@link Hotel Hotels}.
+ * Abstract Data Type (ADT) and Java record modeling a location as city and country.
  *
  * @author John Blum
- * @see Enum
- * @see Hotel
+ * @param cityName {@link String name} of the city, e.g. {@literal Portland, OR}.
+ * @param locale {@link Locale} of this location.
+ * @see GeographicCoordinates
+ * @see Locale
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public enum Hotels implements Hotel {
+public record Location(String cityName, Locale locale, GeographicCoordinates coordinates) {
 
-	HILTON,
-	HYATT,
-	IHG("InterContinental Hotels Group"),
-	MARRIOTT,
-	WYNDHAM;
-
-	private final String name;
-
-	Hotels() {
-		this(null);
-	}
-
-	Hotels(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String getName() {
-		String resolvedName = StringUtils.hasText(this.name) ? this.name : name();
-		return StringUtils.capitalize(resolvedName);
+	public String getCountry() {
+		return locale().getCountry();
 	}
 }
