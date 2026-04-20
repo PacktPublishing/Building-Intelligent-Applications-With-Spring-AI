@@ -19,7 +19,9 @@
 
 	<modules>
 		<module>spring-ai-extensions</module>
+		<module>spring-ai-tools</module>
 		<module>example-one</module>
+		<module>agent-example</module>
 		<module>advisors-example</module>
 		<module>audio-transcription-example</module>
 		<module>chat-client-example</module>
@@ -39,7 +41,6 @@
 		<module>structured-output-converter-example</module>
 		<module>tokenizer-example</module>
 		<module>opposites-app</module>
-		<module>spring-ai-tools</module>
 		<module>connect-four-app</module>
 		<module>realtime-message-translation-app</module>
 		<module>shazam-app</module>
