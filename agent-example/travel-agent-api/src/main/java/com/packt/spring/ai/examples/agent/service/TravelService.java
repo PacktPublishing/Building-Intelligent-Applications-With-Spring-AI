@@ -18,9 +18,7 @@ package com.packt.spring.ai.examples.agent.service;
 import java.util.List;
 
 import com.packt.spring.ai.examples.agent.model.FlightReservation;
-import com.packt.spring.ai.examples.agent.model.Hotel;
 import com.packt.spring.ai.examples.agent.model.HotelReservation;
-import com.packt.spring.ai.examples.agent.model.Vehicle;
 import com.packt.spring.ai.examples.agent.model.VehicleReservation;
 
 /**
@@ -28,8 +26,8 @@ import com.packt.spring.ai.examples.agent.model.VehicleReservation;
  *
  * @author John Blum
  * @see FlightReservation
- * @see Hotel
- * @see Vehicle
+ * @see HotelReservation
+ * @see VehicleReservation
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
