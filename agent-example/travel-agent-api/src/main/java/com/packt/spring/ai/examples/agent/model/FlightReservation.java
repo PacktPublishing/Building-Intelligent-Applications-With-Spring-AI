@@ -47,7 +47,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Flight(
+public record FlightReservation(
 	String number,
 	Departure departure,
 	Arrival arrival,
@@ -61,12 +61,12 @@ public record Flight(
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	public static Flight.Builder builder(String flightNumber) {
-		return new Flight.Builder(flightNumber);
+	public static FlightReservation.Builder builder(String flightNumber) {
+		return new FlightReservation.Builder(flightNumber);
 	}
 
-	public Flight {
-		Assert.hasText(number, "Flight number is required");
+	public FlightReservation {
+		Assert.hasText(number, "FlightReservation number is required");
 		Assert.notNull(aircraft, "Aircraft is required");
 		Assert.notNull(airline, "Airline is required");
 		Assert.notNull(price, "Price is required");
@@ -162,7 +162,7 @@ public record Flight(
 		private ZonedDateTime departureDateTime;
 
 		protected Builder(String flightNumber) {
-			this.flightNumber = StringUtils.requireText(flightNumber, "Flight number is required");
+			this.flightNumber = StringUtils.requireText(flightNumber, "FlightReservation number is required");
 		}
 
 		public Builder arrivingAt(ZonedDateTime arrival) {
@@ -211,12 +211,12 @@ public record Flight(
 			return this;
 		}
 
-		public Flight build() {
+		public FlightReservation build() {
 
 			Departure departure = Departure.departingFrom(getFromOrigin()).on(getDepartureDateTime());
 			Arrival arrival = Arrival.arrivingAt(getToDestination()).on(getArrivalDateTime());
 
-			return new Flight(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
+			return new FlightReservation(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
 		}
 	}
 }
