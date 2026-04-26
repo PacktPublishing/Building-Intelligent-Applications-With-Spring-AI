@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Function;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.StringUtils;
@@ -28,10 +29,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Abstract Data Type (ADT) and Java record modeling a {@link Hotel} {@literal reservation}.
+ * Abstract Data Type (ADT) and Java record modeling a {@link Hotel} for {@literal reservation}.
  *
  * @author John Blum
- * @param number {@link String Hotel reservation confirmation number}.
+ * @param number Hotel reservation {@link String confirmation number}.
  * @param hotel {@link Hotel} of stay.
  * @param room {@link Hotel.Room} of stay.
  * @param occupants {@link Integer#TYPE number} of occupants staying in the room.
@@ -39,6 +40,7 @@ import lombok.Getter;
  * @param checkout {@link ZonedDateTime} of check-out.
  * @param price {@link BigDecimal} estimating the cost per night for the stay.
  * @see ZonedDateTime
+ * @see BigDecimal
  * @see Hotel
  * @since 0.1.0
  */
@@ -100,6 +102,10 @@ public record HotelBooking(
 		int days = numberOfDays();
 		int nights = days - 1;
 		return nights;
+	}
+
+	public HotelReservation reserve(Function<HotelBooking, HotelReservation> reservationFunction) {
+		return reservationFunction.apply(this);
 	}
 
 	@Getter(AccessLevel.PROTECTED)
