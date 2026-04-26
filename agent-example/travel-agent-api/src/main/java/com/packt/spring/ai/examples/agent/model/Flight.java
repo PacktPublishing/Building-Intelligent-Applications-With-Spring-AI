@@ -48,7 +48,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record FlightReservation(
+public record Flight(
 	String number,
 	Departure departure,
 	Arrival arrival,
@@ -62,12 +62,12 @@ public record FlightReservation(
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	public static FlightReservation.Builder builder(String flightNumber) {
-		return new FlightReservation.Builder(flightNumber);
+	public static Flight.Builder builder(String flightNumber) {
+		return new Flight.Builder(flightNumber);
 	}
 
-	public FlightReservation {
-		Assert.hasText(number, "FlightReservation number is required");
+	public Flight {
+		Assert.hasText(number, "Flight number is required");
 		Assert.notNull(aircraft, "Aircraft is required");
 		Assert.notNull(airline, "Airline is required");
 		Assert.notNull(price, "Price is required");
@@ -101,7 +101,7 @@ public record FlightReservation(
 				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
 	}
 
-	public <T> T reserve(Function<FlightReservation, T> callback) {
+	public <T> T reserve(Function<Flight, T> callback) {
 		return callback.apply(this);
 	}
 
@@ -181,7 +181,7 @@ public record FlightReservation(
 		private ZonedDateTime departureDateTime;
 
 		protected Builder(String flightNumber) {
-			this.flightNumber = StringUtils.requireText(flightNumber, "FlightReservation number is required");
+			this.flightNumber = StringUtils.requireText(flightNumber, "Flight number is required");
 		}
 
 		public Builder arrivingAt(ZonedDateTime arrival) {
@@ -230,12 +230,12 @@ public record FlightReservation(
 			return this;
 		}
 
-		public FlightReservation build() {
+		public Flight build() {
 
 			Departure departure = Departure.departingFrom(getFromOrigin()).on(getDepartureDateTime());
 			Arrival arrival = Arrival.arrivingAt(getToDestination()).on(getArrivalDateTime());
 
-			return new FlightReservation(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
+			return new Flight(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
 		}
 	}
 }

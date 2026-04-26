@@ -17,7 +17,7 @@ package com.packt.spring.ai.examples.agent.service;
 
 import java.util.List;
 
-import com.packt.spring.ai.examples.agent.model.FlightReservation;
+import com.packt.spring.ai.examples.agent.model.Flight;
 import com.packt.spring.ai.examples.agent.model.HotelReservation;
 import com.packt.spring.ai.examples.agent.model.VehicleReservation;
 
@@ -25,7 +25,7 @@ import com.packt.spring.ai.examples.agent.model.VehicleReservation;
  * Service interface defining a contract for making travel arrangements.
  *
  * @author John Blum
- * @see FlightReservation
+ * @see Flight
  * @see HotelReservation
  * @see VehicleReservation
  * @since 0.1.0
@@ -33,7 +33,7 @@ import com.packt.spring.ai.examples.agent.model.VehicleReservation;
 @SuppressWarnings("unused")
 public interface TravelService {
 
-	List<FlightReservation> searchForFlights();
+	List<Flight> searchForFlights();
 
 	List<HotelReservation> findHotels();
 
