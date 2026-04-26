@@ -38,7 +38,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record VehicleReservation(
+public record VehicleRental(
 	Vehicle vehicle,
 	ZonedDateTime pickupTime,
 	ZonedDateTime dropOffTime,
@@ -49,11 +49,11 @@ public record VehicleReservation(
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	public static VehicleReservation.Builder builder(Vehicle vehicle) {
-		return new VehicleReservation.Builder(vehicle);
+	public static VehicleRental.Builder builder(Vehicle vehicle) {
+		return new VehicleRental.Builder(vehicle);
 	}
 
-	public VehicleReservation {
+	public VehicleRental {
 		Assert.notNull(vehicle, "Vehicle is required");
 		assertPickupTime(pickupTime);
 		assertDropOffTime(pickupTime, dropOffTime);
@@ -107,8 +107,8 @@ public record VehicleReservation(
 			return this;
 		}
 
-		public VehicleReservation build() {
-			return new VehicleReservation(getVehicle(), getPickup(), getDropOff(), getPrice());
+		public VehicleRental build() {
+			return new VehicleRental(getVehicle(), getPickup(), getDropOff(), getPrice());
 		}
 	}
 }
