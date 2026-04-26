@@ -101,8 +101,8 @@ public record Flight(
 				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
 	}
 
-	public <T> T reserve(Function<Flight, T> callback) {
-		return callback.apply(this);
+	public FlightReservation reserve(Function<Flight, FlightReservation> reservationFunction) {
+		return reservationFunction.apply(this);
 	}
 
 	public record Arrival(Airport arrivingAt, ZonedDateTime dateTime) {
