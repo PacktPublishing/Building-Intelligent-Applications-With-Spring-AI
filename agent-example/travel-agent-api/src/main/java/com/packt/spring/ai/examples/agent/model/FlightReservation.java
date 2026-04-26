@@ -18,6 +18,7 @@ package com.packt.spring.ai.examples.agent.model;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Function;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
@@ -98,6 +99,10 @@ public record FlightReservation(
 
 		Assert.isTrue(departureDateTime.isAfter(now), () -> "Departure [%s] must be after [%s]"
 				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
+	}
+
+	public <T> T reserve(Function<FlightReservation, T> callback) {
+		return callback.apply(this);
 	}
 
 	public record Arrival(Airport arrivingAt, ZonedDateTime dateTime) {
