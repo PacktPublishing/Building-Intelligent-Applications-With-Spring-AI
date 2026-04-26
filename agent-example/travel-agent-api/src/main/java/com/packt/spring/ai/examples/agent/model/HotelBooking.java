@@ -43,7 +43,7 @@ import lombok.Getter;
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record HotelReservation(
+public record HotelBooking(
 	String number,
 	Hotel hotel,
 	Hotel.Room room,
@@ -57,11 +57,11 @@ public record HotelReservation(
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	public static HotelReservation.Builder builder(String reservationNumber) {
-		return new HotelReservation.Builder(reservationNumber);
+	public static HotelBooking.Builder builder(String reservationNumber) {
+		return new HotelBooking.Builder(reservationNumber);
 	}
 
-	public HotelReservation {
+	public HotelBooking {
 		Assert.hasText(number, "Hotel reservation number is required");
 		Assert.notNull(hotel, "Hotel is required");
 		Assert.notNull(room, "Hotel Room is required");
@@ -158,8 +158,8 @@ public record HotelReservation(
 			return this;
 		}
 
-		public HotelReservation build() {
-			return new HotelReservation(getNumber(), getHotel(), getRoom(), getOccupants(), getCheckIn(), getCheckout(),
+		public HotelBooking build() {
+			return new HotelBooking(getNumber(), getHotel(), getRoom(), getOccupants(), getCheckIn(), getCheckout(),
 				getPrice());
 		}
 	}
