@@ -100,17 +100,17 @@ public record FlightReservation(
 				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
 	}
 
-	public record Arrival(Location arrivingAt, ZonedDateTime dateTime) {
+	public record Arrival(Airport arrivingAt, ZonedDateTime dateTime) {
 
-		public static Arrival.Builder arrivingAt(Location destination) {
+		public static Arrival.Builder arrivingAt(Airport destination) {
 			return new Arrival.Builder(destination);
 		}
 
 		public static class Builder {
 
-			private final Location destination;
+			private final Airport destination;
 
-			protected Builder(Location destination) {
+			protected Builder(Airport destination) {
 				this.destination = ObjectUtils.requireObject(destination, "Destination is required");
 			}
 
@@ -119,19 +119,26 @@ public record FlightReservation(
 				return new Arrival(this.destination, dateTime);
 			}
 		}
+
+		@Override
+		@SuppressWarnings("all")
+		public String toString() {
+			return "Arriving at [%s] on [%s]"
+				.formatted(arrivingAt(), dateTime().format(DATE_TIME_FORMATTER));
+		}
 	}
 
-	public record Departure(Location origin, ZonedDateTime dateTime) {
+	public record Departure(Airport origin, ZonedDateTime dateTime) {
 
-		public static Departure.Builder departingFrom(Location origin) {
+		public static Departure.Builder departingFrom(Airport origin) {
 			return new Departure.Builder(origin);
 		}
 
 		public static class Builder {
 
-			private final Location origin;
+			private final Airport origin;
 
-			protected Builder(Location origin) {
+			protected Builder(Airport origin) {
 				this.origin = ObjectUtils.requireObject(origin, "Origin is required");
 			}
 
@@ -139,6 +146,13 @@ public record FlightReservation(
 				Assert.notNull(dateTime, "Departure date/time is required");
 				return new Departure(this.origin, dateTime);
 			}
+		}
+
+		@Override
+		@SuppressWarnings("all")
+		public String toString() {
+			return "Departing from [%s] at [%s]"
+				.formatted(origin(), dateTime().format(DATE_TIME_FORMATTER));
 		}
 	}
 
@@ -153,8 +167,8 @@ public record FlightReservation(
 
 		private Aircraft.Seat seat;
 
-		private Location fromOrigin;
-		private Location toDestination;
+		private Airport fromOrigin;
+		private Airport toDestination;
 
 		private final String flightNumber;
 
@@ -188,7 +202,7 @@ public record FlightReservation(
 			return this;
 		}
 
-		public Builder from(Location origin) {
+		public Builder from(Airport origin) {
 			Assert.notNull(origin, "Origin is required");
 			this.fromOrigin = origin;
 			return this;
@@ -205,7 +219,7 @@ public record FlightReservation(
 			return this;
 		}
 
-		public Builder to(Location destination) {
+		public Builder to(Airport destination) {
 			Assert.notNull(destination, "Destination is required");
 			this.toDestination = destination;
 			return this;
