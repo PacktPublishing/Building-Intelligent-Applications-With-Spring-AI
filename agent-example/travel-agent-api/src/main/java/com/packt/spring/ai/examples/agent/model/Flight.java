@@ -30,14 +30,14 @@ import lombok.Getter;
 /**
  * Abstract Data Type (ADT) modeling a {@literal flight}.
  *
- * @author John Blum
  * @param number {@link String flight number}.
  * @param departure {@link Departure} {@link ZonedDateTime when} the flight leaves from the {@link Location origin}.
  * @param arrival {@link ZonedDateTime} {@link ZonedDateTime when} the flight arrives at the {@link Location destination}.
+ * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
  * @param aircraft make and model of {@link Aircraft} used for the flight.
  * @param seat {@link Aircraft.Seat} assignment on the flight.
- * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
  * @param price {@link BigDecimal Cose} of the flight.
+ * @author John Blum
  * @see Aircraft
  * @see Airline
  * @see Arrival
@@ -52,9 +52,9 @@ public record Flight(
 	String number,
 	Departure departure,
 	Arrival arrival,
+	Airline airline,
 	Aircraft aircraft,
 	Aircraft.Seat seat,
-	Airline airline,
 	BigDecimal price
 ) {
 
@@ -235,7 +235,7 @@ public record Flight(
 			Departure departure = Departure.departingFrom(getFromOrigin()).on(getDepartureDateTime());
 			Arrival arrival = Arrival.arrivingAt(getToDestination()).on(getArrivalDateTime());
 
-			return new Flight(getFlightNumber(), departure, arrival, getAircraft(), getSeat(), getAirline(), getPrice());
+			return new Flight(getFlightNumber(), departure, arrival, getAirline(), getAircraft(), getSeat(), getPrice());
 		}
 	}
 }
