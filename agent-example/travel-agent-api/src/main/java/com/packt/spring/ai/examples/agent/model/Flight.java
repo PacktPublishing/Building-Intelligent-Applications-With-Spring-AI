@@ -42,7 +42,6 @@ import lombok.Getter;
  * @see Airline
  * @see Arrival
  * @see Departure
- * @see Location
  * @see BigDecimal
  * @see ZonedDateTime
  * @since 0.1.0
@@ -66,6 +65,10 @@ public record Flight(
 		return new Flight.Builder(flightNumber);
 	}
 
+	private static String format(ZonedDateTime dateTime) {
+		return dateTime.format(DATE_TIME_FORMATTER);
+	}
+
 	public Flight {
 		Assert.hasText(number, "Flight number is required");
 		Assert.notNull(aircraft, "Aircraft is required");
@@ -82,8 +85,9 @@ public record Flight(
 		ZonedDateTime arrivalDateTime = arrival.dateTime();
 		ZonedDateTime departureDateTime = departure.dateTime();
 
-		Assert.isTrue(arrivalDateTime.isAfter(departureDateTime), () -> "Arrival [%s] must be after departure [%s]"
-			.formatted(arrivalDateTime.format(DATE_TIME_FORMATTER), departureDateTime.format(DATE_TIME_FORMATTER)));
+		Assert.isTrue(arrivalDateTime.isAfter(departureDateTime),
+			() -> "Arrival [%s] must be after departure [%s]"
+				.formatted(format(arrivalDateTime), format(departureDateTime)));
 
 		Assert.isFalse(arrival.arrivingAt().equals(departure.origin()),
 			() -> "Destination [%s] must be different than the origin [%s]"
@@ -98,7 +102,7 @@ public record Flight(
 		ZonedDateTime now = ZonedDateTime.now(departureDateTime.getZone());
 
 		Assert.isTrue(departureDateTime.isAfter(now), () -> "Departure [%s] must be after [%s]"
-				.formatted(departureDateTime.format(DATE_TIME_FORMATTER), now.format(DATE_TIME_FORMATTER)));
+				.formatted(format(departureDateTime), format(now)));
 	}
 
 	public FlightReservation reserve(Function<Flight, FlightReservation> reservationFunction) {
