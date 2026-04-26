@@ -18,6 +18,7 @@ package com.packt.spring.ai.examples.agent.model;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Function;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
@@ -74,6 +75,10 @@ public record VehicleRental(
 
 		Assert.isTrue(dropOff.isAfter(pickup), () -> "Drop-off [%s] must be after pickup [%s]"
 			.formatted(dropOff.format(DATE_TIME_FORMATTER), pickup.format(DATE_TIME_FORMATTER)));
+	}
+
+	public VehicleReservation reserve(Function<VehicleRental, VehicleReservation> reservationFunction) {
+		return reservationFunction.apply(this);
 	}
 
 	@Getter(AccessLevel.PROTECTED)
