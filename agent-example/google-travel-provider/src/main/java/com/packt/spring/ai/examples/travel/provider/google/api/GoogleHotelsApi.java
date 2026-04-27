@@ -25,6 +25,6 @@ import org.springframework.web.service.annotation.HttpExchange;
  * @since 0.1.0
  */
 @HttpExchange(accept = "application/json")
-public class GoogleHotelsApi {
+public interface GoogleHotelsApi {
 
 }
