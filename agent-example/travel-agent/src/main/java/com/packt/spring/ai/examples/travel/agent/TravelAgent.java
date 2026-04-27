@@ -21,8 +21,13 @@ import java.util.List;
 import com.packt.spring.ai.examples.travel.api.model.Flight;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
+import com.packt.spring.ai.examples.travel.api.service.TravelService;
 
+import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.tool.annotation.Tool;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * Travel Agent implemented using Spring AI.
@@ -31,8 +36,15 @@ import org.springframework.ai.tool.annotation.Tool;
  * @see org.springframework.ai.tool.annotation.Tool
  * @since 0.1.0
  */
+@Getter(AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class TravelAgent {
+
+	private final TravelService travelService;
+
+	public TravelAgent(TravelService travelService) {
+		this.travelService = ObjectUtils.requireObject(travelService, "TravelService is required");
+	}
 
 	@Tool(description = "Search for flights")
 	public List<Flight> searchFlights() {
