@@ -17,9 +17,12 @@ package com.packt.spring.ai.examples.travel.provider.google.model;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 
+import com.packt.spring.ai.examples.travel.api.model.Airline;
 import com.packt.spring.ai.examples.travel.api.model.Airport;
 import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.FlightType;
@@ -27,6 +30,7 @@ import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiPropert
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
+import org.cp.elements.util.CollectionUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.service.invoker.HttpRequestValues;
 import org.springframework.web.service.invoker.HttpServiceArgumentResolver;
@@ -65,6 +69,7 @@ public class FlightSearchQuery {
 			.departingOn(searchRequest.getDepartureDateTime())
 			.arrivingAt(searchRequest.getArrivalAirport())
 			.returningOn(searchRequest.getReturnDateTime())
+			.flying(searchRequest.getAirlines())
 			.sittingIn(resolveTravelClass(searchRequest))
 			.build();
 	}
@@ -89,6 +94,8 @@ public class FlightSearchQuery {
 	private final Airport departure;
 	private final Airport arrival;
 
+	private final List<Airline> airlines;
+
 	private TravelClass travelClass;
 
 	private final ZonedDateTime outboundDate;
@@ -104,6 +111,7 @@ public class FlightSearchQuery {
 		this.arrival = assertArrival(arrival, departure);
 		this.outboundDate = assertOutboundDate(outboundDate);
 		this.returnDate = assertReturnDate(returnDate, outboundDate);
+		this.airlines = new ArrayList<>();
 	}
 
 	private Airport assertArrival(Airport arrival, Airport departure) {
@@ -127,6 +135,15 @@ public class FlightSearchQuery {
 		return returnDate;
 	}
 
+	public FlightSearchQuery flying(Airline... airlines) {
+		return flying(List.of(airlines));
+	}
+
+	public FlightSearchQuery flying(List<Airline> airlines) {
+		this.airlines.addAll(CollectionUtils.nullSafeList(airlines));
+		return this;
+	}
+
 	public FlightSearchQuery sittingIn(TravelClass travelClass) {
 		this.travelClass = travelClass;
 		return this;
@@ -145,7 +162,20 @@ public class FlightSearchQuery {
 	}
 
 	public interface ReturnTimeBuilder {
-		InFlightBuilder returningOn(ZonedDateTime dateTime);
+		AirlineBuilder returningOn(ZonedDateTime dateTime);
+	}
+
+	public interface AirlineBuilder {
+
+		default InFlightBuilder flying(Airline... airlines) {
+			return flying(List.of(airlines));
+		}
+
+		InFlightBuilder flying(List<Airline> airlines);
+
+		default InFlightBuilder flyingAny() {
+			return flying();
+		}
 	}
 
 	public interface InFlightBuilder {
@@ -154,11 +184,13 @@ public class FlightSearchQuery {
 	}
 
 	@Getter(AccessLevel.PROTECTED)
-	public static class Builder
-			implements DepartureBuilder, DepartureTimeBuilder, ArrivalBuilder, ReturnTimeBuilder, InFlightBuilder {
+	public static class Builder implements DepartureBuilder, DepartureTimeBuilder, ArrivalBuilder,
+		ReturnTimeBuilder, AirlineBuilder, InFlightBuilder {
 
 		private Airport departure;
 		private Airport arrival;
+
+		private final List<Airline> airlines = new ArrayList<>();
 
 		private TravelClass travelClass;
 
@@ -184,7 +216,13 @@ public class FlightSearchQuery {
 		}
 
 		@Override
-		public InFlightBuilder returningOn(ZonedDateTime dateTime) {
+		public InFlightBuilder flying(List<Airline> airlines) {
+			this.airlines.addAll(airlines);
+			return this;
+		}
+
+		@Override
+		public AirlineBuilder returningOn(ZonedDateTime dateTime) {
 			this.returnDateTime = ObjectUtils.requireObject(dateTime, "Return date/time is required");
 			return this;
 		}
@@ -197,10 +235,17 @@ public class FlightSearchQuery {
 
 		@Override
 		public FlightSearchQuery build() {
-			return new FlightSearchQuery(getDeparture(), getDepartureDateTime(), getArrival(), getReturnDateTime());
+			return new FlightSearchQuery(getDeparture(), getDepartureDateTime(), getArrival(), getReturnDateTime())
+				.sittingIn(getTravelClass())
+				.flying(getAirlines());
 		}
 	}
 
+	/**
+	 * {@link HttpServiceArgumentResolver} used to result HTTP request parameters from an {@link FlightSearchQuery}.
+	 *
+	 * @see HttpServiceArgumentResolver
+	 */
 	@Getter(AccessLevel.PROTECTED)
 	public static class FlightSearchRequestArgumentResolver implements HttpServiceArgumentResolver {
 
