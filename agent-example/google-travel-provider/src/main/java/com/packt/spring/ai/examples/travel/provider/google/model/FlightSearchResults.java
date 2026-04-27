@@ -84,10 +84,12 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 	public List<com.packt.spring.ai.examples.travel.api.model.Flight> toFlights() {
 
-		List<com.packt.spring.ai.examples.travel.api.model.Flight> flights = new ArrayList<>(Long.valueOf(size()).intValue());
+		List<com.packt.spring.ai.examples.travel.api.model.Flight> flights =
+			new ArrayList<>(Long.valueOf(size()).intValue());
 
-		for (FlightContainer bestFlight : this) {
-			for (Flight flight : bestFlight) {
+		for (FlightContainer flightContainer : this) {
+			for (Flight flight : flightContainer) {
+
 				com.packt.spring.ai.examples.travel.api.model.Flight resolvedFlight =
 					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getFlightNumber())
 						.from(flight.getDeparture().toResolvedAirport())
@@ -98,6 +100,8 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 						.flying(flight.resolveAircraft())
 						.price(getPriceInsights().getPrice())
 						.build();
+
+				flights.add(resolvedFlight);
 			}
 		}
 
