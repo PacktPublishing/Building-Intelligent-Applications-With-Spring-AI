@@ -90,7 +90,7 @@ public record Flight(
 				.formatted(format(arrivalDateTime), format(departureDateTime)));
 
 		Assert.isFalse(arrival.airport().equals(departure.airport()),
-			() -> "Destination [%s] must be different than the origin [%s]"
+			() -> "Destination [%s] must be different than origin [%s]"
 				.formatted(arrival().airport(), departure.airport()));
 	}
 
