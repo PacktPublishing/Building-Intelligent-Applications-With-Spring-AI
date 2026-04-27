@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Abstract Data Type (ADT) modeling a flight search.`
+ * Abstract Data Type (ADT) modeling a request to search for flights.
  *
  * @author John Blum
  * @see Airport
@@ -69,6 +69,18 @@ public class FlightSearchRequest {
 		this.departure = ObjectUtils.requireObject(departure, "Departure is required");
 		this.arrival = ObjectUtils.requireObject(arrival, "Arrival is required");
 		arrival.assertArrival(departure);
+	}
+
+	public Airport getArrivalAirport() {
+		return getArrival().airport();
+	}
+
+	public Airport getDepartureAirport() {
+		return getDeparture().airport();
+	}
+
+	public ZonedDateTime getDepartureDateTime() {
+		return getDeparture().dateTime();
 	}
 
 	public FlightType getFlightType() {
