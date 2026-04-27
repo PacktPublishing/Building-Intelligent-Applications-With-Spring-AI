@@ -33,7 +33,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 @HttpExchange(accept = "application/json")
 public interface GoogleFlightsApi {
 
-	@GetExchange("search")
+	@GetExchange
 	FlightSearchResults search(FlightSearchQuery searchQuery);
 
 }
