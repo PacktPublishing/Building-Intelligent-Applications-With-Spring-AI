@@ -76,7 +76,7 @@ public class GoogleTravelService implements TravelService {
 
 		Map<String, String> authConfiguration = Map.of(
 			"api_key", properties.getApiKey(),
-			"engine", properties.getEngine()
+			"engine", properties.getEngine().getGoogle()
 		);
 
 		return new SerpApi(authConfiguration);
