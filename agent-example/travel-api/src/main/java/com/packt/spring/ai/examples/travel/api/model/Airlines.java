@@ -62,7 +62,7 @@ public enum Airlines implements Airline {
 
 	@Override
 	public String getCarrierCode() {
-		return "";
+		return this.carrierCode;
 	}
 
 	@Override
