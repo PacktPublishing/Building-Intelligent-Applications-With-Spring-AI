@@ -45,6 +45,7 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see FlightSearchRequest
+ * @see FlightSearchResults
  * @see SerpApiProperties
  * @since 0.1.0
  */
