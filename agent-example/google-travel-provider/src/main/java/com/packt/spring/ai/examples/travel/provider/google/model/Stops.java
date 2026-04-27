@@ -43,7 +43,7 @@ public enum Stops {
 	private final int option;
 
 	Stops(int option) {
-		Assert.isTrue(option > 0, "Option must be greater than 0");
+		Assert.isTrue(option > -1, "Option must be greater than -1");
 		this.option = option;
 	}
 
