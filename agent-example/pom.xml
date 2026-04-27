@@ -9,6 +9,7 @@
 		<groupId>com.packt.spring.ai</groupId>
 		<artifactId>examples-parent</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>agent-example</artifactId>

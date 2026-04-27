@@ -9,12 +9,13 @@
 		<groupId>com.packt.spring.ai</groupId>
 		<artifactId>agent-example</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>travel-agent</artifactId>
 
 	<name>Travel Agent</name>
-	<description>Travel Agent implement with Spring AI as a Spring Boot application and MCP Server</description>
+	<description>Travel Agent implemented with Spring AI as a Spring Boot application and MCP Server</description>
 
 	<properties>
 	</properties>
