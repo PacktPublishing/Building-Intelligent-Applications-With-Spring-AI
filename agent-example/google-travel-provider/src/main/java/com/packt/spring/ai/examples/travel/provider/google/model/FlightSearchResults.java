@@ -54,24 +54,29 @@ import lombok.Getter;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unused")
-public class FlightSearchResults implements Collectable<FlightSearchResults.BestFlight> {
+public class FlightSearchResults implements Collectable<FlightSearchResults.FlightContainer> {
 
 	@JsonProperty("best_flights")
-	private List<BestFlight> bestFlights;
+	private List<FlightContainer> bestFlights;
+
+	@JsonProperty("other_flights")
+	private List<FlightContainer> otherFlights;
 
 	@JsonProperty("price_insights")
 	private PriceInsights priceInsights;
 
 	@Override
-	public @NonNull Iterator<BestFlight> iterator() {
-		return CollectionUtils.unmodifiableIterator(getBestFlights().iterator());
+	public @NonNull Iterator<FlightContainer> iterator() {
+		List<FlightContainer> flights = new ArrayList<>(getBestFlights());
+		flights.addAll(getOtherFlights());
+		return flights.iterator();
 	}
 
 	public List<com.packt.spring.ai.examples.travel.api.model.Flight> toFlights() {
 
 		List<com.packt.spring.ai.examples.travel.api.model.Flight> flights = new ArrayList<>(Long.valueOf(size()).intValue());
 
-		for (BestFlight bestFlight : this) {
+		for (FlightContainer bestFlight : this) {
 			for (Flight flight : bestFlight) {
 				com.packt.spring.ai.examples.travel.api.model.Flight resolvedFlight =
 					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getFlightNumber())
@@ -126,7 +131,7 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Best
 
 	@Getter
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class BestFlight implements Iterable<Flight> {
+	public static class FlightContainer implements Iterable<Flight> {
 
 		@JsonProperty("total_duration")
 		@JsonDeserialize(using = DurationDeserializer.class)
