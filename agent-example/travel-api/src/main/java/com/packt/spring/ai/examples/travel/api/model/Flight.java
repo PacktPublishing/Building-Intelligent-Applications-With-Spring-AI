@@ -89,9 +89,9 @@ public record Flight(
 			() -> "Arrival [%s] must be after departure [%s]"
 				.formatted(format(arrivalDateTime), format(departureDateTime)));
 
-		Assert.isFalse(arrival.airport().equals(departure.origin()),
+		Assert.isFalse(arrival.airport().equals(departure.airport()),
 			() -> "Destination [%s] must be different than the origin [%s]"
-				.formatted(arrival().airport(), departure.origin()));
+				.formatted(arrival().airport(), departure.airport()));
 	}
 
 	private void assertDeparture(Departure departure) {
@@ -140,10 +140,10 @@ public record Flight(
 		}
 	}
 
-	public record Departure(Airport origin, ZonedDateTime dateTime) {
+	public record Departure(Airport airport, ZonedDateTime dateTime) {
 
 		public Departure {
-			Assert.notNull(origin, "Departure airport is required");
+			Assert.notNull(airport, "Departure airport is required");
 			Assert.notNull(dateTime, "Departure date/time is required");
 			Assert.isTrue(dateTime.isAfter(ZonedDateTime.now()),
 				() -> "Departure date/time [%s] must be after [%s]"
@@ -171,7 +171,7 @@ public record Flight(
 		@Override
 		@SuppressWarnings("all")
 		public String toString() {
-			return "Departing from [%s] at [%s]".formatted(origin(), format(dateTime()));
+			return "Departing from [%s] at [%s]".formatted(airport(), format(dateTime()));
 		}
 	}
 
