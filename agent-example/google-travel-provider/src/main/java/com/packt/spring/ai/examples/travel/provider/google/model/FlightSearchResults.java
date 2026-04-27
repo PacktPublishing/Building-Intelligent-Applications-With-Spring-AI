@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -118,7 +119,7 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		private LocalDateTime time;
 
 		public ZonedDateTime getZonedTime() {
-			return ZonedDateTime.from(getTime());
+			return getTime().atZone(ZoneId.systemDefault());
 		}
 
 		public com.packt.spring.ai.examples.travel.api.model.Airport toResolvedAirport() {
