@@ -198,13 +198,13 @@ public record Flight(
 			this.flightNumber = StringUtils.requireText(flightNumber, "Flight number is required");
 		}
 
-		public Builder arrivingAt(ZonedDateTime arrival) {
+		public Builder arrivingOn(ZonedDateTime arrival) {
 			Assert.notNull(arrival, "Arrival time is required");
 			this.arrivalDateTime = arrival;
 			return this;
 		}
 
-		public Builder departingAt(ZonedDateTime departure) {
+		public Builder departingOn(ZonedDateTime departure) {
 			Assert.notNull(departure, "Departure time is required");
 			this.departureDateTime = departure;
 			return this;
