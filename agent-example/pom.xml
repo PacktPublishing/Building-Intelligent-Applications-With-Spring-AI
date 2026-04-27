@@ -19,6 +19,8 @@
 
 	<modules>
 		<module>travel-api</module>
+		<module>google-travel-provider</module>
+		<module>travel-agent</module>
 	</modules>
 
 	<properties>
