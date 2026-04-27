@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import com.packt.spring.ai.examples.travel.api.model.Airline;
 import com.packt.spring.ai.examples.travel.api.model.Airport;
@@ -32,6 +33,7 @@ import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.util.CollectionUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.service.invoker.HttpRequestValues;
 import org.springframework.web.service.invoker.HttpServiceArgumentResolver;
 
@@ -260,23 +262,35 @@ public class FlightSearchQuery {
 		public boolean resolve(Object argument, MethodParameter parameter, HttpRequestValues.Builder requestValues) {
 
 			if (parameter.getParameterType().equals(FlightSearchQuery.class)) {
-				FlightSearchQuery request = (FlightSearchQuery) argument;
+				FlightSearchQuery query = (FlightSearchQuery) argument;
 				requestValues.addRequestParameter("api_key", getProperties().getApiKey());
 				requestValues.addRequestParameter("engine", getProperties().getEngine().getFlights());
 				requestValues.addRequestParameter("output", getProperties().getOutput());
-				requestValues.addRequestParameter("arrival_id", request.getArrival().getCode());
+				requestValues.addRequestParameter("arrival_id", query.getArrival().getCode());
 				requestValues.addRequestParameter("currentcy", resolveCurrency());
-				requestValues.addRequestParameter("departure_id", request.getDeparture().getCode());
-				requestValues.addRequestParameter("outbound_date", formatDate(request.getOutboundDate()));
-				requestValues.addRequestParameter("return_date", formatDate(request.getReturnDate()));
+				requestValues.addRequestParameter("departure_id", query.getDeparture().getCode());
+				requestValues.addRequestParameter("outbound_date", formatDate(query.getOutboundDate()));
+				requestValues.addRequestParameter("return_date", formatDate(query.getReturnDate()));
 				requestValues.addRequestParameter("sort_by", SortBy.PRICE.getOptionAsString());
 				requestValues.addRequestParameter("stops", Stops.ONE_STOP_OR_FEWER.getOptionAsString());
-				requestValues.addRequestParameter("travel_class", resolveTravelClass(request.getTravelClass()));
+				requestValues.addRequestParameter("travel_class", resolveTravelClass(query));
 				requestValues.addRequestParameter("type", resolveFlightType(FlightType.ROUND_TRIP));
+				resolveAirlines(query).accept(requestValues);
 				return true;
 			}
 
 			return false;
+		}
+
+		private Consumer<HttpRequestValues.Builder> resolveAirlines(FlightSearchQuery query) {
+			return requestValues -> query.getAirlines().stream()
+				.map(Airline::getCarrierCode)
+				.reduce((airlineOne, airlineTwo) -> String.join(",", airlineOne, airlineTwo))
+				.filter(StringUtils::hasText)
+				.ifPresent(includedAirlines ->
+					requestValues.addRequestParameter("include_airlines", includedAirlines)
+				);
+
 		}
 
 		private String resolveCurrency() {
@@ -291,8 +305,8 @@ public class FlightSearchQuery {
 			};
 		}
 
-		private String resolveTravelClass(TravelClass travelClass) {
-			return TravelClass.defaultIfNull(travelClass).getOptionAsString();
+		private String resolveTravelClass(FlightSearchQuery query) {
+			return TravelClass.defaultIfNull(query.getTravelClass()).getOptionAsString();
 		}
 	}
 }
