@@ -44,6 +44,12 @@ public interface Airport extends Nameable<String> {
 			public String getName() {
 				return code;
 			}
+
+			@Override
+			public String toString() {
+				return getCode();
+
+			}
 		};
 	}
 
