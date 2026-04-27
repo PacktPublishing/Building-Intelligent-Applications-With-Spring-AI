@@ -18,6 +18,7 @@ package com.packt.spring.ai.examples.agent.service;
 import java.util.List;
 
 import com.packt.spring.ai.examples.agent.model.Flight;
+import com.packt.spring.ai.examples.agent.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.agent.model.HotelBooking;
 import com.packt.spring.ai.examples.agent.model.VehicleRental;
 
@@ -33,7 +34,7 @@ import com.packt.spring.ai.examples.agent.model.VehicleRental;
 @SuppressWarnings("unused")
 public interface TravelService {
 
-	List<Flight> searchForFlights();
+	List<Flight> searchFlights(FlightSearchRequest searchRequest);
 
 	List<HotelBooking> findHotels();
 
