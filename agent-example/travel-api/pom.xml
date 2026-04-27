@@ -13,7 +13,7 @@
 
 	<artifactId>travel-api</artifactId>
 
-	<name>Tavel Agent API</name>
+	<name>Tavel API</name>
 	<description>API for the Travel Agent, Agentic AI System implemented with Spring AI</description>
 
 	<properties>
