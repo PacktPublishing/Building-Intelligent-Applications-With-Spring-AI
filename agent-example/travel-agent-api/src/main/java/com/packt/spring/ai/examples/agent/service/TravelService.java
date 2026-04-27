@@ -38,6 +38,7 @@ public interface TravelService {
 
 	List<HotelBooking> findHotels();
 
-	List<VehicleRental> arrangeForTransportation();
-
+	default List<VehicleRental> rentVehicle() {
+		throw new UnsupportedOperationException("Vehicle rental is not supported");
+	}
 }
