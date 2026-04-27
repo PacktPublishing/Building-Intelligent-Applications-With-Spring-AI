@@ -47,6 +47,10 @@ public class FlightSearchRequest {
 
 	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
+	public static FlightSearchRequest.DepartureBuilder builder() {
+		return new FlightSearchRequest.Builder();
+	}
+
 	private static String format(ZonedDateTime dateTime) {
 		return dateTime.format(DATE_TIME_FORMATTER);
 	}
@@ -245,7 +249,12 @@ public class FlightSearchRequest {
 	}
 
 	public interface PriceBuilder {
+
 		InFlightBuilder pay(BigDecimal price);
+
+		default InFlightBuilder payAnyAmount() {
+			return pay(BigDecimal.valueOf(Double.MAX_VALUE));
+		}
 	}
 
 	public interface InFlightBuilder {
@@ -265,8 +274,8 @@ public class FlightSearchRequest {
 
 		private List<Airline> airlines;
 
-		private ZonedDateTime departingDateTime;
-		private ZonedDateTime returningDateTime;
+		private ZonedDateTime departureDateTime;
+		private ZonedDateTime returnDateTime;
 
 		@Override
 		public ReturnDateTimeBuilder arrivingAt(Airport airport) {
@@ -282,6 +291,7 @@ public class FlightSearchRequest {
 
 		@Override
 		public ArrivalBuilder departingOn(ZonedDateTime dateTime) {
+			this.departureDateTime = dateTime;
 			return this;
 		}
 
@@ -305,18 +315,18 @@ public class FlightSearchRequest {
 
 		@Override
 		public AirlineBuilder returningOn(@Nullable ZonedDateTime dateTime) {
-			this.returningDateTime = dateTime;
+			this.returnDateTime = dateTime;
 			return this;
 		}
 
 		@Override
 		public FlightSearchRequest build() {
 
-			Departure departure = Departure.departingFrom(getDepartureAirport()).on(getDepartingDateTime());
+			Departure departure = Departure.departingFrom(getDepartureAirport()).on(getDepartureDateTime());
 			Arrival arrival = Arrival.arrivingAt(getArrivalAirport()).build();
 
 			return new FlightSearchRequest(departure, arrival)
-				.returnOn(getReturningDateTime())
+				.returnOn(getReturnDateTime())
 				.flying(getAirlines())
 				.flying(getFlightClass())
 				.pay(getPrice());
