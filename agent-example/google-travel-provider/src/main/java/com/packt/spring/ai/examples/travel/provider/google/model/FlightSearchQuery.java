@@ -23,6 +23,7 @@ import java.util.Locale;
 import com.packt.spring.ai.examples.travel.api.model.Airport;
 import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.FlightType;
+import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiProperties;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
@@ -38,6 +39,7 @@ import lombok.Getter;
  *
  * @author John Blum
  * @see FlightSearchRequest
+ * @see SerpApiProperties
  * @since 0.1.0
  */
 @Getter
@@ -178,7 +180,7 @@ public class FlightSearchQuery {
 		@Override
 		public DepartureTimeBuilder departingFrom(Airport airport) {
 			this.departure = ObjectUtils.requireObject(airport, "Departure airport is required");
-			return null;
+			return this;
 		}
 
 		@Override
@@ -199,7 +201,14 @@ public class FlightSearchQuery {
 		}
 	}
 
+	@Getter(AccessLevel.PROTECTED)
 	public static class FlightSearchRequestArgumentResolver implements HttpServiceArgumentResolver {
+
+		private final SerpApiProperties properties;
+
+		public FlightSearchRequestArgumentResolver(SerpApiProperties properties) {
+			this.properties = ObjectUtils.requireObject(properties, "SerpApiProperties are required");
+		}
 
 		@Override
 		@SuppressWarnings("all")
@@ -207,6 +216,9 @@ public class FlightSearchQuery {
 
 			if (parameter.getParameterType().equals(FlightSearchQuery.class)) {
 				FlightSearchQuery request = (FlightSearchQuery) argument;
+				requestValues.addRequestParameter("api_key", getProperties().getApiKey());
+				requestValues.addRequestParameter("engine", getProperties().getEngine().getFlights());
+				requestValues.addRequestParameter("output", getProperties().getOutput());
 				requestValues.addRequestParameter("arrival_id", request.getArrival().getCode());
 				requestValues.addRequestParameter("currentcy", resolveCurrency());
 				requestValues.addRequestParameter("departure_id", request.getDeparture().getCode());
