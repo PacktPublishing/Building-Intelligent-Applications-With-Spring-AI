@@ -94,7 +94,7 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getFlightNumber())
 						.from(flight.getDeparture().resolveAirport())
 						.departingOn(flight.getDeparture().getZonedTime())
-						.to(flight.getDeparture().resolveAirport())
+						.to(flight.getArrival().resolveAirport())
 						.arrivingOn(flight.getArrival().getZonedTime())
 						.flownBy(flight.resolveAirline())
 						.flying(flight.resolveAircraft())
