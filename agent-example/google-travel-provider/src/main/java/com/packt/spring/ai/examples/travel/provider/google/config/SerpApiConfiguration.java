@@ -16,6 +16,7 @@
 package com.packt.spring.ai.examples.travel.provider.google.config;
 
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleFlightsApi;
+import com.packt.spring.ai.examples.travel.provider.google.api.GoogleHotelsApi;
 import com.packt.spring.ai.examples.travel.provider.google.model.FlightSearchQuery;
 
 import org.springframework.boot.SpringBootConfiguration;
@@ -40,10 +41,7 @@ public class SerpApiConfiguration {
 	@Bean
 	public GoogleFlightsApi googleFlightsApi(SerpApiProperties properties) {
 
-		RestClient restClient = RestClient.builder()
-			.baseUrl(properties.getBaseUri())
-			.defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(properties.getApiKey()))
-			.build();
+		RestClient restClient = buildRestClient(properties);
 
 		RestClientAdapter restClientAdapter = RestClientAdapter.create(restClient);
 
@@ -52,5 +50,25 @@ public class SerpApiConfiguration {
 			.build();
 
 		return proxyFactory.createClient(GoogleFlightsApi.class);
+	}
+
+	@Bean
+	public GoogleHotelsApi googleHotelsApi(SerpApiProperties properties) {
+
+		RestClient restClient = buildRestClient(properties);
+
+		RestClientAdapter restClientAdapter = RestClientAdapter.create(restClient);
+
+		HttpServiceProxyFactory proxyFactory = HttpServiceProxyFactory.builderFor(restClientAdapter).build();
+
+		return proxyFactory.createClient(GoogleHotelsApi.class);
+	}
+
+	private RestClient buildRestClient(SerpApiProperties properties) {
+
+		return RestClient.builder()
+			.baseUrl(properties.getBaseUri())
+			.defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(properties.getApiKey()))
+			.build();
 	}
 }
