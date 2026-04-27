@@ -44,11 +44,12 @@ import org.springframework.lang.NonNull;
 import lombok.Getter;
 
 /**
- * Abstract Data Type (ADT) modeling results from a flight search query
+ * Abstract Data Type (ADT) modeling results from a {@link FlightSearchQuery}
  * returned by {@literal Google Flights} using the {@literal SerpApi}.
  *
  * @author John Blum
  * @see Collectable
+ * @see FlightSearchQuery
  * @since 0.1.0
  */
 @Getter
@@ -64,6 +65,14 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 	@JsonProperty("price_insights")
 	private PriceInsights priceInsights;
+
+	public List<FlightContainer> getBestFlights() {
+		return CollectionUtils.nullSafeList(this.bestFlights);
+	}
+
+	public List<FlightContainer> getOtherFlights() {
+		return CollectionUtils.nullSafeList(this.otherFlights);
+	}
 
 	@Override
 	public @NonNull Iterator<FlightContainer> iterator() {
