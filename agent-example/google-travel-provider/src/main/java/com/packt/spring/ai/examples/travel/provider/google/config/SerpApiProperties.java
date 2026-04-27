@@ -40,8 +40,10 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "travel-agent.app.provider.serpapi")
 public class SerpApiProperties {
 
+	private Engine engine = new Engine();
+
 	private String apiKey;
-	private String engine;
+	private String output;
 
 	private URL baseUrl;
 
@@ -49,5 +51,17 @@ public class SerpApiProperties {
 		return ExceptionThrowingSupplier.getSafely(getBaseUrl()::toURI, cause -> {
 			throw newConfigurationException(cause, "Failed to resolve URI from URL [%s]", getBaseUrl());
 		});
+	}
+
+	@Getter
+	@Setter
+	public static class Engine {
+
+		private String flights;
+		private String hotels;
+
+		public String getGoogle() {
+			return "google";
+		}
 	}
 }
