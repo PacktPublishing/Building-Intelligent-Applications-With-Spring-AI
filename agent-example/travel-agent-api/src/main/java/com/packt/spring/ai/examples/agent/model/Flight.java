@@ -31,8 +31,8 @@ import lombok.Getter;
  * Abstract Data Type (ADT) modeling a {@literal flight}.
  *
  * @param number {@link String flight number}.
- * @param departure {@link Departure} {@link ZonedDateTime when} the flight leaves from the {@link Location origin}.
- * @param arrival {@link ZonedDateTime} {@link ZonedDateTime when} the flight arrives at the {@link Location destination}.
+ * @param departure {@link Departure} ADT modeling from when and where the flight departs.
+ * @param arrival {@link Arrival} ADT modeling to where and when the flight arrives.
  * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
  * @param aircraft make and model of {@link Aircraft} used for the flight.
  * @param seat {@link Aircraft.Seat} assignment on the flight.
