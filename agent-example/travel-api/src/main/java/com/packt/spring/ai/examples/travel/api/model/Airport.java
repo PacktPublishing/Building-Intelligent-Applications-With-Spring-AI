@@ -15,6 +15,8 @@
  */
 package com.packt.spring.ai.examples.travel.api.model;
 
+import java.util.Objects;
+
 import org.cp.elements.lang.Nameable;
 import org.springframework.util.Assert;
 
@@ -43,6 +45,27 @@ public interface Airport extends Nameable<String> {
 			@Override
 			public String getName() {
 				return code;
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+
+				if (this == obj) {
+					return true;
+				}
+
+				if (!(obj instanceof Airport that)) {
+					return false;
+				}
+
+				return this.getCode().equals(that.getCode());
+			}
+
+			@Override
+			public int hashCode() {
+				int hashValue = 31;
+				hashValue = 17 * hashValue + Objects.hash(getCode());
+				return hashValue;
 			}
 
 			@Override
