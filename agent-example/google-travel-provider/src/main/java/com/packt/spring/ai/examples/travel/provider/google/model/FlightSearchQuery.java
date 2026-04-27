@@ -247,11 +247,11 @@ public class FlightSearchQuery {
 	 * @see HttpServiceArgumentResolver
 	 */
 	@Getter(AccessLevel.PROTECTED)
-	public static class FlightSearchRequestArgumentResolver implements HttpServiceArgumentResolver {
+	public static class FlightSearchQueryArgumentResolver implements HttpServiceArgumentResolver {
 
 		private final SerpApiProperties properties;
 
-		public FlightSearchRequestArgumentResolver(SerpApiProperties properties) {
+		public FlightSearchQueryArgumentResolver(SerpApiProperties properties) {
 			this.properties = ObjectUtils.requireObject(properties, "SerpApiProperties are required");
 		}
 
