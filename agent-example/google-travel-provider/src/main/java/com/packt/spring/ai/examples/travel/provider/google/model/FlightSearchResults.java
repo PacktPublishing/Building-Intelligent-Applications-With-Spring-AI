@@ -92,9 +92,9 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 				com.packt.spring.ai.examples.travel.api.model.Flight resolvedFlight =
 					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getFlightNumber())
-						.from(flight.getDeparture().toResolvedAirport())
+						.from(flight.getDeparture().resolveAirport())
 						.departingOn(flight.getDeparture().getZonedTime())
-						.to(flight.getDeparture().toResolvedAirport())
+						.to(flight.getDeparture().resolveAirport())
 						.arrivingOn(flight.getArrival().getZonedTime())
 						.flownBy(flight.resolveAirline())
 						.flying(flight.resolveAircraft())
@@ -126,20 +126,8 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 			return getTime().atZone(ZoneId.systemDefault());
 		}
 
-		public com.packt.spring.ai.examples.travel.api.model.Airport toResolvedAirport() {
-
-			return new com.packt.spring.ai.examples.travel.api.model.Airport() {
-
-				@Override
-				public String getCode() {
-					return getId();
-				}
-
-				@Override
-				public String getName() {
-					return Airport.this.getName();
-				}
-			};
+		public com.packt.spring.ai.examples.travel.api.model.Airport resolveAirport() {
+			return com.packt.spring.ai.examples.travel.api.model.Airport.from(getName(), getId());
 		}
 	}
 
