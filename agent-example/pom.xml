@@ -18,7 +18,7 @@
 	<description>Example AI Agent implemented with Spring AI</description>
 
 	<modules>
-		<module>travel-agent-api</module>
+		<module>travel-api</module>
 	</modules>
 
 	<properties>
