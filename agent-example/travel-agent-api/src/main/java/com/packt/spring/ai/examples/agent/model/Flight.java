@@ -89,9 +89,9 @@ public record Flight(
 			() -> "Arrival [%s] must be after departure [%s]"
 				.formatted(format(arrivalDateTime), format(departureDateTime)));
 
-		Assert.isFalse(arrival.arrivingAt().equals(departure.origin()),
+		Assert.isFalse(arrival.airport().equals(departure.origin()),
 			() -> "Destination [%s] must be different than the origin [%s]"
-				.formatted(arrival().arrivingAt(), departure.origin()));
+				.formatted(arrival().airport(), departure.origin()));
 	}
 
 	private void assertDeparture(Departure departure) {
@@ -109,7 +109,11 @@ public record Flight(
 		return reservationFunction.apply(this);
 	}
 
-	public record Arrival(Airport arrivingAt, ZonedDateTime dateTime) {
+	public record Arrival(Airport airport, ZonedDateTime dateTime) {
+
+		public Arrival {
+			Assert.notNull(airport, "Arrival airport is required");
+		}
 
 		public static Arrival.Builder arrivingAt(Airport destination) {
 			return new Arrival.Builder(destination);
@@ -132,12 +136,19 @@ public record Flight(
 		@Override
 		@SuppressWarnings("all")
 		public String toString() {
-			return "Arriving at [%s] on [%s]"
-				.formatted(arrivingAt(), dateTime().format(DATE_TIME_FORMATTER));
+			return "Arriving at [%s] on [%s]".formatted(airport(), format(dateTime()));
 		}
 	}
 
 	public record Departure(Airport origin, ZonedDateTime dateTime) {
+
+		public Departure {
+			Assert.notNull(origin, "Departure airport is required");
+			Assert.notNull(dateTime, "Departure date/time is required");
+			Assert.isTrue(dateTime.isAfter(ZonedDateTime.now()),
+				() -> "Departure date/time [%s] must be after [%s]"
+					.formatted(format(dateTime), format(ZonedDateTime.now())));
+		}
 
 		public static Departure.Builder departingFrom(Airport origin) {
 			return new Departure.Builder(origin);
@@ -160,8 +171,7 @@ public record Flight(
 		@Override
 		@SuppressWarnings("all")
 		public String toString() {
-			return "Departing from [%s] at [%s]"
-				.formatted(origin(), dateTime().format(DATE_TIME_FORMATTER));
+			return "Departing from [%s] at [%s]".formatted(origin(), format(dateTime()));
 		}
 	}
 
@@ -170,14 +180,14 @@ public record Flight(
 
 		private Aircraft aircraft;
 
-		private Airline airline;
-
-		private BigDecimal price;
-
 		private Aircraft.Seat seat;
 
-		private Airport fromOrigin;
-		private Airport toDestination;
+		private Airline airline;
+
+		private Airport origin;
+		private Airport destination;
+
+		private BigDecimal price;
 
 		private final String flightNumber;
 
@@ -213,7 +223,7 @@ public record Flight(
 
 		public Builder from(Airport origin) {
 			Assert.notNull(origin, "Origin is required");
-			this.fromOrigin = origin;
+			this.origin = origin;
 			return this;
 		}
 
@@ -230,14 +240,14 @@ public record Flight(
 
 		public Builder to(Airport destination) {
 			Assert.notNull(destination, "Destination is required");
-			this.toDestination = destination;
+			this.destination = destination;
 			return this;
 		}
 
 		public Flight build() {
 
-			Departure departure = Departure.departingFrom(getFromOrigin()).on(getDepartureDateTime());
-			Arrival arrival = Arrival.arrivingAt(getToDestination()).on(getArrivalDateTime());
+			Departure departure = Departure.departingFrom(getOrigin()).on(getDepartureDateTime());
+			Arrival arrival = Arrival.arrivingAt(getDestination()).on(getArrivalDateTime());
 
 			return new Flight(getFlightNumber(), departure, arrival, getAirline(), getAircraft(), getSeat(), getPrice());
 		}
