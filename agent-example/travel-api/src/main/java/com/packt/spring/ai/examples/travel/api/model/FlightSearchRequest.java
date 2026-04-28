@@ -63,6 +63,8 @@ public class FlightSearchRequest {
 
 	private FlightClass flightClass;
 
+	private FlightStops flightStops;
+
 	private FlightType flightType;
 
 	private List<Airline> airlines;
@@ -92,25 +94,35 @@ public class FlightSearchRequest {
 		FlightType configuredFlightType = this.flightType;
 
 		return configuredFlightType != null ? configuredFlightType
-			: hasReturnDate() ? FlightType.ROUND_TRIP
+			: isReturnFlight() ? FlightType.ROUND_TRIP
 			: FlightType.ONE_WAY;
 	}
 
-	public boolean hasReturnDate() {
+	public boolean isReturnFlight() {
 		return Objects.nonNull(getReturnDateTime());
 	}
 
-	public FlightSearchRequest flying(Airlines... airlines) {
-		return flying(List.of(airlines));
+	public FlightSearchRequest fly(Airlines... airlines) {
+		return fly(List.of(airlines));
 	}
 
-	public FlightSearchRequest flying(List<Airline> airlines) {
+	public FlightSearchRequest fly(List<Airline> airlines) {
 		this.airlines = CollectionUtils.nullSafeList(airlines);
 		return this;
 	}
 
-	public FlightSearchRequest flying(@Nullable FlightClass flightClass) {
+	public FlightSearchRequest fly(@Nullable FlightClass flightClass) {
 		this.flightClass = FlightClass.defaultIfNull(flightClass);
+		return this;
+	}
+
+	public FlightSearchRequest fly(@Nullable FlightStops flightStops) {
+		this.flightStops = FlightStops.defaultIfNull(flightStops);
+		return this;
+	}
+
+	public FlightSearchRequest fly(@Nullable FlightType flightType) {
+		this.flightType = FlightType.defaultIfNull(flightType);
 		return this;
 	}
 
@@ -124,19 +136,10 @@ public class FlightSearchRequest {
 		return this;
 	}
 
-	public FlightSearchRequest withFlightType(FlightType flightType) {
-		this.flightType = FlightType.defaultIfNull(flightType);
-		return this;
-	}
-
 	protected record Arrival(Airport airport, @Nullable ZonedDateTime dateTime) {
 
 		protected Arrival {
 			Assert.notNull(airport, "Arrival airport is required");
-		}
-
-		protected static Arrival.Builder arrivingAt(Airport airport) {
-			return new Arrival.Builder(airport);
 		}
 
 		protected Arrival assertArrival(Departure departure) {
@@ -151,11 +154,15 @@ public class FlightSearchRequest {
 
 			if (arrivalDateTime != null) {
 				Assert.isTrue(arrivalDateTime.isAfter(departure.dateTime()),
-					() -> "Arrival date/time [%s] cannot be before [%s]"
+					() -> "Arrival date/time [%s] must be after Departure date/time [%s]"
 						.formatted(format(dateTime()), format(departure.dateTime())));
 			}
 
 			return this;
+		}
+
+		protected static Arrival.Builder arriveAt(Airport airport) {
+			return new Arrival.Builder(airport);
 		}
 
 		@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -163,7 +170,7 @@ public class FlightSearchRequest {
 
 			private final Airport airport;
 
-			protected Arrival on(ZonedDateTime dateTime) {
+			protected Arrival on(@Nullable ZonedDateTime dateTime) {
 				return new Arrival(this.airport, dateTime);
 			}
 
@@ -182,7 +189,7 @@ public class FlightSearchRequest {
 				.formatted(format(dateTime), format(ZonedDateTime.now())));
 		}
 
-		protected static Departure.Builder departingFrom(Airport airport) {
+		protected static Departure.Builder departFrom(Airport airport) {
 			return new Departure.Builder(airport);
 		}
 
@@ -198,53 +205,70 @@ public class FlightSearchRequest {
 	}
 
 	public interface DepartureBuilder {
-		DepartureDateTimeBuilder departingFrom(Airport airport);
+		DepartureDateTimeBuilder departFrom(Airport airport);
 	}
 
 	public interface DepartureDateTimeBuilder {
-		ArrivalBuilder departingOn(ZonedDateTime dateTime);
+		ArrivalBuilder departOn(ZonedDateTime dateTime);
 	}
 
 	public interface ArrivalBuilder {
-		ReturnDateTimeBuilder arrivingAt(Airport airport);
+		ReturnDateTimeBuilder arriveAt(Airport airport);
 	}
 
 	public interface ReturnDateTimeBuilder {
 
-		AirlineBuilder returningOn(ZonedDateTime dateTime);
+		AirlineBuilder returnOn(ZonedDateTime dateTime);
 
 		default AirlineBuilder noReturn() {
-			return returningOn(null);
+			return returnOn(null);
 		}
 	}
 
 	public interface AirlineBuilder {
 
-		FlightClassBuilder flying(Airline... airlines);
+		FlightClassBuilder fly(Airline... airlines);
 
 		default FlightClassBuilder anyAirline() {
-			return flying();
+			return fly();
 		}
 	}
 
 	public interface FlightClassBuilder {
 
-		PriceBuilder in(FlightClass flightClass);
+		LayoverBuilder in(FlightClass flightClass);
 
-		default PriceBuilder inBusinessClass() {
+		default LayoverBuilder inBusinessClass() {
 			return in(FlightClass.BUSINESS);
 		}
 
-		default PriceBuilder inFirstClass() {
+		default LayoverBuilder inFirstClass() {
 			return in(FlightClass.FIRST);
 		}
 
-		default PriceBuilder inEconomy() {
+		default LayoverBuilder inEconomy() {
 			return in(FlightClass.ECONOMY);
 		}
 
-		default PriceBuilder inPremiumEconomy() {
+		default LayoverBuilder inPremiumEconomy() {
 			return in(FlightClass.PREMIUM_ECONOMY);
+		}
+	}
+
+	public interface LayoverBuilder {
+
+		PriceBuilder stops(FlightStops flightStops);
+
+		default PriceBuilder nonstop() {
+			return stops(FlightStops.NONSTOP);
+		}
+
+		default PriceBuilder oneStop() {
+			return stops(FlightStops.ONE_STOP);
+		}
+
+		default PriceBuilder unlimitedStops() {
+			return stops(FlightStops.ANY);
 		}
 	}
 
@@ -252,7 +276,7 @@ public class FlightSearchRequest {
 
 		InFlightBuilder pay(BigDecimal price);
 
-		default InFlightBuilder payAnyAmount() {
+		default InFlightBuilder anyPrice() {
 			return pay(BigDecimal.valueOf(Double.MAX_VALUE));
 		}
 	}
@@ -263,7 +287,7 @@ public class FlightSearchRequest {
 
 	@Getter
 	protected static class Builder implements DepartureBuilder, DepartureDateTimeBuilder, ArrivalBuilder,
-			ReturnDateTimeBuilder, AirlineBuilder, FlightClassBuilder, PriceBuilder, InFlightBuilder {
+			ReturnDateTimeBuilder, AirlineBuilder, FlightClassBuilder, LayoverBuilder, PriceBuilder, InFlightBuilder {
 
 		private Airport arrivalAirport;
 		private Airport departureAirport;
@@ -272,37 +296,39 @@ public class FlightSearchRequest {
 
 		private FlightClass flightClass;
 
+		private FlightStops flightStops;
+
 		private List<Airline> airlines;
 
 		private ZonedDateTime departureDateTime;
 		private ZonedDateTime returnDateTime;
 
 		@Override
-		public ReturnDateTimeBuilder arrivingAt(Airport airport) {
+		public ReturnDateTimeBuilder arriveAt(Airport airport) {
 			this.arrivalAirport = ObjectUtils.requireObject(airport, "Arrival airport is required");
 			return this;
 		}
 
 		@Override
-		public DepartureDateTimeBuilder departingFrom(Airport airport) {
+		public DepartureDateTimeBuilder departFrom(Airport airport) {
 			this.departureAirport = ObjectUtils.requireObject(airport, "Departure airport is required");
 			return this;
 		}
 
 		@Override
-		public ArrivalBuilder departingOn(ZonedDateTime dateTime) {
+		public ArrivalBuilder departOn(ZonedDateTime dateTime) {
 			this.departureDateTime = dateTime;
 			return this;
 		}
 
 		@Override
-		public FlightClassBuilder flying(Airline... airlines) {
+		public FlightClassBuilder fly(Airline... airlines) {
 			this.airlines = List.of(airlines);
 			return this;
 		}
 
 		@Override
-		public PriceBuilder in(FlightClass flightClass) {
+		public LayoverBuilder in(FlightClass flightClass) {
 			this.flightClass = flightClass;
 			return this;
 		}
@@ -314,21 +340,28 @@ public class FlightSearchRequest {
 		}
 
 		@Override
-		public AirlineBuilder returningOn(@Nullable ZonedDateTime dateTime) {
+		public AirlineBuilder returnOn(@Nullable ZonedDateTime dateTime) {
 			this.returnDateTime = dateTime;
+			return this;
+		}
+
+		@Override
+		public PriceBuilder stops(FlightStops flightStops) {
+			this.flightStops = flightStops;
 			return this;
 		}
 
 		@Override
 		public FlightSearchRequest build() {
 
-			Departure departure = Departure.departingFrom(getDepartureAirport()).on(getDepartureDateTime());
-			Arrival arrival = Arrival.arrivingAt(getArrivalAirport()).build();
+			Departure departure = Departure.departFrom(getDepartureAirport()).on(getDepartureDateTime());
+			Arrival arrival = Arrival.arriveAt(getArrivalAirport()).build();
 
 			return new FlightSearchRequest(departure, arrival)
 				.returnOn(getReturnDateTime())
-				.flying(getAirlines())
-				.flying(getFlightClass())
+				.fly(getAirlines())
+				.fly(getFlightClass())
+				.fly(getFlightStops())
 				.pay(getPrice());
 		}
 	}
