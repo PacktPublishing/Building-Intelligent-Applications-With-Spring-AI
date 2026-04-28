@@ -16,6 +16,7 @@
 package com.packt.spring.ai.examples.travel.api.model;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
@@ -36,14 +37,13 @@ import lombok.Getter;
  * @param airline {@literal carrier} of the flight, such as {@literal American Airlines}.
  * @param aircraft make and model of {@link Aircraft} used for the flight.
  * @param seat {@link Aircraft.Seat} assignment on the flight.
+ * @param duration {@link Duration} of the flight.
  * @param price {@link BigDecimal Cose} of the flight.
  * @author John Blum
  * @see Aircraft
  * @see Airline
  * @see Arrival
  * @see Departure
- * @see BigDecimal
- * @see ZonedDateTime
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
@@ -54,20 +54,13 @@ public record Flight(
 	Airline airline,
 	Aircraft aircraft,
 	Aircraft.Seat seat,
+	Duration duration,
 	BigDecimal price
 ) {
 
 	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm Z";
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
-
-	public static Flight.Builder builder(String flightNumber) {
-		return new Flight.Builder(flightNumber);
-	}
-
-	private static String format(ZonedDateTime dateTime) {
-		return dateTime.format(DATE_TIME_FORMATTER);
-	}
 
 	public Flight {
 		Assert.hasText(number, "Flight number is required");
@@ -102,7 +95,15 @@ public record Flight(
 		ZonedDateTime now = ZonedDateTime.now(departureDateTime.getZone());
 
 		Assert.isTrue(departureDateTime.isAfter(now), () -> "Departure [%s] must be after [%s]"
-				.formatted(format(departureDateTime), format(now)));
+			.formatted(format(departureDateTime), format(now)));
+	}
+
+	public static Flight.Builder builder(String flightNumber) {
+		return new Flight.Builder(flightNumber);
+	}
+
+	private static String format(ZonedDateTime dateTime) {
+		return dateTime.format(DATE_TIME_FORMATTER);
 	}
 
 	public FlightReservation reserve(Function<Flight, FlightReservation> reservationFunction) {
@@ -189,6 +190,8 @@ public record Flight(
 
 		private BigDecimal price;
 
+		private Duration duration;
+
 		private final String flightNumber;
 
 		private ZonedDateTime arrivalDateTime;
@@ -201,12 +204,19 @@ public record Flight(
 		public Builder arrivingOn(ZonedDateTime arrival) {
 			Assert.notNull(arrival, "Arrival time is required");
 			this.arrivalDateTime = arrival;
+			computeDuration();
 			return this;
 		}
 
 		public Builder departingOn(ZonedDateTime departure) {
 			Assert.notNull(departure, "Departure time is required");
 			this.departureDateTime = departure;
+			computeDuration();
+			return this;
+		}
+
+		public synchronized Builder duration(Duration duration) {
+			this.duration = duration;
 			return this;
 		}
 
@@ -244,12 +254,28 @@ public record Flight(
 			return this;
 		}
 
+		protected synchronized void computeDuration() {
+
+			if (getDuration() == null) {
+
+				ZonedDateTime arrivalDateTime = getArrivalDateTime();
+				ZonedDateTime departureDateTime = getDepartureDateTime();
+
+				if (arrivalDateTime != null && departureDateTime != null) {
+					long millis = departureDateTime.toInstant().toEpochMilli()
+						- arrivalDateTime.toInstant().toEpochMilli();
+					duration(Duration.ofMillis(millis));
+				}
+			}
+		}
+
 		public Flight build() {
 
 			Departure departure = Departure.departingFrom(getOrigin()).on(getDepartureDateTime());
 			Arrival arrival = Arrival.arrivingAt(getDestination()).on(getArrivalDateTime());
 
-			return new Flight(getFlightNumber(), departure, arrival, getAirline(), getAircraft(), getSeat(), getPrice());
+			return new Flight(getFlightNumber(), departure, arrival, getAirline(), getAircraft(), getSeat(),
+				getDuration(), getPrice());
 		}
 	}
 }
