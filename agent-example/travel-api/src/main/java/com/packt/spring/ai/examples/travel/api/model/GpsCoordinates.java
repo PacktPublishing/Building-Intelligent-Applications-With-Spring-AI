@@ -16,13 +16,14 @@
 package com.packt.spring.ai.examples.travel.api.model;
 
 /**
- * Abstract Data Type (ADT) modeling {@literal latitude} and {@literal longitude}.
+ * Abstract Data Type (ADT) modeling {@literal latitude} and {@literal longitude}
+ * in the {@literal Global Positioning System (GPS)}.
  *
  * @author John Blum
  * @param latitude {@link Long#TYPE value} for {@literal longitude}.
  * @param longitude {@link Long#TYPE value} for {@literal latitude}.
  * @since 0.1.0
  */
-public record GeographicCoordinates(long latitude, long longitude) {
+public record GpsCoordinates(long latitude, long longitude) {
 
 }
