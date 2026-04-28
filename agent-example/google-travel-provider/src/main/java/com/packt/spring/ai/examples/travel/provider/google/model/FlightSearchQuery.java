@@ -358,7 +358,7 @@ public class FlightSearchQuery {
 		}
 
 		private String resolveStops(FlightSearchQuery query) {
-			return String.valueOf(query.getStops());
+			return query.getStops().getOptionAsString();
 		}
 
 		private String resolveTravelClass(FlightSearchQuery query) {
