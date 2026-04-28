@@ -22,6 +22,7 @@ import java.util.Map;
 import com.packt.spring.ai.examples.travel.api.model.Flight;
 import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
+import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
 import com.packt.spring.ai.examples.travel.api.service.TravelService;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleFlightsApi;
@@ -29,6 +30,8 @@ import com.packt.spring.ai.examples.travel.provider.google.api.GoogleHotelsApi;
 import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiProperties;
 import com.packt.spring.ai.examples.travel.provider.google.model.FlightSearchQuery;
 import com.packt.spring.ai.examples.travel.provider.google.model.FlightSearchResults;
+import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchQuery;
+import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchResults;
 
 import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
@@ -93,8 +96,12 @@ public class GoogleTravelService implements TravelService {
 	}
 
 	@Override
-	public List<HotelBooking> findHotels() {
-		return Collections.emptyList();
+	public List<HotelBooking> findHotels(HotelSearchRequest request) {
+
+		HotelSearchQuery query = HotelSearchQuery.from(request);
+		HotelSearchResults results = getGoogleHotels().search(query);
+
+		return results.toHotelBookings();
 	}
 
 	@Override
