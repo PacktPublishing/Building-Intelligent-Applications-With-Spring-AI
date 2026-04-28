@@ -51,7 +51,7 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest(classes = GoogleTravelServiceIntegrationTests.TestConfiguration.class)
 @ActiveProfiles({ "serpapi", "user" })
-public class GoogleTravelServiceIntegrationTests {
+class GoogleTravelServiceIntegrationTests {
 
 	@Autowired
 	private GoogleTravelService travelService;
