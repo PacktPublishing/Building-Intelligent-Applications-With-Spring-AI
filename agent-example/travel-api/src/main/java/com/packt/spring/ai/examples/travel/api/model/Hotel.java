@@ -16,16 +16,24 @@
 package com.packt.spring.ai.examples.travel.api.model;
 
 import org.cp.elements.lang.Nameable;
+import org.springframework.util.Assert;
 
 /**
  * Abstract Data Type (ADT) modeling a {@literal hotel}.
  *
  * @author John Blum
+ * @see FunctionalInterface
  * @see org.cp.elements.lang.Nameable
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
 public interface Hotel extends Nameable<String> {
+
+	static Hotel from(String providerName) {
+		Assert.hasText(providerName, "Hotel provider name is required");
+		return () -> providerName;
+	}
 
 	default String getProviderName() {
 		return getName();
