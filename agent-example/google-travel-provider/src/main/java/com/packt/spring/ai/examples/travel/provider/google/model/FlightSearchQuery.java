@@ -107,8 +107,8 @@ public class FlightSearchQuery {
 		};
 	}
 
-	private final Airport departure;
 	private final Airport arrival;
+	private final Airport departure;
 
 	private final List<Airline> airlines;
 
@@ -203,29 +203,29 @@ public class FlightSearchQuery {
 
 	public interface TravelBuilder {
 
-		InFlightBuilder stops(Stops stops);
+		QueryBuilder stops(Stops stops);
 
-		default InFlightBuilder nonstop() {
+		default QueryBuilder nonstop() {
 			return stops(Stops.NONSTOP);
 		}
 
-		default InFlightBuilder oneStop() {
+		default QueryBuilder oneStop() {
 			return stops(Stops.ONE_STOP_OR_FEWER);
 		}
 
-		default InFlightBuilder unlimitedStops() {
+		default QueryBuilder unlimitedStops() {
 			return stops(Stops.UNLIMITED);
 		}
 	}
 
-	public interface InFlightBuilder {
-		InFlightBuilder seatedIn(TravelClass travelClass);
+	public interface QueryBuilder {
+		QueryBuilder seatedIn(TravelClass travelClass);
 		FlightSearchQuery build();
 	}
 
 	@Getter(AccessLevel.PROTECTED)
 	public static class Builder implements DepartureBuilder, DepartureTimeBuilder, ArrivalBuilder,
-			ReturnTimeBuilder, AirlineBuilder, TravelBuilder, InFlightBuilder {
+			ReturnTimeBuilder, AirlineBuilder, TravelBuilder, QueryBuilder {
 
 		private Airport arrival;
 		private Airport departure;
@@ -270,13 +270,13 @@ public class FlightSearchQuery {
 		}
 
 		@Override
-		public InFlightBuilder seatedIn(TravelClass travelClass) {
+		public QueryBuilder seatedIn(TravelClass travelClass) {
 			this.travelClass = travelClass;
 			return this;
 		}
 
 		@Override
-		public InFlightBuilder stops(Stops stops) {
+		public QueryBuilder stops(Stops stops) {
 			this.stops = stops;
 			return this;
 		}
