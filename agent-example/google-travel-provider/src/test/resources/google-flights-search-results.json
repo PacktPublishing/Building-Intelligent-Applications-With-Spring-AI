@@ -1,0 +1,1177 @@
+{
+	"search_metadata": {
+		"id": "69ef05b6ee028ab175283921",
+		"status": "Success",
+		"json_endpoint": "https://serpapi.com/searches/ygaPx6hpzC-tgzsdFxI55A/69ef05b6ee028ab175283921.json",
+		"created_at": "2026-04-27 06:44:06 UTC",
+		"processed_at": "2026-04-27 06:44:06 UTC",
+		"google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=us&tfs=CBwQAhogEgoyMDI2LTA2LTI2KAFqBwgBEgNQRFhyBwgBEgNPUkQaIBIKMjAyNi0wNy0wMygBagcIARIDT1JEcgcIARIDUERYQAFIAXABmAEB&tfu=EgIIAg",
+		"raw_html_file": "https://serpapi.com/searches/ygaPx6hpzC-tgzsdFxI55A/69ef05b6ee028ab175283921.html",
+		"prettify_html_file": "https://serpapi.com/searches/ygaPx6hpzC-tgzsdFxI55A/69ef05b6ee028ab175283921.prettify",
+		"total_time_taken": 7.94
+	},
+	"search_parameters": {
+		"engine": "google_flights",
+		"hl": "en",
+		"gl": "us",
+		"type": "1",
+		"departure_id": "PDX",
+		"arrival_id": "ORD",
+		"outbound_date": "2026-06-26",
+		"return_date": "2026-07-03",
+		"travel_class": 1,
+		"stops": 2,
+		"sort_by": "2"
+	},
+	"other_flights": [
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 17:42"
+					},
+					"arrival_airport": {
+						"name": "Los Angeles International Airport",
+						"id": "LAX",
+						"time": "2026-06-26 20:11"
+					},
+					"duration": 149,
+					"airplane": "Airbus A320",
+					"airline": "Frontier",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/F9.png",
+					"travel_class": "Economy",
+					"flight_number": "F9 4500",
+					"legroom": "28 in",
+					"extensions": [
+						"Below average legroom (28 in)",
+						"Carbon emissions estimate: 126 kg"
+					]
+				},
+				{
+					"departure_airport": {
+						"name": "Los Angeles International Airport",
+						"id": "LAX",
+						"time": "2026-06-26 23:59"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 06:19"
+					},
+					"duration": 260,
+					"airplane": "Airbus A321neo",
+					"airline": "Frontier",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/F9.png",
+					"travel_class": "Economy",
+					"flight_number": "F9 2446",
+					"legroom": "28 in",
+					"extensions": [
+						"Below average legroom (28 in)",
+						"Carbon emissions estimate: 175 kg"
+					],
+					"overnight": true
+				}
+			],
+			"layovers": [
+				{
+					"duration": 228,
+					"name": "Los Angeles International Airport",
+					"id": "LAX"
+				}
+			],
+			"total_duration": 637,
+			"carbon_emissions": {
+				"this_flight": 302000,
+				"typical_for_this_route": 267000,
+				"difference_percent": 13
+			},
+			"price": 298,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/F9.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZzFHT1RRMU1EQjhSamt5TkRRMkdnc0k2T2dCRUFJYUExVlRSRGdjY09qb0FRPT0iLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJMQVgiLG51bGwsIkY5IiwiNDUwMCJdLFsiTEFYIiwiMjAyNi0wNi0yNiIsIk9SRCIsbnVsbCwiRjkiLCIyNDQ2Il1dXQ=="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 11:20"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 17:39"
+					},
+					"duration": 259,
+					"airplane": "Airbus A321",
+					"airline": "American",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+					"travel_class": "Economy",
+					"flight_number": "AA 2284",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 246 kg"
+					]
+				}
+			],
+			"total_duration": 259,
+			"carbon_emissions": {
+				"this_flight": 247000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -7
+			},
+			"price": 316,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pCUVRJeU9EUWFDd2piOWdFUUFob0RWVk5FT0J4dzIvWUIiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFBIiwiMjI4NCJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 13:45"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 20:06"
+					},
+					"duration": 261,
+					"airplane": "Airbus A321",
+					"airline": "American",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+					"travel_class": "Economy",
+					"flight_number": "AA 3303",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 246 kg"
+					]
+				}
+			],
+			"total_duration": 261,
+			"carbon_emissions": {
+				"this_flight": 247000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -7
+			},
+			"price": 316,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pCUVRNek1ETWFDd2piOWdFUUFob0RWVk5FT0J4dzIvWUIiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFBIiwiMzMwMyJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 22:59"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 05:00"
+					},
+					"duration": 241,
+					"airplane": "Airbus A321",
+					"airline": "American",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+					"travel_class": "Economy",
+					"flight_number": "AA 2977",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 246 kg"
+					],
+					"overnight": true
+				}
+			],
+			"total_duration": 241,
+			"carbon_emissions": {
+				"this_flight": 247000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -7
+			},
+			"price": 316,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pCUVRJNU56Y2FDd2piOWdFUUFob0RWVk5FT0J4dzIvWUIiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFBIiwiMjk3NyJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 17:00"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 23:13"
+					},
+					"duration": 253,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 2822",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"On-demand video",
+						"Carbon emissions estimate: 222 kg"
+					]
+				}
+			],
+			"total_duration": 253,
+			"carbon_emissions": {
+				"this_flight": 223000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -16
+			},
+			"price": 317,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRJNE1qSWFDd2pVOXdFUUFob0RWVk5FT0J4dzFQY0IiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMjgyMiJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 22:40"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 04:45"
+					},
+					"duration": 245,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 2094",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"On-demand video",
+						"Carbon emissions estimate: 222 kg"
+					],
+					"overnight": true
+				}
+			],
+			"total_duration": 245,
+			"carbon_emissions": {
+				"this_flight": 223000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -16
+			},
+			"price": 317,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRJd09UUWFDd2pVOXdFUUFob0RWVk5FT0J4dzFQY0IiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMjA5NCJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 22:59"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 05:00"
+					},
+					"duration": 241,
+					"airplane": "Boeing 737",
+					"airline": "Alaska",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AS.png",
+					"travel_class": "Economy",
+					"flight_number": "AS 376",
+					"legroom": "31 in",
+					"extensions": [
+						"Average legroom (31 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 222 kg"
+					],
+					"overnight": true
+				}
+			],
+			"total_duration": 241,
+			"carbon_emissions": {
+				"this_flight": 222000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -17
+			},
+			"price": 317,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AS.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1ZCVXpNM05ob0xDTlQzQVJBQ0dnTlZVMFE0SEhEVTl3RT0iLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFTIiwiMzc2Il1dXQ=="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 23:40"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 05:45"
+					},
+					"duration": 245,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 1490",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power outlet",
+						"Stream media to your device",
+						"Carbon emissions estimate: 220 kg"
+					],
+					"overnight": true
+				}
+			],
+			"total_duration": 245,
+			"carbon_emissions": {
+				"this_flight": 221000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -17
+			},
+			"price": 317,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRFME9UQWFDd2pVOXdFUUFob0RWVk5FT0J4dzFQY0IiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMTQ5MCJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 06:15"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 12:21"
+					},
+					"duration": 246,
+					"airplane": "Boeing 737",
+					"airline": "American",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+					"travel_class": "Economy",
+					"flight_number": "AA 2933",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 225 kg"
+					]
+				}
+			],
+			"total_duration": 246,
+			"carbon_emissions": {
+				"this_flight": 225000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -16
+			},
+			"price": 336,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pCUVRJNU16TWFDd2lzaGdJUUFob0RWVk5FT0J4d3JJWUMiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFBIiwiMjkzMyJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 11:16"
+					},
+					"arrival_airport": {
+						"name": "San Francisco International Airport",
+						"id": "SFO",
+						"time": "2026-06-26 13:07"
+					},
+					"duration": 111,
+					"airplane": "Airbus A320",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 1613",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 107 kg"
+					]
+				},
+				{
+					"departure_airport": {
+						"name": "San Francisco International Airport",
+						"id": "SFO",
+						"time": "2026-06-26 16:21"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 22:59"
+					},
+					"duration": 278,
+					"airplane": "Airbus A321neo",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 1482",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"On-demand video",
+						"Carbon emissions estimate: 189 kg"
+					]
+				}
+			],
+			"layovers": [
+				{
+					"duration": 194,
+					"name": "San Francisco International Airport",
+					"id": "SFO"
+				}
+			],
+			"total_duration": 583,
+			"carbon_emissions": {
+				"this_flight": 297000,
+				"typical_for_this_route": 267000,
+				"difference_percent": 11
+			},
+			"price": 337,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZzFWUVRFMk1UTjhWVUV4TkRneUdnc0krNFlDRUFJYUExVlRSRGdjY1B1R0FnPT0iLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJTRk8iLG51bGwsIlVBIiwiMTYxMyJdLFsiU0ZPIiwiMjAyNi0wNi0yNiIsIk9SRCIsbnVsbCwiVUEiLCIxNDgyIl1dXQ=="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 13:02"
+					},
+					"arrival_airport": {
+						"name": "George Bush Intercontinental Airport",
+						"id": "IAH",
+						"time": "2026-06-26 19:21"
+					},
+					"duration": 259,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 1927",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power outlet",
+						"Stream media to your device",
+						"Carbon emissions estimate: 239 kg"
+					]
+				},
+				{
+					"departure_airport": {
+						"name": "George Bush Intercontinental Airport",
+						"id": "IAH",
+						"time": "2026-06-26 22:08"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-27 00:45"
+					},
+					"duration": 157,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 787",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power outlet",
+						"Stream media to your device",
+						"Carbon emissions estimate: 134 kg"
+					],
+					"often_delayed_by_over_30_min": true
+				}
+			],
+			"layovers": [
+				{
+					"duration": 167,
+					"name": "George Bush Intercontinental Airport",
+					"id": "IAH"
+				}
+			],
+			"total_duration": 583,
+			"carbon_emissions": {
+				"this_flight": 374000,
+				"typical_for_this_route": 267000,
+				"difference_percent": 40
+			},
+			"price": 337,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ3hWUVRFNU1qZDhWVUUzT0RjYUN3ajdoZ0lRQWhvRFZWTkVPQnh3KzRZQyIsW1siUERYIiwiMjAyNi0wNi0yNiIsIklBSCIsbnVsbCwiVUEiLCIxOTI3Il0sWyJJQUgiLCIyMDI2LTA2LTI2IiwiT1JEIixudWxsLCJVQSIsIjc4NyJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 00:33"
+					},
+					"arrival_airport": {
+						"name": "Minneapolis-Saint Paul International Airport",
+						"id": "MSP",
+						"time": "2026-06-26 05:49"
+					},
+					"duration": 196,
+					"airplane": "Airbus A321neo",
+					"airline": "Delta",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+					"travel_class": "Economy",
+					"flight_number": "DL 2359",
+					"legroom": "31 in",
+					"extensions": [
+						"Average legroom (31 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Live TV",
+						"Carbon emissions estimate: 160 kg"
+					],
+					"overnight": true
+				},
+				{
+					"departure_airport": {
+						"name": "Minneapolis-Saint Paul International Airport",
+						"id": "MSP",
+						"time": "2026-06-26 07:00"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 08:35"
+					},
+					"duration": 95,
+					"airplane": "Airbus A220-300 Passenger",
+					"airline": "Delta",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+					"travel_class": "Economy",
+					"flight_number": "DL 1544",
+					"legroom": "31 in",
+					"extensions": [
+						"Average legroom (31 in)",
+						"Free Wi-Fi",
+						"In-seat power & USB outlets",
+						"Live TV",
+						"Carbon emissions estimate: 76 kg"
+					]
+				}
+			],
+			"layovers": [
+				{
+					"duration": 71,
+					"name": "Minneapolis-Saint Paul International Airport",
+					"id": "MSP"
+				}
+			],
+			"total_duration": 362,
+			"carbon_emissions": {
+				"this_flight": 236000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -12
+			},
+			"price": 382,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZzFFVERJek5UbDhSRXd4TlRRMEdnc0krNmtDRUFJYUExVlRSRGdjY1B1cEFnPT0iLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJNU1AiLG51bGwsIkRMIiwiMjM1OSJdLFsiTVNQIiwiMjAyNi0wNi0yNiIsIk9SRCIsbnVsbCwiREwiLCIxNTQ0Il1dXQ=="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 10:46"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 17:00"
+					},
+					"duration": 254,
+					"airplane": "Airbus A321neo",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 1641",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"On-demand video",
+						"Carbon emissions estimate: 183 kg"
+					]
+				}
+			],
+			"total_duration": 254,
+			"carbon_emissions": {
+				"this_flight": 183000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -31
+			},
+			"price": 401,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRFMk5ERWFDd2lrdVFJUUFob0RWVk5FT0J4d3BMa0MiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMTY0MSJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 14:25"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 20:38"
+					},
+					"duration": 253,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 2336",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power outlet",
+						"Stream media to your device",
+						"Carbon emissions estimate: 220 kg"
+					]
+				}
+			],
+			"total_duration": 253,
+			"carbon_emissions": {
+				"this_flight": 221000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -17
+			},
+			"price": 401,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRJek16WWFDd2lrdVFJUUFob0RWVk5FT0J4d3BMa0MiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMjMzNiJdXV0="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 07:00"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 13:13"
+					},
+					"duration": 253,
+					"airplane": "Boeing 737MAX 9 Passenger",
+					"airline": "Alaska",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AS.png",
+					"travel_class": "Economy",
+					"flight_number": "AS 324",
+					"legroom": "31 in",
+					"extensions": [
+						"Average legroom (31 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"Stream media to your device",
+						"Carbon emissions estimate: 191 kg"
+					]
+				}
+			],
+			"total_duration": 253,
+			"carbon_emissions": {
+				"this_flight": 191000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -28
+			},
+			"price": 447,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AS.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1ZCVXpNeU5Cb0xDSnpkQWhBQ0dnTlZVMFE0SEhDYzNRST0iLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIkFTIiwiMzI0Il1dXQ=="
+		},
+		{
+			"flights": [
+				{
+					"departure_airport": {
+						"name": "Portland International Airport",
+						"id": "PDX",
+						"time": "2026-06-26 07:00"
+					},
+					"arrival_airport": {
+						"name": "Chicago O'Hare International Airport",
+						"id": "ORD",
+						"time": "2026-06-26 13:13"
+					},
+					"duration": 253,
+					"airplane": "Boeing 737",
+					"airline": "United",
+					"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+					"travel_class": "Economy",
+					"flight_number": "UA 2306",
+					"legroom": "30 in",
+					"extensions": [
+						"Average legroom (30 in)",
+						"Wi-Fi for a fee",
+						"In-seat power & USB outlets",
+						"On-demand video",
+						"Carbon emissions estimate: 222 kg"
+					]
+				}
+			],
+			"total_duration": 253,
+			"carbon_emissions": {
+				"this_flight": 223000,
+				"typical_for_this_route": 267000,
+				"difference_percent": -16
+			},
+			"price": 447,
+			"type": "Round trip",
+			"airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+			"extensions": [
+				"Checked baggage for a fee",
+				"Bag and fare conditions depend on the return flight"
+			],
+			"departure_token": "WyJDalJJVTIxQ09VVmxaVFZqYUhkQlNteE5Wa0ZDUnkwdExTMHRMUzB0TFhscFltSjJPVUZCUVVGQlIyNTJRbUpaU0c5bFZrVkJFZ1pWUVRJek1EWWFDd2ljM1FJUUFob0RWVk5FT0J4d25OMEMiLFtbIlBEWCIsIjIwMjYtMDYtMjYiLCJPUkQiLG51bGwsIlVBIiwiMjMwNiJdXV0="
+		}
+	],
+	"price_insights": {
+		"lowest_price": 298,
+		"price_level": "typical",
+		"typical_price_range": [
+			175,
+			305
+		],
+		"price_history": [
+			[
+				1772006400,
+				267
+			],
+			[
+				1772092800,
+				267
+			],
+			[
+				1772179200,
+				267
+			],
+			[
+				1772265600,
+				267
+			],
+			[
+				1772352000,
+				267
+			],
+			[
+				1772438400,
+				267
+			],
+			[
+				1772524800,
+				267
+			],
+			[
+				1772611200,
+				287
+			],
+			[
+				1772697600,
+				287
+			],
+			[
+				1772784000,
+				287
+			],
+			[
+				1772870400,
+				287
+			],
+			[
+				1772956800,
+				287
+			],
+			[
+				1773039600,
+				287
+			],
+			[
+				1773126000,
+				298
+			],
+			[
+				1773212400,
+				307
+			],
+			[
+				1773298800,
+				307
+			],
+			[
+				1773385200,
+				307
+			],
+			[
+				1773471600,
+				327
+			],
+			[
+				1773558000,
+				327
+			],
+			[
+				1773644400,
+				327
+			],
+			[
+				1773730800,
+				327
+			],
+			[
+				1773817200,
+				327
+			],
+			[
+				1773903600,
+				327
+			],
+			[
+				1773990000,
+				327
+			],
+			[
+				1774076400,
+				327
+			],
+			[
+				1774162800,
+				327
+			],
+			[
+				1774249200,
+				327
+			],
+			[
+				1774335600,
+				327
+			],
+			[
+				1774422000,
+				327
+			],
+			[
+				1774508400,
+				309
+			],
+			[
+				1774594800,
+				309
+			],
+			[
+				1774681200,
+				309
+			],
+			[
+				1774767600,
+				309
+			],
+			[
+				1774854000,
+				309
+			],
+			[
+				1774940400,
+				309
+			],
+			[
+				1775026800,
+				309
+			],
+			[
+				1775113200,
+				309
+			],
+			[
+				1775199600,
+				309
+			],
+			[
+				1775286000,
+				327
+			],
+			[
+				1775372400,
+				327
+			],
+			[
+				1775458800,
+				317
+			],
+			[
+				1775545200,
+				317
+			],
+			[
+				1775631600,
+				317
+			],
+			[
+				1775718000,
+				317
+			],
+			[
+				1775804400,
+				317
+			],
+			[
+				1775890800,
+				317
+			],
+			[
+				1775977200,
+				317
+			],
+			[
+				1776063600,
+				317
+			],
+			[
+				1776150000,
+				317
+			],
+			[
+				1776236400,
+				316
+			],
+			[
+				1776322800,
+				316
+			],
+			[
+				1776409200,
+				316
+			],
+			[
+				1776495600,
+				316
+			],
+			[
+				1776582000,
+				316
+			],
+			[
+				1776668400,
+				316
+			],
+			[
+				1776754800,
+				316
+			],
+			[
+				1776841200,
+				316
+			],
+			[
+				1776927600,
+				316
+			],
+			[
+				1777014000,
+				316
+			],
+			[
+				1777100400,
+				298
+			],
+			[
+				1777186800,
+				298
+			]
+		]
+	},
+	"airports": [
+		{
+			"departure": [
+				{
+					"airport": {
+						"id": "PDX",
+						"name": "Portland International Airport"
+					},
+					"city": "Portland",
+					"country": "United States",
+					"country_code": "US",
+					"image": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTzwRE9peG7V_1nr1ODOvJwxO-xWUd_3L39jp15dyCGnHlB2zTnR0iA1y3C9iLCK9hcgPZfF56U09tKRA",
+					"thumbnail": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRkFAVSiQZYe65jy-zBfiWE6kka7DzbI6h9XIW60DL_BzkXL7CXEpCANiDjVwecac5Ir1TnWswslFrgAjP9dcm4fPIeTNsuYwqzoH2zroU"
+				}
+			],
+			"arrival": [
+				{
+					"airport": {
+						"id": "ORD",
+						"name": "Chicago O'Hare International Airport"
+					},
+					"city": "Chicago",
+					"country": "United States",
+					"country_code": "US",
+					"image": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTDuw95ynLqGCkZRzt9XuWXGBs8qWhw_1UZkMrCRAQp3rojEZBpwitHM8GAMBXgKhSKFgJZcXZ3qmYs2g",
+					"thumbnail": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR0CK6-eZWtnTJdtBk0BnPl1NeBcRul1YiurNp0AEgxFjNRleXR3vb2VV6vc5Uk51C0AhYN6AZAQKz6FJ-NQfbjVf8HQQ96ZH3WYIS-Rw0"
+				}
+			]
+		},
+		{
+			"departure": [
+				{
+					"airport": {
+						"id": "ORD",
+						"name": "Chicago O'Hare International Airport"
+					},
+					"city": "Chicago",
+					"country": "United States",
+					"country_code": "US",
+					"image": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTDuw95ynLqGCkZRzt9XuWXGBs8qWhw_1UZkMrCRAQp3rojEZBpwitHM8GAMBXgKhSKFgJZcXZ3qmYs2g",
+					"thumbnail": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR0CK6-eZWtnTJdtBk0BnPl1NeBcRul1YiurNp0AEgxFjNRleXR3vb2VV6vc5Uk51C0AhYN6AZAQKz6FJ-NQfbjVf8HQQ96ZH3WYIS-Rw0"
+				}
+			],
+			"arrival": [
+				{
+					"airport": {
+						"id": "PDX",
+						"name": "Portland International Airport"
+					},
+					"city": "Portland",
+					"country": "United States",
+					"country_code": "US",
+					"image": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTzwRE9peG7V_1nr1ODOvJwxO-xWUd_3L39jp15dyCGnHlB2zTnR0iA1y3C9iLCK9hcgPZfF56U09tKRA",
+					"thumbnail": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRkFAVSiQZYe65jy-zBfiWE6kka7DzbI6h9XIW60DL_BzkXL7CXEpCANiDjVwecac5Ir1TnWswslFrgAjP9dcm4fPIeTNsuYwqzoH2zroU"
+				}
+			]
+		}
+	]
+}
