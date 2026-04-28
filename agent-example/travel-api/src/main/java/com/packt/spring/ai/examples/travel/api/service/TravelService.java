@@ -20,6 +20,7 @@ import java.util.List;
 import com.packt.spring.ai.examples.travel.api.model.Flight;
 import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
+import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
 
 /**
@@ -34,9 +35,9 @@ import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
 @SuppressWarnings("unused")
 public interface TravelService {
 
-	List<Flight> searchFlights(FlightSearchRequest searchRequest);
+	List<Flight> searchFlights(FlightSearchRequest request);
 
-	List<HotelBooking> findHotels();
+	List<HotelBooking> findHotels(HotelSearchRequest request);
 
 	default List<VehicleRental> rentVehicle() {
 		throw new UnsupportedOperationException("Vehicle rental is not supported");
