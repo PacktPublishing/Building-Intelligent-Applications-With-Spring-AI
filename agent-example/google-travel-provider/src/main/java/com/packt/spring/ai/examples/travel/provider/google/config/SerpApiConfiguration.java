@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleFlightsApi;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleHotelsApi;
 import com.packt.spring.ai.examples.travel.provider.google.model.FlightSearchQuery;
+import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchQuery;
 
 import io.codeprimate.extensions.spring.core.http.ClientHttpResponseWrapper;
 
@@ -70,7 +71,9 @@ public class SerpApiConfiguration {
 
 		RestClientAdapter restClientAdapter = RestClientAdapter.create(restClient);
 
-		HttpServiceProxyFactory proxyFactory = HttpServiceProxyFactory.builderFor(restClientAdapter).build();
+		HttpServiceProxyFactory proxyFactory = HttpServiceProxyFactory.builderFor(restClientAdapter)
+			.customArgumentResolver(new HotelSearchQuery.HotelSearchQueryArgumentResolver(properties))
+			.build();
 
 		return proxyFactory.createClient(GoogleHotelsApi.class);
 	}
