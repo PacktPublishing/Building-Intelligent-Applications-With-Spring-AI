@@ -107,6 +107,11 @@ public record HotelBooking(
 		return reservationFunction.apply(this);
 	}
 
+	public HotelBooking stayIn(Hotel.Room room) {
+		Assert.notNull(room, "Hotel room is required");
+		return new HotelBooking(number(), hotel(), room, occupants(), price(), checkIn(), checkout());
+	}
+
 	@Getter(AccessLevel.PROTECTED)
 	public static class Builder {
 
