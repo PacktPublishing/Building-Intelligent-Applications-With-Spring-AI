@@ -33,6 +33,7 @@ import org.cp.elements.lang.Assert;
 import org.cp.elements.lang.ObjectUtils;
 import org.cp.elements.util.CollectionUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.service.invoker.HttpRequestValues;
 import org.springframework.web.service.invoker.HttpServiceArgumentResolver;
@@ -46,6 +47,7 @@ import lombok.Getter;
  * @author John Blum
  * @see FlightSearchRequest
  * @see FlightSearchResults
+ * @see HttpServiceArgumentResolver
  * @see SerpApiProperties
  * @since 0.1.0
  */
@@ -73,7 +75,8 @@ public class FlightSearchQuery {
 			.arrivingAt(searchRequest.getArrivalAirport())
 			.returningOn(searchRequest.getReturnDateTime())
 			.flying(searchRequest.getAirlines())
-			.sittingIn(resolveTravelClass(searchRequest))
+			.stops(resolveStops(searchRequest))
+			.seatedIn(resolveTravelClass(searchRequest))
 			.build();
 	}
 
@@ -85,7 +88,17 @@ public class FlightSearchQuery {
 		return dateTime.format(DATE_TIME_FORMATTER);
 	}
 
+	private static Stops resolveStops(FlightSearchRequest searchRequest) {
+
+		return switch (searchRequest.getFlightStops()) {
+			case ANY -> Stops.UNLIMITED;
+			case NONSTOP -> Stops.NONSTOP;
+			case ONE_STOP -> Stops.ONE_STOP_OR_FEWER;
+		};
+	}
+
 	private static TravelClass resolveTravelClass(FlightSearchRequest searchRequest) {
+
 		return switch(searchRequest.getFlightClass()) {
 			case BUSINESS -> TravelClass.BUSINESS;
 			case FIRST -> TravelClass.FIRST;
@@ -98,6 +111,8 @@ public class FlightSearchQuery {
 	private final Airport arrival;
 
 	private final List<Airline> airlines;
+
+	private Stops stops;
 
 	private TravelClass travelClass;
 
@@ -147,8 +162,13 @@ public class FlightSearchQuery {
 		return this;
 	}
 
-	public FlightSearchQuery sittingIn(TravelClass travelClass) {
+	public FlightSearchQuery seatedIn(@Nullable TravelClass travelClass) {
 		this.travelClass = travelClass;
+		return this;
+	}
+
+	public FlightSearchQuery traveling(@Nullable Stops stops) {
+		this.stops = Stops.defaultIfNull(stops);
 		return this;
 	}
 
@@ -170,30 +190,49 @@ public class FlightSearchQuery {
 
 	public interface AirlineBuilder {
 
-		default InFlightBuilder flying(Airline... airlines) {
+		default TravelBuilder flying(Airline... airlines) {
 			return flying(List.of(airlines));
 		}
 
-		InFlightBuilder flying(List<Airline> airlines);
+		TravelBuilder flying(List<Airline> airlines);
 
-		default InFlightBuilder flyingAny() {
+		default TravelBuilder flyingAny() {
 			return flying();
 		}
 	}
 
+	public interface TravelBuilder {
+
+		InFlightBuilder stops(Stops stops);
+
+		default InFlightBuilder nonstop() {
+			return stops(Stops.NONSTOP);
+		}
+
+		default InFlightBuilder oneStop() {
+			return stops(Stops.ONE_STOP_OR_FEWER);
+		}
+
+		default InFlightBuilder unlimitedStops() {
+			return stops(Stops.UNLIMITED);
+		}
+	}
+
 	public interface InFlightBuilder {
-		InFlightBuilder sittingIn(TravelClass travelClass);
+		InFlightBuilder seatedIn(TravelClass travelClass);
 		FlightSearchQuery build();
 	}
 
 	@Getter(AccessLevel.PROTECTED)
 	public static class Builder implements DepartureBuilder, DepartureTimeBuilder, ArrivalBuilder,
-			ReturnTimeBuilder, AirlineBuilder, InFlightBuilder {
+			ReturnTimeBuilder, AirlineBuilder, TravelBuilder, InFlightBuilder {
 
 		private Airport arrival;
 		private Airport departure;
 
 		private final List<Airline> airlines = new ArrayList<>();
+
+		private Stops stops;
 
 		private TravelClass travelClass;
 
@@ -219,7 +258,7 @@ public class FlightSearchQuery {
 		}
 
 		@Override
-		public InFlightBuilder flying(List<Airline> airlines) {
+		public TravelBuilder flying(List<Airline> airlines) {
 			this.airlines.addAll(airlines);
 			return this;
 		}
@@ -231,16 +270,24 @@ public class FlightSearchQuery {
 		}
 
 		@Override
-		public InFlightBuilder sittingIn(TravelClass travelClass) {
+		public InFlightBuilder seatedIn(TravelClass travelClass) {
 			this.travelClass = travelClass;
 			return this;
 		}
 
 		@Override
+		public InFlightBuilder stops(Stops stops) {
+			this.stops = stops;
+			return this;
+		}
+
+		@Override
 		public FlightSearchQuery build() {
+
 			return new FlightSearchQuery(getDeparture(), getDepartureDateTime(), getArrival(), getReturnDateTime())
-				.sittingIn(getTravelClass())
-				.flying(getAirlines());
+				.seatedIn(getTravelClass())
+				.flying(getAirlines())
+				.traveling(getStops());
 		}
 	}
 
@@ -275,7 +322,7 @@ public class FlightSearchQuery {
 				requestValues.addRequestParameter("outbound_date", formatDate(query.getOutboundDate()));
 				requestValues.addRequestParameter("return_date", formatDate(query.getReturnDate()));
 				requestValues.addRequestParameter("sort_by", SortBy.PRICE.getOptionAsString());
-				requestValues.addRequestParameter("stops", Stops.ONE_STOP_OR_FEWER.getOptionAsString());
+				requestValues.addRequestParameter("stops", resolveStops(query));
 				requestValues.addRequestParameter("travel_class", resolveTravelClass(query));
 				requestValues.addRequestParameter("type", resolveFlightType(FlightType.ROUND_TRIP));
 				resolveAirlines(query).accept(requestValues);
@@ -308,6 +355,10 @@ public class FlightSearchQuery {
 				case ONE_WAY -> "2";
 				case MULTI_CITY -> "3";
 			};
+		}
+
+		private String resolveStops(FlightSearchQuery query) {
+			return String.valueOf(query.getStops());
 		}
 
 		private String resolveTravelClass(FlightSearchQuery query) {
