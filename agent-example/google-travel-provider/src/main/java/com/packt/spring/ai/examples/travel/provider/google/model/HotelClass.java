@@ -15,10 +15,12 @@
  */
 package com.packt.spring.ai.examples.travel.provider.google.model;
 
+import java.util.Arrays;
+
 import lombok.Getter;
 
 /**
- * {@link Enum Enumeration} of hotel classes.
+ * {@link Enum Enumeration} of hotel star ratings.
  *
  * @author John Blum
  * @see Enum
@@ -32,6 +34,16 @@ public enum HotelClass {
 	THREE_STAR(3),
 	FOUR_STAR(4),
 	FIVE_STAR(5);
+
+	public static final HotelClass DEFAULT = THREE_STAR;
+
+	public static HotelClass from(int rating) {
+
+		return Arrays.stream(values())
+			.filter(value -> value.getRating() == rating)
+			.findFirst()
+			.orElse(DEFAULT);
+	}
 
 	private final int rating;
 
