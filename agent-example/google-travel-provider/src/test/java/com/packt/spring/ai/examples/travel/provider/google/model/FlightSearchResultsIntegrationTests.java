@@ -40,7 +40,7 @@ import org.springframework.core.io.Resource;
  * @since 0.1.0
  */
 @SpringBootTest
-public class FlightSearchResultsIntegrationTests {
+class FlightSearchResultsIntegrationTests {
 
 	@Autowired
 	private ObjectMapper objectMapper;

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * @see org.junit.jupiter.api.Test
  * @since 0.1.0
  */
-public class FlightSearchQueryUnitTests {
+class FlightSearchQueryUnitTests {
 
 	@Test
 	void fromFlightSearchRequest() {
