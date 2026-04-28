@@ -30,6 +30,7 @@ import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiConfigu
 import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiProperties;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -56,7 +57,7 @@ public class GoogleTravelServiceIntegrationTests {
 	private GoogleTravelService travelService;
 
 	@Test
-	//@EnabledIfSystemProperty(named = "spring-ai-examples-tests", matches = ".*google.*")
+	@EnabledIfSystemProperty(named = "spring-ai-examples-tests", matches = ".*google-travel.*")
 	void findsFlights() {
 
 		ZonedDateTime departureDateTime = ZonedDateTime.now().plusMonths(3).plusDays(1);
