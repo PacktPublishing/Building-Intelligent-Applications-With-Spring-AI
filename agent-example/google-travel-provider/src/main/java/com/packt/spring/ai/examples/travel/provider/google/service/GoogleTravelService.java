@@ -39,7 +39,8 @@ import lombok.Getter;
 import serpapi.SerpApi;
 
 /**
- * {@link TravelService} provider implementation for {@literal Google Flights} using {@literal SerpApi}.
+ * {@link TravelService} provider implementation for {@literal Google Flights} and {@literal Google Hotels}
+ * using {@literal SerpApi}.
  *
  * @author John Blum
  * @see SerpApi
