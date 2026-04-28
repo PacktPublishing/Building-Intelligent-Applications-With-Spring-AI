@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
 import com.packt.spring.ai.examples.travel.api.model.Aircraft;
 import com.packt.spring.ai.examples.travel.api.model.Airline;
+import com.packt.spring.ai.examples.travel.api.model.FlightType;
 
 import io.codeprimate.extensions.data.struct.Collectable;
 
@@ -51,6 +52,7 @@ import lombok.Getter;
  * @author John Blum
  * @see Collectable
  * @see FlightSearchQuery
+ * @see com.packt.spring.ai.examples.travel.api.model.Flight
  * @since 0.1.0
  */
 @Getter
@@ -139,6 +141,10 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		@JsonDeserialize(using = DurationDeserializer.class)
 		private Duration totalDuration;
 
+		@JsonProperty("type")
+		@JsonDeserialize(using = FlightTypeDeserializer.class)
+		private FlightType flightType;
+
 		@JsonProperty("price")
 		private Integer price;
 
@@ -147,6 +153,9 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 		@JsonProperty("layovers")
 		private List<Layover> layovers;
+
+		@JsonProperty("departure_token")
+		private String departureToken;
 
 		@Override
 		public @NonNull Iterator<Flight> iterator() {
@@ -233,6 +242,18 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		public Duration deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
 			int minutes = Integer.parseInt(jsonParser.getText().trim());
 			return Duration.ofMinutes(minutes);
+		}
+	}
+
+	public static class FlightTypeDeserializer extends JsonDeserializer<FlightType> {
+
+		@Override
+		public FlightType deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+
+			String flightTypeValue = String.valueOf(jsonParser.getText());
+			String resolvedFlightTypeValue = flightTypeValue.trim().replaceAll(" ", "_").toUpperCase();
+
+			return FlightType.from(resolvedFlightTypeValue);
 		}
 	}
 
