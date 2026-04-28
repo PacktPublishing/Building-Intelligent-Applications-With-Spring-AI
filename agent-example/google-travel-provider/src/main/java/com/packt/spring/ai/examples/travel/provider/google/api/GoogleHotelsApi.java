@@ -15,6 +15,10 @@
  */
 package com.packt.spring.ai.examples.travel.provider.google.api;
 
+import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchQuery;
+import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchResults;
+
+import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
 /**
@@ -22,9 +26,14 @@ import org.springframework.web.service.annotation.HttpExchange;
  *
  * @author John Blum
  * @see HttpExchange
+ * @see HotelSearchQuery
+ * @see HotelSearchResults
  * @since 0.1.0
  */
 @HttpExchange(accept = "application/json")
 public interface GoogleHotelsApi {
+
+	@GetExchange
+	HotelSearchResults search(HotelSearchQuery searchQuery);
 
 }
