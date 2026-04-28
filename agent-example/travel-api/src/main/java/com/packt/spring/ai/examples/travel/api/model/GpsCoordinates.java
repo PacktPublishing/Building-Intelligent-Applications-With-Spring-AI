@@ -20,10 +20,10 @@ package com.packt.spring.ai.examples.travel.api.model;
  * in the {@literal Global Positioning System (GPS)}.
  *
  * @author John Blum
- * @param latitude {@link Long#TYPE value} for {@literal longitude}.
- * @param longitude {@link Long#TYPE value} for {@literal latitude}.
+ * @param latitude {@link Double#TYPE value} for {@literal longitude}.
+ * @param longitude {@link Double#TYPE value} for {@literal latitude}.
  * @since 0.1.0
  */
-public record GpsCoordinates(long latitude, long longitude) {
+public record GpsCoordinates(double latitude, double longitude) {
 
 }
