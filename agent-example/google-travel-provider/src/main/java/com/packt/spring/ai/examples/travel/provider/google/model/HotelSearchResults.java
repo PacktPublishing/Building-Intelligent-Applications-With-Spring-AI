@@ -19,11 +19,16 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,6 +38,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.packt.spring.ai.examples.travel.api.model.GpsCoordinates;
+import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 
 import io.codeprimate.extensions.data.struct.Collectable;
 
@@ -48,6 +54,7 @@ import lombok.Getter;
  * returned by {@literal Google Hotels} using {@literal SerpApi}.
  *
  * @author John Blum
+ * @see HotelBooking
  * @see HotelSearchQuery
  * @since 0.1.0
  */
@@ -67,10 +74,63 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 	@JsonProperty("search_metadata")
 	private SearchMetadata searchMetadata;
 
+	@JsonProperty("search_parameters")
+	private SearchParameters searchParameters;
+
 	@Override
 	public @NonNull Iterator<Property> iterator() {
 		Iterator<Property> propertiesIterator = getProperties().iterator();
 		return CollectionUtils.unmodifiableIterator(propertiesIterator);
+	}
+
+	public List<HotelBooking> toHotelBookings() {
+
+		List<HotelBooking> hotelBookings = new ArrayList<>();
+
+		for (Property property : this) {
+
+			HotelBooking hotelBooking = HotelBooking.builder(property.getToken())
+				.stayingAt(resolveHotel(property))
+				.checkingIn(resolveCheckIn(property))
+				.checkingOut(resolveCheckout(property))
+				.occupiedBy(resolveOccupants())
+				.price(resolvePrice(property))
+				.build();
+
+			hotelBookings.add(hotelBooking);
+		}
+
+		return hotelBookings;
+	}
+
+	private ZonedDateTime resolveCheckIn(Property property) {
+		return resolveDataTime(getSearchParameters()::getCheckIn, property::getCheckIn);
+	}
+
+	private ZonedDateTime resolveCheckout(Property property) {
+		return resolveDataTime(getSearchParameters()::getCheckout, property::getCheckout);
+	}
+
+	private ZonedDateTime resolveDataTime(Supplier<LocalDate> dateSupplier, Supplier<LocalTime> timeSupplier) {
+		return dateSupplier.get().atTime(timeSupplier.get()).atZone(ZoneId.systemDefault());
+	}
+
+	private com.packt.spring.ai.examples.travel.api.model.Hotel resolveHotel(Property property) {
+		return com.packt.spring.ai.examples.travel.api.model.Hotel.from(property.getName());
+	}
+
+	@SuppressWarnings("all")
+	private int resolveOccupants() {
+		int adults = getSearchParameters().getAdults();
+		int children = getSearchParameters().getChildren();
+		int occupants = adults + children;
+		return occupants;
+	}
+
+	private BigDecimal resolvePrice(Property property) {
+		List<Price> prices = property.getPrices();
+		prices.sort(Comparator.naturalOrder());
+		return prices.get(0).getRatePerNight().getPrice();
 	}
 
 	@Getter
@@ -251,7 +311,7 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 	@Getter
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Price {
+	public static class Price implements Comparable<Price> {
 
 		@JsonProperty("num_guests")
 		private Integer numberOfGuests;
@@ -263,6 +323,11 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 		private String source;
 
 		@Override
+		public int compareTo(Price other) {
+			return this.getRatePerNight().compareTo(other.getRatePerNight());
+		}
+
+		@Override
 		public String toString() {
 			return NumberFormat.getCurrencyInstance().format(getRatePerNight().getPrice());
 		}
@@ -270,10 +335,15 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 	@Getter
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Rate {
+	public static class Rate implements Comparable<Rate> {
 
 		@JsonProperty(value = "extracted_lowest", required = true)
 		private BigDecimal price;
+
+		@Override
+		public int compareTo(Rate other) {
+			return this.getPrice().compareTo(other.getPrice());
+		}
 
 		@Override
 		public String toString() {
@@ -330,6 +400,37 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 		public String toString() {
 			return getId();
 		}
+	}
+
+	@Getter
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class SearchParameters {
+
+		protected static final String DATE_PATTERN = "yyyy-MM-dd";
+
+		@JsonProperty("adults")
+		private Integer adults;
+
+		@JsonProperty("children")
+		private Integer children;
+
+		@JsonProperty("check_in_date")
+		@JsonFormat(pattern = DATE_PATTERN)
+		private LocalDate checkIn;
+
+		@JsonProperty("check_out_date")
+		@JsonFormat(pattern = DATE_PATTERN)
+		private LocalDate checkout;
+
+		@JsonProperty("currency")
+		private String currency;
+
+		@JsonProperty("engine")
+		private String engine;
+
+		@JsonProperty("q")
+		private String query;
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
