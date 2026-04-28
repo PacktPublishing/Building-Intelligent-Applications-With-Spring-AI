@@ -31,14 +31,14 @@ import lombok.Getter;
 /**
  * Abstract Data Type (ADT) and Java record modeling a {@link Hotel} for {@literal reservation}.
  *
- * @author John Blum
  * @param number Hotel reservation {@link String confirmation number}.
  * @param hotel {@link Hotel} of stay.
  * @param room {@link Hotel.Room} of stay.
  * @param occupants {@link Integer#TYPE number} of occupants staying in the room.
+ * @param price {@link BigDecimal} estimating the cost per night for the stay.
  * @param checkIn {@link ZonedDateTime} of check-in.
  * @param checkout {@link ZonedDateTime} of check-out.
- * @param price {@link BigDecimal} estimating the cost per night for the stay.
+ * @author John Blum
  * @see ZonedDateTime
  * @see BigDecimal
  * @see Hotel
@@ -50,23 +50,22 @@ public record HotelBooking(
 	Hotel hotel,
 	Hotel.Room room,
 	int occupants,
+	BigDecimal price,
 	ZonedDateTime checkIn,
-	ZonedDateTime checkout,
-	BigDecimal price
+	ZonedDateTime checkout
 ) {
 
 	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm Z";
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-	public static HotelBooking.Builder builder(String reservationNumber) {
-		return new HotelBooking.Builder(reservationNumber);
+	public static HotelBooking.Builder builder(String bookingNumber) {
+		return new HotelBooking.Builder(bookingNumber);
 	}
 
 	public HotelBooking {
-		Assert.hasText(number, "Hotel reservation number is required");
+		Assert.hasText(number, "Hotel booking number is required");
 		Assert.notNull(hotel, "Hotel is required");
-		Assert.notNull(room, "Hotel Room is required");
 		Assert.isTrue(occupants > 0, "Number of occupants must be greater than 0");
 		assertCheckIn(checkIn);
 		assertCheckout(checkout, checkIn);
@@ -125,7 +124,7 @@ public record HotelBooking(
 		private ZonedDateTime checkout;
 
 		protected Builder(String number) {
-			this.number = StringUtils.requireText(number, "Hotel reservation number is required");
+			this.number = StringUtils.requireText(number, "Hotel booking number is required");
 		}
 
 		public Builder checkingIn(ZonedDateTime checkIn) {
@@ -158,15 +157,14 @@ public record HotelBooking(
 			return this;
 		}
 
-		public Builder inRoom(Hotel.Room room) {
-			Assert.notNull(room, "Hotel Room is required");
+		public Builder stayingIn(Hotel.Room room) {
 			this.room = room;
 			return this;
 		}
 
 		public HotelBooking build() {
-			return new HotelBooking(getNumber(), getHotel(), getRoom(), getOccupants(), getCheckIn(), getCheckout(),
-				getPrice());
+			return new HotelBooking(getNumber(), getHotel(), getRoom(), getOccupants(), getPrice(), getCheckIn(), getCheckout()
+			);
 		}
 	}
 }
