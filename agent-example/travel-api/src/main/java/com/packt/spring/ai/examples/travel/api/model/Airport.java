@@ -39,12 +39,12 @@ public interface Airport extends Nameable<String> {
 
 			@Override
 			public String getCode() {
-				return name;
+				return code;
 			}
 
 			@Override
 			public String getName() {
-				return code;
+				return name;
 			}
 
 			@Override
