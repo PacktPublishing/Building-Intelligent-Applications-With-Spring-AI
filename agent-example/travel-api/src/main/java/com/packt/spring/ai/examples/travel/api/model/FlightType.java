@@ -29,7 +29,9 @@ import org.springframework.lang.Nullable;
 @SuppressWarnings("unused")
 public enum FlightType {
 
-	MULTI_CITY, ONE_WAY, ROUND_TRIP;
+	MULTI_CITY,
+	ONE_WAY,
+	ROUND_TRIP;
 
 	public static final FlightType DEFAULT = ROUND_TRIP;
 
