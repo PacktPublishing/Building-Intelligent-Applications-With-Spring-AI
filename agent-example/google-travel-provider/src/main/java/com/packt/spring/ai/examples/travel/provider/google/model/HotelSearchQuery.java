@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiProperties;
 
 import org.cp.elements.lang.Assert;
@@ -50,6 +51,18 @@ public class HotelSearchQuery {
 	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+	public static HotelSearchQuery from(HotelSearchRequest request) {
+
+		Assert.notNull(request, "HotelSearchRequest is required");
+
+		return stayAt(request.getHotel().getProviderName())
+			.checkingIn(request.getCheckIn())
+			.checkingOut(request.getCheckout())
+			.build()
+			.withAdults(request.getOccupants())
+			.payLessThan(request.getPrice());
+	}
+
 	public static CheckInBuilder stayAt(String hotel) {
 		return new CheckInBuilder(hotel);
 	}
@@ -66,8 +79,8 @@ public class HotelSearchQuery {
 
 	private HotelClass hotelClass;
 
-	private Integer adults;
-	private Integer children;
+	private Integer adults = 1;
+	private Integer children = 0;
 
 	private final ZonedDateTime checkIn;
 	private final ZonedDateTime checkout;
@@ -116,6 +129,10 @@ public class HotelSearchQuery {
 	public BigDecimal getMaxPrice() {
 		BigDecimal maxPrice = this.maxPrice;
 		return maxPrice != null ? maxPrice : BigDecimal.valueOf(Double.MAX_VALUE);
+	}
+
+	public int getOccupants() {
+		return getAdults() + getChildren();
 	}
 
 	public HotelSearchQuery payLessThan(BigDecimal price) {
