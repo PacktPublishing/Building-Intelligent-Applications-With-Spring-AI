@@ -188,10 +188,10 @@ public class FlightSearchQuery {
 
 	@Getter(AccessLevel.PROTECTED)
 	public static class Builder implements DepartureBuilder, DepartureTimeBuilder, ArrivalBuilder,
-		ReturnTimeBuilder, AirlineBuilder, InFlightBuilder {
+			ReturnTimeBuilder, AirlineBuilder, InFlightBuilder {
 
-		private Airport departure;
 		private Airport arrival;
+		private Airport departure;
 
 		private final List<Airline> airlines = new ArrayList<>();
 
@@ -207,14 +207,14 @@ public class FlightSearchQuery {
 		}
 
 		@Override
-		public ArrivalBuilder departingOn(ZonedDateTime dateTime) {
-			this.departureDateTime = ObjectUtils.requireObject(dateTime, "Departure date/time is required");
+		public DepartureTimeBuilder departingFrom(Airport airport) {
+			this.departure = ObjectUtils.requireObject(airport, "Departure airport is required");
 			return this;
 		}
 
 		@Override
-		public DepartureTimeBuilder departingFrom(Airport airport) {
-			this.departure = ObjectUtils.requireObject(airport, "Departure airport is required");
+		public ArrivalBuilder departingOn(ZonedDateTime dateTime) {
+			this.departureDateTime = ObjectUtils.requireObject(dateTime, "Departure date/time is required");
 			return this;
 		}
 
@@ -245,7 +245,7 @@ public class FlightSearchQuery {
 	}
 
 	/**
-	 * {@link HttpServiceArgumentResolver} used to result HTTP request parameters from an {@link FlightSearchQuery}.
+	 * {@link HttpServiceArgumentResolver} used to resolve HTTP request parameters from a {@link FlightSearchQuery}.
 	 *
 	 * @see HttpServiceArgumentResolver
 	 */
@@ -263,7 +263,9 @@ public class FlightSearchQuery {
 		public boolean resolve(Object argument, MethodParameter parameter, HttpRequestValues.Builder requestValues) {
 
 			if (parameter.getParameterType().equals(FlightSearchQuery.class)) {
+
 				FlightSearchQuery query = (FlightSearchQuery) argument;
+
 				requestValues.addRequestParameter("api_key", getProperties().getApiKey());
 				requestValues.addRequestParameter("engine", getProperties().getEngine().getFlights());
 				requestValues.addRequestParameter("output", getProperties().getOutput());
@@ -277,6 +279,7 @@ public class FlightSearchQuery {
 				requestValues.addRequestParameter("travel_class", resolveTravelClass(query));
 				requestValues.addRequestParameter("type", resolveFlightType(FlightType.ROUND_TRIP));
 				resolveAirlines(query).accept(requestValues);
+
 				return true;
 			}
 
@@ -284,6 +287,7 @@ public class FlightSearchQuery {
 		}
 
 		private Consumer<HttpRequestValues.Builder> resolveAirlines(FlightSearchQuery query) {
+
 			return requestValues -> query.getAirlines().stream()
 				.map(Airline::getCarrierCode)
 				.reduce((airlineOne, airlineTwo) -> String.join(",", airlineOne, airlineTwo))
@@ -291,7 +295,6 @@ public class FlightSearchQuery {
 				.ifPresent(includedAirlines ->
 					requestValues.addRequestParameter("include_airlines", includedAirlines)
 				);
-
 		}
 
 		private String resolveCurrency() {
@@ -299,6 +302,7 @@ public class FlightSearchQuery {
 		}
 
 		private String resolveFlightType(FlightType flightType) {
+
 			return switch (FlightType.defaultIfNull(flightType)) {
 				case ROUND_TRIP -> "1";
 				case ONE_WAY -> "2";
