@@ -201,14 +201,14 @@ public record Flight(
 			this.flightNumber = StringUtils.requireText(flightNumber, "Flight number is required");
 		}
 
-		public Builder arrivingOn(ZonedDateTime arrival) {
+		public Builder arriveOn(ZonedDateTime arrival) {
 			Assert.notNull(arrival, "Arrival time is required");
 			this.arrivalDateTime = arrival;
 			computeDuration();
 			return this;
 		}
 
-		public Builder departingOn(ZonedDateTime departure) {
+		public Builder departOn(ZonedDateTime departure) {
 			Assert.notNull(departure, "Departure time is required");
 			this.departureDateTime = departure;
 			computeDuration();
@@ -243,7 +243,7 @@ public record Flight(
 			return this;
 		}
 
-		public Builder sittingIn(Aircraft.Seat seat) {
+		public Builder seatedIn(Aircraft.Seat seat) {
 			this.seat = seat;
 			return this;
 		}
