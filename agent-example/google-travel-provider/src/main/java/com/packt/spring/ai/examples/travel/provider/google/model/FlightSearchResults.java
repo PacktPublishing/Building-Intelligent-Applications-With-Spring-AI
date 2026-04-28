@@ -17,11 +17,14 @@ package com.packt.spring.ai.examples.travel.provider.google.model;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,6 +63,8 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class FlightSearchResults implements Collectable<FlightSearchResults.FlightContainer> {
 
+	protected static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
+
 	@JsonProperty("best_flights")
 	private List<FlightContainer> bestFlights;
 
@@ -81,27 +86,34 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 	public @NonNull Iterator<FlightContainer> iterator() {
 		List<FlightContainer> flights = new ArrayList<>(getBestFlights());
 		flights.addAll(getOtherFlights());
+		Collections.sort(flights);
 		return flights.iterator();
 	}
 
 	public List<com.packt.spring.ai.examples.travel.api.model.Flight> toFlights() {
 
-		List<com.packt.spring.ai.examples.travel.api.model.Flight> flights =
-			new ArrayList<>(Long.valueOf(size()).intValue());
+		int size = Long.valueOf(size()).intValue();
+
+		List<com.packt.spring.ai.examples.travel.api.model.Flight> flights = new ArrayList<>(size);
 
 		for (FlightContainer flightContainer : this) {
 			for (Flight flight : flightContainer) {
 
-				com.packt.spring.ai.examples.travel.api.model.Flight resolvedFlight =
-					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getFlightNumber())
+				com.packt.spring.ai.examples.travel.api.model.Flight.Builder flightBuilder =
+					com.packt.spring.ai.examples.travel.api.model.Flight.builder(flight.getNumber())
 						.from(flight.getDeparture().resolveAirport())
-						.departingOn(flight.getDeparture().getZonedTime())
+						.departOn(flight.getDeparture().getZonedDateTime())
 						.to(flight.getArrival().resolveAirport())
-						.arrivingOn(flight.getArrival().getZonedTime())
+						.arriveOn(flight.getArrival().getZonedDateTime())
 						.flownBy(flight.resolveAirline())
 						.flying(flight.resolveAircraft())
-						.price(getPriceInsights().getPrice())
-						.build();
+						.price(flightContainer.getPricesAsBigDecimal());
+
+				if (flightContainer.isNonStop()) {
+					flightBuilder.duration(flightContainer.getTotalDuration());
+				}
+
+				com.packt.spring.ai.examples.travel.api.model.Flight resolvedFlight = flightBuilder.build();
 
 				flights.add(resolvedFlight);
 			}
@@ -121,11 +133,11 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		private String name;
 
 		@JsonProperty("time")
-		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-		private LocalDateTime time;
+		@JsonFormat(pattern = DATE_TIME_PATTERN)
+		private LocalDateTime dateTime;
 
-		public ZonedDateTime getZonedTime() {
-			return getTime().atZone(ZoneId.systemDefault());
+		public ZonedDateTime getZonedDateTime() {
+			return getDateTime().atZone(ZoneId.systemDefault());
 		}
 
 		public com.packt.spring.ai.examples.travel.api.model.Airport resolveAirport() {
@@ -135,7 +147,25 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 	@Getter
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class FlightContainer implements Iterable<Flight> {
+	public static class AirportLocation {
+
+		@JsonProperty("airport")
+		private Airport airport;
+
+		@JsonProperty("city")
+		private String city;
+
+		@JsonProperty("country")
+		private String country;
+
+		@JsonProperty("country_code")
+		private String countryCode;
+
+	}
+
+	@Getter
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class FlightContainer implements Collectable<Flight>, Comparable<FlightContainer> {
 
 		@JsonProperty("total_duration")
 		@JsonDeserialize(using = DurationDeserializer.class)
@@ -149,17 +179,59 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		private Integer price;
 
 		@JsonProperty("flights")
-		private List<Flight> flights;
+		private List<Flight> flights = new ArrayList<>();
 
 		@JsonProperty("layovers")
-		private List<Layover> layovers;
+		private List<Layover> layovers = new ArrayList<>();
 
 		@JsonProperty("departure_token")
 		private String departureToken;
 
+		@JsonProperty("airline_logo")
+		private URL airlineLogo;
+
+		public Flight getFirstFlight() {
+			return this.flights.get(0);
+		}
+
+		public Flight getLastFight() {
+			int size = Long.valueOf(size()).intValue();
+			int index = size - 1;
+			return this.flights.get(index);
+		}
+
+		public Flight getNonStopFlight() {
+			return getFirstFlight();
+		}
+
+		public BigDecimal getPricesAsBigDecimal() {
+			return BigDecimal.valueOf(getPrice());
+		}
+
+		public boolean hasLayover() {
+			return !isNonStop();
+		}
+
+		public boolean isNonStop() {
+			return getStops() == 0;
+		}
+
+		public int getStops() {
+			return this.layovers == null ? 0 : this.layovers.size();
+		}
+
+		@Override
+		public int compareTo(@NonNull FlightContainer other) {
+
+			return Comparator.comparing(FlightContainer::getPrice)
+				.thenComparing(FlightContainer::getStops)
+				.compare(this, other);
+		}
+
 		@Override
 		public @NonNull Iterator<Flight> iterator() {
-			return CollectionUtils.unmodifiableIterator(getFlights().iterator());
+			Iterator<Flight> flightsIterator = getFlights().iterator();
+			return CollectionUtils.unmodifiableIterator(flightsIterator);
 		}
 	}
 
@@ -173,8 +245,12 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		@JsonProperty("departure_airport")
 		private Airport departure;
 
+		@JsonProperty("overnight")
+		private Boolean overnight;
+
+		@JsonProperty("duration")
 		@JsonDeserialize(using = FlightDurationDeserializer.class)
-		private Duration flightTime;
+		private Duration duration;
 
 		@JsonProperty("airline")
 		private String airline;
@@ -183,31 +259,26 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		private String airplane;
 
 		@JsonProperty("flight_number")
-		private String flightNumber;
+		private String number;
 
 		@JsonProperty("travel_class")
 		@JsonDeserialize(using = TravelClassDeserializer.class)
 		private TravelClass travelClass;
 
+		public boolean isOvernight() {
+			return Boolean.TRUE.equals(this.overnight);
+		}
+
 		public Aircraft resolveAircraft() {
 			String airplane = getAirplane();
-			return new Aircraft(airplane, airplane);
+			String[] makeModel = airplane.split("\\s+");
+			String make = makeModel[0];
+			String model = makeModel.length > 1 ? makeModel[1] : make;
+			return new Aircraft(make, model);
 		}
 
 		public Airline resolveAirline() {
-
-			return new Airline() {
-
-				@Override
-				public String getCarrierCode() {
-					return "";
-				}
-
-				@Override
-				public String getName() {
-					return getAirline();
-				}
-			};
+			return Airline.from(getAirline());
 		}
 	}
 
