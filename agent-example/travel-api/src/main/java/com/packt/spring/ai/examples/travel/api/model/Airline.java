@@ -16,6 +16,8 @@
 package com.packt.spring.ai.examples.travel.api.model;
 
 import org.cp.elements.lang.Nameable;
+import org.cp.elements.lang.StringUtils;
+import org.springframework.util.Assert;
 
 /**
  * Abstract Data Type (ADT) modeling an {@literal airline} (carrier).
@@ -26,6 +28,24 @@ import org.cp.elements.lang.Nameable;
  */
 @SuppressWarnings("unused")
 public interface Airline extends Nameable<String> {
+
+	static Airline from(String name) {
+
+		Assert.hasText(name, "Name of airline is required");
+
+		return new Airline() {
+
+			@Override
+			public String getCarrierCode() {
+				return StringUtils.EMPTY_STRING;
+			}
+
+			@Override
+			public String getName() {
+				return name;
+			}
+		};
+	}
 
 	String getCarrierCode();
 
