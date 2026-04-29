@@ -15,6 +15,8 @@
  */
 package com.packt.spring.ai.examples.travel.provider.google.model;
 
+import static org.cp.elements.lang.LangExtensions.is;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -24,10 +26,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -45,8 +49,10 @@ import io.codeprimate.extensions.data.struct.Collectable;
 
 import org.cp.elements.lang.ImmutableIdentifiable;
 import org.cp.elements.lang.Nameable;
+import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.CollectionUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import lombok.Getter;
 
@@ -55,8 +61,10 @@ import lombok.Getter;
  * returned by {@literal Google Hotels} using {@literal SerpApi}.
  *
  * @author John Blum
+ * @see Collectable
  * @see HotelBooking
  * @see HotelSearchQuery
+ * @see HotelSearchResults.Property
  * @since 0.1.0
  */
 @Getter
@@ -89,31 +97,61 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 		List<HotelBooking> hotelBookings = new ArrayList<>();
 
 		for (Property property : this) {
+			if (propertyPredicate().test(property)) {
 
-			HotelBooking hotelBooking = HotelBooking.builder(property.getToken())
-				.stayingAt(resolveHotel(property))
-				.checkingIn(resolveCheckIn(property))
-				.checkingOut(resolveCheckout(property))
-				.occupiedBy(resolveOccupants())
-				.price(resolvePrice(property))
-				.build();
+				HotelBooking hotelBooking = HotelBooking.builder(property.getToken())
+					.stayingAt(resolveHotel(property))
+					.checkingIn(resolveCheckIn(property))
+					.checkingOut(resolveCheckout(property))
+					.occupiedBy(resolveOccupants())
+					.price(resolvePrice(property))
+					.build();
 
-			hotelBookings.add(hotelBooking);
+				hotelBookings.add(hotelBooking);
+			}
 		}
 
 		return hotelBookings;
 	}
 
+	private Predicate<Property> propertyPredicate() {
+
+		Predicate<Property> propertyPredicate = property -> true;
+
+		// Filter by Price
+		propertyPredicate = propertyPredicate.and(property -> {
+			BigDecimal searchPrice = getSearchParameters().getPrice();
+			BigDecimal propertyPrice = resolvePrice(property);
+			return is(propertyPrice).lessThan(searchPrice);
+		});
+
+		// Filter by Type
+		propertyPredicate = propertyPredicate.and(property -> {
+			String propertyTypeValue = property.getType();
+			PropertyType propertyType = PropertyType.from(propertyTypeValue);
+			return propertyType.isHotel();
+		});
+
+		return propertyPredicate;
+	}
+
 	private ZonedDateTime resolveCheckIn(Property property) {
-		return resolveDataTime(getSearchParameters()::getCheckIn, property::getCheckIn);
+		return resolveDateTime(getSearchParameters()::getCheckIn, property::getCheckIn);
 	}
 
 	private ZonedDateTime resolveCheckout(Property property) {
-		return resolveDataTime(getSearchParameters()::getCheckout, property::getCheckout);
+		return resolveDateTime(getSearchParameters()::getCheckout, property::getCheckout);
 	}
 
-	private ZonedDateTime resolveDataTime(Supplier<LocalDate> dateSupplier, Supplier<LocalTime> timeSupplier) {
-		return dateSupplier.get().atTime(timeSupplier.get()).atZone(ZoneId.systemDefault());
+	private ZonedDateTime resolveDateTime(Supplier<LocalDate> dateSupplier, Supplier<LocalTime> timeSupplier) {
+
+		LocalDate date = dateSupplier.get();
+		LocalTime time = timeSupplier.get();
+		ZoneId zone = ZoneId.systemDefault();
+
+		return time != null
+			? date.atTime(time).atZone(zone)
+			: date.atStartOfDay(zone);
 	}
 
 	private com.packt.spring.ai.examples.travel.api.model.Hotel resolveHotel(Property property) {
@@ -133,9 +171,7 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 	}
 
 	private BigDecimal resolvePrice(Property property) {
-		List<Price> prices = property.getPrices();
-		prices.sort(Comparator.naturalOrder());
-		return prices.get(0).getRatePerNight().getPrice();
+		return property.getRatePerNight().getPrice();
 	}
 
 	@Getter
@@ -254,11 +290,13 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 		private List<Price> prices = new ArrayList<>();
 
 		@JsonProperty("check_in_time")
-		@JsonFormat(pattern = TIME_PATTERN)
+		//@JsonFormat(pattern = TIME_PATTERN)
+		@JsonDeserialize(using = TimeDeserializer.class)
 		private LocalTime checkIn;
 
 		@JsonProperty("check_out_time")
-		@JsonFormat(pattern = TIME_PATTERN)
+		//@JsonFormat(pattern = TIME_PATTERN)
+		@JsonDeserialize(using = TimeDeserializer.class)
 		private LocalTime checkout;
 
 		@JsonProperty("rate_per_night")
@@ -341,6 +379,27 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 		}
 	}
 
+	enum PropertyType {
+
+		HOTEL, UNKNOWN, VACATION_RENTAL;
+
+		static final PropertyType DEFAULT = UNKNOWN;
+
+		static PropertyType from(@Nullable String value) {
+
+			String resolvedValue = String.valueOf(value).replaceAll("\\s+", StringUtils.SINGLE_SPACE);
+
+			return Arrays.stream(values())
+				.filter(it -> it.name().equalsIgnoreCase(resolvedValue))
+				.findFirst()
+				.orElse(DEFAULT);
+		}
+
+		boolean isHotel() {
+			return this.equals(HOTEL);
+		}
+	}
+
 	@Getter
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Rate implements Comparable<Rate> {
@@ -416,6 +475,9 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 		protected static final String DATE_PATTERN = "yyyy-MM-dd";
 
+		@JsonProperty("max_price")
+		private BigDecimal price;
+
 		@JsonProperty("adults")
 		private Integer adults;
 
@@ -453,11 +515,23 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 		@Override
 		public HotelClass deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-
 			String value = jsonParser.getText().trim();
 			int rating = Integer.parseInt(value);
-
 			return HotelClass.from(rating);
+		}
+	}
+
+	protected static class TimeDeserializer extends JsonDeserializer<LocalTime> {
+
+		protected static final String TIME_PATTERN = "h:mm a";
+
+		protected static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
+
+		@Override
+		public LocalTime deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+			String value = jsonParser.getText().trim();
+			value = value.replaceAll("(?U)\\s", " ");
+			return LocalTime.parse(value, TIME_FORMATTER);
 		}
 	}
 }

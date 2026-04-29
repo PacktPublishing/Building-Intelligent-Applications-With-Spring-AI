@@ -20,10 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.packt.spring.ai.examples.travel.api.model.Airports;
 import com.packt.spring.ai.examples.travel.api.model.Flight;
 import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
+import com.packt.spring.ai.examples.travel.api.model.Hotel;
+import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
+import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleFlightsApi;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleHotelsApi;
 import com.packt.spring.ai.examples.travel.provider.google.config.SerpApiConfiguration;
@@ -57,7 +61,7 @@ class GoogleTravelServiceIntegrationTests {
 	private GoogleTravelService travelService;
 
 	@Test
-	@EnabledIfSystemProperty(named = "spring-ai-examples-tests", matches = ".*google-travel.*")
+	@EnabledIfSystemProperty(named = "spring-ai-examples-tests", matches = ".*travel-agent-integration-tests.*")
 	void findsFlights() {
 
 		ZonedDateTime departureDateTime = ZonedDateTime.now().plusMonths(3).plusDays(1);
@@ -90,6 +94,44 @@ class GoogleTravelServiceIntegrationTests {
 				.isEqualTo(Airports.ORD);
 			assertThat(flight.price()).isGreaterThan(BigDecimal.ZERO);
 		});
+	}
+
+	@Test
+	@EnabledIfSystemProperty(named = "spring-ai-examples-tests", matches = ".*travel-agent-integration-tests.*")
+	void findsHotels() {
+
+		Hotel marriott = Hotel.from("Marriott San Francisco");
+
+		ZonedDateTime checkIn = ZonedDateTime.now().plusWeeks(2);
+		ZonedDateTime checkout = checkIn.plusDays(5);
+
+		BigDecimal price = BigDecimal.valueOf(400.0d);
+
+		HotelSearchRequest request = HotelSearchRequest.stayAt(marriott)
+			.checkIn(checkIn)
+			.checkout(checkout)
+			.pay(price)
+			.oneOccupant()
+			.build();
+
+		List<HotelBooking> hotelBookings = this.travelService.findHotels(request);
+
+		assertThat(hotelBookings).isNotNull();
+		assertThat(hotelBookings).hasSizeGreaterThan(0);
+
+		AtomicInteger count = new AtomicInteger(0);
+
+		hotelBookings.forEach(hotelBooking -> {
+			if (hotelBooking.hotel().getProviderName().contains("Marriott")) {
+				count.incrementAndGet();
+			}
+			assertThat(hotelBooking.checkIn().toLocalDate()).isEqualTo(checkIn.toLocalDate());
+			assertThat(hotelBooking.checkout().toLocalDate()).isEqualTo(checkout.toLocalDate());
+			assertThat(hotelBooking.occupants()).isOne();
+			assertThat(hotelBooking.price()).isLessThanOrEqualTo(price);
+		});
+
+		assertThat(count.get()).isGreaterThan(0);
 	}
 
 	@SpringBootConfiguration

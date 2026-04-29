@@ -212,12 +212,17 @@ public class HotelSearchQuery {
 				requestValues.addRequestParameter("check_out_date", formatDate(query.getCheckout()));
 				requestValues.addRequestParameter("adults", String.valueOf(query.getAdults()));
 				requestValues.addRequestParameter("children", String.valueOf(query.getChildren()));
-				requestValues.addRequestParameter("max_price", String.valueOf(query.getMaxPrice()));
+				requestValues.addRequestParameter("max_price", resolvePrice(query));
 
 				return true;
 			}
 
 			return false;
+		}
+
+		private String resolvePrice(HotelSearchQuery query) {
+			BigDecimal price = query.getMaxPrice();
+			return price.toBigInteger().toString();
 		}
 	}
 }
