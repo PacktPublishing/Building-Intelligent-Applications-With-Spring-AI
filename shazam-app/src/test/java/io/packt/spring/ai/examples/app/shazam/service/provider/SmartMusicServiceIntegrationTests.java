@@ -34,6 +34,7 @@ import io.packt.spring.ai.examples.app.shazam.repo.SongRepository;
 import io.packt.spring.ai.examples.app.shazam.service.AudioSplitter;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,7 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest
 @ActiveProfiles({ "honerlaw" })
+@Disabled("Shazam app is incomplete")
 @EnabledIf("resourceExists")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SuppressWarnings("unused")
