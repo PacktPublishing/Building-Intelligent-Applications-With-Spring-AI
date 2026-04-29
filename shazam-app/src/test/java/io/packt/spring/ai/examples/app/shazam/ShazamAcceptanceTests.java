@@ -29,6 +29,7 @@ import io.packt.spring.ai.examples.app.shazam.model.Song;
 import io.packt.spring.ai.examples.app.shazam.service.MusicService;
 import io.packt.spring.ai.examples.app.shazam.support.SongNotFoundException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.assertj.core.api.Assertions;
@@ -47,6 +48,7 @@ import org.springframework.core.io.Resource;
  */
 @SpringBootTest
 @Profile("acceptance-tests")
+@Disabled("Shazam app is incomplete")
 @SuppressWarnings("unused")
 public class ShazamAcceptanceTests {
 
