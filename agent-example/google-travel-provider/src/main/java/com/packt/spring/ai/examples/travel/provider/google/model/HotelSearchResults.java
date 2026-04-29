@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.packt.spring.ai.examples.travel.api.model.GpsCoordinates;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
+import com.packt.spring.ai.examples.travel.api.model.Location;
 
 import io.codeprimate.extensions.data.struct.Collectable;
 
@@ -116,7 +117,11 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 	}
 
 	private com.packt.spring.ai.examples.travel.api.model.Hotel resolveHotel(Property property) {
-		return com.packt.spring.ai.examples.travel.api.model.Hotel.from(property.getName());
+
+		String propertyName = property.getName();
+		Location location = Location.from(property.getGpsCoordinates());
+
+		return com.packt.spring.ai.examples.travel.api.model.Hotel.from(propertyName).inLocation(location);
 	}
 
 	@SuppressWarnings("all")
@@ -261,6 +266,9 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 		@JsonProperty("total_rate")
 		private Rate totalRate;
+
+		@JsonProperty("description")
+		private String description;
 
 		@JsonProperty(value = "name", required = true)
 		private String name;
