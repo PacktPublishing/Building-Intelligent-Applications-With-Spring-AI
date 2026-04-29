@@ -3,9 +3,9 @@
 		"spring-ai-mcp-travel-agent": {
 			"command": "/Users/jxblum/.sdkman/candidates/java/current/bin/java",
 			"args": [
+				"-DUSER_HOME=$HOME",
 				"-Dspring.ai.mcp.server.stdio=true",
 				"-Dspring.main.web-application-type=none",
-				"-Dlogging.pattern.console=",
 				"-jar",
 				"/Users/jxblum/travel-agent-0.1.0-SNAPSHOT.jar"
 			]
