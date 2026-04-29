@@ -1,0 +1,14 @@
+{
+	"mcpServers": {
+		"spring-ai-mcp-travel-agent": {
+			"command": "java",
+			"args": [
+				"-Dspring.ai.mcp.server.stdio=true",
+				"-Dspring.main.web-application-type=none",
+				"-Dlogging.pattern.console=",
+				"-jar",
+				"/Users/jxblum/cpdev/Packt/Building\\ Intelligent\\ Applications\\ with\\ Spring\\ AI/spring-ai-examples/agent-example/travel-agent/target/travel-agent-0.1.0-SNAPSHOT.jar"
+			]
+		}
+	}
+}
