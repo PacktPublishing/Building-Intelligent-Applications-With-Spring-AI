@@ -18,17 +18,19 @@ package com.packt.spring.ai.examples.travel.api.model;
 import java.util.Locale;
 
 /**
- * Abstract Data Type (ADT) and Java record modeling a location as city and country.
+ * Abstract Data Type (ADT) modeling a location as city, area and country, with {@link GpsCoordinates}.
  *
  * @author John Blum
- * @param cityName {@link String name} of the city, e.g. {@literal Portland, OR}.
+ * @param city {@link String name} of the city, e.g. {@literal Portland, OR}.
+ * @param area {@link String name} of the area, such as the state of {@literal California (CA)} in the {@literal USA}
+ * or the the province of {@literal Ontario} in {@literal Canada}.
  * @param locale {@link Locale} of this location.
  * @see GpsCoordinates
  * @see Locale
  * @since 0.1.0
  */
 @SuppressWarnings("unused")
-public record Location(String cityName, Locale locale, GpsCoordinates coordinates) {
+public record Location(String city, String area, Locale locale, GpsCoordinates coordinates) {
 
 	public String getCountry() {
 		return locale().getCountry();
