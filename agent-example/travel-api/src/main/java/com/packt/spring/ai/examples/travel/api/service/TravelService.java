@@ -22,6 +22,7 @@ import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
+import com.packt.spring.ai.examples.travel.api.model.VehicleSearchRequest;
 
 /**
  * Service interface defining a contract for making travel arrangements.
@@ -39,7 +40,7 @@ public interface TravelService {
 
 	List<HotelBooking> findHotels(HotelSearchRequest request);
 
-	default List<VehicleRental> rentVehicle() {
-		throw new UnsupportedOperationException("Vehicle rental is not supported");
+	default List<VehicleRental> rentVehicle(VehicleSearchRequest request) {
+		throw new UnsupportedOperationException("Vehicle rentals not supported");
 	}
 }

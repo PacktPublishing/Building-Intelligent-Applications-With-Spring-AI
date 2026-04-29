@@ -15,7 +15,6 @@
  */
 package com.packt.spring.ai.examples.travel.provider.google.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import com.packt.spring.ai.examples.travel.api.model.FlightSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
+import com.packt.spring.ai.examples.travel.api.model.VehicleSearchRequest;
 import com.packt.spring.ai.examples.travel.api.service.TravelService;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleFlightsApi;
 import com.packt.spring.ai.examples.travel.provider.google.api.GoogleHotelsApi;
@@ -34,6 +34,7 @@ import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchQuer
 import com.packt.spring.ai.examples.travel.provider.google.model.HotelSearchResults;
 
 import org.cp.elements.lang.Assert;
+import org.cp.elements.lang.Constants;
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 
@@ -105,7 +106,7 @@ public class GoogleTravelService implements TravelService {
 	}
 
 	@Override
-	public List<VehicleRental> rentVehicle() {
-		return Collections.emptyList();
+	public List<VehicleRental> rentVehicle(VehicleSearchRequest request) {
+		throw new UnsupportedOperationException(Constants.NOT_IMPLEMENTED);
 	}
 }
