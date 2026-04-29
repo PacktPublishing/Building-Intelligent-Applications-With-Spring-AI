@@ -29,7 +29,7 @@ import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
-import org.springframework.ai.openai.audio.speech.SpeechModel;
+import org.springframework.ai.audio.tts.TextToSpeechModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -91,8 +91,8 @@ public class AiTextToSpeechSynthesizerIntegrationTests {
 	static class TextToSpeechSynthesizerTestConfiguration {
 
 		@Bean
-		AiTextToSpeechSynthesizer textToSpeechSynthesizer(SpeechModel speechModel) {
-			return new AiTextToSpeechSynthesizer(speechModel);
+		AiTextToSpeechSynthesizer textToSpeechSynthesizer(TextToSpeechModel model) {
+			return new AiTextToSpeechSynthesizer(model);
 		}
 	}
 }

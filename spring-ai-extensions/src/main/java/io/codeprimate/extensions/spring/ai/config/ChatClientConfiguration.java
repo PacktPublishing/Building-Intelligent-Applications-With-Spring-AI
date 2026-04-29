@@ -22,6 +22,8 @@ import io.codeprimate.extensions.util.Utils;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.observation.AdvisorObservationConvention;
+import org.springframework.ai.chat.client.advisor.observation.DefaultAdvisorObservationConvention;
 import org.springframework.ai.chat.client.observation.ChatClientObservationConvention;
 import org.springframework.ai.chat.client.observation.DefaultChatClientObservationConvention;
 import org.springframework.ai.chat.model.ChatModel;
@@ -53,22 +55,29 @@ public class ChatClientConfiguration {
 	public ChatClient chatClient(ChatModel chatModel,
 			@Autowired(required = false) ChatClient.Builder chatClientBuilder,
 			@Autowired(required = false) Consumer<ChatClient.Builder> chatClientBuilderCustomizer,
-			@Autowired(required = false) ChatClientObservationConvention observationConvention,
+			@Autowired(required = false) AdvisorObservationConvention advisorObservationConvention,
+			@Autowired(required = false) ChatClientObservationConvention chatClientObservationConvention,
 			@Autowired(required = false) ObservationRegistry observationRegistry) {
 
 		chatClientBuilder = resolveChatClientBuilder(chatClientBuilder, () ->
-			chatClientBuilder(chatModel, observationConvention, observationRegistry));
+			chatClientBuilder(chatModel, advisorObservationConvention, chatClientObservationConvention,
+				observationRegistry));
 
 		Utils.nullSafeConsumer(chatClientBuilderCustomizer).accept(chatClientBuilder);
 
 		return chatClientBuilder.build();
 	}
 
-	protected ChatClient.Builder chatClientBuilder(ChatModel chatModel,
-			ChatClientObservationConvention observationConvention, ObservationRegistry observationRegistry) {
-
+	protected ChatClient.Builder chatClientBuilder(
+		ChatModel chatModel,
+		AdvisorObservationConvention advisorObservationConvention,
+		ChatClientObservationConvention observationConvention,
+		ObservationRegistry observationRegistry
+	) {
 		return observationRegistry != null
-			? ChatClient.builder(chatModel, observationRegistry, resolveObservationConvention(observationConvention))
+			? ChatClient.builder(chatModel, observationRegistry,
+				resolveChatClientObservationConvention(observationConvention),
+				resolveAdvisorObservationConvention(advisorObservationConvention))
 			: ChatClient.builder(chatModel);
 	}
 
@@ -78,7 +87,14 @@ public class ChatClientConfiguration {
 		return chatClientBuilder != null ? chatClientBuilder : supplier.get();
 	}
 
-	protected ChatClientObservationConvention resolveObservationConvention(
+	protected AdvisorObservationConvention resolveAdvisorObservationConvention(
+			AdvisorObservationConvention advisorObservationConvention) {
+
+		return advisorObservationConvention != null ? advisorObservationConvention
+			: new DefaultAdvisorObservationConvention();
+	}
+
+	protected ChatClientObservationConvention resolveChatClientObservationConvention(
 			ChatClientObservationConvention chatClientObservationConvention) {
 
 		return chatClientObservationConvention != null ? chatClientObservationConvention

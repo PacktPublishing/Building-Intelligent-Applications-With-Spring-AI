@@ -22,7 +22,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -70,7 +70,7 @@ public class ChatModelOptionsApplication {
 			String userPrompt = "Finish the sentence, 'A long, long time ago in a...'";
 			//String userPrompt = "Finish the sentence, 'If you don't eat your fruits and vegetables, you will...'";
 
-			OllamaOptions chatOptions = OllamaOptions.builder()
+			OllamaChatOptions chatOptions = OllamaChatOptions.builder()
 				//.withSeed(SEED)
 				.topK(topK)
 				.topP(topP)

@@ -19,12 +19,12 @@ import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
 import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.TextToSpeechSynthesizer;
 
-import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
+import org.springframework.ai.audio.tts.TextToSpeechMessage;
+import org.springframework.ai.audio.tts.TextToSpeechModel;
+import org.springframework.ai.audio.tts.TextToSpeechOptions;
+import org.springframework.ai.audio.tts.TextToSpeechPrompt;
+import org.springframework.ai.audio.tts.TextToSpeechResponse;
 import org.springframework.ai.openai.api.OpenAiAudioApi;
-import org.springframework.ai.openai.audio.speech.SpeechMessage;
-import org.springframework.ai.openai.audio.speech.SpeechModel;
-import org.springframework.ai.openai.audio.speech.SpeechPrompt;
-import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -47,33 +47,33 @@ public class AiTextToSpeechSynthesizer implements TextToSpeechSynthesizer {
 
 	private static final String OPENAI_TTS_MODEL = "gpt-4o-mini-tts";
 
-	private final SpeechModel speechModel;
+	private final TextToSpeechModel model;
 
 	@Override
 	public AudioMessage speak(TextMessage textMessage) {
 
-		SpeechMessage speechMessage = newSpeechMessage(textMessage);
-		SpeechPrompt prompt = newSpeechPrompt(speechMessage);
-		SpeechResponse response = getSpeechModel().call(prompt);
+		TextToSpeechMessage message = newTextToSpeechMessage(textMessage);
+		TextToSpeechPrompt prompt = newSpeechPrompt(message);
+		TextToSpeechResponse response = getModel().call(prompt);
 
 		byte[] audioData = response.getResult().getOutput();
 
 		return AudioMessage.from(audioData);
 	}
 
-	private SpeechMessage newSpeechMessage(TextMessage textMessage) {
-		return new SpeechMessage(textMessage.getText());
+	private TextToSpeechMessage newTextToSpeechMessage(TextMessage message) {
+		return new TextToSpeechMessage(message.getText());
 	}
 
-	private SpeechPrompt newSpeechPrompt(SpeechMessage speechMessage) {
-		return new SpeechPrompt(speechMessage, newSpeechOptions());
+	private TextToSpeechPrompt newSpeechPrompt(TextToSpeechMessage message) {
+		return new TextToSpeechPrompt(message, newTextToSpeechOptions());
 	}
 
-	private OpenAiAudioSpeechOptions newSpeechOptions() {
+	private TextToSpeechOptions newTextToSpeechOptions() {
 
-		return OpenAiAudioSpeechOptions.builder()
-			.voice(OpenAiAudioApi.SpeechRequest.Voice.ALLOY)
-			.responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+		return TextToSpeechOptions.builder()
+			.voice(OpenAiAudioApi.SpeechRequest.Voice.ALLOY.toString())
+			.format(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3.toString())
 			.model(OPENAI_TTS_MODEL)
 			.build();
 	}
