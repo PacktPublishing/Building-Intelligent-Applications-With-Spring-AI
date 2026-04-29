@@ -15,8 +15,10 @@
  */
 package com.packt.spring.ai.examples.travel.api.model;
 
+import java.util.Arrays;
 import java.util.Objects;
 
+import org.cp.elements.lang.Constants;
 import org.cp.elements.lang.Nameable;
 import org.springframework.util.Assert;
 
@@ -27,8 +29,18 @@ import org.springframework.util.Assert;
  * @see org.cp.elements.lang.Nameable
  * @since 0.1.0
  */
-@SuppressWarnings("unused")
 public interface Airport extends Nameable<String> {
+
+	static Airport from(String code) {
+
+		Assert.hasText(code, "Airport code is required");
+
+		return Arrays.stream(Airports.values())
+			.filter(airport -> airport.getCode().equalsIgnoreCase(code))
+			.findFirst()
+			.map(Airport.class::cast)
+			.orElseGet(() -> Airport.from(Constants.UNKNOWN, code));
+	}
 
 	static Airport from(String name, String code) {
 
