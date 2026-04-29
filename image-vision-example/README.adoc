@@ -18,7 +18,7 @@ $ mvnw --projects image-vision-example -Dai=mistral spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------< com.packt.spring.ai:image-vision-example >--------------
-[INFO] Building ImageVisionExample 0.1.0-SNAPSHOT
+[INFO] Building ImageVisionExample 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

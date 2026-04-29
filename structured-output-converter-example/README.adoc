@@ -36,7 +36,7 @@ $ mvnw --projects structured-output-converter-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ------< com.packt.spring.ai:structured-output-converter-example >-------
-[INFO] Building StructuredOutputConverterExample 0.1.0-SNAPSHOT
+[INFO] Building StructuredOutputConverterExample 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

@@ -14,7 +14,7 @@ $ mvnw --projects audio-transcription-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ----------< com.packt.spring.ai:audio-transcription-example >-----------
-[INFO] Building AudioTranscriptionExample 0.1.0-SNAPSHOT
+[INFO] Building AudioTranscriptionExample 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

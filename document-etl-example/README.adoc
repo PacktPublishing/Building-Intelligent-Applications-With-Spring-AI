@@ -16,7 +16,7 @@ $ mvnw --projects document-etl-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------< com.packt.spring.ai:document-etl-example >--------------
-[INFO] Building DocumentEtlApplication 0.1.0-SNAPSHOT
+[INFO] Building DocumentEtlApplication 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]
