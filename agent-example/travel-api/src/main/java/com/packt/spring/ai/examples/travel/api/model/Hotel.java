@@ -16,6 +16,7 @@
 package com.packt.spring.ai.examples.travel.api.model;
 
 import org.cp.elements.lang.Nameable;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -35,8 +36,28 @@ public interface Hotel extends Nameable<String> {
 		return () -> providerName;
 	}
 
+	default @Nullable Location getLocation() {
+		return null;
+	}
+
 	default String getProviderName() {
 		return getName();
+	}
+
+	default Hotel inLocation(Location location) {
+
+		return new Hotel() {
+
+			@Override
+			public Location getLocation() {
+				return location;
+			}
+
+			@Override
+			public String getName() {
+				return Hotel.this.getName();
+			}
+		};
 	}
 
 	/**
