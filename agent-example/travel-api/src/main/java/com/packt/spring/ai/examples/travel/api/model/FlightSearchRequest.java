@@ -274,20 +274,20 @@ public class FlightSearchRequest {
 
 	public interface PriceBuilder {
 
-		InFlightBuilder pay(BigDecimal price);
+		RequestBuilder pay(BigDecimal price);
 
-		default InFlightBuilder anyPrice() {
+		default RequestBuilder anyPrice() {
 			return pay(BigDecimal.valueOf(Double.MAX_VALUE));
 		}
 	}
 
-	public interface InFlightBuilder {
+	public interface RequestBuilder {
 		FlightSearchRequest build();
 	}
 
 	@Getter
 	protected static class Builder implements DepartureBuilder, DepartureDateTimeBuilder, ArrivalBuilder,
-			ReturnDateTimeBuilder, AirlineBuilder, FlightClassBuilder, LayoverBuilder, PriceBuilder, InFlightBuilder {
+			ReturnDateTimeBuilder, AirlineBuilder, FlightClassBuilder, LayoverBuilder, PriceBuilder, RequestBuilder {
 
 		private Airport arrivalAirport;
 		private Airport departureAirport;
@@ -334,7 +334,7 @@ public class FlightSearchRequest {
 		}
 
 		@Override
-		public InFlightBuilder pay(@Nullable BigDecimal price) {
+		public RequestBuilder pay(@Nullable BigDecimal price) {
 			this.price = price;
 			return this;
 		}
