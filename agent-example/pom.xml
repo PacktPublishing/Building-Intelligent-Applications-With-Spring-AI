@@ -22,6 +22,7 @@
 		<module>travel-api</module>
 		<module>google-travel-provider</module>
 		<module>travel-agent</module>
+		<module>travel-client</module>
 	</modules>
 
 	<properties>
