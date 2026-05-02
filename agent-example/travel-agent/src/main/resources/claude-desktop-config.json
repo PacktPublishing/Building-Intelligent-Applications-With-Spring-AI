@@ -1,7 +1,7 @@
 {
 	"mcpServers": {
 		"spring-ai-mcp-travel-agent": {
-			"command": "/Users/jxblum/.sdkman/candidates/java/current/bin/java",
+			"command": "java",
 			"args": [
 				"-Dspring.main.web-application-type=none",
 				"-Dspring.ai.mcp.server.stdio=true",

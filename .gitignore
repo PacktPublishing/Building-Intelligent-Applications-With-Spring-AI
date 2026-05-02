@@ -5,6 +5,7 @@ temp/
 tmp/
 application-user.properties
 ffprobe*
+*.log
 
 ### Eclipse / STS ###
 .apt_generated
