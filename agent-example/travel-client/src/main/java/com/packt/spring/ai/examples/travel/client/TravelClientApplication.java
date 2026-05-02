@@ -15,13 +15,19 @@
  */
 package com.packt.spring.ai.examples.travel.client;
 
+import static org.cp.elements.lang.LangExtensions.assertThat;
+
 import java.io.File;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -45,12 +51,20 @@ import org.springframework.context.annotation.Profile;
 @Profile(TravelClientApplication.TRAVEL_CLIENT_PROFILE)
 public class TravelClientApplication extends AbstractSpringBootApplication {
 
+	protected static final String DATE_PATTERN = "yyyy-MM-dd";
 	protected static final String JAVA_LAUNCHER = "java";
+	protected static final String SEARCH_FLIGHTS_TOOL_NAME = "flight-search";
 	protected static final String TRAVEL_AGENT_JAR = "travel-agent-0.1.0-SNAPSHOT.jar";
 	protected static final String TRAVEL_CLIENT_PROFILE = "travel-client";
 
+	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+
 	public static void main(String[] args) {
 		runSpringApplication(TravelClientApplication.class, asStringArray(TRAVEL_CLIENT_PROFILE), args);
+	}
+
+	private static String formatDate(ZonedDateTime dateTime) {
+		return dateTime.format(DATE_FORMATTER);
 	}
 
 	@Bean
@@ -66,21 +80,44 @@ public class TravelClientApplication extends AbstractSpringBootApplication {
 
 			var transport = new StdioClientTransport(serverParameters, objectMapper);
 
-			var client = McpClient.sync(transport).build();
+			try (var client = McpClient.sync(transport).build()) {
 
-			client.initialize();
+				client.initialize();
 
-			McpSchema.ListToolsResult listToolsResult = client.listTools();
+				McpSchema.ListToolsResult listToolsResult = client.listTools();
 
-			List<McpSchema.Tool> tools = listToolsResult.tools();
+				List<McpSchema.Tool> tools = listToolsResult.tools();
 
-			System.out.println("TOOLS");
+				print("TOOLS");
 
-			tools.forEach(tool -> {
-				System.out.printf("Tool Name [%s] and Description [%s] with Input Schema [%s]%n",
-					tool.name(), tool.description(), tool.inputSchema());
-			});
+				tools.forEach(tool -> {
+					print("Tool Name [%s] and Description [%s] with Input Schema [%s]%n",
+						tool.name(), tool.description(), tool.inputSchema());
+				});
+
+				searchFlights(client);
+			}
 		};
+	}
+
+	private static void searchFlights(McpSyncClient client) {
+
+		ZonedDateTime now = ZonedDateTime.now();
+
+		McpSchema.CallToolRequest request = new McpSchema.CallToolRequest(SEARCH_FLIGHTS_TOOL_NAME, Map.of(
+			"departureAirport", "PDX",
+			"departureDate", formatDate(now.plusWeeks(3)),
+			"arrivalAirport", "SFO",
+			"returnDate", formatDate(now.plusWeeks(3).plusDays(5)),
+			"airlineName", "United",
+			"stops", "1"
+		));
+
+		McpSchema.CallToolResult result = client.callTool(request);
+
+		assertThat(result).isNotNull();
+
+		print("CONTENT [%s]", result.content());
 	}
 
 	private File resolveTravelAgentJar(ApplicationArguments applicationArguments) {
