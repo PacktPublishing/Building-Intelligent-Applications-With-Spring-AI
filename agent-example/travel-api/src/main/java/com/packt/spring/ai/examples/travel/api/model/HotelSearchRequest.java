@@ -42,6 +42,8 @@ public class HotelSearchRequest {
 	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+	protected static final BigDecimal MAX_PRICE = BigDecimal.valueOf(500.0d);
+
 	public static HotelSearchRequest.CheckInBuilder stayAt(Hotel hotel) {
 		return new HotelSearchRequest.Builder(hotel);
 	}
@@ -114,8 +116,9 @@ public class HotelSearchRequest {
 
 		Builder pay(BigDecimal price);
 
+		// Pays any amount up to $500.00 USD
 		default Builder payAny() {
-			return pay(BigDecimal.valueOf(Double.MAX_VALUE));
+			return pay(MAX_PRICE);
 		}
 	}
 

@@ -51,6 +51,8 @@ public class HotelSearchQuery {
 	protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+	protected static final BigDecimal MAX_PRICE = BigDecimal.valueOf(500.0d);
+
 	public static HotelSearchQuery from(HotelSearchRequest request) {
 
 		Assert.notNull(request, "HotelSearchRequest is required");
@@ -128,7 +130,7 @@ public class HotelSearchQuery {
 
 	public BigDecimal getMaxPrice() {
 		BigDecimal maxPrice = this.maxPrice;
-		return maxPrice != null ? maxPrice : BigDecimal.valueOf(Double.MAX_VALUE);
+		return maxPrice != null ? maxPrice : MAX_PRICE;
 	}
 
 	public int getOccupants() {

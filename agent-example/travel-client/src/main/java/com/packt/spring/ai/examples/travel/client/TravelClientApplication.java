@@ -52,6 +52,7 @@ import org.springframework.context.annotation.Profile;
 public class TravelClientApplication extends AbstractSpringBootApplication {
 
 	protected static final String DATE_PATTERN = "yyyy-MM-dd";
+	protected static final String FIND_HOTELS_TOOL_NAME = "hotel-finder";
 	protected static final String JAVA_LAUNCHER = "java";
 	protected static final String SEARCH_FLIGHTS_TOOL_NAME = "flight-search";
 	protected static final String TRAVEL_AGENT_JAR = "travel-agent-0.1.0-SNAPSHOT.jar";
@@ -96,6 +97,8 @@ public class TravelClientApplication extends AbstractSpringBootApplication {
 				});
 
 				searchFlights(client);
+				printNewline(2);
+				searchHotels(client);
 			}
 		};
 	}
@@ -117,7 +120,25 @@ public class TravelClientApplication extends AbstractSpringBootApplication {
 
 		assertThat(result).isNotNull();
 
-		print("CONTENT [%s]", result.content());
+		print("FLIGHTS [%s]", result.content());
+	}
+
+	private static void searchHotels(McpSyncClient client) {
+
+		ZonedDateTime now = ZonedDateTime.now();
+
+		McpSchema.CallToolRequest request = new McpSchema.CallToolRequest(FIND_HOTELS_TOOL_NAME, Map.of(
+			"hotelName", "Marriott",
+			"checkIn", formatDate(now.plusWeeks(3)),
+			"checkout", formatDate(now.plusWeeks(3).plusDays(5)),
+			"occupants", "1"
+		));
+
+		McpSchema.CallToolResult result = client.callTool(request);
+
+		assertThat(result).isNotNull();
+
+		print("HOTELS [%s]", result.content());
 	}
 
 	private File resolveTravelAgentJar(ApplicationArguments applicationArguments) {
