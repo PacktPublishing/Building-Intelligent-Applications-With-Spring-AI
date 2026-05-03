@@ -8,7 +8,10 @@
 				"-DUSER_HOME=$HOME",
 				"-jar",
 				"$HOME/travel-agent-0.1.0-SNAPSHOT.jar"
-			]
+			],
+			"env" : {
+				"USER_HOME": "/Users/jxblum"
+			}
 		}
 	}
 }
