@@ -15,10 +15,12 @@
  */
 package com.packt.spring.ai.examples.travel.agent;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Year;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.packt.spring.ai.examples.travel.api.model.Airline;
@@ -29,12 +31,14 @@ import com.packt.spring.ai.examples.travel.api.model.FlightStops;
 import com.packt.spring.ai.examples.travel.api.model.Hotel;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 import com.packt.spring.ai.examples.travel.api.model.HotelSearchRequest;
+import com.packt.spring.ai.examples.travel.api.model.Vehicle;
 import com.packt.spring.ai.examples.travel.api.model.VehicleRental;
 import com.packt.spring.ai.examples.travel.api.service.TravelService;
 
 import org.cp.elements.lang.ObjectUtils;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -44,11 +48,12 @@ import lombok.Getter;
  * Travel Agent implemented using Spring AI.
  *
  * @author John Blum
+ * @see Tool
  * @see Service
+ * @see Environment
  * @see FlightSearchRequest
  * @see HotelSearchRequest
  * @see TravelService
- * @see org.springframework.ai.tool.annotation.Tool
  * @since 0.1.0
  */
 @Service
@@ -56,9 +61,14 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class TravelAgent {
 
+	protected static final String MOCK_VEHICLE_RENTAL_PROFILE = "mock-vehicle-rental";
+
+	private final Environment environment;
+
 	private final TravelService travelService;
 
-	public TravelAgent(TravelService travelService) {
+	public TravelAgent(Environment environment, TravelService travelService) {
+		this.environment = ObjectUtils.requireObject(environment, "Environment is required");
 		this.travelService = ObjectUtils.requireObject(travelService, "TravelService is required");
 	}
 
@@ -121,10 +131,30 @@ public class TravelAgent {
 
 	@Tool(name = "rent-vehicle", description = "Rent a vehicle, such as a car")
 	public List<VehicleRental> rentVehicle() {
-		return Collections.emptyList();
+
+		if (isMockVehicleRentalProfileEnabled()) {
+			return List.of(mockVehicleRental());
+		}
+
+		throw new UnsupportedOperationException("Vehicle rental is not implemented");
 	}
 
 	private ZoneId inLocalZone() {
 		return ZoneId.systemDefault();
+	}
+
+	private boolean isMockVehicleRentalProfileEnabled() {
+		return getEnvironment().matchesProfiles(MOCK_VEHICLE_RENTAL_PROFILE);
+	}
+
+	private VehicleRental mockVehicleRental() {
+
+		ZonedDateTime now = ZonedDateTime.now();
+
+		return VehicleRental.builder(new Vehicle(Year.of(2021), "Audi", "R8", 5_000, Vehicle.Type.COUPE))
+			.pickingUp(now.plusWeeks(1))
+			.droppingOff(now.plusWeeks(1).plusDays(5))
+			.price(BigDecimal.valueOf(2_000))
+			.build();
 	}
 }

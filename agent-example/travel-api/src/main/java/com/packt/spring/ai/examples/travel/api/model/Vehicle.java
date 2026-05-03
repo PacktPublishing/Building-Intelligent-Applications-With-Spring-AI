@@ -48,7 +48,7 @@ public record Vehicle(Year year, String make, String model, int mileage, Type ty
 		return !isElectric();
 	}
 
-	enum Type {
+	public enum Type {
 		COMPACT, COUPE, ELECTRIC, LUXURY, MIDSIZE, OVERSIZED, PHEV, SEDAN, SUV, TRUCK, VAN
 	}
 }
