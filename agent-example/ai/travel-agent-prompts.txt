@@ -1,5 +1,4 @@
 # FLIGHTS
 
-Search for flights departing from PDX on May 15th, 2026 at 9:00 AM PT arriving at ORD and returning on May 21st, 2026
-at 3:00 PM CT. Fly United Airlines and return all flights with 1 stop or less.
+Search for flights departing from PDX on May 15th, 2026 at 9:00 AM PT, arriving at JFK, and returning on May 21st, 2026 at 3:00 PM CT. Fly United Airlines and only return flights with 1 stop or less. Present the JSON formatted response in Asciidoc clearly delineating each flight. Highlight the price if available. Order by price in ascending order.  Return only the top 10 results.
 
