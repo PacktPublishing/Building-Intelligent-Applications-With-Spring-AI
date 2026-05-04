@@ -83,11 +83,13 @@ public class TravelAgent {
 		@ToolParam(description = "Number of stops; if nonstop or no stops, then 0") int stops
 	) {
 
+		Airport destinationAirport = Airport.from(arrivalAirport);
+
 		FlightSearchRequest request = FlightSearchRequest.builder()
 			.departFrom(Airport.from(departureAirport))
 			.departOn(departureDate.atTime(LocalTime.MIN).atZone(inLocalZone()))
-			.arriveAt(Airport.from(arrivalAirport))
-			.returnOn(returnDate.atTime(LocalTime.MAX).atZone(inLocalZone()))
+			.arriveAt(destinationAirport)
+			.returnOn(returnDate.atTime(LocalTime.MAX).atZone(inReturnZone(destinationAirport)))
 			.fly(Airline.from(airlineName))
 			.inPremiumEconomy()
 			.stops(resolveStops(stops))
@@ -141,6 +143,11 @@ public class TravelAgent {
 
 	private ZoneId inLocalZone() {
 		return ZoneId.systemDefault();
+	}
+
+	// TODO: Return ZoneId using Airport code of destination (arrival airport)
+	private ZoneId inReturnZone(Airport airport) {
+		return inLocalZone();
 	}
 
 	private boolean isMockVehicleRentalProfileEnabled() {
