@@ -14,7 +14,7 @@ $ mvnw --projects prompt-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] -----------------< com.packt.spring.ai:prompt-example >-----------------
-[INFO] Building PromptExample 0.2.0-SNAPSHOT
+[INFO] Building PromptExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

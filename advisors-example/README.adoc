@@ -14,7 +14,7 @@ $ mvnw --projects advisors-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ----------------< com.packt.spring.ai:advisors-example >----------------
-[INFO] Building AdvisorsExample 0.2.0-SNAPSHOT
+[INFO] Building AdvisorsExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

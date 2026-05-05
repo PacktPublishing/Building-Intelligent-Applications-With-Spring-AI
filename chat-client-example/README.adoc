@@ -16,7 +16,7 @@ $ mvnw --projects chat-client-example -Dai=openai spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------< com.packt.spring.ai:chat-client-example >---------------
-[INFO] Building ChatClientExample 0.2.0-SNAPSHOT
+[INFO] Building ChatClientExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

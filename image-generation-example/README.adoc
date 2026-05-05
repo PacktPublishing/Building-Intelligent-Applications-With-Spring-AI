@@ -14,7 +14,7 @@ To run the program, enter the following Maven command at the command-line:
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ------------< com.packt.spring.ai:image-generation-example >------------
-[INFO] Building ImageGenerationExample 0.2.0-SNAPSHOT
+[INFO] Building ImageGenerationExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

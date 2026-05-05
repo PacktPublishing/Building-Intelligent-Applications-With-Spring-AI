@@ -16,7 +16,7 @@ $ mvnw --projects streaming-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ---------------< com.packt.spring.ai:streaming-example >----------------
-[INFO] Building StreamingExample 0.2.0-SNAPSHOT
+[INFO] Building StreamingExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

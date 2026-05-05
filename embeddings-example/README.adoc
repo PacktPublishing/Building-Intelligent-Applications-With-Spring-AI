@@ -14,7 +14,7 @@ $ mvnw --projects embeddings-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ---------------< com.packt.spring.ai:embeddings-example >---------------
-[INFO] Building EmbeddingsExample 0.2.0-SNAPSHOT
+[INFO] Building EmbeddingsExample 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]

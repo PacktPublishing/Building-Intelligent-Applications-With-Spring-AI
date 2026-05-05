@@ -18,7 +18,7 @@ $ mvnw --projects function-example spring-boot:run
 [INFO] Scanning for projects...
 [INFO]
 [INFO] ----------------< com.packt.spring.ai:function-example >----------------
-[INFO] Building StockQuotesFunctionApplication 0.2.0-SNAPSHOT
+[INFO] Building StockQuotesFunctionApplication 0.3.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO]
