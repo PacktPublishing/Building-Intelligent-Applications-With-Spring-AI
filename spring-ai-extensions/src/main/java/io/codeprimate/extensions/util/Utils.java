@@ -59,7 +59,11 @@ public abstract class Utils {
 	}
 
 	public static ChatOptions buildChatOptions(String model) {
-		return ChatOptions.builder().model(model).build();
+		return chatOptionsBuilder(model).build();
+	}
+
+	public static ChatOptions.Builder<?> chatOptionsBuilder(String model) {
+		return ChatOptions.builder().model(model);
 	}
 
 	public static <T> T defaultIfNull(T value, T defaultValue) {
