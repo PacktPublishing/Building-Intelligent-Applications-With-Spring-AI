@@ -68,7 +68,7 @@ To:
 ----
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-starter-model-vertex-ai-gemini</artifactId>
+    <artifactId>spring-ai-starter-model-google-genai</artifactId>
 </dependency>
 ----
 
