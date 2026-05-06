@@ -25,10 +25,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.google.genai.GoogleGenAiChatModel;
 import org.springframework.ai.mistralai.MistralAiChatModel;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -44,7 +44,11 @@ import org.springframework.test.context.ActiveProfiles;
  * @see org.springframework.boot.test.context.SpringBootTest
  * @since 0.1.0
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
+	"spring.ai.google.genai.api-key=mockApiKey",
+	"spring.ai.google.genai.location=us-west1",
+	"spring.ai.google.genai.project-id=mockGeminiProjectId",
+})
 @ActiveProfiles({ ConnectFourApplication.CONNECT_FOUR_PROFILE, "user" })
 @SuppressWarnings("unused")
 public class ConnectFourAiModelSwitchingIntegrationTests {
@@ -58,7 +62,7 @@ public class ConnectFourAiModelSwitchingIntegrationTests {
 		assertThat(this.chatModel).isNotNull();
 		assertThat(toConfiguredChatModelTypes(this.chatModel))
 			.containsExactlyInAnyOrder(MistralAiChatModel.class, OllamaChatModel.class, OpenAiChatModel.class,
-				VertexAiGeminiChatModel.class);
+				GoogleGenAiChatModel.class);
 	}
 
 	private Iterable<Class<?>> toConfiguredChatModelTypes(Iterable<ChatModel> chatModels) {
@@ -81,7 +85,7 @@ public class ConnectFourAiModelSwitchingIntegrationTests {
 		this.chatModel.use(SpringAiProvider.VERTEX_AI_GEMINI);
 		currentChatModel = Utils.resolveChatModel(this.chatModel.getCurrentChatModel());
 
-		assertThat(currentChatModel.getClass()).isEqualTo(VertexAiGeminiChatModel.class);
+		assertThat(currentChatModel.getClass()).isEqualTo(GoogleGenAiChatModel.class);
 	}
 
 	@SpringBootConfiguration
