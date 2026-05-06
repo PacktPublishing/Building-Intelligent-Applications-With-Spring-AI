@@ -15,7 +15,7 @@
 
 	<name>Spring AI Extensions</name>
 	<description>
-		Extensions to Spring AI.
+		Extensions to Spring AI, Spring Boot and Java to support the development of Spring AI applications.
 	</description>
 	<url>https://github.com/jxblum/building-intelligent-applications-with-spring-ai/tree/main/spring-ai-extensions</url>
 
