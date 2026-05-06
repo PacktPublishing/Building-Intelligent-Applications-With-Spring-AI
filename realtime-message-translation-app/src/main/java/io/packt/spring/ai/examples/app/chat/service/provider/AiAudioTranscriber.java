@@ -19,6 +19,9 @@ import io.packt.spring.ai.examples.app.chat.model.AudioMessage;
 import io.packt.spring.ai.examples.app.chat.model.TextMessage;
 import io.packt.spring.ai.examples.app.chat.service.AudioTranscriber;
 
+import org.springframework.ai.audio.transcription.AudioTranscription;
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
+import org.springframework.ai.audio.transcription.AudioTranscriptionResponse;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionModel;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -48,7 +51,10 @@ public class AiAudioTranscriber implements AudioTranscriber {
 
 		if (audioMessage.isNotEmpty()) {
 			Resource audio = audioMessage.getResource();
-			String text = getModel().call(audio);
+			AudioTranscriptionPrompt prompt = new AudioTranscriptionPrompt(audio);
+			AudioTranscriptionResponse response = getModel().call(prompt);
+			AudioTranscription transcription = response.getResult();
+			String text = transcription.getOutput();
 			return TextMessage.from(text);
 		}
 

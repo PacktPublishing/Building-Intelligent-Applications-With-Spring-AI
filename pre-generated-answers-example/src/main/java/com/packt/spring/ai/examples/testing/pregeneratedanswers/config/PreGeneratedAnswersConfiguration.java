@@ -15,9 +15,10 @@
  */
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.PreGeneratedAnswersApplication;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.serialization.json.DocumentDeserializer;
+
+import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
@@ -25,10 +26,10 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 
-import io.codeprimate.extensions.spring.ai.vectorstore.DecoratedSimpleVectorStore;
+import tools.jackson.databind.module.SimpleModule;
 
 /**
  * {@link SpringBootConfiguration} for the {@link PreGeneratedAnswersApplication}.
@@ -52,12 +53,12 @@ public class PreGeneratedAnswersConfiguration {
 	}
 
 	@Bean
-	Jackson2ObjectMapperBuilderCustomizer objectMapperCustomizer() {
+	JsonMapperBuilderCustomizer objectMapperCustomizer() {
 
 		return jacksonObjectMapperBuilder -> {
 			SimpleModule module = new SimpleModule("customDocumentDeserializerModule");
 			module.addDeserializer(Document.class, new DocumentDeserializer());
-			jacksonObjectMapperBuilder.modules(module);
+			jacksonObjectMapperBuilder.addModule(module);
 		};
 	}
 

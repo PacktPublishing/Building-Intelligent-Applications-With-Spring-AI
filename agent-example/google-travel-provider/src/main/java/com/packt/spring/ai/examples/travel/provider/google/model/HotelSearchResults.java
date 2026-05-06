@@ -17,7 +17,6 @@ package com.packt.spring.ai.examples.travel.provider.google.model;
 
 import static org.cp.elements.lang.LangExtensions.is;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -37,10 +36,6 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.packt.spring.ai.examples.travel.api.model.GpsCoordinates;
 import com.packt.spring.ai.examples.travel.api.model.HotelBooking;
 import com.packt.spring.ai.examples.travel.api.model.Location;
@@ -51,10 +46,13 @@ import org.cp.elements.lang.ImmutableIdentifiable;
 import org.cp.elements.lang.Nameable;
 import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.CollectionUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Abstract Data Type (ADT) modeling search results from a {@link HotelSearchQuery}
@@ -87,7 +85,8 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 	private SearchParameters searchParameters;
 
 	@Override
-	public @NonNull Iterator<Property> iterator() {
+	@SuppressWarnings("all")
+	public Iterator<Property> iterator() {
 		Iterator<Property> propertiesIterator = getProperties().iterator();
 		return CollectionUtils.unmodifiableIterator(propertiesIterator);
 	}
@@ -511,25 +510,25 @@ public class HotelSearchResults implements Collectable<HotelSearchResults.Proper
 
 	}
 
-	protected static class HotelClassDeserializer extends JsonDeserializer<HotelClass> {
+	protected static class HotelClassDeserializer extends ValueDeserializer<HotelClass> {
 
 		@Override
-		public HotelClass deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-			String value = jsonParser.getText().trim();
+		public HotelClass deserialize(JsonParser jsonParser, DeserializationContext context) {
+			String value = jsonParser.getString().trim();
 			int rating = Integer.parseInt(value);
 			return HotelClass.from(rating);
 		}
 	}
 
-	protected static class TimeDeserializer extends JsonDeserializer<LocalTime> {
+	protected static class TimeDeserializer extends ValueDeserializer<LocalTime> {
 
 		protected static final String TIME_PATTERN = "h:mm a";
 
 		protected static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
 
 		@Override
-		public LocalTime deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-			String value = jsonParser.getText().trim();
+		public LocalTime deserialize(JsonParser jsonParser, DeserializationContext context) {
+			String value = jsonParser.getString().trim();
 			value = value.replaceAll("(?U)\\s", " ");
 			return LocalTime.parse(value, TIME_FORMATTER);
 		}

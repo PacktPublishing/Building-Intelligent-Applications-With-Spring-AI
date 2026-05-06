@@ -26,7 +26,6 @@ import java.util.function.Function;
 import javax.sound.sampled.AudioFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.codeprimate.extensions.spring.boot.AbstractSpringBootApplication;
 import io.codeprimate.extensions.spring.core.io.ResourceUtils;
@@ -62,6 +61,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link SpringBootApplication} used to load {@link Song Songs} for the {@link ShazamApplication}.

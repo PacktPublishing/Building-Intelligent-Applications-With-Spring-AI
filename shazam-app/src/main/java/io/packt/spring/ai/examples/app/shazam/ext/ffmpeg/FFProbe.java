@@ -33,11 +33,6 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import io.codeprimate.extensions.util.ExceptionThrowingSupplier;
 import io.packt.spring.ai.examples.app.shazam.model.Audio;
@@ -51,6 +46,11 @@ import org.slf4j.Logger;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * API for {@literal ffprobe}.
@@ -190,7 +190,7 @@ public class FFProbe {
 		try {
 			return getJsonMapper().readValue(json, type);
 		}
-		catch (JsonProcessingException cause) {
+		catch (JacksonException cause) {
 			logInfo(() -> "JSON [%s]".formatted(json));
 			throw cause;
 		}

@@ -15,7 +15,6 @@
  */
 package com.packt.spring.ai.examples.travel.provider.google.model;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
@@ -31,11 +30,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
 import com.packt.spring.ai.examples.travel.api.model.Aircraft;
 import com.packt.spring.ai.examples.travel.api.model.Airline;
 import com.packt.spring.ai.examples.travel.api.model.FlightType;
@@ -44,9 +38,13 @@ import io.codeprimate.extensions.data.struct.Collectable;
 
 import org.cp.elements.lang.StringUtils;
 import org.cp.elements.util.CollectionUtils;
-import org.springframework.lang.NonNull;
 
 import lombok.Getter;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.ext.javatime.deser.DurationDeserializer;
 
 /**
  * Abstract Data Type (ADT) modeling results from a {@link FlightSearchQuery}
@@ -83,7 +81,8 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 	}
 
 	@Override
-	public @NonNull Iterator<FlightContainer> iterator() {
+	@SuppressWarnings("all")
+	public Iterator<FlightContainer> iterator() {
 		List<FlightContainer> flights = new ArrayList<>(getBestFlights());
 		flights.addAll(getOtherFlights());
 		Collections.sort(flights);
@@ -221,7 +220,8 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		}
 
 		@Override
-		public int compareTo(@NonNull FlightContainer other) {
+		@SuppressWarnings("all")
+		public int compareTo(FlightContainer other) {
 
 			return Comparator.comparing(FlightContainer::getPrice)
 				.thenComparing(FlightContainer::getStops)
@@ -229,7 +229,8 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 		}
 
 		@Override
-		public @NonNull Iterator<Flight> iterator() {
+		@SuppressWarnings("all")
+		public Iterator<Flight> iterator() {
 			Iterator<Flight> flightsIterator = getFlights().iterator();
 			return CollectionUtils.unmodifiableIterator(flightsIterator);
 		}
@@ -307,32 +308,32 @@ public class FlightSearchResults implements Collectable<FlightSearchResults.Flig
 
 	}
 
-	public static class FlightDurationDeserializer extends JsonDeserializer<Duration> {
+	public static class FlightDurationDeserializer extends ValueDeserializer<Duration> {
 
 		@Override
-		public Duration deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-			int minutes = Integer.parseInt(jsonParser.getText().trim());
+		public Duration deserialize(JsonParser jsonParser, DeserializationContext context) {
+			int minutes = Integer.parseInt(jsonParser.getString().trim());
 			return Duration.ofMinutes(minutes);
 		}
 	}
 
-	public static class FlightTypeDeserializer extends JsonDeserializer<FlightType> {
+	public static class FlightTypeDeserializer extends ValueDeserializer<FlightType> {
 
 		@Override
-		public FlightType deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+		public FlightType deserialize(JsonParser jsonParser, DeserializationContext context) {
 
-			String flightTypeValue = String.valueOf(jsonParser.getText());
+			String flightTypeValue = String.valueOf(jsonParser.getString());
 			String resolvedFlightTypeValue = flightTypeValue.trim().replaceAll(" ", "_").toUpperCase();
 
 			return FlightType.from(resolvedFlightTypeValue);
 		}
 	}
 
-	public static class TravelClassDeserializer extends JsonDeserializer<TravelClass> {
+	public static class TravelClassDeserializer extends ValueDeserializer<TravelClass> {
 
 		@Override
-		public TravelClass deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
-			return TravelClass.from(StringUtils.trim(jsonParser.getText()));
+		public TravelClass deserialize(JsonParser jsonParser, DeserializationContext context) {
+			return TravelClass.from(StringUtils.trim(jsonParser.getString()));
 		}
 	}
 }

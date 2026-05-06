@@ -15,34 +15,32 @@
  */
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.serialization.json;
 
-import java.io.IOException;
 import java.util.UUID;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import org.springframework.ai.document.Document;
 
 import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
 
+import org.springframework.ai.document.Document;
+
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.node.ArrayNode;
+
 /**
- * Jackson {@link JsonDeserializer} used to deserialize JSON as a {@link Document}.
+ * Jackson {@link ValueDeserializer} used to deserialize JSON as a {@link Document}.
  *
  * @author John Blum
- * @see com.fasterxml.jackson.databind.JsonDeserializer
  * @see org.springframework.ai.document.Document
  * @since 0.1.0
  */
-public class DocumentDeserializer extends JsonDeserializer<Document> {
+public class DocumentDeserializer extends ValueDeserializer<Document> {
 
   @Override
   @SuppressWarnings("all")
-  public Document deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+  public Document deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
 
-    JsonNode documentNode = jsonParser.getCodec().readTree(jsonParser);
+    JsonNode documentNode = jsonParser.readValueAsTree();
 
     Document document = Document.builder()
       .id(parseDocumentId(documentNode))

@@ -15,37 +15,35 @@
  */
 package com.packt.spring.ai.examples.testing.pregeneratedanswers.serialization.json;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Questions;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.util.Utils;
 
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
+
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
- * Spring {@link JsonComponent} and Jackson {@link JsonSerializer} used to serialize {@link Questions} to JSON.
+ * Spring {@link JacksonComponent} and Jackson {@link ValueSerializer} used to serialize {@link Questions} to JSON.
  *
  * @author John Blum
+ * @see JacksonComponent
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Questions
- * @see com.fasterxml.jackson.core.JsonGenerator
- * @see com.fasterxml.jackson.databind.JsonSerializer
- * @see org.springframework.boot.jackson.JsonComponent
+ * @see tools.jackson.core.JsonGenerator
+ * @see tools.jackson.databind.ValueSerializer
  * @since 0.1.0
  */
-@JsonComponent
+@JacksonComponent
 @SuppressWarnings("unused")
-public class QuestionsSerializer extends JsonSerializer<Questions> {
+public class QuestionsSerializer extends ValueSerializer<Questions> {
+
 
 	@Override
-	public void serialize(Questions questions, JsonGenerator jsonGenerator, SerializerProvider serializers)
-			throws IOException {
-
+	public void serialize(Questions questions, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
 		jsonGenerator.writeStartArray();
-		questions.stream().forEach(Utils.consumeSafely(jsonGenerator::writeObject));
+		questions.stream().forEach(Utils.consumeSafely(jsonGenerator::writePOJO));
 		jsonGenerator.writeEndArray();
 	}
 }

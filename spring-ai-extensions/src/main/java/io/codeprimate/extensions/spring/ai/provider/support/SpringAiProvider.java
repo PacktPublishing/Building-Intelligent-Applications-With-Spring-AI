@@ -64,7 +64,7 @@ public enum SpringAiProvider implements AiProvider {
 	POSTGRES_ML("Postgres ML", "postgresml", match("postgres")),
 	QIAN_FAN("Qian Fan AI", "qianfan", match("qianfan")),
 	STABILITY("Stability AI", "stabilityai", match("stability")),
-	VERTEX_AI_GEMINI("Google Vertex AI Gemini", "vertex.ai.gemini", match("gemini")),
+	VERTEX_AI_GEMINI("Google Vertex AI Gemini", "google.genai", match("GoogleGenAi")),
 	WATSONX("IBM Watsonx AI", "watsonx", match("watson")),
 	ZHI_PU("Zhipu AI", "zhipuai", match("zhipu"));
 
@@ -72,6 +72,7 @@ public enum SpringAiProvider implements AiProvider {
 
 	private final String name;
 	private final String propertyName;
+
 	private final Predicate<Object> predicate;
 
 	SpringAiProvider(String name, String propertyName, Predicate<Object> predicate) {

@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.Test;
 
 import org.assertj.core.api.Assertions;
@@ -34,6 +32,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.Getter;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit Tests for {@link DocumentTextSplitter}

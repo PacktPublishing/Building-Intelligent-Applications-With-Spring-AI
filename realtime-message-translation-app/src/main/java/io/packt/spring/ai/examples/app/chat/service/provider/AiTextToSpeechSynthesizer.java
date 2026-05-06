@@ -24,7 +24,7 @@ import org.springframework.ai.audio.tts.TextToSpeechModel;
 import org.springframework.ai.audio.tts.TextToSpeechOptions;
 import org.springframework.ai.audio.tts.TextToSpeechPrompt;
 import org.springframework.ai.audio.tts.TextToSpeechResponse;
-import org.springframework.ai.openai.api.OpenAiAudioApi;
+import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -36,8 +36,8 @@ import lombok.RequiredArgsConstructor;
  * from {@link String written text}.
  *
  * @author John Blum
- * @see TextToSpeechSynthesizer
  * @see Service
+ * @see TextToSpeechSynthesizer
  * @since 0.1.0
  */
 @Service
@@ -72,8 +72,8 @@ public class AiTextToSpeechSynthesizer implements TextToSpeechSynthesizer {
 	private TextToSpeechOptions newTextToSpeechOptions() {
 
 		return TextToSpeechOptions.builder()
-			.voice(OpenAiAudioApi.SpeechRequest.Voice.ALLOY.toString())
-			.format(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3.toString())
+			.voice(OpenAiAudioSpeechOptions.Voice.ALLOY.toString())
+			.format(OpenAiAudioSpeechOptions.AudioResponseFormat.MP3.toString())
 			.model(OPENAI_TTS_MODEL)
 			.build();
 	}

@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
@@ -38,7 +37,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.client.RestClientCustomizer;
+import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
@@ -53,6 +52,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
 import lombok.Getter;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama ({@literal llama3.2} model) to demonstrate Tool Calling

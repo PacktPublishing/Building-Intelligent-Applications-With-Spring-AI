@@ -17,7 +17,6 @@ package com.packt.spring.ai.examples.testing.pregeneratedanswers.config;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
@@ -35,6 +34,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link SpringBootConfiguration} or all {@link ApplicationRunner ApplicationRunners}.

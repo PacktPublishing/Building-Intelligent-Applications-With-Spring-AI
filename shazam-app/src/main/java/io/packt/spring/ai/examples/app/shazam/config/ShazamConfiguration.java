@@ -31,8 +31,8 @@ import io.packt.spring.ai.examples.app.shazam.service.provider.JavaSoundAudioSpl
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;

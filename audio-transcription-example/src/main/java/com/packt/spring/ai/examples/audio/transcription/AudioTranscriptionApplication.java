@@ -15,6 +15,9 @@
  */
 package com.packt.spring.ai.examples.audio.transcription;
 
+import org.springframework.ai.audio.transcription.AudioTranscription;
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
+import org.springframework.ai.audio.transcription.AudioTranscriptionResponse;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
@@ -55,7 +58,10 @@ public class AudioTranscriptionApplication {
 
 		return args -> {
 			Resource audio = new ClassPathResource("audio.mp3");
-			String text = transcriptionModel.call(audio);
+			AudioTranscriptionPrompt prompt = new AudioTranscriptionPrompt(audio);
+			AudioTranscriptionResponse response = transcriptionModel.call(prompt);
+			AudioTranscription transcription = response.getResult();
+			String text = transcription.getOutput();
 			System.out.printf("\"%s\"%n", text.trim());
 		};
 	}

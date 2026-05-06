@@ -28,8 +28,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.codeprimate.extensions.spring.ai.document.EmbeddedDocument;
 import io.codeprimate.extensions.spring.ai.embedding.EmbeddingModelWrapper;
 import io.codeprimate.extensions.spring.ai.transformer.splitter.DocumentTextSplitter;
@@ -57,13 +55,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Ollama ({@literal nomic-embed-text} model)
  * to demonstrate Similarity Search.
  *
  * @author John Blum
- * @see com.fasterxml.jackson.databind.ObjectMapper
  * @see org.springframework.ai.document.Document
  * @see org.springframework.ai.embedding.EmbeddingModel
  * @see org.springframework.ai.transformer.splitter.TextSplitter
@@ -72,6 +70,7 @@ import lombok.NoArgsConstructor;
  * @see org.springframework.boot.ApplicationRunner
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.boot.builder.SpringApplicationBuilder
+ * @see tools.jackson.databind.ObjectMapper
  * @since 0.1.0
  */
 @SpringBootApplication

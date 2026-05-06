@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable;
 import com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Question;
@@ -39,6 +38,7 @@ import org.springframework.util.Assert;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link Repository} and {@link InMemoryHowToRepository} implementation used to persist {@link HowTo} objects
@@ -46,7 +46,6 @@ import lombok.RequiredArgsConstructor;
  *
  * @author John Blum
  * @see java.io.File
- * @see com.fasterxml.jackson.databind.ObjectMapper
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.HowTo
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.model.Nameable
  * @see com.packt.spring.ai.examples.testing.pregeneratedanswers.repo.InMemoryHowToRepository
@@ -55,6 +54,7 @@ import lombok.RequiredArgsConstructor;
  * @see org.springframework.core.env.Environment
  * @see org.springframework.core.io.Resource
  * @see org.springframework.stereotype.Repository
+ * @see tools.jackson.databind.ObjectMapper
  * @since 0.1.0
  */
 @Primary
@@ -100,16 +100,9 @@ public class JsonFileHowToRepository extends InMemoryHowToRepository {
 	}
 
 	private boolean doSave(HowTo howTo) {
-
 		File jsonFile = toJsonFile(howTo);
-
-		try {
-			getObjectMapper().writeValue(jsonFile, howTo);
-			return true;
-		}
-		catch (IOException e) {
-			throw new RuntimeException("Failed to save HowTo [%s] to file [%s]".formatted(howTo, jsonFile), e);
-		}
+		getObjectMapper().writeValue(jsonFile, howTo);
+		return true;
 	}
 
 	private boolean isPersistenceEnabled() {
