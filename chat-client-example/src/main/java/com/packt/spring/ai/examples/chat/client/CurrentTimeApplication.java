@@ -34,6 +34,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * {@link SpringBootApplication} using Spring AI with OpenAI ChatGPT ({@literal gpt-4o} model) to demonstrate
  * the {@link ChatClient} API by returning the current time for any location in the world.
@@ -59,6 +61,7 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
+@Slf4j(topic = "spring-ai-examples-current-time")
 public class CurrentTimeApplication {
 
 	private static final String EXIT = "exit";
@@ -76,6 +79,7 @@ public class CurrentTimeApplication {
 
 	@Bean
 	ChatClient chatClient(ChatModel chatModel) {
+		log.trace("CHAT MODEL [{}]", chatModel.getClass().getName());
 		return ChatClient.builder(chatModel).build();
 	}
 

@@ -71,8 +71,7 @@
 					<exists>${project.basedir}/src/main/resources/application-user.properties</exists>
 				</file>
 				<property>
-					<name>ai</name>
-					<value>openai</value>
+					<name>!ai</name>
 				</property>
 			</activation>
 			<dependencies>
