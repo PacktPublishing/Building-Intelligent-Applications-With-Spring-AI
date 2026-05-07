@@ -77,3 +77,12 @@ While you cannot observe the programs behavior as described in this README, the 
 Type "exit" to quit the program.
 
 Watch the link:streaming-example-demo.mp4[Demo]
+
+Try:
+
+++++
+<video width="800" controls>
+  <source src="./streaming-example-demo.mp4" type="video/quicktime">
+  Your browser does not support the video tag.
+</video>
+++++
