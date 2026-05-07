@@ -75,3 +75,5 @@ user>
 While you cannot observe the programs behavior as described in this README, the AI generated response is output as the model is generating the response. And so, you see the text appears as if someone is typing.
 
 Type "exit" to quit the program.
+
+Watch the link:streaming-example-demo.mp4[Demo]
