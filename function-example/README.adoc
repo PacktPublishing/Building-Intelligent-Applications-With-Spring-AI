@@ -3,13 +3,13 @@
 
 This Spring AI example contains a simple Spring Boot application using Spring AI's https://docs.spring.io/spring-ai/reference/api/tools.html[Tool Calling API] and https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html#_function_calling[Ollama's Function Calling] to configure a Function defined by our application, called by an AI model.
 
-By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `llama3.2` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
+By default, this example runs Spring AI with https://ollama.com[Ollama] using Meta's `functiongemma` model. See Spring AI documentation on https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html[using Ollama].
 
-> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's llama3.2, run `$ ollama run llama3.2`.
+> NOTE: Using Ollama allows you to run AI models locally. Goto https://ollama.com/download[download] and install Ollama on your computer. To install a AI model locally, such as Meta's functiongemma, run `$ ollama run functiongemma`.
 
-In addition, the https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L109-L135[Stock Quote Function] defined by the application and called by the AI model uses https://polygon.io/[Polygon] and their https://polygon.io/docs/rest/quickstart[REST API] to access stock market data. A https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L93-L107[Spring `RestClient` bean] has be configured to access the Polgon REST API.
+In addition, the https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L130-L156[Stock Quote Function] defined by the application and called by the AI model uses https://polygon.io/[Polygon] and their https://polygon.io/docs/rest/quickstart[REST API] to access stock market data. A https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/java/com/packt/spring/ai/examples/function/StockQuotesFunctionApplication.java#L100-L114[Spring `RestClient` bean] has be configured to access the Polgon REST API.
 
-In order to run the problem you must sign up for a free account at Polygon and create an API key. Once you have an API key set the `examples.app.stock-quotes.polygon.api.key` property in `application.properties`, https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/resources/application.properties#L9[here].
+In order to run the program you must sign up for a free account at Polygon and create an API key. Once you have an API key set the `examples.app.stock-quotes.polygon.api.key` property in `application.properties`, https://github.com/PacktPublishing/Building-Intelligent-Applications-With-Spring-AI/blob/main/function-example/src/main/resources/application.properties#L9[here].
 
 To run the program, enter the following Maven command at the command-line:
 
@@ -73,3 +73,6 @@ Enter Stock Symbol: exit
 ```
 
 Type "exit" to quit.
+
+> NOTE: As of October 30th, 2025, Polygon.io was rebranded as Massive. See the https://massive.com/blog/polygon-is-now-massive[public announcement] posted on Massive's Blog for more details.
+However, the original, base REST API URL still works as is.

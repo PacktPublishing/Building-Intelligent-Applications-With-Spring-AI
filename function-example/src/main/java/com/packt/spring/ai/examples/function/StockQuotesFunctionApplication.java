@@ -172,11 +172,11 @@ public class StockQuotesFunctionApplication {
 						.toolNames(STOCK_PRICE_FUNCTION_NAME)
 						.build();
 
-					String template = "What is the current price for {stock}?";
+					String promptTemplate = "What is the current price for {stock}?";
 
 					Map<String, Object> promptArguments = Map.of("stock", stockSymbol);
 
-					Prompt prompt = new PromptTemplate(template).create(promptArguments, chatOptions);
+					Prompt prompt = new PromptTemplate(promptTemplate).create(promptArguments, chatOptions);
 
 					String stockPrice = chatClient.prompt(prompt).call().content();
 
