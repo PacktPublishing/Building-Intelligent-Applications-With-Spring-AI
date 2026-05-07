@@ -81,4 +81,9 @@ public class Rfc1123DateTimeStructuredOutputConverterUnitTests {
 	void convertDateTimeTwo() {
 		assertDateTimeAtTimezoneOffset("Mon, 02 Jun 2025 02:32:19 +0200", 2025, Month.JUNE, 2, 2, 32, 19, "+02:00");
 	}
+
+	@Test
+	void convertDateTimeThree() {
+		assertDateTimeAtTimezoneOffset("Thu, 07 May 2026 20:41:35 EDT", 2026, Month.MAY, 7, 20, 41, 35, "-04:00");
+	}
 }

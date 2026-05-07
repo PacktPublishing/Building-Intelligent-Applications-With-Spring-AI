@@ -17,7 +17,11 @@ package io.codeprimate.extensions.spring.ai.converter;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.cp.elements.lang.Assert;
 import org.slf4j.Logger;
@@ -41,6 +45,12 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 	public static final Rfc1123DateTimeStructuredOutputConverter INSTANCE
 		= new Rfc1123DateTimeStructuredOutputConverter();
 
+	// AI models are stupid! This set of Date/Time patterns captures possible return values by LLMs
+	// that don't know how to follow instructions!
+	private static final Set<String> DATE_TIME_PATTERNS = Set.of(
+		"EEE, dd MMM yyyy HH:mm:ss z"
+	);
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
@@ -53,15 +63,46 @@ public class Rfc1123DateTimeStructuredOutputConverter implements StructuredOutpu
 	}
 
 	@Override
+	@SuppressWarnings("all")
 	public @NonNull ZonedDateTime convert(@NonNull String source) {
 
 		Assert.hasText(source, () -> "Source [%s] to convert as an RFC 1123 Date & Time is required".formatted(source));
 
 		getLogger().info("Converting source [{}] to RFC 1123 Date & Time", source);
 
-		TemporalAccessor dateTime = DateTimeFormatter.RFC_1123_DATE_TIME.parse(source);
+		RuntimeException originalCause = null;
 
-		return ZonedDateTime.from(dateTime);
-		//return ZonedDateTime.parse(source, DateTimeFormatter.RFC_1123_DATE_TIME);
+		for (DateTimeFormatter dateTimeFormatter : getDateTimeFormatters()) {
+			try {
+				TemporalAccessor dateTime = dateTimeFormatter.parse(source);
+				return ZonedDateTime.from(dateTime);
+			}
+			catch (DateTimeParseException cause) {
+				if (originalCause == null) {
+					originalCause = cause;
+				}
+			}
+		}
+
+		throw originalCause;
+	}
+
+	protected List<DateTimeFormatter> getDateTimeFormatters() {
+
+		Set<String> dateTimePatterns = getDateTimePatterns();
+
+		List<DateTimeFormatter> dateTimeFormatters = new ArrayList<>(1 + dateTimePatterns.size());
+
+		dateTimeFormatters.add(DateTimeFormatter.RFC_1123_DATE_TIME);
+
+		dateTimePatterns.stream()
+			.map(DateTimeFormatter::ofPattern)
+			.forEach(dateTimeFormatters::add);
+
+		return dateTimeFormatters;
+	}
+
+	protected Set<String> getDateTimePatterns() {
+		return DATE_TIME_PATTERNS;
 	}
 }
