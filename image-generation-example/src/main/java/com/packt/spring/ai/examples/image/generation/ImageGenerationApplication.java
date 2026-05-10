@@ -26,9 +26,10 @@ import javax.imageio.ImageIO;
 import org.springframework.ai.image.Image;
 import org.springframework.ai.image.ImageGeneration;
 import org.springframework.ai.image.ImageModel;
+import org.springframework.ai.image.ImageOptions;
+import org.springframework.ai.image.ImageOptionsBuilder;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
-import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -82,11 +83,10 @@ public class ImageGenerationApplication {
 					directly on the cat's back.
 				""";
 
-			OpenAiImageOptions options = new OpenAiImageOptions();
-
-			options.setWidth(WIDTH);
-			options.setHeight(HEIGHT);
-			options.setSize(IMAGE_SIZE);
+			ImageOptions options = ImageOptionsBuilder.builder()
+				.width(WIDTH)
+				.height(HEIGHT)
+				.build();
 
 			ImagePrompt prompt = new ImagePrompt(instructions, options);
 
