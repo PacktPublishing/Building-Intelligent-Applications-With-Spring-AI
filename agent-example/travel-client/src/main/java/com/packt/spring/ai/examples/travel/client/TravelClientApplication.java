@@ -30,14 +30,18 @@ import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 
 import org.cp.elements.lang.Assert;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+
+import lombok.val;
 
 /**
  * {@link SpringBootApplication} and {@literal MCP client} for the Travel Agent application.
@@ -69,17 +73,19 @@ public class TravelClientApplication extends AbstractSpringBootApplication {
 	}
 
 	@Bean
-	ApplicationRunner programRunner(ObjectMapper objectMapper) {
+	ApplicationRunner programRunner(ObjectProvider<ObjectMapper> objectMapperProvider) {
 
 		return applicationArguments -> {
 
 			File pathToTravelAgentJar = resolveTravelAgentJar(applicationArguments);
 
+			val mcpJsonMapper = new JacksonMcpJsonMapper(objectMapperProvider.getObject());
+
 			var serverParameters = new ServerParameters.Builder(JAVA_LAUNCHER)
 				.args("-jar", pathToTravelAgentJar.getAbsolutePath())
 				.build();
 
-			var transport = new StdioClientTransport(serverParameters, objectMapper);
+			var transport = new StdioClientTransport(serverParameters, mcpJsonMapper);
 
 			try (var client = McpClient.sync(transport).build()) {
 
