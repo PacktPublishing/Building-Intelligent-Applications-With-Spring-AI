@@ -263,6 +263,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private void logExplanation(PlayerAction playerAction) {
 
 		if (LOG_EXPLANATION) {
+			logInfo("AI model move [{}]", playerAction.move());
 			logInfo("AI model explanation [{}]", playerAction.reason());
 			logInfo("AI model decision duration {} ms", playerAction.time().toMillis());
 		}
