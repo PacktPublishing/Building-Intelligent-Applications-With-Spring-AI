@@ -35,6 +35,7 @@ import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
 import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
+import io.codeprimate.extensions.util.AbstractTimer;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.boot.ApplicationRunner;
@@ -155,13 +156,14 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				logCurrentPlayer(currentPlayer);
 				logModelInput(model, promptTemplateArguments, boardGame);
 
-				long timestamp = System.currentTimeMillis();
+				AbstractTimer<?, Play> playTimer =
+					AbstractTimer.time(() -> promptModel(model, promptTemplateArguments, chatClient));
 
-				Play play = promptModel(model, promptTemplateArguments, chatClient);
+				Play play = playTimer.run();
 
-				Duration milliseconds = durationInMilliseconds(timestamp);
+				Duration playTime = playTimer.getTime();
 
-				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play).in(milliseconds);
+				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play).in(playTime);
 
 				logExplanation(playerAction);
 
@@ -248,11 +250,6 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				throw ConnectFourException.because("AI model fumbled the ball", cause);
 			}
 		};
-	}
-
-	private static Duration durationInMilliseconds(long timestamp) {
-		long timeDifferenceInMilliseconds = System.currentTimeMillis() - timestamp;
-		return Duration.ofMillis(timeDifferenceInMilliseconds);
 	}
 
 	private void logCurrentPlayer(Player currentPlayer) {
