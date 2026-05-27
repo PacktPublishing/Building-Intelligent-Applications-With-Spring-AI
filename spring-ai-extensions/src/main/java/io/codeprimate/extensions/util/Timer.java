@@ -44,4 +44,13 @@ public interface Timer<IN, OUT> {
 	 */
 	OUT run(IN input);
 
+	/**
+	 * Run the operation.
+	 *
+	 * @return {@link OUT value} computed by operation.
+	 * @see #run(Object)
+	 */
+	default OUT run() {
+		return run(null);
+	}
 }
