@@ -21,9 +21,11 @@ import java.time.Duration;
  * Interface defining a contract to time operations.
  *
  * @author John Blum
+ * @see FunctionalInterface
  * @see java.time.Duration
  * @since 0.1.0
  */
+@FunctionalInterface
 @SuppressWarnings("unused")
 public interface Timer<IN, OUT> {
 
