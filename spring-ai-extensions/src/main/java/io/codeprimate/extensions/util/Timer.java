@@ -30,11 +30,13 @@ public interface Timer<IN, OUT> {
 	/**
 	 * Get the {@link Duration} of the {@link #run(Object)}.
 	 *
-	 * @return the {@link Duration} of the {@link #run(Object)}.
+	 * @return the {@link Duration} of the {@link #run(Object)}; defaults to {@link Duration#ZERO}.
 	 * @see java.time.Duration
 	 * @see #run(Object)
 	 */
-	Duration getTime();
+	default Duration getTime() {
+		return Duration.ZERO;
+	}
 
 	/**
 	 * Run the operation.
