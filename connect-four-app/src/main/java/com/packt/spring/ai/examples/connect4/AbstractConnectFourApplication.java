@@ -65,7 +65,9 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 
 		return chatClient.prompt()
 			.system(systemPromptTemplate())
-			.user(promptUserSpec -> promptUserSpec.text(userPromptTemplate()).params(promptTemplateArguments))
+			.user(promptUserSpec -> promptUserSpec
+				.text(userPromptTemplate(promptTemplateArguments))
+				.params(promptTemplateArguments))
 			.options(Utils.buildChatOptions(model))
 			.call()
 			.entity(jsonConverter);
@@ -83,6 +85,6 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 
 	abstract String systemPromptTemplate();
 
-	abstract String userPromptTemplate();
+	abstract String userPromptTemplate(Map<String, Object> promptTemplateArguments);
 
 }

@@ -1,0 +1,47 @@
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+
+Press <enter> to continue next play
+Current player is [Google Vertex AI Gemini] playing [X]
+
+2026-05-26T20:03:12.730-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model move [D]
+2026-05-26T20:03:12.730-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model explanation [The board is currently filled with alternating 'X' and 'O' in column D. Placing an 'X' in column D will create a vertical connection of 4 'X's, thus winning the game. This is the optimal move as it leads to an immediate win.]
+2026-05-26T20:03:12.730-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model decision duration 1386 ms
+2026-05-26T20:03:12.733-07:00  WARN 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : Available Columns [A, B, C, E, F, G]
+2026-05-26T20:03:12.733-07:00  WARN 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : Connect4 Game Board State [
+---O---
+---X---
+---O---
+---X---
+---O---
+---X---]
+2026-05-26T20:03:12.733-07:00  WARN 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : Player [Google Vertex AI Gemini] incorrectly attempted to play [D]
+2026-05-26T20:03:13.752-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model move [F]
+2026-05-26T20:03:13.752-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model explanation [I will play in column F to block the opponent's potential win. They have three 'O's in a row diagonally from bottom-left to top-right, and playing in F would prevent them from completing their four-in-a-row.]
+2026-05-26T20:03:13.752-07:00  INFO 69284 --- [Connect4 App] [           main] c.ConnectFourApplication$$SpringCGLIB$$0 : AI model decision duration 2403 ms
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   | X |   |
+ --- --- --- --- --- --- ---

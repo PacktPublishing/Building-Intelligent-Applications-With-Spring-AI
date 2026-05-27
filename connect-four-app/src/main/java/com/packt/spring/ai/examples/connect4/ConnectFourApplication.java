@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.DatabindException;
 import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
 import com.packt.spring.ai.examples.connect4.model.Disc;
 import com.packt.spring.ai.examples.connect4.model.Play;
@@ -37,6 +39,7 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.util.AbstractTimer;
 
+import org.cp.elements.util.MapBuilder;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
@@ -44,11 +47,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
  *
  * @author John Blum
+ * @see org.springframework.boot.SpringBootConfiguration
  * @see org.springframework.boot.autoconfigure.SpringBootApplication
  * @see org.springframework.context.annotation.Profile
  * @see AbstractConnectFourApplication
@@ -69,7 +77,15 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private static final boolean LOG_EXPLANATION = true;
 	private static final boolean MOCK_AI_ENABLED = false;
 
+	private static final int MAX_RETRY_ATTEMPTS = 2;
+
+	private static final String TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT = "triedColumn";
+
 	static final String CONNECT_FOUR_PROFILE = "connect4";
+
+	private static final String RETRY_PROMPT_TEMPLATE = """
+		"{triedColumn}" is not an available column! You can only play 1 of the letters in: {availableColumns}. Try again!
+	""";
 
 	// System & User Prompts prompting the AI models on how to play Connect4 and instructing them to play.
 	private static final String SYSTEM_PROMPT_TEMPLATE = """
@@ -84,7 +100,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		and strategically about your next move. Minimize the number of moves needed to connect 4 and beat your opponent.
 		If you have an opportunity to win, then you must make a move to win. If your opponent has an opportunity to win,
 		then you should block your opponent and prevent them from winning. Select 1 of the available columns represented
-		as a letter in {availableColumns}. What is your move? Explain.
+		as a letter in: {availableColumns}. What is your move? Explain.
 	""";
 
 	private static final List<SpringAiProvider> AI_PROVIDERS = List.of(
@@ -117,6 +133,22 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		ConnectFourBoardGame boardGame() {
 			return new ConnectFourBoardGame();
 		}
+
+		@Bean
+		RetryTemplate retryTemplate() {
+
+			RetryPolicy retryPolicy = new SimpleRetryPolicy(MAX_RETRY_ATTEMPTS, Map.of(
+				ConnectFourException.class, true,
+				DatabindException.class, true,
+				IndexOutOfBoundsException.class, true
+			), true);
+
+			RetryTemplate retryTemplate = new RetryTemplate();
+
+			retryTemplate.setRetryPolicy(retryPolicy);
+
+			return retryTemplate;
+		}
 	}
 
 	/**
@@ -136,7 +168,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	 */
 	@Bean
 	ApplicationRunner playGame(Environment environment, ChatClient chatClient, CompositeChatModel chatModel,
-			ConnectFourBoardGame boardGame) {
+			ConnectFourBoardGame boardGame, RetryTemplate retryTemplate) {
 
 		return args -> {
 
@@ -150,27 +182,45 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				String model = resolveModel(environment, currentPlayer);
 
+				Player activePlayer = currentPlayer;
+
 				Map<String, Object> promptTemplateArguments =
 					resolvePromptTemplateArguments(boardGame, currentPlayer);
+
+				AtomicReference<String> playerMove = new AtomicReference<>(null);
+				AtomicReference<Duration> totalPlayTime = new AtomicReference<>(Duration.ZERO);
 
 				logCurrentPlayer(currentPlayer);
 				logModelInput(model, promptTemplateArguments, boardGame);
 
-				AbstractTimer<?, Play> playTimer =
-					AbstractTimer.time(() -> promptModel(model, promptTemplateArguments, chatClient));
+				retry(retryTemplate, retryContext -> {
 
-				Play play = playTimer.run();
+					if (retryContext.getRetryCount() > 0) {
+						logWarn("Player [{}] incorrectly attempted to play [{}]; Retry count [{}]", () -> new Object[] {
+							activePlayer.getName(), playerMove.get(), retryContext.getRetryCount()
+						});
+						promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, playerMove.get());
+					}
 
-				Duration playTime = playTimer.getTime();
+					AbstractTimer<?, Play> playTimer =
+						AbstractTimer.time(() -> promptModel(model, promptTemplateArguments, chatClient));
 
-				PlayerAction playerAction = PlayerAction.by(currentPlayer).played(play).in(playTime);
+					Play play = playTimer.run();
 
-				logExplanation(playerAction);
+					Duration playTime = totalPlayTime.updateAndGet(it -> it.plus(playTimer.getTime()));
 
-				playSafely(gameBoard -> {
-					gameBoard.play(playerAction);
-					gameBoard.printGameBoard();
-				}).accept(boardGame);
+					PlayerAction playerAction = PlayerAction.by(activePlayer).played(play).in(playTime);
+
+					playerMove.set(playerAction.move());
+					logExplanation(playerAction);
+
+					playSafely(gameBoard -> {
+						gameBoard.play(playerAction);
+						gameBoard.printGameBoard();
+					}).accept(boardGame);
+
+					return playerAction;
+				});
 
 				if (boardGame.isPlayable()) {
 					currentPlayer = players.switchPlayer(chatModel);
@@ -214,11 +264,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 	private Map<String, Object> resolvePromptTemplateArguments(ConnectFourBoardGame boardGame, Player player) {
 
-		return Map.of(
-			"gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()),
-			"playerDisc", player.disc().getSymbol(),
-			"availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter())
-		);
+		return MapBuilder.<String, Object>newHashMap()
+			.put("gameBoard", "\n\n%s\n\n".formatted(boardGame.getGameBoardStateAsGrid()))
+			.put("playerDisc", player.disc().getSymbol())
+			.put("availableColumns", Arrays.toString(boardGame.getPlayableColumnsAsLetter()))
+			.build();
 	}
 
 	private Play promptModel(String model, Map<String, Object> promptTemplateArguments, ChatClient chatClient) {
@@ -234,22 +284,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	}
 
 	@Override
-	String userPromptTemplate() {
-		return USER_PROMPT_TEMPLATE;
-	}
+	String userPromptTemplate(Map<String, Object> promptTemplateArguments) {
 
-	private Consumer<ConnectFourBoardGame> playSafely(Consumer<ConnectFourBoardGame> boardGameConsumer) {
-
-		return boardGame -> {
-			try {
-				boardGameConsumer.accept(boardGame);
-			}
-			catch (RuntimeException cause) {
-				logWarn("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
-				logWarn("Connect4 Game Board State [{}]", boardGame.getGameBoardStateAsGrid());
-				throw ConnectFourException.because("AI model fumbled the ball", cause);
-			}
-		};
+		return promptTemplateArguments.containsKey(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT)
+			? RETRY_PROMPT_TEMPLATE.concat(System.lineSeparator()).concat(USER_PROMPT_TEMPLATE)
+			: USER_PROMPT_TEMPLATE;
 	}
 
 	private void logCurrentPlayer(Player currentPlayer) {
@@ -272,6 +311,26 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		logDebug("Model [{}]", model);
 		logDebug("Prompt Arguments [{}]", promptTemplateArguments);
 		logDebug("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+	}
+
+	private Consumer<ConnectFourBoardGame> playSafely(Consumer<ConnectFourBoardGame> boardGameConsumer) {
+
+		return boardGame -> {
+			try {
+				boardGameConsumer.accept(boardGame);
+			}
+			catch (RuntimeException cause) {
+				logWarn("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
+				logWarn("Connect4 Game Board State [{}]", boardGame.getGameBoardStateAsGrid());
+				throw ConnectFourException.because("AI model fumbled the ball", cause);
+			}
+		};
+	}
+
+	private PlayerAction retry(RetryTemplate retryTemplate,
+			RetryCallback<PlayerAction, ConnectFourException> retryCallback) {
+
+		return retryTemplate.execute(retryCallback);
 	}
 
 	private void waitOnUserInput(Scanner input) {
