@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+	<contextName>ConnectFourLoggingContext</contextName>
+
+	<statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} - [%t] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="APP" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%t][%-4level] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="connect-four-app" level="${connect4.logging.app.log-level:-INFO}" additivity="false">
+		<appender-ref ref="APP"/>
+	</logger>
+
+	<root level="${connect4.logging.root.log-level:-WARN}">
+		<appender-ref ref="CONSOLE"/>
+	</root>
+
+</configuration>

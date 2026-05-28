@@ -41,6 +41,7 @@ import io.codeprimate.extensions.util.AbstractTimer;
 
 import org.cp.elements.util.MapBuilder;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,6 +52,8 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@link SpringBootApplication} using Spring AI with Google Gemini vs. OpenAI in a game of Connect 4.
@@ -71,6 +74,7 @@ import org.springframework.retry.support.RetryTemplate;
  */
 @SpringBootApplication
 @Profile(ConnectFourApplication.CONNECT_FOUR_PROFILE)
+@Slf4j(topic = "connect-four-app")
 @SuppressWarnings("unused")
 public class ConnectFourApplication extends AbstractConnectFourApplication {
 
@@ -299,10 +303,14 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 	private void logExplanation(PlayerAction playerAction) {
 
 		if (LOG_EXPLANATION) {
-			logInfo("AI model move [{}]", playerAction.move());
-			logInfo("AI model explanation [{}]", playerAction.reason());
-			logInfo("AI model decision duration {} ms", playerAction.time().toMillis());
+			logGamePlay("AI model move [{}]", playerAction.move());
+			logGamePlay("AI model explanation [{}]", playerAction.reason());
+			logGamePlay("AI model decision duration {} ms", playerAction.time().toMillis());
 		}
+	}
+
+	private void logGamePlay(String message, Object... arguments) {
+		log.info(message, arguments);
 	}
 
 	private void logModelInput(String model, Map<String, Object> promptTemplateArguments,
