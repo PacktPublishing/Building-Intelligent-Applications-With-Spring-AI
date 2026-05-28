@@ -23,6 +23,7 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
@@ -39,6 +40,7 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.util.AbstractTimer;
 
+import org.cp.elements.util.ArrayUtils;
 import org.cp.elements.util.MapBuilder;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +52,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryPolicy;
+import org.springframework.retry.policy.CompositeRetryPolicy;
+import org.springframework.retry.policy.PredicateRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.client.ResourceAccessException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -142,17 +147,35 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		RetryTemplate retryTemplate(
 				@Value("${connect4.retry.max-attempts:"+MAX_RETRY_ATTEMPTS+"}") Integer maxRetryAttempts) {
 
-			RetryPolicy retryPolicy = new SimpleRetryPolicy(maxRetryAttempts, Map.of(
+			SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(maxRetryAttempts, Map.of(
 				ConnectFourException.class, true,
 				DatabindException.class, true,
 				IndexOutOfBoundsException.class, true
 			), true);
+
+			Predicate<Throwable> retryPredicate = throwable ->
+				throwable instanceof ResourceAccessException
+					&& String.valueOf(throwable.getMessage()).toLowerCase().contains("operation timed out");
+
+			PredicateRetryPolicy predicateRetryPolicy = new PredicateRetryPolicy(retryPredicate);
+
+			CompositeRetryPolicy retryPolicy = compose(simpleRetryPolicy, predicateRetryPolicy);
 
 			RetryTemplate retryTemplate = new RetryTemplate();
 
 			retryTemplate.setRetryPolicy(retryPolicy);
 
 			return retryTemplate;
+		}
+
+		private CompositeRetryPolicy compose(RetryPolicy... retryPolicies) {
+
+			CompositeRetryPolicy retryPolicy = new CompositeRetryPolicy();
+
+			retryPolicy.setPolicies(ArrayUtils.asArray(retryPolicies));
+			retryPolicy.setOptimistic(true);
+
+			return retryPolicy;
 		}
 	}
 
