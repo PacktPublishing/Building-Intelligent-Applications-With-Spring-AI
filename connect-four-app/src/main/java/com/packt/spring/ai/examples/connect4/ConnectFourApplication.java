@@ -217,8 +217,8 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				Map<String, Object> promptTemplateArguments =
 					resolvePromptTemplateArguments(boardGame, currentPlayer);
 
-				AtomicReference<String> playerMove = new AtomicReference<>(null);
 				AtomicReference<Duration> totalPlayTime = new AtomicReference<>(Duration.ZERO);
+				AtomicReference<PlayerAction> playerActionRef = new AtomicReference<>(null);
 
 				logCurrentPlayer(currentPlayer);
 				logModelInput(model, promptTemplateArguments, boardGame);
@@ -227,12 +227,13 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 					if (retryContext.getRetryCount() > 0) {
 						if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
-							Supplier<Object[]> arguments = () -> new Object[] {
-								activePlayer.getName(), playerMove.get(), retryContext.getRetryCount()
-							};
-							logGamePlay("Player [{}] incorrectly attempted to play [{}]; Retry count [{}]", arguments);
-							promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, playerMove.get());
+							PlayerAction lastPlayerAction = playerActionRef.get();
+							Supplier<Object[]> arguments = () ->
+								ArrayUtils.asArray(lastPlayerAction.player().getName(), lastPlayerAction.move());
+							logGamePlay("Player [{}] incorrectly attempted to play [{}]", arguments);
+							promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
 						}
+						logGamePlay("Retry count [{}]", retryContext.getRetryCount());
 					}
 
 					AbstractTimer<?, Play> playTimer =
@@ -242,9 +243,9 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 					Duration playTime = totalPlayTime.updateAndGet(it -> it.plus(playTimer.getTime()));
 
-					PlayerAction playerAction = PlayerAction.by(activePlayer).played(play).in(playTime);
+					PlayerAction playerAction = playerActionRef
+						.updateAndGet(it -> PlayerAction.by(activePlayer).played(play).in(playTime));
 
-					playerMove.set(playerAction.move());
 					logExplanation(playerAction);
 
 					playSafely(gameBoard -> {
@@ -342,6 +343,12 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		log.info(message, arguments);
 	}
 
+	private void logGamePlay(String message, Supplier<Object[]> arguments) {
+		if (log.isInfoEnabled()) {
+			log.info(message, arguments.get());
+		}
+	}
+
 	private void logModelInput(String model, Map<String, Object> promptTemplateArguments,
 			ConnectFourBoardGame boardGame) {
 
@@ -390,3 +397,4 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		}
 	}
 }
+
