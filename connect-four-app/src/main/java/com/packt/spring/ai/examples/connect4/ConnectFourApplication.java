@@ -139,9 +139,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		}
 
 		@Bean
-		RetryTemplate retryTemplate() {
+		RetryTemplate retryTemplate(
+				@Value("${connect4.retry.max-attempts:"+MAX_RETRY_ATTEMPTS+"}") Integer maxRetryAttempts) {
 
-			RetryPolicy retryPolicy = new SimpleRetryPolicy(MAX_RETRY_ATTEMPTS, Map.of(
+			RetryPolicy retryPolicy = new SimpleRetryPolicy(maxRetryAttempts, Map.of(
 				ConnectFourException.class, true,
 				DatabindException.class, true,
 				IndexOutOfBoundsException.class, true
