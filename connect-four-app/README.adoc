@@ -16,7 +16,6 @@ They game proceeds until their is a clear winner or the game results in a draw (
 == REQUIREMENTS
 
 1. JDK 17
-2. Apache Maven `3.9.15`
 
 [[connect-four-app-run]]
 == RUN
@@ -151,11 +150,11 @@ Press <enter> to continue next play
 2026-May-27:
 
 Since writing the book, I have slightly modified and improved the Connect4 application.
-While I have enhanced the application, the design, components and use of Spring AI is largely as it was described in the book.
+Although, while I enhanced the application, the design, components and use of Spring AI is largely as it was described in the book.
 
-One of the more severe problems I encountered while building the example is that certain AI models would select unavailable moves, for example:
+One of the more severe problems I encountered while building the example is that certain AI models would make invalid moves, for example:
 
-.Example of Invalid Play (Move)
+.Example of Invalid Move
 [source,shell]
 ----
   A   B   C   D   E   F   G
@@ -209,8 +208,8 @@ Current player is [Mistral AI] playing [X]
 Press <enter> to continue next play
 ----
 
-As seen in the output above, Mistral AI attempted to play column D when the column is no longer available to play; all positions are exhausted.
-When this occurs, I have the application output the program/game state with available, correct columns to play along with the gameboard's current positions.
+As seen in the output above, Mistral AI attempted to play column D when the column is full.
+When this occurs, I have the application output the program/game state with available columns to play along with the gameboard's current positions.
 I then log the following message:
 
 .Logging Player's Incorrect Play
@@ -219,27 +218,31 @@ I then log the following message:
 026-05-27 17:10:24.650 - [main] - Player [Mistral AI] incorrectly attempted to play [D]; Retry count [1]
 ----
 
-Since this can occur quite frequently, I built in resiliency to the Connect4 application using https://github.com/spring-projects/spring-retry[Spring Retry].
+Since this can occur quite frequently, I built in *resiliency* to the Connect4 application using https://github.com/spring-projects/spring-retry[Spring Retry].
 
 > NOTE: As of Spring Framework `7.0`, Spring Retry was integrated into the core framework.
 Use of Spring Framework `7.0` requires the use of Spring Boot `4.0`.
-The Spring AI `2.0` release will be rebased on Spring Boot `4.1` along with Spring Framework `7.0`.
-I have built all Spring AI Examples for the book on all versions of Spring AI, including (up to) Spring AI `2.0`, which is on the `spring-ai-2.0.x` topic branch in this GitHub repository.
-You can learn more about the core Spring Framework's https://docs.spring.io/spring-framework/reference/core/resilience.html[Resilience Features] in the documentation.
+Spring AI `2.0` has been https://github.com/spring-projects/spring-ai/blob/2.0.0-M7/pom.xml#L263[rebased on] Spring Boot `4.1`, which is https://github.com/spring-projects/spring-boot/blob/v4.1.0-RC1/gradle.properties#L24[based on] Spring Framework `7.0`.
+I have built all Spring AI Examples for the book on all versions of Spring AI, including, and up to, Spring AI `2.0`.
+Support for Spring AI `2.0` is on the `spring-ai-2.0.x` topic branch in this GitHub repository.
+
+> TIP: You can learn more about the core Spring Framework's https://docs.spring.io/spring-framework/reference/core/resilience.html[Resilience Features] in the documentation.
 
 In general, there are many different ways you can handle program errors.
-You can simply rethrow the `Exception`/`Error` or wrap the `Throwable` in some type of custom, application domain-specific `Exception`.
+You can simply allow the `Exception`/`Error` to propagate up the call stack.
+You can rethrow the `Exception`/`Error` or wrap the `Throwable` in some type of custom, application domain-specific `Exception` or `Error`.
 You can `try`-`catch`, log a message or invoke some recovery action, such as releasing system resources.
 You can retry the operation with some type of backoff, such as exponential backoff.
 You have many options.
 However, when it comes to AI, you must be selective.
 
-In this case, I simply allow the AI model to try again, in other words, "retry" the operation using Spring Retry.
-You certainly don't want to let the AI model retry indefinitely.
-Each attempt costs additional tokens.
+In this case, I simply allow the AI model to try again.
+In other words, "retry" the operation using Spring Retry.
+You certainly don't want to let the AI model retry indefinitely since each attempt costs additional tokens.
+Technically, it is much better to make other adjustments that I summarize below.
 
-Of course, I don't simply reissue the same prompt.
-I customize the prompt and let the AI model know it made a bad choice, for example:
+Of course, when the application retries, it does not simply reissue the same prompt.
+The application customizes the prompt and lets the AI model know it made a bad choice, for example:
 
 [source,java]
 ----
@@ -248,11 +251,11 @@ private static final String RETRY_PROMPT_TEMPLATE = """
 """;
 ----
 
-The application inserts this additional prompt into the system and user prompts.
+The application inserts this additional prompt in between the system and user prompts.
 
 > NOTE: For simplicity's sake, I hardcoded the prompts in the application.
 However, it is recommended that you externalize the prompts to a file or some data store capable of managing your prompts.
-It is simple matter using Spring's https://docs.spring.io/spring-framework/reference/core/resources.html[Resource Abstraction] to access prompts from any data source.
+It is simple matter to use Spring's https://docs.spring.io/spring-framework/reference/core/resources.html[Resource Abstraction] to access prompts from any data source.
 
 Using the features and logic from Spring Retry, I can now have the AI model try again:
 
@@ -278,13 +281,18 @@ class ConnectFourApplication {
 						logGamePlay("Retry count [{}]", retryContext.getRetryCount());
                     }
                 });
+
+				// Run Game Logic Here
+
             }
         };
     }
 }
 ----
 
-The configuration of Spring Retry is declared and defined in the `RetryTemplate` bean of the application configuration:
+In this case, I also introduced a new `RuntimeException` to represent the invalid play, namely `InvalidPlayException`, as seen in the conditional statement in the code snippet above.
+
+The configuration of Spring Retry is defined and declared with the `RetryTemplate` bean in application configuration:
 
 .Application Configuration
 [source,java]
@@ -320,12 +328,12 @@ class ConnectFourConfiguration {
 
 `MAX_RETRY_ATTEMPTS` is set to 2 by default.
 
-As seen in the `RetryTemplate` bean configuration above, all `ConnectFourException` types are handles, such as `InvalidPlayException` along with Jackson's `DatabindException` during StructuredOutputConverter conversions.
-If the retry count exceeds configured (i.e. 2), then an Exception will simply by thrown and the game will end.
+As seen in the `RetryTemplate` bean configuration above, all `ConnectFourException` types are handled, such as `InvalidPlayException` along with Jackson's `DatabindException` during the `StructuredOutputConverter` conversion of JSON to an instance of `Play`.
+If the retry count exceeds configured (i.e. 2), then an `Exception` will simply be thrown and the game will end.
 
 Of course, the resilience logic is not as robust as it could be, and you could certainly handle this differently, but it illustrates what is possible.
 
-Technically, the optimization really belongs in the prompt as well as the data structured presented to the AI model to model the game's current state.
+Technically, the optimization really belongs in the **prompt** as well as the **data structure** presented to the AI model representing the game's current state.
 
 Can you think of what that data structure representation optimization might be?
 
