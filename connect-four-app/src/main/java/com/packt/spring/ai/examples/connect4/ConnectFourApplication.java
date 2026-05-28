@@ -53,6 +53,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.policy.CompositeRetryPolicy;
 import org.springframework.retry.policy.PredicateRetryPolicy;
@@ -225,19 +226,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 				retry(retryTemplate, retryContext -> {
 
-					if (retryContext.getRetryCount() > 0) {
-						if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
-							PlayerAction lastPlayerAction = playerActionRef.get();
-							Supplier<Object[]> arguments = () ->
-								ArrayUtils.asArray(lastPlayerAction.player().getName(), lastPlayerAction.move());
-							logGamePlay("Player [{}] incorrectly attempted to play [{}]", arguments);
-							promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
-						}
-						logGamePlay("Retry count [{}]", retryContext.getRetryCount());
-					}
+					retryHandler(retryContext, playerActionRef.get(), promptTemplateArguments);
 
-					AbstractTimer<?, Play> playTimer =
-						AbstractTimer.time(() -> promptModel(model, promptTemplateArguments, chatClient));
+					AbstractTimer<?, Play> playTimer = AbstractTimer.time(() ->
+						promptModel(model, promptTemplateArguments, chatClient));
 
 					Play play = playTimer.run();
 
@@ -265,6 +257,19 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 			endGame(boardGame, players);
 		};
+	}
+
+	private void retryHandler(RetryContext retryContext, PlayerAction lastPlayerAction,
+			Map<String, Object> promptTemplateArguments) {
+
+		if (retryContext.getRetryCount() > 0) {
+			if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
+				promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
+				logGamePlay("Player [{}] incorrectly attempted to play [{}]",
+					lastPlayerAction.player().getName(), lastPlayerAction.move());
+			}
+			logGamePlay("Retry count [{}]", retryContext.getRetryCount());
+		}
 	}
 
 	private Players selectPlayers(Scanner input) {
@@ -397,4 +402,3 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		}
 	}
 }
-
