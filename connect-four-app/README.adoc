@@ -1,0 +1,332 @@
+[[connect-four-app]]
+= Connect4 Application
+
+The Connect4 Spring AI, Spring Boot application was featured in **Chapter 6 - Connecting the Dots**.
+
+The Spring Boot application is a simple, interactive command-line interface (CLI) using Spring AI to have AI models compete against each other in a friendly game of Connect4.
+You can learn more about Connect4 on the https://en.wikipedia.org/wiki/Connect_Four[Wikipedia].
+
+A CLI was chosen for simplicity of implementation and to focus on AI model interactions.
+The application begins by having the user select 2 different, or the same, AI models to compete in a game of Connect4.
+The AI models each take turns playing a move.
+They must declare their move along with providing an explanation of why they chose the move they did.
+They game proceeds until their is a clear winner or the game results in a draw (tie).
+
+[[connect-four-app-requiredments]]
+== REQUIREMENTS
+
+1. JDK 17
+2. Apache Maven `3.9.15`
+
+[[connect-four-app-run]]
+== RUN
+
+Execute the following `mvnw` command from the `spring-ai-examples/` directory:
+
+.Spring Boot Run
+[source,shell]
+----
+$ mvnw --projects connect-four-app spring-boot:run
+----
+
+[[connect-four-app-test-run]]
+== TEST RUN
+
+Here is an example of the output from the application:
+
+.Spring Boot Run
+[source,shell]
+----
+  spring-ai-examples $ mvnw --projects connect-four-app spring-boot:run
+[INFO] Scanning for projects...
+[WARNING]
+[WARNING] Some problems were encountered while building the effective model for com.packt.spring.ai:shazam-app:jar:0.1.0-SNAPSHOT
+[WARNING] 'dependencies.dependency.systemPath' for io.honerlaw:audio-fingerprint:jar should not point at files within the project directory, ${project.basedir}/libs/audio-fingerprint-1.0.0.jar will be unresolvable by dependent projects @ line 94, column 16
+[WARNING] 'profiles.profile[mp3].dependencies.dependency.systemPath' for org.tritonus:tritonus_mp3:jar should not point at files within the project directory, ${project.basedir}/libs/tritonus_mp3-0.3.6.jar will be unresolvable by dependent projects @ line 183, column 18
+[WARNING]
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING]
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING]
+[INFO]
+[INFO] ----------------< com.packt.spring.ai:connect-four-app >----------------
+[INFO] Building ConnectFourApp 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.14:run (default-cli) > test-compile @ connect-four-app >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ connect-four-app ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ connect-four-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ connect-four-app ---
+[INFO] skip non existing resourceDirectory /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/connect-four-app/src/test/resources
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ connect-four-app ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] <<< spring-boot:3.5.14:run (default-cli) < test-compile @ connect-four-app <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.14:run (default-cli) @ connect-four-app ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.14)
+
+2026-05-27 17:07:13.248 - [main] - Starting ConnectFourApplication using Java 17.0.18 with PID 82485 (/Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/connect-four-app/target/classes started by jxblum in /Users/jxblum/cpdev/Packt/Building Intelligent Applications with Spring AI/spring-ai-examples/connect-four-app)
+2026-05-27 17:07:13.249 - [main] - The following 2 profiles are active: "connect4", "user"
+2026-05-27 17:07:13.787 - [main] - Started ConnectFourApplication in 0.656 seconds (process running for 0.83)
+
+
+Welcome to Connect4!
+
+1. Ollama
+2. OpenAI
+3. Google Vertex AI Gemini
+4. Mistral AI
+
+Select player one: 2
+Select player two: 4
+Player 1 [OpenAI] is playing [O]
+Player 2 [Mistral AI] is playing [X]
+
+Current player is [OpenAI] playing [O]
+
+[main][INFO] - AI model move [D]
+[main][INFO] - AI model explanation [No immediate win or block is available on an empty board, so I will take the center column to maximize future winning chances and create the strongest board position.]
+[main][INFO] - AI model decision duration 1650 ms
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+
+Press <enter> to continue next play
+Current player is [Mistral AI] playing [X]
+
+[main][INFO] - AI model move [F]
+[main][INFO] - AI model explanation [The opponent has played an 'O' in the bottom row (column F). To win, I must create a vertical line of 4 'X's. The best move is to play in column F to place an 'X' directly above the opponent's 'O', starting my vertical sequence.]
+[main][INFO] - AI model decision duration 1011 ms
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   |   |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   | X |   |
+ --- --- --- --- --- --- ---
+
+Press <enter> to continue next play
+----
+
+[[connect-four-app-notes]]
+== NOTES
+
+2026-May-27:
+
+Since writing the book, I have slightly modified and improved the Connect4 application.
+While I have enhanced the application, the design, components and use of Spring AI is largely as it was described in the book.
+
+One of the more severe problems I encountered while building the example is that certain AI models would select unavailable moves, for example:
+
+.Example of Invalid Play (Move)
+[source,shell]
+----
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   | X |   |
+ --- --- --- --- --- --- ---
+
+Press <enter> to continue next play
+Current player is [Mistral AI] playing [X]
+
+[main][INFO] - AI model move [D]
+[main][INFO] - AI model explanation [The opponent has three consecutive 'O's in row 5 (columns B, C, D). To block their potential win, I must place an 'X' in column D. This prevents the opponent from completing a row of four 'O's in the next move.]
+[main][INFO] - AI model decision duration 979 ms
+2026-05-27 17:10:24.649 - [main] - Available Columns [A, B, C, E, F, G]
+2026-05-27 17:10:24.649 - [main] - Connect4 Game Board State [
+---O---
+---X---
+---O---
+---X---
+---O---
+---O-X-]
+2026-05-27 17:10:24.650 - [main] - Player [Mistral AI] incorrectly attempted to play [D]; Retry count [1]
+[main][INFO] - AI model move [C]
+[main][INFO] - AI model explanation [Opponent has a potential winning move in column C by placing 'O' in the bottom row, which would create a vertical line of 4 'O's. To block this, I must play in column C. This prevents the opponent from winning in their next move.]
+[main][INFO] - AI model decision duration 1899 ms
+  A   B   C   D   E   F   G
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | X |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   |   | O |   |   |   |
+ --- --- --- --- --- --- ---
+|   |   | X | O |   | X |   |
+ --- --- --- --- --- --- ---
+
+Press <enter> to continue next play
+----
+
+As seen in the output above, Mistral AI attempted to play column D when the column is no longer available to play; all positions are exhausted.
+When this occurs, I have the application output the program/game state with available, correct columns to play along with the gameboard's current positions.
+I then log the following message:
+
+.Logging Player's Incorrect Play
+[source,text]
+----
+026-05-27 17:10:24.650 - [main] - Player [Mistral AI] incorrectly attempted to play [D]; Retry count [1]
+----
+
+Since this can occur quite frequently, I built in resiliency to the Connect4 application using https://github.com/spring-projects/spring-retry[Spring Retry].
+
+> NOTE: As of Spring Framework `7.0`, Spring Retry was integrated into the core framework.
+Use of Spring Framework `7.0` requires the use of Spring Boot `4.0`.
+The Spring AI `2.0` release will be rebased on Spring Boot `4.1` along with Spring Framework `7.0`.
+I have built all Spring AI Examples for the book on all versions of Spring AI, including (up to) Spring AI `2.0`, which is on the `spring-ai-2.0.x` topic branch in this GitHub repository.
+You can learn more about the core Spring Framework's https://docs.spring.io/spring-framework/reference/core/resilience.html[Resilience Features] in the documentation.
+
+In general, there are many different ways you can handle program errors.
+You can simply rethrow the `Exception`/`Error` or wrap the `Throwable` in some type of custom, application domain-specific `Exception`.
+You can `try`-`catch`, log a message or invoke some recovery action, such as releasing system resources.
+You can retry the operation with some type of backoff, such as exponential backoff.
+You have many options.
+However, when it comes to AI, you must be selective.
+
+In this case, I simply allow the AI model to try again, in other words, "retry" the operation using Spring Retry.
+You certainly don't want to let the AI model retry indefinitely.
+Each attempt costs additional tokens.
+
+Of course, I don't simply reissue the same prompt.
+I customize the prompt and let the AI model know it made a bad choice, for example:
+
+[source,java]
+----
+private static final String RETRY_PROMPT_TEMPLATE = """
+    "{triedColumn}" is not an available column! You can only play 1 of the letters in: {availableColumns}. Try again!
+""";
+----
+
+The application inserts this additional prompt into the system and user prompts.
+
+> NOTE: For simplicity's sake, I hardcoded the prompts in the application.
+However, it is recommended that you externalize the prompts to a file or some data store capable of managing your prompts.
+It is simple matter using Spring's https://docs.spring.io/spring-framework/reference/core/resources.html[Resource Abstraction] to access prompts from any data source.
+
+Using the features and logic from Spring Retry, I can now have the AI model try again:
+
+.Game REPL
+[source,java]
+----
+// Inside REPL
+class ConnectFourApplication {
+    ApplicationRunner playGame(RetryTemplate retryTemplate) {
+        return args -> {
+            // Setup
+            while (boardGame.isPlayable()) {
+				// Additional Game State Variables
+                retry(retryTemplate, retryContext -> {
+                    if (retryContext.getRetryCount() > 0) {
+						if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
+							PlayerAction lastPlayerAction = playerActionRef.get();
+							Supplier<Object[]> arguments = () ->
+								ArrayUtils.asArray(lastPlayerAction.player().getName(), lastPlayerAction.move());
+							logGamePlay("Player [{}] incorrectly attempted to play [{}]", arguments);
+							promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
+						}
+						logGamePlay("Retry count [{}]", retryContext.getRetryCount());
+                    }
+                });
+            }
+        };
+    }
+}
+----
+
+The configuration of Spring Retry is declared and defined in the `RetryTemplate` bean of the application configuration:
+
+.Application Configuration
+[source,java]
+----
+@SpringBootConfiguration
+class ConnectFourConfiguration {
+		@Bean
+		RetryTemplate retryTemplate(
+				@Value("${connect4.retry.max-attempts:"+MAX_RETRY_ATTEMPTS+"}") Integer maxRetryAttempts) {
+
+			SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(maxRetryAttempts, Map.of(
+				ConnectFourException.class, true,
+				DatabindException.class, true,
+				IndexOutOfBoundsException.class, true
+			), true);
+
+			Predicate<Throwable> retryPredicate = throwable ->
+				throwable instanceof ResourceAccessException
+					&& String.valueOf(throwable.getMessage()).toLowerCase().contains("operation timed out");
+
+			PredicateRetryPolicy predicateRetryPolicy = new PredicateRetryPolicy(retryPredicate);
+
+			CompositeRetryPolicy retryPolicy = compose(simpleRetryPolicy, predicateRetryPolicy);
+
+			RetryTemplate retryTemplate = new RetryTemplate();
+
+			retryTemplate.setRetryPolicy(retryPolicy);
+
+			return retryTemplate;
+		}
+}
+----
+
+`MAX_RETRY_ATTEMPTS` is set to 2 by default.
+
+As seen in the `RetryTemplate` bean configuration above, all `ConnectFourException` types are handles, such as `InvalidPlayException` along with Jackson's `DatabindException` during StructuredOutputConverter conversions.
+If the retry count exceeds configured (i.e. 2), then an Exception will simply by thrown and the game will end.
+
+Of course, the resilience logic is not as robust as it could be, and you could certainly handle this differently, but it illustrates what is possible.
+
+Technically, the optimization really belongs in the prompt as well as the data structured presented to the AI model to model the game's current state.
+
+Can you think of what that data structure representation optimization might be?
+
+In a later update, I will present the data structure representation optimization in detail.
