@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import com.packt.spring.ai.examples.connect4.model.ConnectFourBoardGame;
@@ -33,6 +34,7 @@ import com.packt.spring.ai.examples.connect4.model.Player;
 import com.packt.spring.ai.examples.connect4.model.PlayerAction;
 import com.packt.spring.ai.examples.connect4.model.Players;
 import com.packt.spring.ai.examples.connect4.support.ConnectFourException;
+import com.packt.spring.ai.examples.connect4.support.InvalidPlayException;
 
 import io.codeprimate.extensions.spring.ai.chat.model.CompositeChatModel;
 import io.codeprimate.extensions.spring.ai.config.EnableChatClient;
@@ -224,10 +226,13 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				retry(retryTemplate, retryContext -> {
 
 					if (retryContext.getRetryCount() > 0) {
-						logWarn("Player [{}] incorrectly attempted to play [{}]; Retry count [{}]", () -> new Object[] {
-							activePlayer.getName(), playerMove.get(), retryContext.getRetryCount()
-						});
-						promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, playerMove.get());
+						if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
+							Supplier<Object[]> arguments = () -> new Object[] {
+								activePlayer.getName(), playerMove.get(), retryContext.getRetryCount()
+							};
+							logGamePlay("Player [{}] incorrectly attempted to play [{}]; Retry count [{}]", arguments);
+							promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, playerMove.get());
+						}
 					}
 
 					AbstractTimer<?, Play> playTimer =
@@ -353,7 +358,10 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 			}
 			catch (RuntimeException cause) {
 				logWarn("Available Columns {}", Arrays.toString(boardGame.getPlayableColumnsAsLetter()));
-				logWarn("Connect4 Game Board State [{}]", boardGame.getGameBoardStateAsGrid());
+				logWarn("Connect4 Gameboard State [{}]", boardGame.getGameBoardStateAsGrid());
+				if (cause instanceof ConnectFourException exception) {
+					throw exception;
+				}
 				throw ConnectFourException.because("AI model fumbled the ball", cause);
 			}
 		};

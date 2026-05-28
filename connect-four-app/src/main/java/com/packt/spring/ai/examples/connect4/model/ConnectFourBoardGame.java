@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.packt.spring.ai.examples.connect4.support.InvalidPlayException;
+
 import io.codeprimate.extensions.util.AnsiColors;
 import io.codeprimate.extensions.util.Utils;
 
@@ -267,8 +269,17 @@ public class ConnectFourBoardGame {
 	}
 
 	ConnectFourBoardGame play(Disc disc, int rowIndex, int columnIndex) {
+
 		setCurrentRowColumnPlayed(RowColumn.of(rowIndex, columnIndex));
-		this.gameBoard[rowIndex][columnIndex] = disc;
+
+		try {
+			this.gameBoard[rowIndex][columnIndex] = disc;
+		}
+		catch (IndexOutOfBoundsException cause) {
+			String message = "[%d, %d] is not a valid play by [%s]".formatted(rowIndex, columnIndex, disc);
+			throw new InvalidPlayException(message, cause);
+		}
+
 		return this;
 	}
 
