@@ -108,6 +108,8 @@ public class ConnectFourBoardGame {
 		StringBuilder grid = new StringBuilder(GAME_BOARD_SIZE);
 		int count = 0;
 
+		grid.append("ABCDEFG");
+
 		for (String element : getGameBoardStateAsArray()) {
 			if (count++ % COLUMNS == 0) {
 				grid.append(Utils.NEW_LINE);
