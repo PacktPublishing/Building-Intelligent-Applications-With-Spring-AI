@@ -73,7 +73,7 @@
 						url: 'http://localhost:8080/token-metadata/api/tokens/count',
 						accept: 'application/json',
 						contentType: 'application/json',
-						data: `{ \"content\": \"${documentContent}\" }`,
+						data: JSON.stringify({ content: documentContent }),
 						success: function(data) {
 							console.log(`Document Content [${documentContent}]`);
 							$("#wordCount").html(data.wordCount);
@@ -90,7 +90,7 @@
 						url: 'http://localhost:8080/token-metadata/view/tokens',
 						accept: 'text/html',
 						contentType: 'application/json',
-						data: `{ \"content\": \"${documentContent}\" }`,
+						data: JSON.stringify({ content: documentContent }),
 						success: function(html) {
 							$("#tokens").html(html);
 						},
