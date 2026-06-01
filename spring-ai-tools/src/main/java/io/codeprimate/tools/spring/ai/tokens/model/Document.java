@@ -27,8 +27,11 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unused")
 public record Document(String content) {
 
-	public static Document from(String content) {
+	public Document {
 		Assert.hasText(content, () -> "Content [%s] is required".formatted(content));
+	}
+
+	public static Document from(String content) {
 		return new Document(content);
 	}
 
