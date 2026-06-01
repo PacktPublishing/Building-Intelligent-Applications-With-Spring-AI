@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootConfiguration
 @SuppressWarnings("unused")
-public class TokenMetadataApplicationConfiguration {
+public class TokenMetadataConfiguration {
 
 	@Bean
 	public TokenCountEstimator tokenCountEstimator(
