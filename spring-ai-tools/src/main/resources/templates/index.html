@@ -28,17 +28,9 @@
 				<div style="margin: 15px;">
 					<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
 				</div>
+				<button id="clearButton">Clear</button>
 			</form>
 		</div>
-<!--
-		<div class="container center">
-			<form id="tokenMediaForm" th:action="/token-metadata/api/tokens/count/media" action="#" method="POST" enctype="multipart/form-data">
-				<div style="margin: 15px;">
-					<textarea id="mediaContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
-				</div>
-			</form>
-		</div>
--->
 		<div class="horizontal-separator"></div>
 		<div class="tokenizer-stats-container center">
 			<div class="tokenizer-stat vertical-separators">
@@ -59,6 +51,14 @@
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$("#documentContent").focus();
+
+				$("#clearButton").on("click", function () {
+					$("#documentContent").val("");
+					$("#wordCount").html(0)
+					$("#tokenCount").html(0)
+					$("#filteredTokenCount").html(0)
+					$("#tokens").html("")
+				});
 
 				htmx.on("#documentContent", "input", function(event) {
 
