@@ -3,22 +3,24 @@
 
 Welcome to this example repository for Spring AI.
 
-This repository contains all the examples cited in the book, *Building Intelligent Applications with Spring AI*,
-published by https://www.packtpub.com/en-us[Packt], authored by https://github.com/jxblum[John Blum].
+This repository contains all the examples cited in the book, *Building Intelligent Applications with Spring AI*, published by https://www.packtpub.com/en-us[Packt], authored by https://github.com/jxblum[John Blum].
 
 The examples focus on demonstrating how to use Spring AI's features and functionality in a simple and comprehensive way.
-The examples are meant to help you instantly become familiar with Spring AI's APIs and capabilities so you can be
-immediately productive out-of-the-box, leveraging AI to build intelligent applications with Spring
-using any JVM language: Java, Kotlin, Groovy, etc. All examples were written in Java.
+The examples are meant to help you instantly become familiar with Spring AI's APIs and capabilities so you can be immediately productive out-of-the-box, leveraging AI to build intelligent applications with Spring using any JVM language: Java, Kotlin, Groovy, etc. All examples were written in Java.
 
-All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot] `3.5.x`,
-https://spring.io/projects/spring-ai[Spring AI] `1.0.x`, and *Java 17*.
+All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot] `3.5.x`, https://spring.io/projects/spring-ai[Spring AI] `1.0.x`, and *Java 17*.
+Additionally, all examples, extensions and tools have been built with Spring AI `1.1.x`, Spring AI `2.0.0-M7` and Spring Boot `4.1.0-RC1`.
+
+The following branch contain the following baseline:
+
+* `main` - Spring AI `1.0.8`, Spring Boot `3.5.14`
+* `spring-ai-1.1.x` - Spring AI `1.1.7`, Spring Boot `3.5.14`
+* `spring-ai-2.0.x` - Spring AI `2.0.0-M7`, Spring Boot `4.1.0-RC1`
 
 [[build-and-run]]
 == Build & Run
 
-This project uses https://maven.apache.org/[Apache Maven] to build
-and the https://docs.spring.io/spring-boot/maven-plugin/index.html[Spring Boot Maven Plugin] to run the examples.
+This project uses https://maven.apache.org/[Apache Maven] to build and the https://docs.spring.io/spring-boot/maven-plugin/index.html[Spring Boot Maven Plugin] to run the examples.
 
 You can build the entire project in the root directory with the `mvnw` command:
 
@@ -44,11 +46,9 @@ $ mvnw --projects example-one spring-boot:run
 [source,shell]
 ----
 
-For a few examples, the example may use an AI provider model, such as OpenAI. It is recommended that you add an
-`application-user.properties` file to the `resources/` directory of the example Spring Boot, Spring AI application.
+For a few examples, the example may use an AI provider model, such as OpenAI. It is recommended that you add an `application-user.properties` file to the `resources/` directory of the example Spring Boot, Spring AI application.
 In `application-user.properties` you must declare your registered API key created for you by the AI provider.
-The `application-user.properties` files is ignored by Git. Additionally, the "user" Spring profile has been enabled
-by default.
+The `application-user.properties` files is ignored by Git. Additionally, the "user" Spring profile has been enabled by default.
 
 As discussed in the book, alternatively, you can switch AI providers by changing the Spring Boot, Spring AI starter.
 
