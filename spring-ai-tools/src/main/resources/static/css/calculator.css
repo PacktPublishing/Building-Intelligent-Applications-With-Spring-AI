@@ -43,6 +43,10 @@
   font-weight: 600;
 }
 
+.calculator-dialog__fieldControl {
+  position: relative;
+}
+
 .calculator-dialog__field input,
 .calculator-dialog__total input {
   border: 1px solid #353637;
@@ -51,6 +55,10 @@
   font: inherit;
   padding: 8px 10px;
   width: 100%;
+}
+
+.calculator-dialog__fieldControl input {
+  padding-right: 5rem;
 }
 
 .calculator-dialog__divider {
@@ -84,6 +92,34 @@
 
 .calculator-dialog__closeButton:hover {
   background: #e3e6ea;
+}
+
+.calculator-dialog__copyButton {
+  background: #e3e6ea;
+  border-radius: 999px;
+  box-sizing: border-box;
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: auto;
+  inset-block-start: 50%;
+  inset-inline-end: 0.5rem;
+  line-height: 1;
+  min-width: 3.5rem;
+  padding: 4px 10px;
+  position: absolute;
+  transform: translateY(-50%);
+  width: auto;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.calculator-dialog__copyButton:hover {
+  background: #d9dfe4;
+}
+
+.calculator-dialog__copyButton:active {
+  box-shadow: inset 0 2px 4px rgba(4, 4, 4, 0.2);
+  transform: translateY(calc(-50% + 1px));
 }
 
 @media (max-width: 720px) {

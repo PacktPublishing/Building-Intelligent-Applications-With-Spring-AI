@@ -30,7 +30,7 @@
 						<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
 					</div>
 					<button id="clearButton" type="button" >Clear</button>
-					<button id="calculatorButton" type="button"  class="image-button" aria-label="Calculator" aria-haspopup="dialog" aria-controls="calculatorDialog">
+					<button id="calculatorButton" type="button" class="image-button" aria-label="Calculator" aria-haspopup="dialog" aria-controls="calculatorDialog">
 						<img th:src="@{/img/calculator.svg}" src="../static/img/calculator.svg" alt="" aria-hidden="true">
 					</button>
 				</form>
@@ -41,7 +41,12 @@
 					<div class="calculator-dialog__grid">
 						<div class="calculator-dialog__field">
 							<label for="inputTokens">Input Tokens</label>
-							<input id="inputTokens" name="inputTokens" type="number" min="0" step="1" autofocus>
+							<div class="calculator-dialog__fieldControl">
+								<input id="inputTokens" name="inputTokens" type="number" min="0" step="1" autofocus>
+								<button type="button" class="calculator-dialog__copyButton" data-copy-target="inputTokens" aria-label="Copy token count to input tokens" title="Copy Token Count">
+									<img th:src="@{/img/copy.svg}" src="../static/img/copy.svg" alt="" aria-hidden="true">
+								</button>
+							</div>
 						</div>
 						<div class="calculator-dialog__field">
 							<label for="inputCost">Input Cost / 1M Tokens</label>
@@ -49,7 +54,12 @@
 						</div>
 						<div class="calculator-dialog__field">
 							<label for="outputTokens">Output Tokens</label>
-							<input id="outputTokens" name="outputTokens" type="number" min="0" step="1">
+							<div class="calculator-dialog__fieldControl">
+								<input id="outputTokens" name="outputTokens" type="number" min="0" step="1">
+								<button type="button" class="calculator-dialog__copyButton" data-copy-target="outputTokens" aria-label="Copy token count to output tokens" title="Copy Token Count">
+									<img th:src="@{/img/copy.svg}" src="../static/img/copy.svg" alt="" aria-hidden="true">
+								</button>
+							</div>
 						</div>
 						<div class="calculator-dialog__field">
 							<label for="outputCosts">Output Costs / 1M Tokens</label>
@@ -96,6 +106,18 @@
 						const calculatorDialog = document.getElementById('calculatorDialog');
 						if (calculatorDialog && !calculatorDialog.open) {
 							calculatorDialog.showModal();
+						}
+					});
+
+					$(".calculator-dialog__copyButton").on("click", function(event) {
+						event.preventDefault();
+
+						const tokenCount = $("#tokenCount").text().trim() || "0";
+						const targetFieldId = $(this).data("copyTarget");
+						const targetField = $("#" + targetFieldId);
+
+						if (targetField.length > 0) {
+							targetField.val(tokenCount).trigger("input").focus();
 						}
 					});
 
