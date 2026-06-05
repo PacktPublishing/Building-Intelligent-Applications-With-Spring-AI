@@ -7,6 +7,7 @@
 		<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" th:href="@{/css/main.css}" href="../static/css/main.css">
+		<link rel="stylesheet" th:href="@{/css/calculator.css}" href="../static/css/calculator.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 		<script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.js" integrity="sha384-BBDmZzVt6vjz5YbQqZPtFZW82o8QotoM7RUp5xOxV3nSJ8u2pSdtzFAbGKzTlKtg" crossorigin="anonymous"></script>
 	</head>
@@ -23,20 +24,55 @@
 				</p>
 			</div>
 		</div>
-		<div class="container center">
-			<form id="tokenContentForm" action="#">
-				<div style="margin: 15px;">
-					<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
-				</div>
-				<button id="clearButton">Clear</button>
-				<button id="calculatorButton" class="image-button" aria-label="Calculator">
-					<img th:src="@{/img/calculator.svg}" src="../static/img/calculator.svg" alt="" aria-hidden="true">
-				</button>
-			</form>
-		</div>
-		<div class="horizontal-separator"></div>
-		<div class="tokenizer-stats-container center">
-			<div class="tokenizer-stat vertical-separators">
+			<div class="container center">
+				<form id="tokenContentForm" action="#">
+					<div style="margin: 15px;">
+						<textarea id="documentContent" placeholder="Enter some text" style="background-color: #f1f3f6; width: 80%; height: 450px; margin: 5px;"></textarea>
+					</div>
+					<button id="clearButton" type="button" >Clear</button>
+					<button id="calculatorButton" type="button"  class="image-button" aria-label="Calculator" aria-haspopup="dialog" aria-controls="calculatorDialog">
+						<img th:src="@{/img/calculator.svg}" src="../static/img/calculator.svg" alt="" aria-hidden="true">
+					</button>
+				</form>
+			</div>
+			<dialog id="calculatorDialog" class="calculator-dialog" aria-labelledby="calculatorDialogTitle">
+				<form method="dialog" class="calculator-dialog__form" action="#">
+					<h2 id="calculatorDialogTitle" class="calculator-dialog__title">Token Cost Calculator (Default Model: GPT-5.5)</h2>
+					<div class="calculator-dialog__grid">
+						<div class="calculator-dialog__field">
+							<label for="inputTokens">Input Tokens</label>
+							<input id="inputTokens" name="inputTokens" type="number" min="0" step="1" autofocus>
+						</div>
+						<div class="calculator-dialog__field">
+							<label for="inputCost">Input Cost / 1M Tokens</label>
+							<input id="inputCost" name="inputCost" type="number" min="0" step="0.01" value="5.00">
+						</div>
+						<div class="calculator-dialog__field">
+							<label for="outputTokens">Output Tokens</label>
+							<input id="outputTokens" name="outputTokens" type="number" min="0" step="1">
+						</div>
+						<div class="calculator-dialog__field">
+							<label for="outputCosts">Output Costs / 1M Tokens</label>
+							<input id="outputCosts" name="outputCosts" type="number" min="0" step="0.01" value="30.00">
+						</div>
+						<div class="calculator-dialog__field">
+							<label for="requestsPerSecond">Requests / Second</label>
+							<input id="requestsPerSecond" name="requestsPerSecond" type="number" min="0" step="1" value="1000">
+						</div>
+					</div>
+					<hr class="calculator-dialog__divider">
+					<div class="calculator-dialog__total">
+						<label for="totalCost"><strong>Total</strong></label>
+						<input id="totalCost" name="totalCost" type="text" readonly value="$0.00">
+					</div>
+					<div class="calculator-dialog__footer">
+						<button type="submit" class="calculator-dialog__closeButton" value="close">Close</button>
+					</div>
+				</form>
+			</dialog>
+			<div class="horizontal-separator"></div>
+			<div class="tokenizer-stats-container center">
+				<div class="tokenizer-stat vertical-separators">
 				<div class="tokenizer-stat-title tokenSubNavBarTitle">WORD COUNT</div>
 				<div id="wordCount" class="tokenizer-stat-value">0</div>
 			</div>
@@ -51,59 +87,69 @@
 		</div>
 		<div class="horizontal-separator"></div>
 		<div id="tokens" class="tokenizer-tokens center"></div>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				$("#documentContent").focus();
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$("#documentContent").focus();
 
-				$("#clearButton").on("click", function () {
-					$("#documentContent").val("");
-					$("#wordCount").html(0)
-					$("#tokenCount").html(0)
-					$("#filteredTokenCount").html(0)
-					$("#tokens").html("")
+					$("#calculatorButton").on("click", function(event) {
+						event.preventDefault();
+						const calculatorDialog = document.getElementById('calculatorDialog');
+						if (calculatorDialog && !calculatorDialog.open) {
+							calculatorDialog.showModal();
+						}
+					});
+
+					$("#clearButton").on("click", function(event) {
+						const documentContent = $("#documentContent");
+						documentContent.val("");
+						$("#wordCount").html(0);
+						$("#tokenCount").html(0);
+						$("#filteredTokenCount").html(0);
+						$("#tokens").html("");
+						documentContent.focus();
+					});
+
+					htmx.on("#documentContent", "input", function(event) {
+
+						var documentContent = $("#documentContent").val();
+
+						documentContent = documentContent.replace(/(\r\n|\n|\r)/gm, " ");
+						documentContent = documentContent.replace(/\s+/g, " ");
+						documentContent = documentContent.trim();
+
+						$.ajax({
+							method: 'POST',
+							url: 'http://localhost:8080/token-metadata/api/tokens/count',
+							accept: 'application/json',
+							contentType: 'application/json',
+							data: JSON.stringify({ content: documentContent }),
+							success: function(data) {
+								console.log(`Document Content [${documentContent}]`);
+								$("#wordCount").html(data.wordCount);
+								$("#tokenCount").html(data.tokenCount);
+								$("#filteredTokenCount").html(data.filteredTokenCount);
+							},
+							error: function(xhr, status, errorMessage) {
+								console.log(`Failed to get token counts from content: { status: ${status}, errorMessage: ${errorMessage} }`);
+							}
+						});
+
+						$.ajax({
+							method: 'POST',
+							url: 'http://localhost:8080/token-metadata/view/tokens',
+							accept: 'text/html',
+							contentType: 'application/json',
+							data: JSON.stringify({ content: documentContent }),
+							success: function(html) {
+								$("#tokens").html(html);
+							},
+							error: function(xhr, status, errorMessage) {
+								console.log(`Failed to get token from content: { status: ${status}, errorMessage: ${errorMessage} }`);
+							}
+						});
+					}, "{ delay: 500ms }");
 				});
-
-				htmx.on("#documentContent", "input", function(event) {
-
-					var documentContent = $("#documentContent").val()
-
-					documentContent = documentContent.replace(/(\r\n|\n|\r)/gm, " ");
-					documentContent = documentContent.replace(/\s+/g, " ");
-					documentContent = documentContent.trim();
-
-					$.ajax({
-						method: 'POST',
-						url: 'http://localhost:8080/token-metadata/api/tokens/count',
-						accept: 'application/json',
-						contentType: 'application/json',
-						data: JSON.stringify({ content: documentContent }),
-						success: function(data) {
-							console.log(`Document Content [${documentContent}]`);
-							$("#wordCount").html(data.wordCount);
-							$("#tokenCount").html(data.tokenCount);
-							$("#filteredTokenCount").html(data.filteredTokenCount);
-						},
-						error: function(xhr, status, errorMessage) {
-							console.log(`Failed to get token counts from content: { status: ${status}, errorMessage: ${errorMessage} }`);
-						}
-					});
-
-					$.ajax({
-						method: 'POST',
-						url: 'http://localhost:8080/token-metadata/view/tokens',
-						accept: 'text/html',
-						contentType: 'application/json',
-						data: JSON.stringify({ content: documentContent }),
-						success: function(html) {
-							$("#tokens").html(html);
-						},
-						error: function(xhr, status, errorMessage) {
-							console.log(`Failed to get token from content: { status: ${status}, errorMessage: ${errorMessage} }`);
-						}
-					});
-				}, "{ delay: 500ms }");
-			});
-		</script>
+			</script>
 	</body>
 
 </html>
