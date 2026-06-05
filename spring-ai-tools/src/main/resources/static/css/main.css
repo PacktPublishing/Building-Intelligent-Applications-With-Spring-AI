@@ -1,218 +1,218 @@
 body {
-    background: white;
-    border: 0px;
-    height: 100%;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
+  background: white;
+  border: 0px;
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
 }
 
 .x-border {
-    border: 1px solid black;
+  border: 1px solid black;
 }
 
 .x-hide {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .center {
-    justify-content: center;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
-    margin: auto;
-    padding: 5px;
-    width: 90%;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  padding: 5px;
+  width: 90%;
 }
 
 .padding-and-margins {
-    margin: 10px;
-    padding: 5px;
+  margin: 10px;
+  padding: 5px;
 }
 
 div.tokenNavBarContainer > * {
-    border: 0px;
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
 }
 
 div.tokenMainNavBarContainer {
-    background: black;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    height: 50px;
+  background: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 50px;
 }
 
 div.tokenSubNavBarContainer {
-    background: #575757;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    height: 30px;
+  background: #575757;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 30px;
 }
 
 .tokenMainNavBarTitle {
-    color: white;
-    font-family: "calibri", sans-serif;
-    font-size: 40px;
-    letter-spacing: 20px;
-    margin-top: 0px;
-    padding: 2px;
-    text-transform: uppercase;
+  color: white;
+  font-family: "calibri", sans-serif;
+  font-size: 40px;
+  letter-spacing: 20px;
+  margin-top: 0px;
+  padding: 2px;
+  text-transform: uppercase;
 }
 
 .tokenSubNavBarTitle {
-    color: gray;
-    font-family: "calibri", sans-serif;
-    font-size: 20px;
-    letter-spacing: 10px;
-    margin-top: 0px;
-    margin-right: 25px;
-    padding: 2px;
+  color: gray;
+  font-family: "calibri", sans-serif;
+  font-size: 20px;
+  letter-spacing: 10px;
+  margin-top: 0px;
+  margin-right: 25px;
+  padding: 2px;
 }
 
 div.horizontalWhiteBar {
-    background: white;
-    height: 25px;
+  background: white;
+  height: 25px;
 }
 
 button {
-    color: black;
-    font-family: "calibri", sans-serif;
-    font-size: 12pt;
-    width: 150px;
-    height: 50px;
-    transition: transform 0.05s ease, box-shadow 0.05s ease;
+  color: black;
+  font-family: "calibri", sans-serif;
+  font-size: 12pt;
+  width: 150px;
+  height: 50px;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 
 button:active {
-    transform: translateY(1px);
-    box-shadow: inset 0 2px 4px rgba(4, 4, 4, 0.2);
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(4, 4, 4, 0.2);
 }
 
 button:hover {
-    background-color: #b8b8b8; /* slightly darker grey */
+  background-color: #b8b8b8; /* slightly darker grey */
 }
 
 .image-button {
-    appearance: none;
-    width: 50px;
-    height: 50px;
+  appearance: none;
+  width: 50px;
+  height: 50px;
 }
 
 .image-button img {
-    display: block;
-    width: 25px;
-    height: 25px;
+  display: block;
+  width: 25px;
+  height: 25px;
 }
 
 .image-button:active {
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px);
 }
 
 .image-button:hover {
-    background: #e3e6ea;
+  background: #e3e6ea;
 }
 
 button, .image-button {
-    align-items: center;
-    background: #f1f3f6;
-    border: 2px solid #353637;
-    border-radius: 4px;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: inline-flex;
-    justify-content: center;
-    padding: 4px 4px;
-    vertical-align: middle;
+  align-items: center;
+  background: #f1f3f6;
+  border: 2px solid #353637;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 4px 4px;
+  vertical-align: middle;
 }
 
 form {
-    width: 100%;
+  width: 100%;
 }
 
 textarea {
-    border: 1px solid #edfeee;
-    overflow-y: scroll;
+  border: 1px solid #edfeee;
+  overflow-y: scroll;
 }
 
 textarea:focus {
-    border-color: #83df8a;
-    outline: none;
+  border-color: #83df8a;
+  outline: none;
 }
 
 .tokenizer-stats-container {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 25px;
-    transition: opacity .3s;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 25px;
+  transition: opacity .3s;
 }
 
 .tokenize-stat {
 }
 
 .tokenizer-stat-title {
-    background: #f1f3f6;
-    color: var(--gray-900);
-    font-size: 25px;
-    font-weight: 800;
+  background: #f1f3f6;
+  color: var(--gray-900);
+  font-size: 25px;
+  font-weight: 800;
 }
 
 .tokenizer-stat-value {
-    color: var(--gray-900);
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    font-size: 50px;
-    margin-left: 5px;
-    margin-top: 5px;
+  color: var(--gray-900);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  font-size: 50px;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 
 .tokenizer-tokens {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    font-size: 20px;
-    margin-top: 5px;
-    width: 80%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  font-size: 20px;
+  margin-top: 5px;
+  width: 80%;
 }
 
 .gradient-text {
-    background: linear-gradient(to bottom, #ffffff, #83df8a);
-    -webkit-background-clip: text;
-    color: transparent;
+  background: linear-gradient(to bottom, #ffffff, #83df8a);
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .vertical-separators {
-    width: 400px;
-    padding: 30px;
-    float: left;
-    border: 1.5px solid;
-    border-top: 0;
-    border-bottom: 0;
-    border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(226, 226, 226, 1) 48%, rgba(255, 255, 255, 0) 100%);
-    border-image-slice: 1;
+  width: 400px;
+  padding: 30px;
+  float: left;
+  border: 1.5px solid;
+  border-top: 0;
+  border-bottom: 0;
+  border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(226, 226, 226, 1) 48%, rgba(255, 255, 255, 0) 100%);
+  border-image-slice: 1;
 }
 
 .horizontal-separator {
-        height: 1px;
-        background-color: #E6E6E6;
-        width: 80%;
-        margin: 0 auto;
-        background-image: linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -o-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -moz-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -webkit-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -ms-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.02, white), color-stop(0.5, gray), color-stop(0.98, white) );
+  height: 1px;
+  background-color: #E6E6E6;
+  width: 80%;
+  margin: 0 auto;
+  background-image: linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+  background-image: -o-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+  background-image: -moz-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+  background-image: -webkit-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+  background-image: -ms-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+  background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.02, white), color-stop(0.5, gray), color-stop(0.98, white) );
 }
