@@ -57,6 +57,10 @@
   width: 100%;
 }
 
+.calculator-dialog__total input {
+  background: #e3e6ea
+}
+
 .calculator-dialog__fieldControl input {
   padding-right: 5rem;
 }

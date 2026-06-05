@@ -62,8 +62,8 @@
 							</div>
 						</div>
 						<div class="calculator-dialog__field">
-							<label for="outputCosts">Output Costs / 1M Tokens</label>
-							<input id="outputCosts" name="outputCosts" type="number" min="0" step="0.01" value="30.00">
+							<label for="outputCost">Output Costs / 1M Tokens</label>
+							<input id="outputCost" name="outputCost" type="number" min="0" step="0.01" value="30.00">
 						</div>
 						<div class="calculator-dialog__field">
 							<label for="requestsPerSecond">Requests / Second</label>
@@ -98,7 +98,13 @@
 		<div class="horizontal-separator"></div>
 		<div id="tokens" class="tokenizer-tokens center"></div>
 			<script type="text/javascript">
+				const currencyFormatter = new Intl.NumberFormat('en-US', {
+					style: 'currency',
+					currency: 'USD'
+				});
+
 				$(document).ready(function() {
+
 					$("#documentContent").focus();
 
 					$("#calculatorButton").on("click", function(event) {
@@ -131,6 +137,8 @@
 						documentContent.focus();
 					});
 
+					const tokenizationOptions = "{ delay: 500ms }";
+
 					htmx.on("#documentContent", "input", function(event) {
 
 						var documentContent = $("#documentContent").val();
@@ -146,7 +154,6 @@
 							contentType: 'application/json',
 							data: JSON.stringify({ content: documentContent }),
 							success: function(data) {
-								console.log(`Document Content [${documentContent}]`);
 								$("#wordCount").html(data.wordCount);
 								$("#tokenCount").html(data.tokenCount);
 								$("#filteredTokenCount").html(data.filteredTokenCount);
@@ -166,11 +173,45 @@
 								$("#tokens").html(html);
 							},
 							error: function(xhr, status, errorMessage) {
-								console.log(`Failed to get token from content: { status: ${status}, errorMessage: ${errorMessage} }`);
+								console.log(`Failed to get tokens from content: { status: ${status}, errorMessage: ${errorMessage} }`);
 							}
 						});
-					}, "{ delay: 500ms }");
+					}, tokenizationOptions);
+
+					const calculatorOptions = "{ delay: 1000ms }";
+
+					htmx.on("#inputTokens", "input", calculate, calculatorOptions);
+					htmx.on("#inputCost", "input", calculate, calculatorOptions);
+					htmx.on("#outputTokens", "input", calculate, calculatorOptions);
+					htmx.on("#outputCost", "input", calculate, calculatorOptions);
+					htmx.on("#requestsPerSecond", "input", calculate, calculatorOptions);
 				});
+
+				function calculate(event) {
+
+					// Get current form values
+					const tokens = 1_000_000;
+					const inputTokens = $("#inputTokens").val();
+					const inputCost = $("#inputCost").val();
+					const outputTokens = $("#outputTokens").val();
+					const outputCost = $("#outputCost").val();
+					const requestsPerSecond = $("#requestsPerSecond").val();
+
+					// Compute cost of input and output tokens per request
+					const inputRatio = inputTokens / tokens;
+					const inputCostPerRequest = inputRatio * inputCost;
+					const outputRatio = outputTokens / tokens;
+					const outputCostPerRequest = outputRatio * outputCost;
+
+					// Compute cost of input and output tokens multiplied by the number of requests per second
+					const totalInputCost = inputCostPerRequest * requestsPerSecond;
+					const totalOutputCost = outputCostPerRequest * requestsPerSecond;
+
+					// Compute total input and output token cost every second
+					const totalCost = totalInputCost + totalOutputCost;
+
+					$("#totalCost").val(currencyFormatter.format(totalCost));
+				}
 			</script>
 	</body>
 
