@@ -1,0 +1,35 @@
+[[shazam-app]]
+= Shazam Application
+
+The Shazam Spring AI, Spring Boot application was featured in **Chapter 5 - Beat Shazam**.
+
+The application is a recreation of the popular https://www.shazam.com/[Shazam] mobile music app that helps users identify millions of songs in only a few seconds simply by sampling audio from a song by using the mic on your digital device, such as a smartphone.
+
+> TIP: You can learn more about https://en.wikipedia.org/wiki/Shazam_(music_app)[Shazam on the Wikipedia].
+
+This application showcases how you can extend Spring AI's APIs to develop a alternative implementation of Shazam using Spring AI.
+Specifically, a custom `EmbeddingModel` is created to generate audio fingerprints as embeddings (vectors) from sampled audio.
+To sample audio, the https://www.oracle.com/java/technologies/java-sound-api.html[Java Sound API] is used.
+
+> TIP: See the https://docs.oracle.com/javase/8/docs/technotes/guides/sound/programmer_guide/contents.html[Java Sound Programmer Guide] to learn more.
+
+To generate embeddings for audio fingerprints, an `AudioFingerprintFunction` API & SPI is used to plugin different service provider implementations.
+By using an SPI, the algorithm used to calculate audio (digital) fingerprints as embeddings can be easily customized or interchanged without impacting the application implementation.
+One of the more formidable audio fingerprinting libraries is https://acoustid.org/chromaprint[Chromprint].
+
+> NOTE: The Acoustid https://acoustid.org/chromaprint[Chromprint] is a C library.
+While there is a https://github.com/mgdigital/Chromaprint.scala[Scala implementation], the binaries are not available in any artifact repository.
+The Scala implementation was last uploaded to JCenter, which no longer exists.
+The bits were not published in Maven Central AFAIK.
+I am currently working on a port of _Chromaprint_ to Java, along with exploring alternatives to building the Scala implementation with Maven.
+
+[[shazam-app-wip]]
+== DISCLAIMER: Work In Progress
+
+While the design of Shazam using Spring AI is largely stable, the implementation of Shazam using Spring AI is currently a work-in-progress.
+
+I am actively maintaining this repository as new Spring AI releases become available as well as making enhancements to the examples, such as Shazam as I learn more.
+
+Please check back frequently and feedback is always welcomed.
+
+You can learn about my journey to build Shazam in Chapter 5, where some of the more ambitious adventures, such as training a model, I hope to explore more soon.
