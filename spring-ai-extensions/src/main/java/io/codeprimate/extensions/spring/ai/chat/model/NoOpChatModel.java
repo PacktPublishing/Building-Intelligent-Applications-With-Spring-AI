@@ -17,8 +17,6 @@ package io.codeprimate.extensions.spring.ai.chat.model;
 
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.DefaultChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 
 /**
@@ -32,12 +30,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 public class NoOpChatModel implements ChatModel {
 
 	@Override
+	@SuppressWarnings("all")
 	public ChatResponse call(Prompt prompt) {
 		throw new UnsupportedOperationException("ChatModel.call(Prompt) is not supported");
-	}
-
-	@Override
-	public ChatOptions getDefaultOptions() {
-		return new DefaultChatOptions();
 	}
 }

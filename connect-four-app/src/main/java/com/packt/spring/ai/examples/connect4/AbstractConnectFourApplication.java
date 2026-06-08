@@ -68,7 +68,7 @@ public abstract class AbstractConnectFourApplication extends AbstractSpringBootA
 			.user(promptUserSpec -> promptUserSpec
 				.text(userPromptTemplate(promptTemplateArguments))
 				.params(promptTemplateArguments))
-			.options(Utils.buildChatOptions(model))
+			.options(Utils.chatOptionsBuilder(model))
 			.call()
 			.entity(jsonConverter);
 	}

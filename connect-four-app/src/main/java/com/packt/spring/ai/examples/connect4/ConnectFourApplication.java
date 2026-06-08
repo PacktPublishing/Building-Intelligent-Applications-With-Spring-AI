@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -42,8 +43,9 @@ import io.codeprimate.extensions.spring.ai.provider.AiProvider;
 import io.codeprimate.extensions.spring.ai.provider.support.SpringAiProvider;
 import io.codeprimate.extensions.util.AbstractTimer;
 
-import org.cp.elements.util.ArrayUtils;
 import org.cp.elements.util.MapBuilder;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -52,13 +54,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.retry.RetryCallback;
-import org.springframework.retry.RetryContext;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.policy.CompositeRetryPolicy;
-import org.springframework.retry.policy.PredicateRetryPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.core.retry.RetryException;
+import org.springframework.core.retry.RetryListener;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryState;
+import org.springframework.core.retry.RetryTemplate;
+import org.springframework.core.retry.Retryable;
 import org.springframework.web.client.ResourceAccessException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -148,37 +149,23 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 
 		@Bean
 		RetryTemplate retryTemplate(
-				@Value("${connect4.retry.max-attempts:"+MAX_RETRY_ATTEMPTS+"}") Integer maxRetryAttempts) {
-
-			SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(maxRetryAttempts, Map.of(
-				ConnectFourException.class, true,
-				DatabindException.class, true,
-				IndexOutOfBoundsException.class, true
-			), true);
+			@Value("${connect4.retry.max-attempts:" + MAX_RETRY_ATTEMPTS + "}") Integer maxRetryAttempts) {
 
 			Predicate<Throwable> retryPredicate = throwable ->
 				throwable instanceof ResourceAccessException
 					&& String.valueOf(throwable.getMessage()).toLowerCase().contains("operation timed out");
 
-			PredicateRetryPolicy predicateRetryPolicy = new PredicateRetryPolicy(retryPredicate);
-
-			CompositeRetryPolicy retryPolicy = compose(simpleRetryPolicy, predicateRetryPolicy);
+			RetryPolicy retryPolicy = RetryPolicy.builder()
+				.includes(Set.of(ConnectFourException.class, DatabindException.class, IndexOutOfBoundsException.class))
+				.maxRetries(maxRetryAttempts)
+				.predicate(retryPredicate)
+				.build();
 
 			RetryTemplate retryTemplate = new RetryTemplate();
 
 			retryTemplate.setRetryPolicy(retryPolicy);
 
 			return retryTemplate;
-		}
-
-		private CompositeRetryPolicy compose(RetryPolicy... retryPolicies) {
-
-			CompositeRetryPolicy retryPolicy = new CompositeRetryPolicy();
-
-			retryPolicy.setPolicies(ArrayUtils.asArray(retryPolicies));
-			retryPolicy.setOptimistic(true);
-
-			return retryPolicy;
 		}
 	}
 
@@ -224,9 +211,7 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				logCurrentPlayer(currentPlayer);
 				logModelInput(model, promptTemplateArguments, boardGame);
 
-				retry(retryTemplate, retryContext -> {
-
-					retryHandler(retryContext, playerActionRef.get(), promptTemplateArguments);
+				Retryable<PlayerAction> gamePlay = () -> {
 
 					AbstractTimer<?, Play> playTimer = AbstractTimer.time(() ->
 						promptModel(model, promptTemplateArguments, chatClient));
@@ -246,7 +231,11 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 					}).accept(boardGame);
 
 					return playerAction;
-				});
+				};
+
+				RetryListener gameReplay = retryHandler(playerActionRef.get(), promptTemplateArguments);
+
+				retry(gamePlay, gameReplay, retryTemplate);
 
 				if (boardGame.isPlayable()) {
 					currentPlayer = players.switchPlayer(chatModel);
@@ -259,17 +248,32 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 		};
 	}
 
-	private void retryHandler(RetryContext retryContext, PlayerAction lastPlayerAction,
-			Map<String, Object> promptTemplateArguments) {
+	private void retry(Retryable<?> retryable, RetryListener retryListener, RetryTemplate retryTemplate)
+			throws RetryException {
 
-		if (retryContext.getRetryCount() > 0) {
-			if (retryContext.getLastThrowable() instanceof InvalidPlayException) {
-				promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
-				logGamePlay("Player [{}] incorrectly attempted to play [{}]",
-					lastPlayerAction.player().getName(), lastPlayerAction.move());
+		retryTemplate.setRetryListener(retryListener);
+		retryTemplate.execute(retryable);
+	}
+
+	private RetryListener retryHandler(PlayerAction lastPlayerAction, Map<String, Object> promptTemplateArguments) {
+
+		return new RetryListener() {
+
+			@Override
+			public void beforeRetry(@Nullable RetryPolicy retryPolicy, @Nullable Retryable<?> retryable,
+					@NonNull RetryState retryState) {
+
+				if (retryState.getRetryCount() > 0) {
+					if (retryState.getLastException() instanceof InvalidPlayException) {
+						promptTemplateArguments.put(TRIED_COLUMN_PROMPT_TEMPLATE_ARGUMENT, lastPlayerAction.move());
+						logGamePlay("Player [{}] incorrectly attempted to play [{}]",
+							lastPlayerAction.player().getName(), lastPlayerAction.move());
+					}
+					logGamePlay("Retry count [{}]", retryState.getRetryCount());
+				}
 			}
-			logGamePlay("Retry count [{}]", retryContext.getRetryCount());
-		}
+		};
+
 	}
 
 	private Players selectPlayers(Scanner input) {
@@ -377,12 +381,6 @@ public class ConnectFourApplication extends AbstractConnectFourApplication {
 				throw ConnectFourException.because("AI model fumbled the ball", cause);
 			}
 		};
-	}
-
-	private PlayerAction retry(RetryTemplate retryTemplate,
-			RetryCallback<PlayerAction, ConnectFourException> retryCallback) {
-
-		return retryTemplate.execute(retryCallback);
 	}
 
 	private void waitOnUserInput(Scanner input) {

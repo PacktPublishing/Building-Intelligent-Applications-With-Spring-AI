@@ -32,14 +32,15 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.model.tool.ToolCallingChatOptions;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -80,7 +81,7 @@ public class StockQuotesFunctionApplication {
 
 	private static final String DEBUG_PROFILE = "debug";
 	private static final String EXIT = "exit";
-	private static final String STOCK_PRICE_FUNCTION_NAME = "StockPriceFunction";
+	private static final String STOCK_QUOTE_FUNCTION_NAME = "StockQuoteFunction";
 	private static final String USER_PROFILE = "user";
 
 	public static void main(String[] args) {
@@ -127,36 +128,46 @@ public class StockQuotesFunctionApplication {
 		});
 	}
 
-	@Bean(STOCK_PRICE_FUNCTION_NAME)
-	@Description("Get the current price for a stock")
-	Function<StockQuote.Request, StockQuote.Response> stockQuoteFunction(Environment environment,
-			RestClient polygonClient) {
+	@SpringBootConfiguration
+	static class StockMarketTools {
 
-		return request -> {
+		@Bean
+		public ToolCallback stockQuote(Environment environment, RestClient polygonClient) {
+			return FunctionToolCallback.builder(STOCK_QUOTE_FUNCTION_NAME, stockQuoteFunction(environment, polygonClient))
+				.description("Get the current price for a stock")
+				.inputType(StockQuote.Request.class)
+				.build();
+		}
 
-			String exchangeSymbol = request.exchangeSymbol();
+		Function<StockQuote.Request, StockQuote.Response> stockQuoteFunction(Environment environment,
+				RestClient polygonClient) {
 
-			print("Fetching quote for stock [%s]...%n", exchangeSymbol);
+			return request -> {
 
-			Map<String, ?> uriVariables = Map.of("exchangeSymbol", exchangeSymbol);
+				String exchangeSymbol = request.exchangeSymbol();
 
-			String uri = environment
-				.getRequiredProperty("examples.app.stock-quotes.polygon.api.market-data.previous-close.uri");
+				print("Fetching quote for stock [%s]...%n", exchangeSymbol);
 
-			StockQuote stockQuote = polygonClient.get()
-				.uri(uri, uriVariables)
-				.accept(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.body(StockQuote.class);
+				Map<String, ?> uriVariables = Map.of("exchangeSymbol", exchangeSymbol);
 
-			Assert.state(stockQuote != null, () -> "Failed to retrieve quote for stock [%s]".formatted(request));
+				String uri = environment
+					.getRequiredProperty("examples.app.stock-quotes.polygon.api.market-data.previous-close.uri");
 
-			return new StockQuote.Response(stockQuote.getFirstResult().getClose());
-		};
+				StockQuote stockQuote = polygonClient.get()
+					.uri(uri, uriVariables)
+					.accept(MediaType.APPLICATION_JSON)
+					.retrieve()
+					.body(StockQuote.class);
+
+				Assert.state(stockQuote != null, () -> "Failed to retrieve quote for stock [%s]".formatted(request));
+
+				return new StockQuote.Response(stockQuote.getFirstResult().getClose());
+			};
+		}
 	}
 
 	@Bean
-	ApplicationRunner programRunner(ChatClient chatClient) {
+	ApplicationRunner programRunner(ChatClient chatClient, ToolCallback stockQuote) {
 
 		return args -> {
 
@@ -168,17 +179,16 @@ public class StockQuotesFunctionApplication {
 			while (isNotExit(stockSymbol = scanner.nextLine())) {
 				if (StringUtils.hasText(stockSymbol)) {
 
-					ToolCallingChatOptions chatOptions = ToolCallingChatOptions.builder()
-						.toolNames(STOCK_PRICE_FUNCTION_NAME)
-						.build();
-
 					String promptTemplate = "What is the current price for {stock}?";
 
 					Map<String, Object> promptArguments = Map.of("stock", stockSymbol);
 
-					Prompt prompt = new PromptTemplate(promptTemplate).create(promptArguments, chatOptions);
+					Prompt prompt = new PromptTemplate(promptTemplate).create(promptArguments);
 
-					String stockPrice = chatClient.prompt(prompt).call().content();
+					String stockPrice = chatClient.prompt(prompt)
+						.tools(stockQuote)
+						.call()
+						.content();
 
 					print("AI> %s%n%n", stockPrice);
 				}
@@ -192,7 +202,7 @@ public class StockQuotesFunctionApplication {
 		return StringUtils.hasText(input) && !EXIT.equalsIgnoreCase(input);
 	}
 
-	private void print(String message, Object... arguments) {
+	private static void print(String message, Object... arguments) {
 		System.out.printf(message, arguments);
 		System.out.flush();
 	}

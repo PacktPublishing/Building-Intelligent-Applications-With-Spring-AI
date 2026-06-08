@@ -35,7 +35,6 @@ import org.cp.elements.lang.annotation.ThreadSafe;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.DefaultChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import lombok.AccessLevel;
@@ -140,11 +139,12 @@ public class CompositeChatModel implements Iterable<ChatModel>, ChatModel {
 	}
 
 	@Override
-	public ChatOptions getDefaultOptions() {
+	@SuppressWarnings("all")
+	public ChatOptions getOptions() {
 
 		return getOptionalCurrentChatModel()
-			.map(ChatModel::getDefaultOptions)
-			.orElseGet(DefaultChatOptions::new);
+			.map(ChatModel::getOptions)
+			.orElseGet(() -> ChatOptions.builder().build());
 	}
 
 	@Override
