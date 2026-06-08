@@ -15,7 +15,7 @@ The following branch contain the following baseline:
 
 * `main` - Spring AI `1.0.8`, Spring Boot `3.5.14`
 * `spring-ai-1.1.x` - Spring AI `1.1.7`, Spring Boot `3.5.14`
-* `spring-ai-2.0.x` - Spring AI `2.0.0-M7`, Spring Boot `4.1.0-RC1`
+* `spring-ai-2.0.x` - Spring AI `2.0.0-RC1`, Spring Boot `4.1.0-RC1`
 
 [[build-and-run]]
 == Build & Run
