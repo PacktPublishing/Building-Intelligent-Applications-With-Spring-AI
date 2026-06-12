@@ -222,7 +222,7 @@ Since this can occur quite frequently, I built in *resiliency* to the Connect4 a
 
 > NOTE: As of Spring Framework `7.0`, Spring Retry was integrated into the core framework.
 Use of Spring Framework `7.0` requires the use of Spring Boot `4.0`.
-Spring AI `2.0` has been https://github.com/spring-projects/spring-ai/blob/2.0.0-M7/pom.xml#L263[rebased on] Spring Boot `4.1`, which is https://github.com/spring-projects/spring-boot/blob/v4.1.0-RC1/gradle.properties#L24[based on] Spring Framework `7.0`.
+Spring AI `2.0` has been https://github.com/spring-projects/spring-ai/blob/2.0.0/pom.xml#L263[rebased on] Spring Boot `4.1`, which is https://github.com/spring-projects/spring-boot/blob/v4.1.0/gradle.properties#L24[based on] Spring Framework `7.0`.
 I have built all Spring AI Examples for the book on all versions of Spring AI, including, and up to, Spring AI `2.0`.
 Support for Spring AI `2.0` is on the `spring-ai-2.0.x` topic branch in this GitHub repository.
 
