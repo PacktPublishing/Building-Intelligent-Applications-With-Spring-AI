@@ -46,7 +46,6 @@ import io.packt.spring.ai.examples.app.shazam.util.NumberUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.cp.elements.io.FileSystemUtils;
 import org.cp.elements.lang.Assert;
 import org.springframework.ai.document.Document;
@@ -271,7 +270,7 @@ class JavaSoundAudioSplitterIntegrationTests extends AbstractShazamIntegrationTe
 		return new File(FileSystemUtils.WORKING_DIRECTORY, audioFilename);
 	}
 
-	private @NonNull String toAudioFilename(String filename, int fileNumber) {
+	private String toAudioFilename(String filename, int fileNumber) {
 		int index = filename.indexOf(".");
 		String audioFilename = filename.substring(0, index);
 		String audioExtension = filename.substring(index);
