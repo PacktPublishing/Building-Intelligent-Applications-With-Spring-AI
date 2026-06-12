@@ -9,13 +9,13 @@ The examples focus on demonstrating how to use Spring AI's features and function
 The examples are meant to help you instantly become familiar with Spring AI's APIs and capabilities so you can be immediately productive out-of-the-box, leveraging AI to build intelligent applications with Spring using any JVM language: Java, Kotlin, Groovy, etc. All examples were written in Java.
 
 All examples are built on the latest GA version of https://spring.io/projects/spring-boot#support[Spring Boot] `3.5.x`, https://spring.io/projects/spring-ai[Spring AI] `1.0.x`, and *Java 17*.
-Additionally, all examples, extensions and tools have been built with Spring AI `1.1.x`, Spring AI `2.0.0-M7` and Spring Boot `4.1.0-RC1`.
+Additionally, all examples, extensions and tools have been built with the lastest Spring AI `1.1.x`, Spring AI `2.0.x` and Spring Boot `4.1.x`, on *Java 17*.
 
 The following branch contain the following baseline:
 
-* `main` - Spring AI `1.0.8`, Spring Boot `3.5.14`
-* `spring-ai-1.1.x` - Spring AI `1.1.7`, Spring Boot `3.5.14`
-* `spring-ai-2.0.x` - Spring AI `2.0.0-RC1`, Spring Boot `4.1.0-RC1`
+* `main` - Spring AI `1.0.9`, Spring Boot `3.5.15`
+* `spring-ai-1.1.x` - Spring AI `1.1.8`, Spring Boot `3.5.15`
+* `spring-ai-2.0.x` - Spring AI `2.0.0`, Spring Boot `4.1.0`
 
 [[build-and-run]]
 == Build & Run
