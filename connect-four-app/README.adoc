@@ -1,14 +1,14 @@
 [[connect-four-app]]
-= Connect4 Application
+= Connect 4 Application
 
-The Connect4 Spring AI, Spring Boot application was featured in **Chapter 6 - Connecting the Dots**.
+The Connect 4 Spring AI, Spring Boot application was featured in **Chapter 6 - Connecting the Dots**.
 
-The Spring Boot application is a simple, interactive command-line interface (CLI) using Spring AI to have AI models compete against each other in a friendly game of Connect4.
-You can learn more about Connect4 on the https://en.wikipedia.org/wiki/Connect_Four[Wikipedia].
+The Spring Boot application is a simple, interactive command-line interface (CLI) using Spring AI to have AI models compete against each other in a friendly game of Connect 4.
+You can learn more about Connect 4 on the https://en.wikipedia.org/wiki/Connect_Four[Wikipedia].
 
 A CLI was chosen for simplicity of implementation and to focus on AI model interactions.
-The application begins by having the user select 2 different, or the same, AI models to compete in a game of Connect4.
-The AI models each take turns playing a move.
+The application begins by having the user select 2 different, or the same, AI models as players to compete in a game of Connect 4.
+The AI models (players) each take turns playing a move.
 They must declare their move along with providing an explanation of why they chose the move they did.
 They game proceeds until their is a clear winner or the game results in a draw (tie).
 
