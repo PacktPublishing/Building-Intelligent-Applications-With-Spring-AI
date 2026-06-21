@@ -27,6 +27,9 @@ import org.springframework.context.annotation.Bean;
  * the {@link ChatModel} API.
  *
  * @author John Blum
+ * @see SpringBootApplication
+ * @see SpringApplicationBuilder
+ * @see ApplicationRunner
  * @see ChatModel
  * @since 0.1.0
  */
