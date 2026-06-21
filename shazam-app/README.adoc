@@ -23,6 +23,11 @@ The Scala implementation was last uploaded to JCenter, which no longer exists.
 The bits were not published in Maven Central AFAIK.
 I am currently working on a port of _Chromaprint_ to Java, along with exploring alternatives to building the Scala implementation with Maven.
 
+[[shazam-app-requiredments]]
+== REQUIREMENTS
+
+1. JDK 17
+
 [[shazam-app-wip]]
 == DISCLAIMER: Work In Progress
 
