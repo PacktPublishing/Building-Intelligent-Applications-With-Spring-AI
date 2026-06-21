@@ -1,0 +1,32 @@
+[[realtime-message-translation-app]]
+= Realtime Message Translation app
+
+The Realtime Message Translation Spring AI, Spring Boot application was featured in **Chapter 4 - Realtime Message Translation**.
+
+The Spring Boot application is a full-featured Web application using Spring AI to perform language translation, audio transcription (speech-to-text) and text-to-speech (TTS).
+Web chat enables you to communicate in your native language.
+You must select your preferred language before joining a chat session.
+The application assumes you will be communicating in your selected preferred language.
+Once you have logged into a chat session, you can share link to the chat session with a friend connected to your local network.
+Alternatively, you could host this application in the cloud, such as AWS, GCP or Azure, thereby enabling users to communicate over the internet.
+The application presents a Web-based user interface (UI) allowing 2 or more users to converse in online messaging through chat.
+You can either type your text message or use your system's mic to speak your message.
+Messages sent to the chat session will automatically be converted to your preferred language, assuming multiple users speaking different languages are conversing in the same chat session.
+Once the message arrives, a chat bubble is displayed.
+You may read the message or click the speaker button to have the message read to you.
+
+[[realtime-message-translation-app-requiredments]]
+== REQUIREMENTS
+
+1. JDK 17
+
+[[realtime-message-translation-app-run]]
+== RUN
+
+Execute the following `mvnw` command from the `spring-ai-examples/` directory:
+
+.Spring Boot Run
+[source,shell]
+----
+$ mvnw --projects realtime-message-translation-app spring-boot:run
+----
