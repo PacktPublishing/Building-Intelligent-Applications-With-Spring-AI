@@ -1,6 +1,6 @@
 plugins {
   java
-  id("org.springframework.boot") version "3.5.0"
+  id("org.springframework.boot") version "3.5.16"
   id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -17,8 +17,7 @@ repositories {
   mavenCentral()
 }
 
-extra["springAiVersion"] = "1.0.0"
-}
+extra["springAiVersion"] = "1.0.9"
 
 dependencies {
   implementation("org.springframework.ai:spring-ai-starter-model-open-ai")
