@@ -13,8 +13,8 @@ Additionally, all examples, extensions and tools have been built with the lastes
 
 The following branch contain the following baseline:
 
-* `main` - Spring AI `1.0.9`, Spring Boot `3.5.15`
-* `spring-ai-1.1.x` - Spring AI `1.1.8`, Spring Boot `3.5.15`
+* `main` - Spring AI `1.0.9`, Spring Boot `3.5.16`
+* `spring-ai-1.1.x` - Spring AI `1.1.8`, Spring Boot `3.5.16`
 * `spring-ai-2.0.x` - Spring AI `2.0.0`, Spring Boot `4.1.0`
 
 [[build-and-run]]
